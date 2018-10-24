@@ -2,6 +2,7 @@ soDLA (Building)
 ================
 
 This is a suite of packages for working with nvdla in chisel
+.
 These are the tutorials for [chisel3](https://chisel.eecs.berkeley.edu/index.html#getstarted) and [nvdla](http://nvdla.org/hw/v1/hwarch.html)
 
 
