@@ -1,20 +1,16 @@
-Chisel Tutorials (Release branch)
+soDLA (Building)
 ================
 
-These are the tutorials for [Chisel](https://github.com/ucb-bar/chisel3).
+This is a suite of packages for working with nvdla in chisel
+These are the tutorials for [chisel3](https://chisel.eecs.berkeley.edu/index.html#getstarted) and [nvdla](http://nvdla.org/hw/v1/hwarch.html)
 
-Chisel is an open-source hardware construction language developed
-at UC Berkeley that supports advanced hardware design using highly
-parameterized generators and layered domain-specific hardware languages.
 
 
 Getting the Repo
 ----------------
 
-    $ git clone https://github.com/ucb-bar/chisel-tutorial.git
-    $ cd chisel-tutorial
-    $ git fetch origin
-    $ git checkout release
+    $ git clone https://github.com/redpanda3/soDLA.git
+    $ cd soDLA
 
 
 Executing Chisel
