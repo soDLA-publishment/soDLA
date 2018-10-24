@@ -1,6 +1,6 @@
+package nvdla
 
-
-
+import chisel3._
 
 class NV_NVDLA_CDMA_DC_fifo extends Module {
     val io = IO(new Bundle {
@@ -39,12 +39,14 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     val wr_data_in = Reg(UInt(6.W))
     val wr_busy_in = Reg(Bool())
     val wr_ready = !wr_busy_in
+    val wr_busy_next = Wire(Bool())
 
     // factor for better timing with distant wr_req signal
     val wr_busy_in_next_wr_req_eq_1 = wr_busy_next
     val wr_busy_in_next_wr_req_eq_0 = (wr_req_in && wr_busy_next) && !wr_reserving
     val wr_busy_in_next := Mux(io.wr_req, wr_busy_in_next_wr_req_eq_1, wr_busy_in_next_wr_req_eq_0)
 
+    val wr_busy_in_int = Reg(Bool())
     //孩子你是最棒的
     withClockAndReset(io.clk, !io.reset_) {
         wr_busy_in = RegNext(wr_busy_in_next)
