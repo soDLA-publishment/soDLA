@@ -32,7 +32,16 @@ class NV_NVDLA_RT_cmac_a2cacc extends Module {
     })
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        val cacc2glb_done_intr_pd_d = RegNext(io.cacc2glb_done_intr_src_pd)
+        for (i <- 0 until 7) { 
+            when(mac2accu_src_mask(i)){
+
+            }
+
+        }
+        
+
+
+        val mac2accu_data_d = RegNext()
         io.cacc2glb_done_intr_dst_pd := RegNext(cacc2glb_done_intr_pd_d)
     } 
   }
