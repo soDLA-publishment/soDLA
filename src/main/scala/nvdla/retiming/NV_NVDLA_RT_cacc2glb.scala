@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 
 
-class NV_NVDLA_RT_cacc2glb extends Module {
+class NV_NVDLA_RT_cacc2glb(implicit val conf: cacc2glbConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
@@ -16,7 +16,6 @@ class NV_NVDLA_RT_cacc2glb extends Module {
     })
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        val cacc2glb_done_intr_pd_d = RegNext(io.cacc2glb_done_intr_src_pd)
-        io.cacc2glb_done_intr_dst_pd := RegNext(cacc2glb_done_intr_pd_d)
+        io.cacc2glb_done_intr_dst_pd := ShiftRegister(io.cacc2glb_done_intr_src_pd, 2, true.B)
     } 
   }
