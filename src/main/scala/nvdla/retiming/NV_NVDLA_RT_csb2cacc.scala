@@ -14,9 +14,9 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
         val csb2cacc_req_src_prdy = Output(Bool()) /* data return handshake */
         val csb2cacc_req_src_pd = Input(UInt(63.W))//63 is a magic number
 
-        val csb2cacc_req_src_pvld = Output(Bool()) /* data valid */
-        val csb2cacc_req_src_prdy = Input(Bool()) /* data return handshake */
-        val csb2cacc_req_src_pd = Output(UInt(63.W))//63 is a magic number
+        val csb2cacc_req_dst_pvld = Output(Bool()) /* data valid */
+        val csb2cacc_req_dst_prdy = Input(Bool()) /* data return handshake */
+        val csb2cacc_req_dst_pd = Output(UInt(63.W))//63 is a magic number
 
 
         //data signal
@@ -24,16 +24,15 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
         val cacc2csb_resp_src_pd =  Input(UInt(34.W))  /* pkt_id_width=1 pkt_widths=33,33  */                                 /* pkt_id_width=1 pkt_widths=33,33  */
 
 
-        val cacc2csb_resp_src_valid = Input(Bool()) /* data valid */
-        val cacc2csb_resp_src_pd =  Input(UInt(34.W))  /* pkt_id_width=1 pkt_widths=33,33  */                                 /* pkt_id_width=1 pkt_widths=33,33  */
+        val cacc2csb_resp_dst_valid = Input(Bool()) /* data valid */
+        val cacc2csb_resp_dst_pd =  Input(UInt(34.W))  /* pkt_id_width=1 pkt_widths=33,33  */                                 /* pkt_id_width=1 pkt_widths=33,33  */
 
 
     })
 
 
-    val mac2accu_data_d = Reg(Vec(conf.RT_CMAC_A2CACC_LATENCY, Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_RESULT_WIDTH).W))))
-    val mac2accu_mask_d = Reg(Vec(conf.RT_CMAC_A2CACC_LATENCY, UInt((conf.CMAC_ATOMK_HALF).W)))
-    val mac2accu_mode_d = Reg(Vec(conf.RT_CMAC_A2CACC_LATENCY, UInt((conf.CMAC_ATOMK_HALF).W)))
+    val cacc2csb_resp_pd_d  = Reg(Vec(conf.RT_CMAC_A2CACC_LATENCY, UInt(34.W)))
+    val cacc2csb_resp_valid_d = Reg(Vec(conf.RT_CMAC_A2CACC_LATENCY, UInt((conf.CMAC_ATOMK_HALF).W)))
     val mac2accu_pd_d = Reg(Vec(conf.RT_CMAC_A2CACC_LATENCY, UInt(9.W))
     val mac2accu_pvld_d = Reg(Vec(conf.RT_CMAC_A2CACC_LATENCY, Bool()))
 

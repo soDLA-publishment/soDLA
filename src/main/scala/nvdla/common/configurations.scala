@@ -41,5 +41,5 @@ case class cacc2glbConfiguration()
 
 case class csb2caccConfiguration()
 {
-    RT_CMAC_CACC2GLB_LATENCY = 2   
+    RT_csb2cacc_LATENCY = 3   
 }
