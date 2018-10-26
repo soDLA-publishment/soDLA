@@ -47,7 +47,7 @@ class NV_NVDLA_RT_cmac_b2cacc(implicit val conf: cmacConfiguration) extends Modu
     //initial condition
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-        for(t <- 0 to (conf.RT_CMAC_A2CACC_LATENCY-1){
+        for(t <- 0 to conf.RT_CMAC_A2CACC_LATENCY-1){
 
             mac2accu_pvld_d(t+1) := RegNext(mac2accu_pvld_d(t))
             mac2accu_mask_d(t+1) := RegNext(mac2accu_mask_d(t))
@@ -57,12 +57,12 @@ class NV_NVDLA_RT_cmac_b2cacc(implicit val conf: cmacConfiguration) extends Modu
 
     //data flight
     withClock(io.nvdla_core_clk) {
-        for(t <- 0 to (conf.RT_CMAC_A2CACC_LATENCY-1){
+        for(t <- 0 to conf.RT_CMAC_A2CACC_LATENCY-1){
 
             mac2accu_pd_d(t+1) := ShiftRegister(mac2accu_pd_d(t) , 1, mac2accu_pvld_d(t))
             mac2accu_mode_d(t+1) := ShiftRegister(mac2accu_mode_d(t) , 1, mac2accu_pvld_d(t))
             
-            for(i <- 0 to (conf.CMAC_ATOMK_HALF-1){
+            for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
             when (mac2accu_mask_d(t)(i)){
 
                     mac2accu_data_d(t+1)(i)(43,0):= RegNext(mac2accu_data_d(t)(i)(43,0))
@@ -80,11 +80,11 @@ class NV_NVDLA_RT_cmac_b2cacc(implicit val conf: cmacConfiguration) extends Modu
 
     //output assignment
 
-    mac2accu_pvld_d(2) := io.mac2accu_dst_pvld
-    mac2accu_mask_d(2) := io.mac2accu_dst_mask
-    mac2accu_mode_d(2) := io.mac2accu_dst_mode
-    mac2accu_pd_d(2) := io.mac2accu_dst_pd
-    mac2accu_data_d(2) := io.mac2accu_dst_data
+    io.mac2accu_dst_pvld := mac2accu_pvld_d(2) 
+    io.mac2accu_dst_mask := mac2accu_mask_d(2) 
+    io.mac2accu_dst_mode := mac2accu_mode_d(2) 
+    io.mac2accu_dst_pd := mac2accu_pd_d(2) 
+    io.mac2accu_dst_data :=mac2accu_data_d(2) 
 
 
 
