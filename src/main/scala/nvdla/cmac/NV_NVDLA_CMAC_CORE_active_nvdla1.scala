@@ -86,7 +86,7 @@ class NV_NVDLA_CMAC_CORE_active_nvdla1(implicit val conf: cmacConfiguration) ext
     io.dat_pre_exp := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.EXP).W)))
     io.dat_pre_mask := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.NAN).W)))
     io.dat_pre_pvld := Reg(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-    io.dat_pre_stripe_end_d = Reg(Vec(conf.CMAC_ATOMK_HALF, Bool())) 
+    io.dat_pre_stripe_end = Reg(Vec(conf.CMAC_ATOMK_HALF, Bool())) 
     io.dat_pre_stripe_st = Reg(Vec(conf.CMAC_ATOMK_HALF, Bool()))  
 
     val dat_actv_data_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))) 
@@ -101,8 +101,99 @@ class NV_NVDLA_CMAC_CORE_active_nvdla1(implicit val conf: cmacConfiguration) ext
     val dat_pre_data_w = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
 
 
+    val dat_pre_exp_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.EXP).W)))
+    val dat_pre_exp_w = Reg(UInt((conf.EXP).W))
+
+    val dat_pre_mask_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.NAN).W)))
+    val dat_pre_mask_w = Reg(UInt((conf.NAN).W))
+    val dat_pre_nan = Reg(UInt((conf.NAN).W))
+
+    val dat_pre_nz = Reg(UInt((conf.CMAC_ATOMC).W))
+    val dat_pre_nz_w = Reg(UInt((conf.CMAC_ATOMC).W))
+    val dat_pre_pvld_reg = Reg(UInt(16.W))
+    val dat_pre_stripe_end_reg = Reg(UInt(9.W))
+    val dat_pre_stripe_st_reg = Reg(UInt(16.W))
+
+    //input dat
+    val in_dat_data_fp16_reg = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_dat_data_fp16 = Reg(Vec(64, UInt(16.W)))
+    val in_dat_data_fp16_mts_ori = Reg(Vec(64, UInt(12.W)))
+    val in_dat_data_fp16_mts_sft = Reg(Vec(64, UInt(15.W)))
+
+    val in_dat_data_int16_reg = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_dat_data_int16 = Reg(Vec(64, UInt(16.W)))
+
+    val in_dat_data_int8_reg = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_dat_data_int8 = Reg(Vec(64, UInt(16.W)))
+
+    val in_dat_data_pack = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_dat_exp = Reg(UInt((conf.EXP).W))
+    val in_dat_mask_int8 = Reg(UInt((conf.CMAC_INPUT_NUM).W))
+    val in_dat_nan = Reg(UInt((conf.NAN).W))  
+    val in_dat_norm = Reg(UInt((conf.NAN).W)) 
+
+
+    //input weight
+    val in_wt_data_fp16_reg = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_wt_data_fp16 = Reg(Vec(64, UInt(16.W)))
+    val in_wt_data_fp16_mts_ori = Reg(Vec(64, UInt(12.W)))
+    val in_wt_data_fp16_mts_sft = Reg(Vec(64, UInt(15.W))) 
+
+    val in_wt_data_int16_reg = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_wt_data_int16 = Reg(Vec(64, UInt(16.W)))
+
+    val in_wt_data_int8_reg = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_wt_data_int8 = Reg(Vec(64, UInt(16.W)))
+
+    val in_wt_data_pack = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val in_wt_exp = Reg(UInt((conf.EXP).W))
+    val in_wt_mask_int8 = Reg(UInt((conf.CMAC_INPUT_NUM).W))
+    val in_wt_nan = Reg(UInt((conf.NAN).W))  
+    val in_wt_norm = Reg(UInt((conf.NAN).W))   
+
+
+    //assign output
+
+    io.wt_actv_data := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
+    io.wt_actv_nan := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.NAN).W))) 
+    io.wt_actv_nz := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
+    io.wt_actv_pvld := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.PVLD).W)))
+    val wt_actv_pvld_w = Reg(Vec(conf.CMAC_ATOMK_HALF, Bool()))
+    val wt_actv_vld = Reg(Vec(conf.CMAC_ATOMK_HALF, Bool()))
+    val wt_sd_data =  Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
+ 
+ 
+    io.wt_sd_exp := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.EXP).W)))
+    io.wt_sd_mask := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.NAN).W)))
+    val wt_sd_nan = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.NAN).W))) 
+    val wt_sd_nz := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))              
+    io.wt_sd_pvld := Reg(Vec(conf.CMAC_ATOMK_HALF, Bool())) 
+    val wt_sd_pvld_w = Reg(Vec(conf.CMAC_ATOMK_HALF, Bool())) 
+
+
+    val wt_pre_data = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val wt_pre_data_w = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))   
+    val wt_pre_exp =  Reg(UInt((conf.EXP).W))
+    val wt_pre_exp_w =  Reg(UInt((conf.EXP).W))   
+    val wt_pre_mask = Reg(UInt((conf.NAN).W))
+    val wt_pre_mask_w = Reg(UInt((conf.)NAN).W) 
+    val wt_pre_nan = Reg(UInt((conf.)NAN).W)
+    val wt_pre_nz= Reg(UInt((conf.CMAC_ATOMC).W)) 
+    val wt_pre_nz_w= Reg(UInt((conf.CMAC_ATOMC).W))       
+    val wt_pre_sel = Reg(UInt((conf.CMAC_ATOMK_HALF).W)) 
+
+
+
+
+
+
     //initial condition
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
+
+        when(cfg_reg_en){
+            
+
+        }
 
         for(t <- 0 to conf.RT_CMAC_A2CACC_LATENCY-1){
 
