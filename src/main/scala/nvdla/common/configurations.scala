@@ -26,6 +26,20 @@ case class ramSizeCongiguration()
     phy_rcols_pos = 288'b0
 }
 
+case class cmacv1Configuration()
+{
+    //谜一样的变量
+    CMAC_ATOMC = 128
+    CMAC_ATOMK_HALF = 8
+    CMAC_RESULT_WIDTH = 176
+    RT_CMAC_A2CACC_LATENCY = 2
+    CMAC_INPUT_NUM = 128
+    CMAC_BPE = 8
+    EXP = 192
+    PVLD = 104
+    NAN = 64
+}
+
 case class cmacConfiguration()
 {
     //谜一样的变量
@@ -39,6 +53,7 @@ case class cmacConfiguration()
     PVLD = 104
     NAN = 64
 }
+
 
 case class cacc2glbConfiguration()
 

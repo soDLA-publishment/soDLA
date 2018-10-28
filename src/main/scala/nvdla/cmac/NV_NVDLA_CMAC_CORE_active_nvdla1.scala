@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 
 
-class NV_NVDLA_CMAC_CORE_active_nvdla1(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_active_nvdla1(implicit val conf: cmacv1Configuration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
@@ -183,25 +183,23 @@ class NV_NVDLA_CMAC_CORE_active_nvdla1(implicit val conf: cmacConfiguration) ext
     val wt_pre_sel = Reg(UInt((conf.CMAC_ATOMK_HALF).W)) 
 
 
-
-
-
-
     //initial condition
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
         when(cfg_reg_en){
-            
+            cfg_is_int8_d1:=RegNext(Fill(65, cfg_is_int8))
+            cfg_is_fp16_d1:=RegNext(Fill(98, cfg_is_fp16))
+            cfg_is_int16_d1:=RegNext(Fill(64, cfg_is_fp16))
 
-        }
-
-        for(t <- 0 to conf.RT_CMAC_A2CACC_LATENCY-1){
-
-            mac2accu_pvld_d(t+1) := RegNext(mac2accu_pvld_d(t))
-            mac2accu_mask_d(t+1) := RegNext(mac2accu_mask_d(t))
-  
         }
     } 
+
+
+    //weight reordering and detect
+
+
+
+
 
     //data flight
     withClock(io.nvdla_core_clk) {
