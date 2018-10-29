@@ -69,6 +69,35 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     })
 
 
+
+
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘ 
+                
+
+
+
+
+
     //: for(my $i=0; $i<CMAC_ATOMK_HALF; $i++){
     //: print qq(
     //: reg  [CMAC_BPE*CMAC_ATOMC-1:0]  dat_actv_data_reg${i};
@@ -271,7 +300,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     }
 
     for(i <- 0 to conf.CMAC_INPUT_NUM-1){
-        dat_pre_mask_w(i*8+7, i*8) := io.in_dat_mask(i)
+        dat_pre_mask_w(i) := io.in_dat_mask(i)
     }
 
 
@@ -280,9 +309,10 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //: &eperl::flop(" -q  dat_pre_pvld   -d \"in_dat_pvld\"  -clk nvdla_core_clk -rst nvdla_core_rstn "); 
     //: &eperl::flop(" -q  dat_pre_nz     -en \"in_dat_pvld\" -d  \"dat_pre_mask_w\" -wid ${kk} -clk nvdla_core_clk -rst nvdla_core_rstn"); 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        io.dat_pre_pvld = RegNext(conf.CMAC_ATOMK_HALF, io.in_dat_pvld)
+        io.dat_pre_pvld := RegNext(io.in_dat_pvld)
         when(io.in_dat_pvld) {val dat_pre_nz = RegNext(dat_pre_mask_w) }
     }    
+
 
 //:     for (my $i = 0; $i < CMAC_ATOMC; $i ++) {
 //:         my $b0 = $i * 8;
@@ -302,23 +332,16 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     val dat_pre_data = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
     for(i <- 0 to conf.CMAC_ATOMC-1){        
         withClock(io.nvdla_core_clk) {
-            when(io.in_dat_pvld & in_dat_mask_w(i)) { dat_pre_data(i*8+7,i*8) := io.in_dat_data(i) }
+            when(io.in_dat_pvld & in_dat_mask_w(i)) { dat_pre_data(i*8+7,i*8) := dat_pre_data_w(i*8+7,i*8) }
         }
     }
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-        val dat_actv_stripe_st = RegNext(io.in_dat_stripe_st&io.in_dat_pvld)
-        val dat_pre_stripe_end = RegNext(io.in_dat_stripe_end&io.in_dat_pvld)
-
+        io.dat_pre_stripe_st = RegNext(io.in_dat_stripe_st&io.in_dat_pvld)
+        io.dat_pre_stripe_end = RegNext(io.in_dat_stripe_end&io.in_dat_pvld)
     } 
 
-    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-
-        io.dat_actv_stripe_st(i) := dat_actv_stripe_st
-        io.dat_pre_stripe_end(i) := dat_pre_stripe_end
-
-    }
 
 // get data for cmac, 1 pipe.
 //: my $atomc= CMAC_ATOMC; 
@@ -333,52 +356,36 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 //:         &eperl::flop("-nodeclare -norst -q  dat_actv_data_reg${i}[${b1}:${b0}]  -en \"dat_pre_pvld & dat_pre_nz[${k}]\" -d  \"dat_pre_data[${b1}:${b0}]\" -clk nvdla_core_clk"); 
 //:     }
 //: }
+    val dat_actv_pvld_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
+    val dat_actv_nz_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
 
+    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
+        
+        withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-
-
-
-
-
-
-
-
-    //weight reordering and detect
-
-
-
-
-
-    //data flight
-    withClock(io.nvdla_core_clk) {
-        for(t <- 0 to conf.RT_CMAC_A2CACC_LATENCY-1){
-
-            mac2accu_pd_d(t+1) := ShiftRegister(mac2accu_pd_d(t) , 1, mac2accu_pvld_d(t))
-            mac2accu_mode_d(t+1) := ShiftRegister(mac2accu_mode_d(t) , 1, mac2accu_pvld_d(t))
-            
-            for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-            when (mac2accu_mask_d(t)(i)){
-
-                    mac2accu_data_d(t+1)(i)(43,0):= RegNext(mac2accu_data_d(t)(i)(43,0))
-                }
-                when (mac2accu_mode_d(t)(i)){
-
-                        mac2accu_data_d(t+1)(i)(conf.CMAC_RESULT_WIDTH,44):= RegNext(mac2accu_data_d(t)(i)(conf.CMAC_RESULT_WIDTH,44))
-
-                }       
-                
+            dat_actv_pvld_reg(i) := RegNext(Fill(conf.CMAC_ATOMC, io.dat_pre_pvld(i)))
+            when(io.dat_pre_pvld(i)){
+                dat_actv_nz_reg(i) := RegNext(dat_pre_nz)
             }
-        }
-   
-    }  
+            for(k <- 0 to conf.CMAC_ATOMC-1){                   
+                withClock(io.nvdla_core_clk){
+                    when(io.dat_pre_pvld(i) & dat_pre_nz(k)){
+                        dat_actv_data_reg(i)(k*8+7, k*8):= dat_pre_data(k*8+7,k*8)
+                    }
+                }
+            }
+        }     
+    }
 
-    //output assignment
+//:     for(my $i = 0; $i < CMAC_ATOMK_HALF; $i ++) {
+//:         print qq {
+//: assign    dat${i}_actv_pvld = dat_actv_pvld_reg${i};
+//: assign    dat${i}_actv_data = dat_actv_data_reg${i};
+//: assign    dat${i}_actv_nz   = dat_actv_nz_reg${i};
 
-    io.mac2accu_dst_pvld := mac2accu_pvld_d(2) 
-    io.mac2accu_dst_mask := mac2accu_mask_d(2) 
-    io.mac2accu_dst_mode := mac2accu_mode_d(2) 
-    io.mac2accu_dst_pd := mac2accu_pd_d(2) 
-    io.mac2accu_dst_data :=mac2accu_data_d(2) 
+    io.dat_actv_pvld := dat_actv_pvld_reg
+    io.dat_actv_data := dat_actv_data_reg
+    io.dat_actv_nz := dat_actv_nz_reg
 
 
 
