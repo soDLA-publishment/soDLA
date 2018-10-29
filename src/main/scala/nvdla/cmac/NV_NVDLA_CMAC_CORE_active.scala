@@ -4,66 +4,33 @@ import chisel3._
 
 
 
-//this core is to choose active dat and wt
+//this module is to active dat and wt
 
 class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
-        val nvdla_core_rstn = Input(Bool()
-   
+        val nvdla_core_rstn = Input(Bool())
 
-        //control signal
-        val in_dat_mask = Input(UInt((conf.CMAC_ATOMC).W))
-        //input           in_dat_pvld;
-        val in_dat_pvld = Input(Bool())
-        //input           in_dat_stripe_end;
-        val in_dat_stripe_end = Input(Bool())
-        //input           in_dat_stripe_st;
-        val in_dat_stripe_st = Input(Bool())
-        //input           in_wt_pvld;
-        val in_wt_pvld = Input(Bool())
-        //input   [CMAC_ATOMC-1:0] in_wt_mask;
-        // weight mask pack
-        //:    print "assign    wt_pre_mask_w = {";
-        //:    for(my $i = CMAC_ATOMC-1; $i >= 0; $i --) {
-        //:        print "in_wt_mask[${i}]";
-        //:        if($i == 0) {
-        //:            print "};\n";
-        //:        } elsif ($i % 8 == 0) {
-        //:            print ",\n                       ";
-        //:        } else {
-        //:            print ", ";
-        //:        }
-        //:    }  
-        val in_wt_mask = Input(UInt(conf.CMAC_ATOMC.W))
-        //input   [CMAC_ATOMK_HALF-1:0] in_wt_sel;
-        val in_wt_sel = Input(UInt((conf.CMAC_ATOMK_HALF).W))
-
-
-        //data signal
         //: for(my $i=0; $i<CMAC_INPUT_NUM; $i++){
         //: print qq(
         //: input [CMAC_BPE-1:0] in_dat_data${i};)
         //: }
         val in_dat_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt((conf.CMAC_BPE).W)))
 
-        // weight pack
-        //:    print "assign    wt_pre_data_w  = {";
-        //:    for(my $i = CMAC_ATOMC-1; $i >= 0; $i --) {
-        //:        print "in_wt_data${i}";
-        //:        if($i == 0) {
-        //:            print "};\n";
-        //:        } elsif ($i % 8 == 0) {
-        //:            print ",\n                       ";
-        //:        } else {
-        //:            print ", ";
-        //:        }
-        //:    }
+        val in_dat_mask = Input(UInt((conf.CMAC_ATOMC).W))
+        val in_dat_pvld = Input(Bool())
+        val in_dat_stripe_end = Input(Bool())
+        val in_dat_stripe_st = Input(Bool())
+
+        //: for(my $i=0; $i<CMAC_INPUT_NUM; $i++){
+        //: print qq(
+        //: input [CMAC_BPE-1:0] in_wt_data${i};)
         val in_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt((conf.CMAC_BPE).W)))
 
-
-        //input data
+        val in_wt_mask = Input(UInt(conf.CMAC_ATOMC.W))
+        val in_wt_pvld = Input(Bool())
+        val in_wt_sel = Input(UInt((conf.CMAC_ATOMK_HALF).W))
 
         //: for(my $i=0; $i<CMAC_ATOMK_HALF; $i++){
         //: print qq(
@@ -75,8 +42,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         //:  output dat${i}_pre_stripe_end;
         //:  output dat${i}_pre_stripe_st;
         //: )
-        //: }
-
+        //: } 
         val dat_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
         val dat_actv_nz = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
         val dat_actv_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
@@ -93,14 +59,12 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         //: output [CMAC_ATOMC-1:0] wt${i}_sd_mask;
         //: output wt${i}_sd_pvld;
         //: )
-        //: }
-
-
+        //: } 
         val wt_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*CMAC_ATOMC).W)))   
         val wt_actv_nz = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
         val wt_actv_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
         val wt_sd_mask = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))        
-        val wt_sd_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))        
+        val wt_sd_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))    
        
     })
 
@@ -109,13 +73,16 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //: print qq(
     //: reg  [CMAC_BPE*CMAC_ATOMC-1:0]  dat_actv_data_reg${i};
     //: )
-
-    io.dat_actv_data := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
+    val dat_actv_data_reg := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
+    val dat_pre_data_w = Wire(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
+    val dat_pre_mask_w = Wire(UInt((conf.CMAC_ATOMC).W))
     val dat_pre_nz_w = Reg(UInt((conf.CMAC_ATOMC).W)) 
-    io.dat_pre_stripe_end := Reg(Bool()) 
-    io.dat_pre_stripe_st := Reg(Bool())
+    val dat_pre_stripe_end := Reg(Bool()) 
+    val dat_pre_stripe_st := Reg(Bool())
     val wt_pre_data = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)) 
+    val wt_pre_data_w = Wire(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
     val wt_pre_mask = Reg(UInt((conf.CMAC_ATOMC).W)) 
+    val wt_pre_mask_w = Wire(UInt((conf.CMAC_ATOMC).W))
     val wt_pre_nz_w = Reg(UInt((conf.CMAC_ATOMC).W)) 
 
     //: my $kk=CMAC_ATOMC;
@@ -125,13 +92,44 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //: wire [${kk}-1:0] dat${i}_pre_mask={${kk}{1'b0}};
     //: )
     //: }
-    io.wt_sd_mask := Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W))        
-    io.dat_pre_mask := Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W)) 
+    io.wt_sd_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W)))        
+    io.dat_pre_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W))) 
 
 
 
 /////////////////////////////////////// handle weight ///////////////////////
+    // weight pack
+    //:    print "assign    wt_pre_data_w  = {";
+    //:    for(my $i = CMAC_ATOMC-1; $i >= 0; $i --) {
+    //:        print "in_wt_data${i}";
+    //:        if($i == 0) {
+    //:            print "};\n";
+    //:        } elsif ($i % 8 == 0) {
+    //:            print ",\n                       ";
+    //:        } else {
+    //:            print ", ";
+    //:        }
+    //:    }
+    for(i <- 0 to conf.CMAC_ATOMC-1){
+            wt_pre_data_w(i*conf.CMAC_BPE+conf.CMAC_BPE-1, i*conf.CMAC_BPE) := io.in_wt_data(i)
+    }
 
+    // weight mask pack
+    //:    print "assign    wt_pre_mask_w = {";
+    //:    for(my $i = CMAC_ATOMC-1; $i >= 0; $i --) {
+    //:        print "in_wt_mask[${i}]";
+    //:        if($i == 0) {
+    //:            print "};\n";
+    //:        } elsif ($i % 8 == 0) {
+    //:            print ",\n                       ";
+    //:        } else {
+    //:            print ", ";
+    //:        }
+    //:    
+    for(i <- 0 to conf.CMAC_ATOMC-1){
+            wt_pre_mask_w(i) := io.in_wt_mask(i)
+    }
+    
 
     // 1 pipe for input
     //: my $i=CMAC_ATOMC;
@@ -148,18 +146,17 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     val wt_pre_nz = Reg(UInt(conf.CMAC_ATOMC.W))
     val wt_pre_sel = Reg(UInt(conf.CMAC_ATOMK_HALF.W))
 
-
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        when(io.in_wt_pvld) {wt_pre_nz := RegNext(io.in_wt_mask)}
-        wt_pre_sel := RegNext(in_wt_sel&Fill(conf.CMAC_ATOMK_HALF, io.in_wt_pvld))
+        when(io.in_wt_pvld) {wt_pre_nz := wt_pre_mask_w}
+        wt_pre_sel := in_wt_sel&Fill(conf.CMAC_ATOMK_HALF, io.in_wt_pvld)
     } 
 
 
     withClock(io.nvdla_core_clk) {
         for(i <- 0 to (conf.CMAC_ATOMC-1)){
-            when (io.in_wt_pvld & wt_pre_mask_w(i)) {wt_pre_data(i*8+7,i*8) :=RegNext(io.in_wt_data(i))}
-        }
-    }
+            when (io.in_wt_pvld & wt_pre_mask_w(i)) {
+                wt_pre_data(i*8+7,i*8) := wt_pre_data_w(i*8+7,i*8)}
+        }}
 
 // put input weight into shadow.
 //:     for(my $i = 0; $i < CMAC_ATOMK_HALF; $i ++) {
@@ -181,23 +178,69 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 //: }
 //: &eperl::flop(" -q  dat_actv_stripe_end  -d \"dat_pre_stripe_end\" -clk nvdla_core_clk -rst nvdla_core_rstn "); 
 
-
-    io.wt_sd_pvld := Reg(Vec(conf.CMAC_ATOMK_HALF, Bool())) 
-    val wt_sd_pvld_w = Wire(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-    val wt_sd_nz = Reg(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_ATOMC.W))
+    val wt_sd_pvld_w = Vec(conf.CMAC_ATOMK_HALF, Bool())
+    val wt_sd_nz = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_ATOMC.W)))
+    val wt_sd_data = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC *conf.CMAC_BPE).W)))
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-        wt_sd_pvld_w(i) := Mux(wt_pre_sel(i), true.B, Mux(io.dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
+        io.wt_sd_pvld(i) := Reg(Bool())
+        val wt_sd_pvld_w(i) := Mux(wt_pre_sel(i), true.B, Mux(dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
-            wt_sd_pvld(i) := RegNext(wt_sd_pvld_w(i))
-            when(wt_pre_sel(i)) {io.wt_sd_nz(i) := RegNext(wt_pre_nz)}
+            io.wt_sd_pvld(i) := wt_sd_pvld_w(i)
+            when(wt_pre_sel(i)) {wt_sd_nz(i) := wt_pre_nz}
+        }
+        for(j <- 0 to conf.CMAC_ATOMC-1){
+            withClock(io.nvdla_core_clk) { 
+                when(wt_pre_sel(i)&wt_pre_nz(j)) {wt_sd_data(i)(j*8+7, j*8) := wt_pre_data(j*8+7, j*8)}
+            }   
+        }      
+    }
+
+ 
+
+    val dat_actv_stripe_end = Reg(Bool)
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
+        dat_actv_stripe_end := io.dat_pre_stripe_end
+    } 
+
+ // pop weight from shadow when new stripe begin.
+//:     for(my $i = 0; $i < CMAC_ATOMK_HALF; $i ++) {
+//:         print qq {
+//:     reg wt${i}_actv_vld; 
+//:     reg [CMAC_BPE*CMAC_ATOMC-1:0] wt${i}_actv_data;
+//:     wire wt${i}_actv_pvld_w = dat_pre_stripe_st ? wt${i}_sd_pvld : dat_actv_stripe_end ? 1'b0 : wt${i}_actv_vld;
+//: };
+//: my $cmac_atomc = CMAC_ATOMC;
+//: &eperl::flop(" -q  wt${i}_actv_vld   -d \"wt${i}_actv_pvld_w\" -clk nvdla_core_clk -rst nvdla_core_rstn -nodeclare"); 
+//: &eperl::flop(" -q  wt${i}_actv_pvld  -d \"{${cmac_atomc}{wt${i}_actv_pvld_w}}\" -clk nvdla_core_clk -rst nvdla_core_rstn -wid ${cmac_atomc}"); 
+//: &eperl::flop(" -q  wt${i}_actv_nz    -en \"dat_pre_stripe_st & wt${i}_actv_pvld_w\" -d  \"wt${i}_sd_nz\" -clk nvdla_core_clk -rst nvdla_core_rstn -wid ${cmac_atomc}"); 
+//: 
+//:         for(my $k = 0; $k < CMAC_ATOMC; $k ++) {
+//:             my $b0 = $k * 8;
+//:             my $b1 = $k * 8 + 7;
+//: &eperl::flop("-nodeclare -norst -q  wt${i}_actv_data[${b1}:${b0}]  -en \"dat_pre_stripe_st & wt${i}_actv_pvld_w\" -d  \"{8{wt${i}_sd_nz[${k}]}} & wt${i}_sd_data[${b1}:${b0}]\" -clk nvdla_core_clk"); 
+//:     }
+//: }   
+
+    val wt_actv_vld = Reg(conf.CMAC_ATOMK_HALF, Bool())
+    io.wt_actv_data := Reg(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*CMAC_ATOMC).W))
+    val wt_actv_pvld_w = Reg(conf.CMAC_ATOMK_HALF, Bool())
+    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
+        wt_avtc_pvld_w(i) := Mux(dat_pre_stripe_st, io.wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
+        withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
+            wt_actv_vld(i) := wt_actv_pvld_w(i)
+            io.wt_actv_pvld(i) := RegNext(Fill(conf.CMAC_ATOMC, wt_sd_pvld_w(i)))
+            when(dat_pre_stripe_st& wt_actv_pvld_w(i)) {io.wt_actv_nz(i) := RegNext(wt_sd_nz(i))}
+        }
+        for(j <- 0 to conf.CMAC_ATOMC-1){
+            withClock(io.nvdla_core_clk){
+                when(dat_pre_stripe_st&(wt_actv_pvld_w(i))){
+                    io.wt_actv_data(i)(j*8+7, j*8) := Fill(8, wt_sd_nz(i)(j))&(wt_sd_data(i)(j*8+7, j*8))
+                }
+            }
         }         
     }
-    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-        val dat_actv_stripe_end = RegNext(io.dat_pre_stripe_end)
-    } 
- 
-   ////////////////////////////////// handle data ///////////////
+    ////////////////////////////////// handle data ///////////////
     // data pack
     //:    print "assign    dat_pre_data_w  = {";
     //:    for(my $i = CMAC_INPUT_NUM-1; $i >= 0; $i --) {
@@ -223,15 +266,22 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //:            print ", ";
     //:        }
     //:    }
+    for(i <- 0 to conf.CMAC_INPUT_NUM-1){
+        dat_pre_data_w(i*8+7, i*8) := io.in_dat_data(i)
+    }
 
-// 1 pipe for input data
-//: my $kk= CMAC_ATOMC; 
-//: &eperl::flop(" -q  dat_pre_pvld   -d \"in_dat_pvld\"  -clk nvdla_core_clk -rst nvdla_core_rstn "); 
-//: &eperl::flop(" -q  dat_pre_nz     -en \"in_dat_pvld\" -d  \"dat_pre_mask_w\" -wid ${kk} -clk nvdla_core_clk -rst nvdla_core_rstn"); 
+    for(i <- 0 to conf.CMAC_INPUT_NUM-1){
+        dat_pre_mask_w(i*8+7, i*8) := io.in_dat_mask(i)
+    }
 
+
+    // 1 pipe for input data
+    //: my $kk= CMAC_ATOMC; 
+    //: &eperl::flop(" -q  dat_pre_pvld   -d \"in_dat_pvld\"  -clk nvdla_core_clk -rst nvdla_core_rstn "); 
+    //: &eperl::flop(" -q  dat_pre_nz     -en \"in_dat_pvld\" -d  \"dat_pre_mask_w\" -wid ${kk} -clk nvdla_core_clk -rst nvdla_core_rstn"); 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        io.dat_pre_pvld := RegNext(io.in_dat_pvld)
-        when(io.in_dat_pvld) {val dat_pre_nz = RegNext(io.in_dat_mask) }
+        io.dat_pre_pvld = RegNext(conf.CMAC_ATOMK_HALF, io.in_dat_pvld)
+        when(io.in_dat_pvld) {val dat_pre_nz = RegNext(dat_pre_mask_w) }
     }    
 
 //:     for (my $i = 0; $i < CMAC_ATOMC; $i ++) {
@@ -257,9 +307,18 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     }
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        io.dat_actv_stripe_st := io.in_dat_stripe_st&io.in_dat_pvld
-        io.dat_pre_stripe_end := io.in_dat_stripe_end&io.in_dat_pvld
+
+        val dat_actv_stripe_st = RegNext(io.in_dat_stripe_st&io.in_dat_pvld)
+        val dat_pre_stripe_end = RegNext(io.in_dat_stripe_end&io.in_dat_pvld)
+
     } 
+
+    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
+
+        io.dat_actv_stripe_st(i) := dat_actv_stripe_st
+        io.dat_pre_stripe_end(i) := dat_pre_stripe_end
+
+    }
 
 // get data for cmac, 1 pipe.
 //: my $atomc= CMAC_ATOMC; 
@@ -275,7 +334,9 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 //:     }
 //: }
 
-    
+
+
+
 
 
 
