@@ -4,8 +4,8 @@ package utils
 import scala.collection.mutable.ArrayBuffer
 import chisel3.iotesters._
 
-object TutorialRunner {
-  def apply(section: String, tutorialMap: Map[String, TesterOptionsManager => Boolean], args: Array[String]): Unit = {
+object sodlaRunner {
+  def apply(section: String, sodlaMap: Map[String, TesterOptionsManager => Boolean], args: Array[String]): Unit = {
     var successful = 0
     val errors = new ArrayBuffer[String]
 
