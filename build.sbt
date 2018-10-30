@@ -28,7 +28,7 @@ organization := "edu.berkeley.cs"
 
 version := "3.1.0"
 
-name := "chisel-tutorial"
+name := "sodla"
 
 scalaVersion := "2.11.12"
 

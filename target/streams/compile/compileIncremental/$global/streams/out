@@ -1,0 +1,165 @@
+[0m[[0m[0mdebug[0m] [0m[0mFull compilation, no sources in previous analysis.[0m
+[0m[[0m[0mdebug[0m] [0m[0mAll sources are invalidated.[0m
+[0m[[0m[0mdebug[0m] [0m[0mRecompiling all 122 sources: invalidated sources (122) exceeded 50.0% of all sources[0m
+[0m[[0m[0minfo[0m] [0m[0mCompiling 122 Scala sources to C:\Users\yuda\Desktop\soDLA\target\scala-2.11\classes ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mGetting org.scala-sbt:compiler-bridge_2.11:1.1.1:compile for Scala 2.11.12[0m
+[0m[[0m[0minfo[0m] [0m[0mNon-compiled module 'compiler-bridge_2.11' for Scala 2.11.12. Compiling...[0m
+[0m[[0m[0mdebug[0m] [0m[0mCreating plain compiler interface for 2.11.12.[0m
+[0m[[0m[0mdebug[0m] [0m[0m  > Arguments: [0m
+[0m[[0m[0mdebug[0m] [0m[0m	-nowarn[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-d[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_d48b103f[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-bootclasspath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-library\jars\scala-library-2.11.12.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0m	-classpath[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_1ddd912a\jars\org.scala-sbt\compiler-interface\compiler-interface-1.1.1.jar;C:\Users\yuda\AppData\Local\Temp\sbt_1ddd912a\jars\org.scala-sbt\util-interface\util-interface-1.1.2.jar;C:\Users\yuda\AppData\Local\Temp\sbt_1ddd912a\srcs\org.scala-sbt\compiler-bridge_2.11\compiler-bridge_2.11-1.1.1-sources.jar;C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-compiler\jars\scala-compiler-2.11.12.jar;C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-reflect\jars\scala-reflect-2.11.12.jar;C:\Users\yuda\.ivy2\cache\org.scala-lang.modules\scala-xml_2.11\bundles\scala-xml_2.11-1.0.5.jar;C:\Users\yuda\.ivy2\cache\org.scala-lang.modules\scala-parser-combinators_2.11\bundles\scala-parser-combinators_2.11-1.0.4.jar;C:\Users\yuda\.ivy2\cache\jline\jline\jars\jline-2.14.3.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\API.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\Analyzer.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\CallbackGlobal.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\ClassName.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\Command.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\Compat.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\CompilerInterface.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\ConsoleInterface.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\DelegatingReporter.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\Dependency.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\ExtractAPI.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\ExtractUsedNames.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\GlobalHelpers.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\InteractiveConsoleFactory.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\InteractiveConsoleHelper.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\InteractiveConsoleInterface.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\InteractiveConsoleResponse.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\JavaUtils.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\LocalToNonLocalClass.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\LocateClassFile.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\Log.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\Message.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m	C:\Users\yuda\AppData\Local\Temp\sbt_63c443cb\xsbt\ScaladocInterface.scala[0m
+[0m[[0m[0mdebug[0m] [0m[0m      [0m
+[0m[[0m[0minfo[0m] [0m[0mAttempting to fetch org.scala-sbt:compiler-bridge_2.11:1.1.1.[0m
+[0m[[0m[31merror[0m] [0m[0m## Exception when compiling 122 sources to C:\Users\yuda\Desktop\soDLA\target\scala-2.11\classes[0m
+[0m[[0m[31merror[0m] [0m[0mnull[0m
+[0m[[0m[31merror[0m] [0m[0mjdk.internal.reflect.GeneratedMethodAccessor53.invoke(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/java.lang.reflect.Method.invoke(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.RawCompiler.getReporter$1(RawCompiler.scala:50)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.RawCompiler.apply(RawCompiler.scala:71)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler$.$anonfun$compileSources$6(AnalyzingCompiler.scala:350)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler$.handleCompilationError$1(AnalyzingCompiler.scala:327)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler$.$anonfun$compileSources$4(AnalyzingCompiler.scala:346)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler$.$anonfun$compileSources$4$adapted(AnalyzingCompiler.scala:341)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:376)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:383)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler$.$anonfun$compileSources$2(AnalyzingCompiler.scala:341)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler$.$anonfun$compileSources$2$adapted(AnalyzingCompiler.scala:335)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:376)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:383)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler$.compileSources(AnalyzingCompiler.scala:335)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.$anonfun$compileAndInstall$3(ZincComponentCompiler.scala:271)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.$anonfun$compileAndInstall$3$adapted(ZincComponentCompiler.scala:256)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:376)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:383)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.$anonfun$compileAndInstall$2(ZincComponentCompiler.scala:256)[0m
+[0m[[0m[31merror[0m] [0m[0mscala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:12)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.util.BufferedLogger.bufferQuietly(BufferedLogger.scala:106)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.$anonfun$compileAndInstall$1(ZincComponentCompiler.scala:256)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.$anonfun$compileAndInstall$1$adapted(ZincComponentCompiler.scala:253)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:376)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.io.IO$.withTemporaryDirectory(IO.scala:383)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.compileAndInstall(ZincComponentCompiler.scala:253)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.$anonfun$compiledBridgeJar$1(ZincComponentCompiler.scala:219)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IfMissing$Define.run(IfMissing.scala:19)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.createAndCache$1(ZincComponentManager.scala:46)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.$anonfun$files$3(ZincComponentManager.scala:57)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.getOrElse$1(ZincComponentManager.scala:38)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.$anonfun$files$2(ZincComponentManager.scala:57)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager$$anon$1.call(ZincComponentManager.scala:87)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.withChannel$1(Locks.scala:95)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.xsbt$boot$Locks$GlobalLock$$withChannelRetries$1(Locks.scala:80)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock$$anonfun$withFileLock$1.apply(Locks.scala:99)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Using$.withResource(Using.scala:10)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Using$.apply(Using.scala:9)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.ignoringDeadlockAvoided(Locks.scala:60)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.withLock(Locks.scala:50)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$.apply0(Locks.scala:31)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$.apply(Locks.scala:28)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.lock(ZincComponentManager.scala:87)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.$anonfun$lockSecondaryCache$1(ZincComponentManager.scala:84)[0m
+[0m[[0m[31merror[0m] [0m[0mscala.Option.map(Option.scala:146)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.lockSecondaryCache(ZincComponentManager.scala:82)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.fromSecondary$1(ZincComponentManager.scala:55)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.$anonfun$files$6(ZincComponentManager.scala:61)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.getOrElse$1(ZincComponentManager.scala:38)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.$anonfun$files$5(ZincComponentManager.scala:61)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager$$anon$1.call(ZincComponentManager.scala:87)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.withChannel$1(Locks.scala:95)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.xsbt$boot$Locks$GlobalLock$$withChannelRetries$1(Locks.scala:80)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock$$anonfun$withFileLock$1.apply(Locks.scala:99)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Using$.withResource(Using.scala:10)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Using$.apply(Using.scala:9)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.ignoringDeadlockAvoided(Locks.scala:60)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$GlobalLock.withLock(Locks.scala:50)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$.apply0(Locks.scala:31)[0m
+[0m[[0m[31merror[0m] [0m[0mxsbt.boot.Locks$.apply(Locks.scala:28)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.lock(ZincComponentManager.scala:87)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.lockLocalCache(ZincComponentManager.scala:78)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.files(ZincComponentManager.scala:61)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentManager.file(ZincComponentManager.scala:66)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler.compiledBridgeJar(ZincComponentCompiler.scala:219)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler$ZincCompilerBridgeProvider.compiledBridge(ZincComponentCompiler.scala:84)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.ZincComponentCompiler$ZincCompilerBridgeProvider.fetchCompiledBridge(ZincComponentCompiler.scala:91)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler.loader(AnalyzingCompiler.scala:249)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler.getInterfaceClass(AnalyzingCompiler.scala:267)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler.call(AnalyzingCompiler.scala:234)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler.newCachedCompiler(AnalyzingCompiler.scala:134)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler.newCachedCompiler(AnalyzingCompiler.scala:121)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.FreshCompilerCache.apply(CompilerCache.scala:78)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.AnalyzingCompiler.compile(AnalyzingCompiler.scala:88)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.MixedAnalyzingCompiler.$anonfun$compile$3(MixedAnalyzingCompiler.scala:83)[0m
+[0m[[0m[31merror[0m] [0m[0mscala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:12)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.MixedAnalyzingCompiler.timed(MixedAnalyzingCompiler.scala:134)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.MixedAnalyzingCompiler.compileScala$1(MixedAnalyzingCompiler.scala:74)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.MixedAnalyzingCompiler.compile(MixedAnalyzingCompiler.scala:117)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompilerImpl.$anonfun$compileInternal$1(IncrementalCompilerImpl.scala:305)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompilerImpl.$anonfun$compileInternal$1$adapted(IncrementalCompilerImpl.scala:305)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.Incremental$.doCompile(Incremental.scala:101)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.Incremental$.$anonfun$compile$4(Incremental.scala:82)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCommon.recompileClasses(IncrementalCommon.scala:110)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCommon.cycle(IncrementalCommon.scala:57)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.Incremental$.$anonfun$compile$3(Incremental.scala:84)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.Incremental$.manageClassfiles(Incremental.scala:129)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.Incremental$.compile(Incremental.scala:75)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompile$.apply(Compile.scala:61)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompilerImpl.compileInternal(IncrementalCompilerImpl.scala:309)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompilerImpl.$anonfun$compileIncrementally$1(IncrementalCompilerImpl.scala:267)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompilerImpl.handleCompilationError(IncrementalCompilerImpl.scala:158)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompilerImpl.compileIncrementally(IncrementalCompilerImpl.scala:237)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.inc.IncrementalCompilerImpl.compile(IncrementalCompilerImpl.scala:68)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.Defaults$.compileIncrementalTaskImpl(Defaults.scala:1429)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.Defaults$.$anonfun$compileIncrementalTask$1(Defaults.scala:1403)[0m
+[0m[[0m[31merror[0m] [0m[0mscala.Function1.$anonfun$compose$1(Function1.scala:44)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.util.$tilde$greater.$anonfun$$u2219$1(TypeFunctions.scala:39)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.std.Transform$$anon$4.work(System.scala:66)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.Execute.$anonfun$submit$2(Execute.scala:262)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.internal.util.ErrorHandling$.wideConvert(ErrorHandling.scala:16)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.Execute.work(Execute.scala:271)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.Execute.$anonfun$submit$1(Execute.scala:262)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.ConcurrentRestrictions$$anon$4.$anonfun$submitValid$1(ConcurrentRestrictions.scala:174)[0m
+[0m[[0m[31merror[0m] [0m[0msbt.CompletionService$$anon$2.call(CompletionService.scala:36)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/java.util.concurrent.FutureTask.run(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/java.util.concurrent.FutureTask.run(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.base/java.lang.Thread.run(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m           [0m
+[0m[[0m[31merror[0m] [0m[0mjava.lang.NullPointerException[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.reflect.io.JavaToolsPlatformArchive.iterator(ZipArchive.scala:301)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.collection.IterableLike$class.foreach(IterableLike.scala:72)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.reflect.io.AbstractFile.foreach(AbstractFile.scala:92)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.tools.nsc.util.DirectoryClassPath.traverse(ClassPath.scala:277)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.tools.nsc.util.DirectoryClassPath.x$15$lzycompute(ClassPath.scala:299)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.tools.nsc.util.DirectoryClassPath.x$15(ClassPath.scala:299)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.tools.nsc.util.DirectoryClassPath.packages$lzycompute(ClassPath.scala:299)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.tools.nsc.util.DirectoryClassPath.packages(ClassPath.scala:299)[0m
