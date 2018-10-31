@@ -48,6 +48,7 @@ case class cmacConfiguration()
     val PVLD = 104
     val NAN = 64
     val CMAC_RESULT_WIDTH = 16 + 7   //16b+log2(atomC)
+    val CMAC_OUT_RETIMING = 3
 }
 
 
@@ -66,5 +67,6 @@ case class csb2cmacConfiguration()
 {
     RT_CSB2CMAC_LATENCY = 3   
 }
+
 
 
