@@ -4,7 +4,6 @@ import chisel3._
 
 
 
-//this module is to active dat and wt
 
 class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
