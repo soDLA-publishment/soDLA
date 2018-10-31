@@ -12,9 +12,7 @@ class CKLNQD12 extends Module {
 
 
   withClock (!io.CP) {
-    // In this withClock scope, all synchronous elements are clocked against io.clockB.
 
-    // This register is clocked against io.clockB, but uses implict reset from the parent context.
     val qd = RegNext(io.TE || io.E)
   }
 

@@ -12,46 +12,42 @@ case class cdmaConfiguration()
     val width = 8
 }
 
-case class slibConfiguration()
-{
-    val BYPASS_POWER_CG = true
-}
-
 }
 
 case class ramSizeCongiguration()
 {
-    phy_rows = 20
-    phy_cols = 288
-    phy_rcols_pos = 288'b0
+    val phy_rows = 20
+    val phy_cols = 288
+    val phy_rcols_pos = 288'b0
 }
 
 case class cmacv1Configuration()
 {
     //谜一样的变量
-    CMAC_ATOMC = 128
-    CMAC_ATOMK_HALF = 8
-    CMAC_RESULT_WIDTH = 176
-    RT_CMAC_A2CACC_LATENCY = 2
-    CMAC_INPUT_NUM = 128
-    CMAC_BPE = 8
-    EXP = 192
-    PVLD = 104
-    NAN = 64
+    val CMAC_ATOMC = 128
+    val CMAC_ATOMK_HALF = 8
+    val CMAC_RESULT_WIDTH = 176
+    val RT_CMAC_A2CACC_LATENCY = 2
+    val CMAC_INPUT_NUM = 128
+    val CMAC_BPE = 8
+    val EXP = 192
+    val PVLD = 104
+    val NAN = 64
 }
 
 case class cmacConfiguration()
 {
     //谜一样的变量
-    CMAC_ATOMC = 128
-    CMAC_ATOMK_HALF = 8
-    CMAC_RESULT_WIDTH = 176
-    RT_CMAC_A2CACC_LATENCY = 2
-    CMAC_INPUT_NUM = 128
-    CMAC_BPE = 8
-    EXP = 192
-    PVLD = 104
-    NAN = 64
+    val CMAC_ATOMC = 128
+    val CMAC_ATOMK_HALF = 8
+    val CMAC_RESULT_WIDTH = 176
+    val RT_CMAC_A2CACC_LATENCY = 2
+    val CMAC_INPUT_NUM = 128
+    val CMAC_BPE = 8
+    val EXP = 192
+    val PVLD = 104
+    val NAN = 64
+    val CMAC_RESULT_WIDTH = 16 + 7   //16b+log2(atomC)
 }
 
 

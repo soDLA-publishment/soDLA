@@ -3,29 +3,19 @@ package slibs
 import chisel3._
 
 
-
-class NV_CLK_gate_power(implicit val conf: cdpConfiguration)  extends Module {
-   val io = IO(new Bundle {
-        //nvdla core clock
-        val clk = Input(Clock())
-        val reset_ = Input(Bool())
-
-        //control signal
-        val clk_en = Input(Bool())
-        val clk_gated = Output(Bool()
-
-    })
-
-    if(conf.BYPASS_POWER_CG){
-        clk_gated = io.clk
-    }
-    else{
-        val p_clkgate = Module(new CKLNQD12())
-        p_clkgate.io.TE := false
-        p_clkgate.io.CP := io.clk
-        p_clkgate.io.E := io.clk_en
-        p_clkgate.io.Q := io.clk_gated
-    } 
-
+class NV_CLK_gate_powers(c: NV_CLK_gate_power) extends PeekPokeTester(c) {
+  for (i <- 0 until 10) {
+    // FILL THIS IN HERE    
+    val I0 = rnd.nextInt(1)
+    val I1 = rnd.nextInt(1)
+    val S = rnd.nextInt(1)
+    poke(c.io.I0, I0)
+    poke(c.io.I1, I1)
+    poke(c.io.S, S)
+    // FILL THIS IN HERE
+    step(1)
+    expect(c.io.Z, if (S) I0 else I1)
+  }
 }
+
 

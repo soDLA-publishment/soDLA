@@ -14,7 +14,7 @@ class SDFCNQD1 extends Module {
 
   })
 
-    val sel = Mux(SE, I1,  D)
+  val sel = Mux(SE, I1,  D)
 
   withClock (io.CP || !io.CDN) {
     // In this withClock scope, all synchronous elements are clocked against io.clockB.

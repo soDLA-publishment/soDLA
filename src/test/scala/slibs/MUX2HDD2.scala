@@ -1,13 +1,23 @@
+// See LICENSE.txt for license details.
 package slibs
 
-import chisel3._
+import chisel3.iotesters.PeekPokeTester
 
-class MUX2HDD2 extends Module {
-  val io = IO(new Bundle {
-    val I0 = Input(Bool())
-    val I1 = Input(Bool())
-    val S = Input(Bool())
-    val Z = Output(Bool())
-  })
-  io.Z := Mux(S, I1,  I0)
+// Problem:
+//
+// Implement test with PeekPokeTester
+//
+class MUX2HDD2Tests(c: MUX2HDD2) extends PeekPokeTester(c) {
+  for (i <- 0 until 10) {
+    // FILL THIS IN HERE    
+    val I0 = rnd.nextInt(1)
+    val I1 = rnd.nextInt(1)
+    val S = rnd.nextInt(1)
+    poke(c.io.I0, I0)
+    poke(c.io.I1, I1)
+    poke(c.io.S, S)
+    // FILL THIS IN HERE
+    step(1)
+    expect(c.io.Z, if (S) I0 else I1)
+  }
 }

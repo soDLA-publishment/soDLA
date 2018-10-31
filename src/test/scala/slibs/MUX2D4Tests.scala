@@ -18,6 +18,6 @@ class MUX2D4Tests(c: MUX2D4) extends PeekPokeTester(c) {
     poke(c.io.S, S)
     // FILL THIS IN HERE
     step(1)
-    expect(c.io.S, if (S) I0 else I1)
+    expect(c.io.Z, if (S) I0 else I1)
   }
 }
