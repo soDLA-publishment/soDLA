@@ -49,6 +49,10 @@ case class cmacConfiguration()
     val NAN = 64
     val CMAC_RESULT_WIDTH = 16 + 7   //16b+log2(atomC)
     val CMAC_OUT_RETIMING = 3
+    val CMAC_IN_RT_LATENCY = 2
+    val CMAC_OUT_RT_LATENCY  = 2
+    val CMAC_ACTV_LATENCY = 2
+    
 }
 
 
