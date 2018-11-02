@@ -252,7 +252,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 
     val wt_actv_vld = Reg(conf.CMAC_ATOMK_HALF, Bool())
     io.wt_actv_data := Reg(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*CMAC_ATOMC).W))
-    val wt_actv_pvld_w = Reg(conf.CMAC_ATOMK_HALF, Bool())
+    val wt_actv_pvld_w = Wire(conf.CMAC_ATOMK_HALF, Bool())
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
         wt_avtc_pvld_w(i) := Mux(dat_pre_stripe_st, io.wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 

@@ -52,6 +52,8 @@ case class cmacConfiguration()
     val CMAC_IN_RT_LATENCY = 2
     val CMAC_OUT_RT_LATENCY  = 2
     val CMAC_ACTV_LATENCY = 2
+    val PKT_nvdla_stripe_info_stripe_st_FIELD = 5
+    val PKT_nvdla_stripe_info_stripe_end_FIELD = 6
     
 }
 
