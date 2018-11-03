@@ -61,18 +61,29 @@ case class cmacConfiguration()
 case class cacc2glbConfiguration()
 
 {
-    RT_CMAC_CACC2GLB_LATENCY = 2
+    val RT_CMAC_CACC2GLB_LATENCY = 2
 }
 
 case class csb2caccConfiguration()
 {
-    RT_CSB2CACC_LATENCY = 3   
+    val RT_CSB2CACC_LATENCY = 3   
 }
 
 case class csb2cmacConfiguration()
 {
-    RT_CSB2CMAC_LATENCY = 3   
+    val RT_CSB2CMAC_LATENCY = 3   
 }
+
+
+case class glbConfiguration()
+{
+    val NVDLA_BDMA_ENABLE = true
+    val NVDLA_CDP_ENABLE = true
+    val NVDLA_PDP_ENABLE = true
+    val NVDLA_RUBIK_ENABLE = true
+    val NVDLA_BDMA_ENABLE = true
+}
+
 
 
 

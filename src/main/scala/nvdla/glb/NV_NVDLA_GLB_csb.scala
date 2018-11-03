@@ -5,7 +5,7 @@ import chisel3._
 
 
 
-class NV_NVDLA_GLB_CSB_reg extends Module {
+class NV_NVDLA_GLB_csb(implicit val conf: glbConfiguration)extends Module {
     val io = IO(new Bundle {
 
         //clock
@@ -13,69 +13,52 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
         val nvdla_core_clk = Input(Clock())
         val nvdla_core_rstn = Input(Bool())
 
-        // Register control interface
+        if(conf.NVDLA_BDMA_ENABLE){
+            val bdma_done_status0 = Input(UInt(1.W))
+            val bdma_done_status1 = Input(UInt(1.W))
+            val bdma_done_mask0 = Input(UInt(1.W))
+            val bdma_done_mask1 = Input(UInt(1.W))            
+        }   
 
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))
-        val reg_wr_en = Input(UInt(1.W))
+        if(conf.NVDLA_CDP_ENABLE){
+            val cdp_done_status0 = Input(UInt(1.W))
+            val cdp_done_status1 = Input(UInt(1.W))
+            val cdp_done_mask0 = Input(UInt(1.W))
+            val cdp_done_mask1 = Input(UInt(1.W))           
+        }
 
-        // Writable register flop/trigger outputs
+        if(conf.NVDLA_PDP_ENABLE){
+            val pdp_done_status0 = Input(UInt(1.W))
+            val pdp_done_status1 = Input(UInt(1.W))
+        }
 
-        val bdma_done_mask0 = Output(UInt(1.W))
-        val bdma_done_mask1 = Output(UInt(1.W))       
-        val cacc_done_mask0 = Output(UInt(1.W))
-        val cacc_done_mask1 = Output(UInt(1.W))
-        val cdma_dat_done_mask0 = Output(UInt(1.W))
-        val cdma_dat_done_mask1 = Output(UInt(1.W))
-        val cdma_wt_done_mask0 = Output(UInt(1.W))
-        val cdma_wt_done_mask1 = Output(UInt(1.W))
-        val cdp_done_mask0 = Output(UInt(1.W))
-        val cdp_done_mask1 = Output(UInt(1.W))
-        val pdp_done_mask0 = Output(UInt(1.W))
-        val pdp_done_mask1 = Output(UInt(1.W))
-        val rubik_done_mask0 = Output(UInt(1.W))
-        val rubik_done_mask1 = Output(UInt(1.W))
-        val sdp_done_mask0 = Output(UInt(1.W)) 
-        val sdp_done_mask1 = Output(UInt(1.W))
-        val sdp_done_set0_trigger = Output(UInt(1.W))
-        val sdp_done_status0_trigger = Output(UInt(1.W))
+        if(conf.NVDLA_RUBIK_ENABLE ){
+            val rubik_done_status0 = Input(UInt(1.W))
+            val rubik_done_status1 = Input(UInt(1.W))
+        }
 
-        // Read-only register inputs
-
-        val bdma_done_set0 = Input(UInt(1.W)) 
-        val bdma_done_set1 = Input(UInt(1.W))
-        val cacc_done_set0 = Input(UInt(1.W))
-        val cacc_done_set1 = Input(UInt(1.W))
-        val cdma_dat_done_set0 = Input(UInt(1.W))
-        val cdma_dat_done_set1 = Input(UInt(1.W))
-        val cdma_wt_done_set0 = Input(UInt(1.W))
-        val cdma_wt_done_set1 = Input(UInt(1.W))
-        val cdp_done_set0 = Input(UInt(1.W))
-        val cdp_done_set1 = Input(UInt(1.W))
-        val pdp_done_set0 = Input(UInt(1.W))
-        val pdp_done_set1 = Input(UInt(1.W))
-        val rubik_done_set0 = Input(UInt(1.W))
-        val rubik_done_set1 = Input(UInt(1.W))
-        val sdp_done_set0 = Input(UInt(1.W))
-        val sdp_done_set1 = Input(UInt(1.W))
-        val bdma_done_status0 = Input(UInt(1.W))
-        val bdma_done_status1 = Input(UInt(1.W))
         val cacc_done_status0 = Input(UInt(1.W))
         val cacc_done_status1 = Input(UInt(1.W))
         val cdma_dat_done_status0 = Input(UInt(1.W))
         val cdma_dat_done_status1 = Input(UInt(1.W))
         val cdma_wt_done_status0 = Input(UInt(1.W))
         val cdma_wt_done_status1 = Input(UInt(1.W))
-        val cdp_done_status0 = Input(UInt(1.W))
-        val cdp_done_status1 = Input(UInt(1.W))
-        val pdp_done_status0 = Input(UInt(1.W))
-        val pdp_done_status1 = Input(UInt(1.W))
-        val rubik_done_status0 = Input(UInt(1.W))
-        val rubik_done_status1 = Input(UInt(1.W))
+        val cacc_done_mask0 = Output(UInt(1.W))
+        val cacc_done_mask1 = Output(UInt(1.W))
+        val cdma_dat_done_mask0 = Output(UInt(1.W))
+        val cdma_dat_done_mask1 = Output(UInt(1.W))
+        val cdma_wt_done_mask0 = Output(UInt(1.W))
+        val cdma_wt_done_mask1 = Output(UInt(1.W)) 
+
+        val csb2glb_req_pd = Input(UInt(63.W))
+        val csb2glb_req_pvld = Input(UInt(1.W))    
+
         val sdp_done_status0 = Input(UInt(1.W))
         val sdp_done_status1 = Input(UInt(1.W))
 
+
+
+        
     })
 
 //     
