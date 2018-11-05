@@ -84,6 +84,9 @@ case class glbConfiguration()
     val NVDLA_BDMA_ENABLE = true
 }
 
+case class csbMasterConfiguration(){
+    val FPGA = true
+}
 
-
+}
 

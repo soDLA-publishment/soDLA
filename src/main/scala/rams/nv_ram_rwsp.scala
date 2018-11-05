@@ -33,7 +33,7 @@ when (io.we) {
     io.dout := DontCare
 }
 .otherwise{ 
-    val dout_ram := mem.read(ra, read)
+    val dout_ram = mem.read(ra, read)
     when (io.ore){
         io.dout := RegNext(dout_ram)
     }

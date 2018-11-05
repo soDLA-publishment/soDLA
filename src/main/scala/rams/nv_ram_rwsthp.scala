@@ -35,8 +35,8 @@ when (io.we) {
     io.dout := DontCare
 }
 .otherwise{ 
-    val dout_ram := mem.read(ra, read)
-    val fbypass_dout_ram := Mux(io.byp_sel, io.dbyp, dout_ram)
+    val dout_ram = mem.read(ra, read)
+    val fbypass_dout_ram = Mux(io.byp_sel, io.dbyp, dout_ram)
     when (io.ore){
         io.dout := RegNext(fbypass_dout_ram)
     }

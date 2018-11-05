@@ -120,8 +120,245 @@ class HLS_cdp_ICVT_pipe_p1 extends Module {
         val chn_in_prdy = Output(Bool())
         val sub_data_out = Output(UInt(9.W))
         val sub_out_pvld = Output(Bool())
+    })
+
+    io.chn_in_prdy := Reg(Bool())
+    val p1_pipe_data = Reg(UInt(9.W))
+    val p1_pipe_ready = Wire(Bool())//actually wire
+    val p1_pipe_ready_bc = Wire(Bool())//actually wire
+    val p1_pipe_valid = Reg(Bool())
+    val p1_skid_catch = Wire(Bool())    //actually wire
+    val p1_skid_data = Reg(UInt(9.W))
+    val p1_skid_pipe_data = Wire(UInt(9.W))    //actually wire
+    val p1_skid_pipe_ready = Wire(Bool()) //actually wire
+    val p1_skid_pipe_valid = Wire(Bool())    //actually wire
+    val p1_skid_ready = Wire(Bool())    //actually wire
+    val p1_skid_ready_flop = Reg(Bool())
+    val p1_skid_valid = Reg(Bool())
+    io.sub_data_out = Wire(UInt(9.W))//actually wire
+    io.sub_out_pvld = Wire(Bool())//actually wire
+
+    //## pipe (1) skid buffer
+    p1_skid_catch := io.chn_in_pvld && p1_skid_ready_flop && !p1_skid_pipe_ready)
+    p1_skid_ready := Mux(p1_skid_valid, p1_skid_pipe_ready, !p1_skid_catch)
+
+
+    withClock((io.nvdla_core_clk)|(!io.nvdla_core_rstn.asClock)) {
+        when(!io.nvdla_core_rstn){
+            p1_skid_valid:=false.B
+            p1_skid_ready_flop:=true.B
+            io.chn_in_prdy:= true.B
+        }
+        .else{
+            p1_skid_valid:= Mux(p1_skid_valid, p1_skid_pipe_ready, !p1_skid_catch)
+            p1_skid_ready_flop:=p1_skid_ready 
+            io.chn_in_prdy:=p1_skid_ready
+        }
+    } 
+
+    withClock(io.nvdla_core_clk) {
+        p1_skid_data := Mux(p1_skid_catch, io.sub_dout, p1_skid_data)
+    } 
+
+    p1_skid_pipe_valid := Mux(p1_skid_ready_flop,  io.chn_in_pvld, p1_skid_valid)
+    p1_skid_pipe_data := Mux(p1_skid_ready_flop,  io.sub_dout, p1_skid_data)
+
+    //## pipe (1) valid-ready-bubble-collapse
+    p1_pipe_ready_bc:= p1_pipe_ready||!p1_pipe_valid
+
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+        p1_pipe_valid := Mux(p1_pipe_ready_bc,  p1_skid_pipe_valid, true.B)
+    }
+
+    withClock(io.nvdla_core_clk) {
+        p1_pipe_data := Mux(p1_pipe_ready_bc&&p1_skid_pipe_valid,  p1_skid_pipe_data, p1_pipe_data)
+    }
+    
+    p1_skid_pipe_ready:= p1_pipe_ready_bc
+    //## pipe (1) output
+    io.sub_out_pvld := p1_pipe_valid
+    p1_pipe_ready := io.sub_out_prdy
+    io.sub_data_out:= p1_pipe_data
+
+}
+
+class HLS_cdp_ICVT_pipe_p2 extends Module {
+    val io = IO(new Bundle {
+        //general clock
+        val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
+
+        //
+        val mul_dout = Input(UInt(25.W))
+        val mul_out_prdy = Input(Bool())
+        val sub_out_pvld = Input(Bool())
+        val mul_data_out = Input(UInt(25.W))
+        val mul_out_pvld = Output(Bool())
+        val sub_out_prdy = Output(Bool())
+    })
+
+    io.mul_data_out = Reg(UInt(25.W))
+    io.mul_out_pvld = Reg(Bool())
+    io.sub_out_prdy = Reg(Bool())
+
+    val p2_pipe_data = Reg(UInt(25.W))
+    val p2_pipe_ready = Wire(Bool())//actually wire
+    val p2_pipe_ready_bc = Wire(Bool())//actually wire
+    val p2_pipe_valid = Reg(Bool())
+    val p2_skid_catch = Wire(Bool())    //actually wire
+    val p2_skid_data = Reg(UInt(25.W))
+    val p2_skid_pipe_data = Wire(UInt(25.W))    //actually wire
+    val p2_skid_pipe_ready = Wire(Bool()) //actually wire
+    val p2_skid_pipe_valid = Wire(Bool())    //actually wire
+    val p2_skid_ready = Wire(Bool())    //actually wire
+    val p2_skid_ready_flop = Reg(Bool())
+    val p2_skid_valid = Reg(Bool())
+    
+
+    //## pipe (2) skid buffer
+    p2_skid_catch := io.sub_out_pvld && p2_skid_ready_flop && !p2_skid_pipe_ready)
+    p2_skid_ready := Mux(p2_skid_valid, p2_skid_pipe_ready, !p2_skid_catch)
+
+
+    withClock((io.nvdla_core_clk)|(!io.nvdla_core_rstn.asClock)) {
+        when(!io.nvdla_core_rstn){
+            p2_skid_valid:=false.B
+            p2_skid_ready_flop:=true.B
+            io.sub_out_prdy:= true.B
+        }
+        .else{
+            p2_skid_valid:= Mux(p2_skid_valid, !p2_skid_pipe_ready, p2_skid_catch)
+            p2_skid_ready_flop:=p2_skid_ready 
+            io.sub_out_prdy:=p2_skid_ready
+        }
+    } 
+
+    withClock(io.nvdla_core_clk) {
+        p2_skid_data := Mux(p2_skid_catch, io.mul_dout, p2_skid_data)
+    } 
+
+    p2_skid_pipe_valid := Mux(p2_skid_ready_flop,  io.sub_out_pvld, p2_skid_valid)
+    p2_skid_pipe_data := Mux(p2_skid_ready_flop,  io.mul_dout, p2_skid_data)
+
+    //## pipe (1) valid-ready-bubble-collapse
+    p2_pipe_ready_bc:= p2_pipe_ready||!p2_pipe_valid
+
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+        p2_pipe_valid := Mux(p2_pipe_ready_bc,  p2_skid_pipe_valid, true.B)
+    }
+
+    withClock(io.nvdla_core_clk) {
+        p2_pipe_data := Mux(p2_pipe_ready_bc&&p2_skid_pipe_valid,  p2_skid_pipe_data, p2_pipe_data)
+    }
+    
+    p2_skid_pipe_ready:= p2_pipe_ready_bc
+    //## pipe (1) output
+    io.mul_out_pvld := p2_pipe_valid
+    p2_pipe_ready := io.mul_out_prdy
+    io.mul_data_out:= p2_pipe_data
+
+}
+
+
+class HLS_cdp_ICVT_pipe_p3 extends Module {
+    val io = IO(new Bundle {
+        //general clock
+        val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
+
+        //
+        val chn_out_prdy = Input(Bool())
+        val mul_out_pvld = Input(Bool())
+        val tru_dout = Input(UInt(9.W))
+        val chn_data_out = Output(UInt(9.W))
+        val chn_out_pvld = Output(Bool())
+        val mul_out_prdy  = Output(Bool())
 
     })
+
+    io.chn_data_out := Reg(UInt(9.W))
+    io.chn_out_pvld := Reg(Bool())
+    io.mul_out_prdy := Reg(Bool())
+
+    val p3_pipe_data = Reg(UInt(9.W))
+    val p3_pipe_ready = Wire(Bool())//actually wire
+    val p3_pipe_ready_bc = Wire(Bool())//actually wire
+    val p3_pipe_valid = Reg(Bool())
+    val p3_skid_catch = Wire(Bool())    //actually wire
+    val p3_skid_data = Reg(UInt(9.W))
+    val p3_skid_pipe_data = Wire(UInt(9.W))    //actually wire
+    val p3_skid_pipe_ready = Wire(Bool()) //actually wire
+    val p3_skid_pipe_valid = Wire(Bool())    //actually wire
+    val p3_skid_ready = Wire(Bool())    //actually wire
+    val p3_skid_ready_flop = Reg(Bool())
+    val p3_skid_valid = Reg(Bool())
+
+    //## pipe (3) skid buffer
+    p3_skid_catch := io.mul_out_pvld && p3_skid_ready_flop && !p3_skid_pipe_ready
+    p3_skid_ready := Mux(p3_skid_valid, p3_skid_pipe_ready, !p3_skid_catch)
+
+
+    withClock((io.nvdla_core_clk)|(!io.nvdla_core_rstn.asClock)) {
+        when(!io.nvdla_core_rstn){
+            p3_skid_valid:=false.B
+            p3_skid_ready_flop:=true.B
+            io.mul_out_prdy:= true.B
+        }
+        .else{
+            p3_skid_valid:= Mux(p3_skid_valid, !p3_skid_pipe_ready, p3_skid_catch)
+            p3_skid_ready_flop:=p3_skid_ready 
+            io.mul_out_prdy:=p3_skid_ready
+        }
+    } 
+
+    withClock(io.nvdla_core_clk) {
+        p3_skid_data := Mux(p3_skid_catch, io.tru_dout, p3_skid_data)
+    } 
+
+    p3_skid_pipe_valid := Mux(p3_skid_ready_flop,  io.mul_out_pvld, p3_skid_valid)
+    p3_skid_pipe_data := Mux(p3_skid_ready_flop,  io.tru_dout, p3_skid_data)
+
+    //## pipe (1) valid-ready-bubble-collapse
+    p3_pipe_ready_bc:= p3_pipe_ready||!p3_pipe_valid
+
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+        p3_pipe_valid := Mux(p3_pipe_ready_bc,  p3_skid_pipe_valid, true.B)
+    }
+
+    withClock(io.nvdla_core_clk) {
+        p3_pipe_data := Mux(p3_pipe_ready_bc&&p3_skid_pipe_valid,  p3_skid_pipe_data, p3_pipe_data)
+    }
+    
+    p3_skid_pipe_ready:= p3_pipe_ready_bc
+    //## pipe (1) output
+    io.chn_out_pvld := p3_pipe_valid
+    p3_pipe_ready := io.chn_out_pvld
+    io.chn_data_out:= p3_pipe_data
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
 
     
 
