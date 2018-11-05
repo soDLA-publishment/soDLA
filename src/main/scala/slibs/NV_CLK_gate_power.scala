@@ -11,7 +11,7 @@ class NV_CLK_gate_power(BYPASS_POWER_CG:Boolean = false)  extends Module {
 
         //control signal
         val clk_en = Input(Bool())
-        val clk_gated = Output(Bool()
+        val clk_gated = Output(Clock())
 
     })
 

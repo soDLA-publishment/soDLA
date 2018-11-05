@@ -4,7 +4,7 @@ import chisel3._
 
 // this is a two clock read, synchronous-write memory
 
-class nv_ram_rwsp(dep：Int, wid: Int) extends Module{
+class nv_ram_rwsp(dep: Int, wid: Int) extends Module{
 
     val io = IO(new Bundle {
         //clock

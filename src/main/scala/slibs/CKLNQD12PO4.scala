@@ -19,5 +19,6 @@ class CKLNQD12PO4 extends Module {
     val qd = RegNext(io.TE || io.E)
   }
 
-  io.Q := qd & io.CP
+  io.Q := (qd & io.CP).asClock
+}
 }
