@@ -31,7 +31,7 @@ class nv_ram_rwsthp(dep：Int, wid: Int) extends Module{
 val mem = SyncReadMem(dep, UInt(wid.W)))
 // Create one write port and one read port.
 when (io.we) { 
-    mem.write(wa, di) ;
+    mem.write(wa, di) 
     io.dout := DontCare
 }
 .otherwise{ 

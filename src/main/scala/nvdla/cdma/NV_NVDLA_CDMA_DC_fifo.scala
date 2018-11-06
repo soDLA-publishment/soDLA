@@ -179,19 +179,44 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     // READ SIDE
     //
 
+    val rd_req_p = Reg(Bool())// data out of fifo is valid
+    val rd_req_int = Reg(Bool())// internal copy of rd_req
+    rd_req := rd_req_int
+    rd_popping := rd_req_p && !(rd_req_int && !io.rd_ready)
+    val rd_count_p = Reg(UInt(8.W)) // read-side fifo count
+    // spyglass disable_block W164a W484
+
+    val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p - "d1".UInt(1.W))
+    val rd_count_p_next_no_rd_popping =  Mux(rd_pushing, rd_count_p  +"d1".UInt(1.W), rd_count_p)
+
+    // spyglass enable_block W164a W484
+    val rd_count_p_next = Mux(rd_popping,  rd_count_p_next_rd_popping,  rd_count_p_next_no_rd_popping)
+    val rd_count_p_next_rd_popping_not_0 = (rd_count_p_next_rd_popping != 0)
+    val rd_count_p_next_n = Mux(rd_popping,  rd_count_p_next_rd_popping_not_0,   rd_count_p_next_no_rd_popping_not_0)
 
 
+    rd_enable := ((rd_count_p_next_not_0) && ((!rd_req_p) || rd_popping))
 
+    withClockAndReset(clk_mgated, !io.reset_) {
+        if(rd_pushing || rd_popping){
+            rd_count_p:=rd_count_p_next 
+        }
+    } 
 
+    val rd_req_next = (rd_req_p || (rd_req_int && !io.rd_ready))
 
+    withClockAndReset(clk_mgated, !io.reset_) {
+        rd_req_int:= rd_req_next
+    } 
 
+    io.rd_data := rd_data_p
+    ore := rd_popping
 
+    // Master Clock Gating (SLCG) Enables
+    //
 
-
-
-    
-
-    
+    clk_mgated_enable := ((wr_reserving || wr_pushing || rd_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next)) || (rd_pushing || rd_popping || (rd_req_int && io.rd_ready) || wr_pushing))
+ 
 
   
 }

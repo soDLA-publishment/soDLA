@@ -16,7 +16,7 @@ class NV_CLK_gate_power(BYPASS_POWER_CG:Boolean = false)  extends Module {
     })
 
     if(BYPASS_POWER_CG){
-        clk_gated = io.clk
+        io.clk_gated = io.clk
     }
     else{
         val p_clkgate = Module(new CKLNQD12())
