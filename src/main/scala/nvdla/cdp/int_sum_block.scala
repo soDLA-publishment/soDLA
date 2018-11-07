@@ -1,10 +1,9 @@
 package nvdla
 
-{
 
-import chisel3._
+import chisel3
 
-import common._
+import common
 
 //https://github.com/freechipsproject/chisel3/wiki/Multiple-Clock-Domains
 

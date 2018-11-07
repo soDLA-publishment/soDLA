@@ -30,7 +30,9 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
 
     })
 
-
+//    val max2accu_data_d_wire = Wire(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_RESULT_WIDTH).W)))
+//    val max2accu_data_d_regs = Seq.fill(conf.RT_CMAC_A2CACC_LATENCY)(Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_RESULT_WIDTH).W))))
+//    val mac2accu_data_d = VecInit(max2accu_data_d_wire +: max2accu_data_d_regs)
     val cacc2csb_resp_pd_d  = Reg(Vec(conf.RT_CSB2CACC_LATENCY, UInt(34.W)))
     val cacc2csb_resp_valid_d = Reg(Vec(conf.RT_CSB2CACC_LATENCY, Bool()))
     val csb2cacc_req_pd_d= Reg(Vec(conf.RT_CSB2CACC_LATENCY, UInt(63.W)))
@@ -73,8 +75,4 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
     cacc2csb_resp_dst_valid:=cacc2csb_resp_valid_d(3)
     cacc2csb_resp_dst_pd:=cacc2csb_resp_pd_d(3)
 
-
-
-
-
-  }
+}

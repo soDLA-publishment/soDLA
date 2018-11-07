@@ -12,13 +12,11 @@ case class cdmaConfiguration()
     val width = 8
 }
 
-}
 
 case class ramSizeCongiguration()
 {
     val phy_rows = 20
     val phy_cols = 288
-    val phy_rcols_pos = 288'b0
 }
 
 case class cmacv1Configuration()
@@ -59,7 +57,6 @@ case class cmacConfiguration()
 
 
 case class cacc2glbConfiguration()
-
 {
     val RT_CMAC_CACC2GLB_LATENCY = 2
 }

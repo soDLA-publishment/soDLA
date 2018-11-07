@@ -8,7 +8,7 @@ class CKLNQD12PO4 extends Module {
     val CP = Input(Clock())
     val TE = Input(Bool())
     val E = Input(Bool())
-    val Q = Output(Bool())
+    val Q = Output(Clock())
   })
 
 
@@ -21,4 +21,4 @@ class CKLNQD12PO4 extends Module {
 
   io.Q := (qd & io.CP).asClock
 }
-}
+

@@ -124,7 +124,7 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
     io.pdp_done_mask0 := Reg(UInt(1.W))
     io.pdp_done_mask1 := Reg(UInt(1.W))
     io.reg_rd_data := Wire(UInt(32.W)) //Not really change when clock coming
-    io.rubik_done_mask0 ：= Reg(UInt(1.W))
+    io.rubik_done_mask0 := Reg(UInt(1.W))
     io.rubik_done_mask1 := Reg(UInt(1.W))
     io.sdp_done_mask0 := Reg(UInt(1.W))
     io.sdp_done_mask1 := Reg(UInt(1.W))

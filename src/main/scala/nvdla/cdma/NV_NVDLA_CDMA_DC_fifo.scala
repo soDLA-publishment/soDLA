@@ -92,12 +92,12 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     val wr_limit_muxed = Wire(UInt(8.W))  // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
 
-    val wr_busy_next := wr_count_next_is_128|(wr_limit_reg != "d0".U(8.W) &&wr_count_next >= wr_limit_reg)// busy next cycle? // check wr_limit if != 0
+    val wr_busy_next := wr_count_next_is_128|((wr_limit_reg != "d0".U(8.W)) &&(wr_count_next >= wr_limit_reg))// busy next cycle? // check wr_limit if != 0
 
-    wr_busy_in_int := wr_req_in && wr_busy_int
+    wr_busy_in_int := io.wr_req_in && wr_busy_int
 
     withClockAndReset(clk_mgated, !io.reset_) {
-        wr_busy_in := wr_busy_in_next
+        io.wr_busy_in := wr_busy_in_next
         when (wr_reserving ^ wr_popping) {
             wr_count := wr_count_next
         }

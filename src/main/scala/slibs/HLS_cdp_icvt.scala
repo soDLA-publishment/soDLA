@@ -216,7 +216,7 @@ class HLS_cdp_ICVT_pipe_p2 extends Module {
     
 
     //## pipe (2) skid buffer
-    p2_skid_catch := io.sub_out_pvld && p2_skid_ready_flop && !p2_skid_pipe_ready)
+    p2_skid_catch := io.sub_out_pvld && p2_skid_ready_flop && !p2_skid_pipe_ready
     p2_skid_ready := Mux(p2_skid_valid, p2_skid_pipe_ready, !p2_skid_catch)
 
 
@@ -304,7 +304,7 @@ class HLS_cdp_ICVT_pipe_p3 extends Module {
             p3_skid_ready_flop:=true.B
             io.mul_out_prdy:= true.B
         }
-        .else{
+        .otherwise{
             p3_skid_valid:= Mux(p3_skid_valid, !p3_skid_pipe_ready, p3_skid_catch)
             p3_skid_ready_flop:=p3_skid_ready 
             io.mul_out_prdy:=p3_skid_ready

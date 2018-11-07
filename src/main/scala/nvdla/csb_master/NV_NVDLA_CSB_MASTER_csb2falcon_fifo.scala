@@ -169,7 +169,7 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfigurat
 
     val wr_adr_next = wr_adr + "d1".U(1.W)
 
-    withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_ {
+    withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_ ){
         when (wr_pushing) {
             wr_adr := wr_adr_next
         }
