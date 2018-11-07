@@ -102,12 +102,12 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //: print qq(
     //: reg  [CMAC_BPE*CMAC_ATOMC-1:0]  dat_actv_data_reg${i};
     //: )
-    val dat_actv_data_reg := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
+    val dat_actv_data_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
     val dat_pre_data_w = Wire(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
     val dat_pre_mask_w = Wire(UInt((conf.CMAC_ATOMC).W))
     val dat_pre_nz_w = Reg(UInt((conf.CMAC_ATOMC).W)) 
-    val dat_pre_stripe_end := Reg(Bool()) 
-    val dat_pre_stripe_st := Reg(Bool())
+    io.dat_pre_stripe_end := Reg(Bool()) 
+    io.dat_pre_stripe_st := Reg(Bool())
     val wt_pre_data = Reg(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)) 
     val wt_pre_data_w = Wire(UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))
     val wt_pre_mask = Reg(UInt((conf.CMAC_ATOMC).W)) 

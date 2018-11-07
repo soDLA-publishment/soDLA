@@ -86,7 +86,7 @@ class NV_NVDLA_RT_cmac_b2cacc(implicit val conf: cmacConfiguration) extends Modu
 
     
     withClock(io.nvdla_core_clk) {
-        for(t <- 0 to (conf.RT_CMAC_A2CACC_LATENCY-1){
+        for(t <- 0 to conf.RT_CMAC_A2CACC_LATENCY-1){
 
             mac2accu_pvld_d(t+1) := mac2accu_pvld_d(t)
             mac2accu_mask_d(t+1) := mac2accu_mask_d(t)
@@ -96,7 +96,7 @@ class NV_NVDLA_RT_cmac_b2cacc(implicit val conf: cmacConfiguration) extends Modu
                 mac2accu_mode_d(t+1) := mac2accu_mode_d(t) 
             }
             
-            for(i <- 0 to (conf.CMAC_ATOMK_HALF-1){
+            for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
 
                 when (mac2accu_mask_d(t)(i)){
                     mac2accu_data_d(t+1)(i):= mac2accu_data_d(t)(i)

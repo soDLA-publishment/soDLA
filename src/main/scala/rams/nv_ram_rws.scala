@@ -26,10 +26,10 @@ class nv_ram_rws(dep: Int, wid: Int) extends Module{
 // assign data...
 
 // Create a synchronous-read, synchronous-write memory (like in FPGAs).
-val mem = SyncReadMem(dep, UInt(wid.W)))
+val mem = SyncReadMem(dep, UInt(wid.W))
 // Create one write port and one read port.
 when (io.we) { 
-    mem.write(wa, di) ;
+    mem.write(wa, di) 
     io.dout := DontCare
 }
 .otherwise{ 

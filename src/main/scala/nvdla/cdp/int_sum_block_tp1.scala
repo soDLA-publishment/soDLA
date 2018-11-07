@@ -1,6 +1,6 @@
 package nvdla
 
-{
+
 
 import chisel3._
 
@@ -30,7 +30,7 @@ class int_sum_block_tp1(implicit val conf: cdpConfiguration) extends Module {
         val sq_pd_int8 = Input(Vec(9, UInt((2*conf.pINT8_BW-1).W)))
 
         //output signal
-        val int8_sum = Output(UInt(2*conf.pINT8_BW+3).W))
+        val int8_sum = Output(UInt((2*conf.pINT8_BW+3).W))
     })
 
     //Reg
@@ -107,17 +107,15 @@ class int_sum_block_tp1(implicit val conf: cdpConfiguration) extends Module {
         }
     }
 
-
-
     //direction
     when(reg2dp_normalz_len === "b00".U){
         int8_sum := Cat("b00".U, int8_sum3)
     }
     .elsewhen(reg2dp_normalz_len === "b01".U){
-        int8_sum := Cat("b0".U,, int8_sum5)   
+        int8_sum := Cat("b0".U, int8_sum5)   
     }
     .elsewhen(reg2dp_normalz_len === "b10".U){
-        int8_sum := Cat("b0".U,, int8_sum7)   
+        int8_sum := Cat("b0".U, int8_sum7)   
     }
     .otherwise{
         int8_sum := int8_sum9

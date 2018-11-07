@@ -28,7 +28,7 @@ class NV_NVDLA_CDMA_CVT_cell(implicit conf: cdmaConfiguration) extends BlackBox 
         val sq_pd_int8 = Input(Vec(9, SInt((2*pINT8_BW-1).W)))
 
         //output signal
-        val int8_sum = Output(SInt(2*pINT8_BW+3).W))
+        val int8_sum = Output(SInt((2*pINT8_BW+3).W))
     })
 
 

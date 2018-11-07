@@ -159,13 +159,45 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
     val bank_wr_en_d1 = Reg(Vec(conf.CBUF_WR_PORT_NUMBER, Vec(conf.CBUF_BANK_NUMBER, Bool())))
     for(i <- 0 to conf.CBUF_WR_PORT_NUMBER-1){
         for(j <- 0 to conf.CBUF_BANK_NUMBER-1){          
-            bank_ram_wr_en_d0(j)(i) := bank_ram_wr_en_d0_t(j)(k).exists //Bool OR-reduce p on all elts
+            bank_ram_wr_en_d0(j)(i) := bank_ram_wr_en_d0_t(j)(i).exists //Bool OR-reduce p on all elts
             withClock(io.nvdla_core_clk, !io.nvdla_core_rstn){
-                bank_ram_wr_en_d1(j)(k) := bank_ram_wr_en_d0(j)(k) 
+                bank_ram_wr_en_d1(j)(i) := bank_ram_wr_en_d0(j)(i) 
             }
             }
         }
     }
+
+    //generate bank write addr/data
+    //: my $t1="";
+    //: my $d1="";
+    //: my $kk= CBUF_ADDR_WIDTH;
+    //: my $jj= CBUF_WR_PORT_WIDTH;
+    //: for(my $j=0; $j<CBUF_BANK_NUMBER ; $j++){
+    //:         for(my $i=0; $i<CBUF_WR_PORT_NUMBER; $i++){
+    //:         $t1 .="({${kk}{bank${j}_wr${i}_en_d1}}&cdma2buf_wr_addr${i}_d1)|";
+    //:         $d1 .="({${jj}{bank${j}_wr${i}_en_d1}}&cdma2buf_wr_data${i}_d1)|";
+    //:         }
+    //:         my $t2 .="{${kk}{1'b0}}";
+    //:         my $d2 .="{${jj}{1'b0}}";
+    //:         print "wire [${kk}-1:0] bank${j}_wr_addr_d1 = ${t1}${t2}; \n";
+    //:         print "wire [${jj}-1:0] bank${j}_wr_data_d1 = ${d1}${d2}; \n";
+    //:         $t1="";
+    //:         $d1="";
+    //: }
+
+
+    val bank_wr_addr_d1 = Wire(Vec(conf.CBUF_BANK_NUMBER, Bool())
+    val bank_wr_data_d1 = Wire(Vec(conf.CBUF_BANK_NUMBER, Bool()) 
+    for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+        for(i <- 0 to conf.CBUF_BANK_NUMBER-1){          
+            when(bank_ram_wr_en_d1(j)(i)){
+
+            }
+        }
+
+        
+    }
+
 
 
 
