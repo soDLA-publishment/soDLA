@@ -30,3 +30,8 @@ are doing this for the first time, sbt will automatically download the
 appropriate versions of Chisel3, the Chisel Testers harness
 and Scala and cache them (usually in `~/.ivy2`).
 
+Discussion
+----------------
+
+gitter: [link](https://gitter.im/NVDLA_chisel/Lobby)
+
