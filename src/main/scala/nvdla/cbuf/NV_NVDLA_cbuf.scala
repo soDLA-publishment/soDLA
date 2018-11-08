@@ -548,14 +548,118 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
     //:     }
     //: }
 
+
     if(conf.CBUF_BANK_RAM_CASE==0){
-        val bank_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Bool())))
+        val bank_data_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd_data(j) := ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_even_case(j)(0)))(conf.CBUF_RD_PORT_WIDTH-1,0)   
+        }          
     }
-    if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-        val bank_data_rd0_data = Reg(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(2, Bool()))))
+    if(conf.CBUF_BANK_RAM_CASE==1){
+        val bank_data_rd0_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val bank_data_rd1_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))       
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd0_data(j) := (((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(0)(0)))|((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(1)(0))))(conf.CBUF_BANK_NUMBER-1,0)  
+            bank_data_rd1_data(j) := (((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(0)(1)))|((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(1)(1))))(conf.CBUF_BANK_NUMBER-1,0)  
+        }          
+    }
+    if(conf.CBUF_BANK_RAM_CASE==2){
+        val bank_data_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd_data(j) := Cat((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_even_case(j)(0)), (bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_even_case(j)(1)))(conf.CBUF_RD_PORT_WIDTH-1,0)   
+        }          
+    }
+    if(conf.CBUF_BANK_RAM_CASE==3){
+        val bank_data_rd0_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val bank_data_rd1_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))       
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd0_data(j) := (Cat(((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(1)(0))), ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(0)(0))))|Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(3)(0))), ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(2)(0)))))(conf.CBUF_RD_PORT_WIDTH-1,0)   
+            bank_data_rd1_data(j) := (Cat(((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(1)(1))), ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(0)(1))))|Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(3)(1))), ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(2)(1)))))(conf.CBUF_RD_PORT_WIDTH-1,0)   
+        }          
+    }
+    if(conf.CBUF_BANK_RAM_CASE==4){
+        val bank_data_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd_data(j) := Cat((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_even_case(j)(3)), (bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_even_case(j)(2)), (bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_even_case(j)(1)),(bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_even_case(j)(0)))(conf.CBUF_RD_PORT_WIDTH-1,0)   
+        }          
+    }
+    if(conf.CBUF_BANK_RAM_CASE==5){
+        val bank_data_rd0_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val bank_data_rd1_data = Wire(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))       
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd0_data(j) := (Cat(((bank_ram_rd_data(j)(7))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(7)(0))), ((bank_ram_rd_data(j)(6))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(6)(0))), ((bank_ram_rd_data(j)(5))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(5)(0))), ((bank_ram_rd_data(j)(4))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(4)(0))))|Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(3)(0))), ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(2)(0))), ((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(1)(0))), ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(0)(0)))))(conf.CBUF_RD_PORT_WIDTH-1,0)   
+            bank_data_rd1_data(j) := (Cat(((bank_ram_rd_data(j)(7))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(7)(1))), ((bank_ram_rd_data(j)(6))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(6)(1))), ((bank_ram_rd_data(j)(5))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(5)(1))), ((bank_ram_rd_data(j)(4))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(4)(1))))|Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(3)(1))), ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(2)(1))), ((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(1)(1))), ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid_odd_case(j)(0)(1)))))(conf.CBUF_RD_PORT_WIDTH-1,0)    
+        }          
     }
 
+    //: my $kk=CBUF_RD_DATA_SHIFT_WIDTH;
+    //: &eperl::retime("-O sc2buf_dat_rd_shift_5T -i sc2buf_dat_rd_shift -wid ${kk} -stage 5 -clk nvdla_core_clk");
+    withClock(io.nvdla_core_clk){
+        val sc2buf_dat_rd_shift_5T = ShiftRegister(io.sc2buf_dat_rd_shift, 5)
+    }
 
+    // pipe solution. for timing concern, 4 level pipe. 
+    //: my $kk=CBUF_RD_PORT_WIDTH;
+    //: if((CBUF_BANK_RAM_CASE==0)||(CBUF_BANK_RAM_CASE==2)||(CBUF_BANK_RAM_CASE==4)){
+    //: for (my $i=0; $i<CBUF_BANK_NUMBER; $i++){
+    //: &eperl::flop("-wid ${kk} -norst -q l1group${i}_data_rd_data   -d bank${i}_data_rd_data");
+    //: }
+    //: 
+    //: for (my $i=0; $i<CBUF_BANK_NUMBER/4; $i++){
+    //: my $ni=$i*4;
+    //: my $nii=$i*4+1;
+    //: my $niii=$i*4+2;
+    //: my $niiii=$i*4+3;
+    //: print qq(
+    //: wire [${kk}-1:0] l2group${i}_data_rd_data_w = l1group${ni}_data_rd_data | l1group${nii}_data_rd_data | l1group${niii}_data_rd_data | l1group${niiii}_data_rd_data;
+    //: );
+    //: &eperl::flop("-wid ${kk} -norst -q l2group${i}_data_rd_data   -d l2group${i}_data_rd_data_w");
+    //: }
+    //:
+    //: for (my $i=0; $i<CBUF_BANK_NUMBER/16; $i++){
+    //: my $ni=$i*4;
+    //: my $nii=$i*4+1;
+    //: my $niii=$i*4+2;
+    //: my $niiii=$i*4+3;
+    //: print qq(
+    //: wire [${kk}-1:0] l3group${i}_data_rd_data_w = l2group${ni}_data_rd_data | l2group${nii}_data_rd_data | l2group${niii}_data_rd_data | l2group${niiii}_data_rd_data;
+    //: );
+    //: &eperl::flop("-wid ${kk} -norst -q l3group${i}_data_rd_data   -d l3group${i}_data_rd_data_w");
+    //: }
+    //: 
+    //: if(CBUF_BANK_NUMBER==16){
+    //: &eperl::flop("-wid ${kk} -norst -q l4group_data_rd_data   -d l3group0_data_rd_data"); 
+    //: }
+    //: if(CBUF_BANK_NUMBER==32) {
+    //: print qq(
+    //: wire [${kk}-1:0] l4group_data_rd_data_w = l3group0_data_rd_data | l3group1_data_rd_data;
+    //: );
+    //: &eperl::flop("-wid ${kk} -norst -q l4group_data_rd_data   -d l4group_data_rd_data_w");
+    //: }
+    //: print "wire[${kk}-1:0] sc2buf_dat_rd_data = l4group_data_rd_data[${kk}-1:0]; \n";
+    //: }
+
+    if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+        val l1group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        for(i <- 0 to conf.CBUF_BANK_NUMBER-1){
+            withClock(io.nvdla_core_clk){
+                l1group_data_rd_data := bank_data_rd_data
+            }
+        }
+        for(i <- 0 to conf.CBUF_BANK_NUMBER/4-1){
+            
+        }
+
+
+
+
+
+
+
+
+
+
+    
 
 
 
