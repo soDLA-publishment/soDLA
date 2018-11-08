@@ -646,9 +646,130 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
                 l1group_data_rd_data := bank_data_rd_data
             }
         }
+        val l2group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l2group_data_rd_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))        
         for(i <- 0 to conf.CBUF_BANK_NUMBER/4-1){
-            
+            l2group_data_rd_data_w(i) := l1group_data_rd_data(i*4)|l1group_data_rd_data(i*4+1)|l1group_data_rd_data(i*4+2)|l1group_data_rd_data(i*4+3)
+            withClock(io.nvdla_core_clk){
+                l2group_data_rd_data(i) := l2group_data_rd_data_w(i)
+            }            
         }
+        val l3group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l3group_data_rd_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))                
+        for(i <- 0 to conf.CBUF_BANK_NUMBER/16-1){
+            l3group_data_rd_data_w(i) := l2group_data_rd_data(i*4)|l2group_data_rd_data(i*4+1)|l2group_data_rd_data(i*4+2)|l2group_data_rd_data(i*4+3)
+            withClock(io.nvdla_core_clk){
+                l3group_data_rd_data(i) := l3group_data_rd_data_w(i)
+            }            
+        }
+        if(conf.CBUF_BANK_NUMBER==16){
+            val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+             withClock(io.nvdla_core_clk){
+                l4group_data_rd_data := l3group_data_rd_data(0)
+            }            
+        } 
+        if(conf.CBUF_BANK_NUMBER==32){
+            val l4group_data_rd_data_w = l3group_data_rd_data(0)|l3group_data_rd_data(1)
+            val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+             withClock(io.nvdla_core_clk){
+                l4group_data_rd_data := l4group_data_rd_data_w
+            }            
+        }
+        io.sc2buf_dat_rd_data := l4group_data_rd_data
+    }
+    //: my $kk=CBUF_RD_PORT_WIDTH;
+    //: if((CBUF_BANK_RAM_CASE==1)||(CBUF_BANK_RAM_CASE==3)||(CBUF_BANK_RAM_CASE==5)){
+    //: for (my $i=0; $i<CBUF_BANK_NUMBER; $i++){
+    //: &eperl::flop("-wid ${kk} -norst -q l1group${i}_data_rd0_data   -d bank${i}_data_rd0_data");
+    //: &eperl::flop("-wid ${kk} -norst -q l1group${i}_data_rd1_data   -d bank${i}_data_rd1_data");
+    //: }
+    //: 
+    //: for (my $i=0; $i<CBUF_BANK_NUMBER/4; $i++){
+    //: my $ni=$i*4;
+    //: my $nii=$i*4+1;
+    //: my $niii=$i*4+2;
+    //: my $niiii=$i*4+3;
+    //: print qq(
+    //: wire [${kk}-1:0] l2group${i}_data_rd0_data_w = l1group${ni}_data_rd0_data | l1group${nii}_data_rd0_data | l1group${niii}_data_rd0_data | l1group${niiii}_data_rd0_data;
+    //: wire [${kk}-1:0] l2group${i}_data_rd1_data_w = l1group${ni}_data_rd1_data | l1group${nii}_data_rd1_data | l1group${niii}_data_rd1_data | l1group${niiii}_data_rd1_data;
+    //: );
+    //: &eperl::flop("-wid ${kk} -norst -q l2group${i}_data_rd0_data   -d l2group${i}_data_rd0_data_w");
+    //: &eperl::flop("-wid ${kk} -norst -q l2group${i}_data_rd1_data   -d l2group${i}_data_rd1_data_w");
+    //: }
+    //:
+    //: for (my $i=0; $i<CBUF_BANK_NUMBER/16; $i++){
+    //: my $ni=$i*4;
+    //: my $nii=$i*4+1;
+    //: my $niii=$i*4+2;
+    //: my $niiii=$i*4+3;
+    //: print qq(
+    //: wire [${kk}-1:0] l3group${i}_data_rd0_data_w = l2group${ni}_data_rd0_data | l2group${nii}_data_rd0_data | l2group${niii}_data_rd0_data | l2group${niiii}_data_rd0_data;
+    //: wire [${kk}-1:0] l3group${i}_data_rd1_data_w = l2group${ni}_data_rd1_data | l2group${nii}_data_rd1_data | l2group${niii}_data_rd1_data | l2group${niiii}_data_rd1_data;
+    //: );
+    //: &eperl::flop("-wid ${kk} -norst -q l3group${i}_data_rd0_data   -d l3group${i}_data_rd0_data_w");
+    //: &eperl::flop("-wid ${kk} -norst -q l3group${i}_data_rd1_data   -d l3group${i}_data_rd1_data_w");
+    //: }
+    //: 
+    //: if(CBUF_BANK_NUMBER==16){
+    //: print qq(
+    //: wire [${kk}-1:0] l4group_data_rd0_data = l3group0_data_rd0_data;
+    //: wire [${kk}-1:0] l4group_data_rd1_data = l3group0_data_rd1_data;
+    //: );
+    //: }
+    //: if(CBUF_BANK_NUMBER==32) {
+    //: print qq(
+    //: wire [${kk}-1:0] l4group_data_rd0_data = l3group0_data_rd0_data | l3group1_data_rd0_data;
+    //: wire [${kk}-1:0] l4group_data_rd1_data = l3group0_data_rd1_data | l3group1_data_rd1_data;
+    //: );
+    //: }
+    //: print qq(
+    //: wire [${kk}*2-1:0] l4group_data_rd_data_w = {l4group_data_rd1_data,l4group_data_rd0_data}>>{sc2buf_dat_rd_shift_5T,3'b0};
+    //: );
+    //: &eperl::flop("-wid ${kk} -norst -q l4group_data_rd_data   -d l4group_data_rd_data_w[${kk}-1:0]");
+    //: print "wire[${kk}-1:0] sc2buf_dat_rd_data = l4group_data_rd_data[${kk}-1:0]; \n";
+    //: }
+    if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+        val l1group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        for(i <- 0 to conf.CBUF_BANK_NUMBER-1){
+            withClock(io.nvdla_core_clk){
+                l1group_data_rd_data := bank_data_rd_data
+            }
+        }
+        val l2group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l2group_data_rd_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))        
+        for(i <- 0 to conf.CBUF_BANK_NUMBER/4-1){
+            l2group_data_rd_data_w(i) := l1group_data_rd_data(i*4)|l1group_data_rd_data(i*4+1)|l1group_data_rd_data(i*4+2)|l1group_data_rd_data(i*4+3)
+            withClock(io.nvdla_core_clk){
+                l2group_data_rd_data(i) := l2group_data_rd_data_w(i)
+            }            
+        }
+        val l3group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l3group_data_rd_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))                
+        for(i <- 0 to conf.CBUF_BANK_NUMBER/16-1){
+            l3group_data_rd_data_w(i) := l2group_data_rd_data(i*4)|l2group_data_rd_data(i*4+1)|l2group_data_rd_data(i*4+2)|l2group_data_rd_data(i*4+3)
+            withClock(io.nvdla_core_clk){
+                l3group_data_rd_data(i) := l3group_data_rd_data_w(i)
+            }            
+        }
+        if(conf.CBUF_BANK_NUMBER==16){
+            val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+             withClock(io.nvdla_core_clk){
+                l4group_data_rd_data := l3group_data_rd_data(0)
+            }            
+        } 
+        if(conf.CBUF_BANK_NUMBER==32){
+            val l4group_data_rd_data_w = l3group_data_rd_data(0)|l3group_data_rd_data(1)
+            val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+             withClock(io.nvdla_core_clk){
+                l4group_data_rd_data := l4group_data_rd_data_w
+            }            
+        }
+        io.sc2buf_dat_rd_data := l4group_data_rd_data
+    }
+
+
+
+            
 
 
 
