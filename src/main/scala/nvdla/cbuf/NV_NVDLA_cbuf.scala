@@ -643,7 +643,7 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
         val l1group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
         for(i <- 0 to conf.CBUF_BANK_NUMBER-1){
             withClock(io.nvdla_core_clk){
-                l1group_data_rd_data := bank_data_rd_data
+                l1group_data_rd_data(i) := bank_data_rd_data(i)
             }
         }
         val l2group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
@@ -728,44 +728,146 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
     //: &eperl::flop("-wid ${kk} -norst -q l4group_data_rd_data   -d l4group_data_rd_data_w[${kk}-1:0]");
     //: print "wire[${kk}-1:0] sc2buf_dat_rd_data = l4group_data_rd_data[${kk}-1:0]; \n";
     //: }
-    if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-        val l1group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+    if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
+        val l1group_data_rd0_data = Reg(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l1group_data_rd1_data = Reg(Vec(conf.CBUF_BANK_NUMBER, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
         for(i <- 0 to conf.CBUF_BANK_NUMBER-1){
             withClock(io.nvdla_core_clk){
-                l1group_data_rd_data := bank_data_rd_data
+                l1group_data_rd0_data(i) := bank_data_rd0_data(i)
+                l1group_data_rd1_data(i) := bank_data_rd1_data(i)                
             }
         }
-        val l2group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
-        val l2group_data_rd_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))        
+        val l2group_data_rd0_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l2group_data_rd1_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))       
+        val l2group_data_rd0_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l2group_data_rd1_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/4, UInt(conf.CBUF_RD_PORT_WIDTH.W)))                
         for(i <- 0 to conf.CBUF_BANK_NUMBER/4-1){
-            l2group_data_rd_data_w(i) := l1group_data_rd_data(i*4)|l1group_data_rd_data(i*4+1)|l1group_data_rd_data(i*4+2)|l1group_data_rd_data(i*4+3)
+            l2group_data_rd0_data_w(i) := l1group_data_rd0_data(i*4)|l1group_data_rd0_data(i*4+1)|l1group_data_rd0_data(i*4+2)|l1group_data_rd0_data(i*4+3)
+            l2group_data_rd1_data_w(i) := l1group_data_rd1_data(i*4)|l1group_data_rd1_data(i*4+1)|l1group_data_rd1_data(i*4+2)|l1group_data_rd1_data(i*4+3)
             withClock(io.nvdla_core_clk){
-                l2group_data_rd_data(i) := l2group_data_rd_data_w(i)
+                l2group_data_rd0_data(i) := l2group_data_rd0_data_w(i)
+                l2group_data_rd1_data(i) := l2group_data_rd1_data_w(i)
             }            
         }
-        val l3group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
-        val l3group_data_rd_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))                
+        val l3group_data_rd0_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l3group_data_rd1_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))        
+        val l3group_data_rd0_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+        val l3group_data_rd1_data_w = Wire(Vec(conf.CBUF_BANK_NUMBER/16, UInt(conf.CBUF_RD_PORT_WIDTH.W)))                        
         for(i <- 0 to conf.CBUF_BANK_NUMBER/16-1){
-            l3group_data_rd_data_w(i) := l2group_data_rd_data(i*4)|l2group_data_rd_data(i*4+1)|l2group_data_rd_data(i*4+2)|l2group_data_rd_data(i*4+3)
+            l3group_data_rd0_data_w(i) := l2group_data_rd0_data(i*4)|l2group_data_rd0_data(i*4+1)|l2group_data_rd0_data(i*4+2)|l2group_data_rd0_data(i*4+3)
+            l3group_data_rd1_data_w(i) := l2group_data_rd1_data(i*4)|l2group_data_rd1_data(i*4+1)|l2group_data_rd1_data(i*4+2)|l2group_data_rd1_data(i*4+3)        
             withClock(io.nvdla_core_clk){
-                l3group_data_rd_data(i) := l3group_data_rd_data_w(i)
+                l3group_data_rd0_data(i) := l3group_data_rd0_data_w(i)
+                l3group_data_rd1_data(i) := l3group_data_rd1_data_w(i)
             }            
         }
         if(conf.CBUF_BANK_NUMBER==16){
-            val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
+            val l4group_data_rd0_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W))) 
+            val l4group_data_rd1_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W)))                       
              withClock(io.nvdla_core_clk){
-                l4group_data_rd_data := l3group_data_rd_data(0)
+                l4group_data_rd0_data := l3group_data_rd0_data(0)
+                l4group_data_rd1_data := l3group_data_rd1_data(0)
             }            
         } 
         if(conf.CBUF_BANK_NUMBER==32){
-            val l4group_data_rd_data_w = l3group_data_rd_data(0)|l3group_data_rd_data(1)
-            val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
-             withClock(io.nvdla_core_clk){
-                l4group_data_rd_data := l4group_data_rd_data_w
-            }            
+            val l4group_data_rd0_data = l3group_data_rd0_data(0)|l3group_data_rd1_data(1)
+            val l4group_data_rd1_data = l3group_data_rd0_data(0)|l3group_data_rd1_data(1)         
         }
+        val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W))
+        val l4group_data_rd_data_w = Cat(l4group_data_rd1_data, l4group_data_rd0_data) >> Cat(sc2buf_dat_rd_shift_5T, "b0".UInt(3.W))
+        withClock(io.nvdla_core_clk){
+            l4group_data_rd_data:=l4group_data_rd_data_w
+        }  
         io.sc2buf_dat_rd_data := l4group_data_rd_data
     }
+
+    ////get sc data read data. no pipe
+    ////: my $t1="";
+    ////: my $t2="";
+    ////: my $kk=CBUF_RD_PORT_WIDTH;
+    ////: if((CBUF_BANK_RAM_CASE==0)||(CBUF_BANK_RAM_CASE==2)||(CBUF_BANK_RAM_CASE==4)){
+    ////:     for(my $j=0; $j<CBUF_BANK_NUMBER ; $j++){
+    ////:         $t1 .= "bank${j}_data_rd_data|";    
+    ////:     }
+    ////: print "wire[${kk}-1:0] sc2buf_dat_rd_data =".${t1}."{${kk}{1'b0}}; \n";
+    ////: }
+    ////:     
+    ////: if((CBUF_BANK_RAM_CASE==1)|(CBUF_BANK_RAM_CASE==3)||(CBUF_BANK_RAM_CASE==5)){
+    ////:     for(my $j=0; $j<CBUF_BANK_NUMBER ; $j++){
+    ////:         $t1 .= "bank${j}_data_rd0_data|";    
+    ////:         $t2 .= "bank${j}_data_rd1_data|";    
+    ////:     }
+    ////: print "wire[${kk}-1:0] sc2buf_dat_rd_data0 =".${t1}."{${kk}{1'b0}}; \n";
+    ////: print "wire[${kk}-1:0] sc2buf_dat_rd_data1 =".${t2}."{${kk}{1'b0}}; \n";
+    ////: }
+    ////:
+    //wire[CBUF_RD_PORT_WIDTH*2-1:0] sc2buf_dat_rd_data_temp = {sc2buf_dat_rd_data1,sc2buf_dat_rd_data0} >> {sc2buf_dat_rd_shift_5T,3'b0};
+    //wire[CBUF_RD_PORT_WIDTH-1:0] sc2buf_dat_rd_data = sc2buf_dat_rd_data_temp[CBUF_RD_PORT_WIDTH-1:0];
+
+    //if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+    //    io.sc2buf_dat_rd_data:= bank_data_rd_data.reduce(_ | _) 
+    //}
+    //if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
+    //    val sc2buf_dat_rd_data0:= bank_data_rd0_data.reduce(_ | _) 
+    //    val sc2buf_dat_rd_data1:= bank_data_rd0_data.reduce(_ | _)     
+    //}
+    //val sc2buf_dat_rd_data_temp = Cat(sc2buf_dat_rd_data1, sc2buf_dat_rd_data0) >> Cat(sc2buf_dat_rd_shift_5T, "b0".UInt(3.W))
+    //io.sc2buf_dat_rd_data := sc2buf_dat_rd_data_temp(conf.CBUF_RD_PORT_WIDTH-1, 0)
+
+    /////////////////////step3: read weight handle
+    //decode read weight address to sram.
+    //: my $bank_slice= CBUF_BANK_SLICE;  #address part for select bank
+    //: for(my $j=0; $j<CBUF_BANK_NUMBER ; $j++){
+    //:     for(my $k=0; $k<CBUF_RAM_PER_BANK ; $k++){
+    //:         my $kdiv2 = int($k/2);
+    //:         my $kdiv4 = int($k/4);
+    //:         if((CBUF_BANK_RAM_CASE==0)||(CBUF_BANK_RAM_CASE==2)||(CBUF_BANK_RAM_CASE==4)){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wt_rd_en = sc2buf_wt_rd_en&&(sc2buf_wt_rd_addr[${bank_slice}]==${j}); )
+    //:         }
+    //:         if(CBUF_BANK_RAM_CASE==1){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wt_rd_en = sc2buf_wt_rd_en&&(sc2buf_wt_rd_addr[${bank_slice}]==${j})&&(sc2buf_wt_rd_addr[0]==${k}); )
+    //:         }
+    //:         if(CBUF_BANK_RAM_CASE==3){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wt_rd_en = sc2buf_wt_rd_en&&(sc2buf_wt_rd_addr[${bank_slice}]==${j})&&(sc2buf_wt_rd_addr[0]==${kdiv2}); )
+    //:         }
+    //:         if(CBUF_BANK_RAM_CASE==5){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wt_rd_en = sc2buf_wt_rd_en&&(sc2buf_wt_rd_addr[${bank_slice}]==${j})&&(sc2buf_wt_rd_addr[0]==${kdiv4}); )
+    //:         }
+    //:     }
+    //: }
+
+    val bank_ram_wt_rd_en = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Bool())))
+
+    for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+        for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
+            val kdiv2 = k/2
+            val kdiv4 = k/4
+            if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_dat_rd_en)&&(io.sc2buf_dat_rd_addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)
+            }
+
+            if(conf.CBUF_BANK_RAM_CASE==1){
+                bank_ram_data_rd_en_odd_case(j)(k)(0) := (sc2buf_dat_rd_en0)&&(sc2buf_dat_rd_addr0(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(sc2buf_dat_rd_addr0(0)=== k.U)
+                bank_ram_data_rd_en_odd_case(j)(k)(1) := (sc2buf_dat_rd_en1)&&(sc2buf_dat_rd_addr1(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(sc2buf_dat_rd_addr1(0)=== k.U)
+            }
+            if(conf.CBUF_BANK_RAM_CASE==3){
+                bank_ram_data_rd_en_odd_case(j)(k)(0) := (sc2buf_dat_rd_en0)&&(sc2buf_dat_rd_addr0(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(sc2buf_dat_rd_addr0(0)=== kdiv2.U)
+                bank_ram_data_rd_en_odd_case(j)(k)(1) := (sc2buf_dat_rd_en1)&&(sc2buf_dat_rd_addr1(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(sc2buf_dat_rd_addr1(0)=== kdiv2.U)
+            }   
+            if(conf.CBUF_BANK_RAM_CASE==5){
+                bank_ram_data_rd_en_odd_case(j)(k)(0) := (sc2buf_dat_rd_en0)&&(sc2buf_dat_rd_addr0(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(sc2buf_dat_rd_addr0(0)=== kdiv4.U)
+                bank_ram_data_rd_en_odd_case(j)(k)(1) := (sc2buf_dat_rd_en1)&&(sc2buf_dat_rd_addr1(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(sc2buf_dat_rd_addr1(0)=== kdiv4.U)
+            }
+        }       
+    }   
+
+
+
+
 
 
 
