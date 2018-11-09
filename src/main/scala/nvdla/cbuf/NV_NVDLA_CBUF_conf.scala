@@ -2,6 +2,7 @@ package common
 
 
 
+
 {
 
 case class cbufConfiguration(){

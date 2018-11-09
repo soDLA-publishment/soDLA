@@ -1,4 +1,6 @@
-package common
+package nvdla
+
+
 {
    
 case class cdpConfiguration()
