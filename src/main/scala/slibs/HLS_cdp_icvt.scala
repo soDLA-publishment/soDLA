@@ -226,7 +226,7 @@ class HLS_cdp_ICVT_pipe_p2 extends Module {
             p2_skid_ready_flop:=true.B
             io.sub_out_prdy:= true.B
         }
-        .else{
+        .otherwise{
             p2_skid_valid:= Mux(p2_skid_valid, !p2_skid_pipe_ready, p2_skid_catch)
             p2_skid_ready_flop:=p2_skid_ready 
             io.sub_out_prdy:=p2_skid_ready
