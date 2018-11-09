@@ -343,11 +343,11 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
             if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-                bank_ram_data_rd_addr_even_case(j)(k) := (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en_even_case(j)(k)))&(io.sc2buf_dat_rd_addr(conf.CBUF_RAM_DEPTH_BITS-1, 0))
+                bank_ram_data_rd_addr_even_case(j)(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en_even_case(j)(k))&(io.sc2buf_dat_rd_addr(conf.CBUF_RAM_DEPTH_BITS-1, 0))
             }
             if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-                bank_ram_data_rd0_addr_odd_case(j)(k) := (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd0_en_odd_case(j)(k))&(io.sc2buf_dat_rd_addr(conf.CBUF_RAM_DEPTH_BITS, 1))
-                bank_ram_data_rd1_addr_odd_case(j)(k) := (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd1_en_odd_case(j)(k))&(io.sc2buf_dat_rd_addr(conf.CBUF_RAM_DEPTH_BITS, 1))
+                bank_ram_data_rd0_addr_odd_case(j)(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd0_en_odd_case(j)(k))&(io.sc2buf_dat_rd_addr(conf.CBUF_RAM_DEPTH_BITS, 1))
+                bank_ram_data_rd1_addr_odd_case(j)(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd1_en_odd_case(j)(k))&(io.sc2buf_dat_rd_addr(conf.CBUF_RAM_DEPTH_BITS, 1))
             }       
         }
     }
