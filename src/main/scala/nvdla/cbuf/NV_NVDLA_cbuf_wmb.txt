@@ -1,0 +1,175 @@
+  /////////////////step4: read WMB handle
+    //decode read wmb address to sram.
+    //: my $bank_slice= CBUF_BANK_SLICE;  #address part for select bank
+    //: print  "`ifdef  CBUF_WEIGHT_COMPRESSED";
+    //: for(my $j=CBUF_BANK_NUMBER-1; $j<CBUF_BANK_NUMBER ; $j++){
+    //:     for(my $k=0; $k<CBUF_RAM_PER_BANK ; $k++){
+    //:         my $kdiv2 = int($k/2);
+    //:         my $kdiv4 = int($k/4);
+    //:         if((CBUF_BANK_RAM_CASE==0)||(CBUF_BANK_RAM_CASE==2)||(CBUF_BANK_RAM_CASE==4)){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wmb_rd_en = sc2buf_wmb_rd_en&&(sc2buf_wmb_rd_addr[${bank_slice}]==${j}); )
+    //:         }
+    //:         if(CBUF_BANK_RAM_CASE==1){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wmb_rd_en = sc2buf_wmb_rd_en&&(sc2buf_wmb_rd_addr[${bank_slice}]==${j})&&(sc2buf_wmb_rd_addr[0]==${k}); )
+    //:         }
+    //:         if(CBUF_BANK_RAM_CASE==3){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wmb_rd_en = sc2buf_wmb_rd_en&&(sc2buf_wmb_rd_addr[${bank_slice}]==${j})&&(sc2buf_wmb_rd_addr[0]==${kdiv2}); )
+    //:         }
+    //:         if(CBUF_BANK_RAM_CASE==5){
+    //:         print qq(
+    //:     wire  bank${j}_ram${k}_wmb_rd_en = sc2buf_wmb_rd_en&&(sc2buf_wmb_rd_addr[${bank_slice}]==${j})&&(sc2buf_wmb_rd_addr[0]==${kdiv4}); )
+    //:         }
+    //:     }
+    //: }
+    //`endif
+
+    
+
+    //if(conf.CBUF_WEIGHT_COMPRESSED){
+    //val bank_selected_ram_wmb_rd_en = Wire(Vec(conf.CBUF_RAM_PER_BANK, Bool()))    
+    //    for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
+    //        kdiv2 = k/2
+    //        kdiv4 = k/4
+    //        if ((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+    //            bank_selected_ram_wmb_rd_en(k) := io.sc2buf_wmb_rd_en&&(io.sc2buf_wmb_rd_addr(conf.CBUF_BANK_SLICE_max, conf.CBUF_BANK_SLICE_min) === (CBUF_BANK_NUMBER-1).U)
+    //        }
+    //        if (conf.CBUF_BANK_RAM_CASE==1){
+    //            bank_selected_ram_wmb_rd_en(k) := io.sc2buf_wmb_rd_en&&(io.sc2buf_wmb_rd_addr(conf.CBUF_BANK_SLICE_max, conf.CBUF_BANK_SLICE_min) === (CBUF_BANK_NUMBER-1).U)&&(io.sc2buf_wmb_rd_addr(0)===k.U)
+    //        }
+    //        if (conf.CBUF_BANK_RAM_CASE==3){
+    //            bank_selected_ram_wmb_rd_en(k) := io.sc2buf_wmb_rd_en&&(io.sc2buf_wmb_rd_addr(conf.CBUF_BANK_SLICE_max, conf.CBUF_BANK_SLICE_min) === (CBUF_BANK_NUMBER-1).U)&&(io.sc2buf_wmb_rd_addr(0)===kdiv2.U)
+    //        }
+    //        if (conf.CBUF_BANK_RAM_CASE==5){
+    //            bank_selected_ram_wmb_rd_en(k) := io.sc2buf_wmb_rd_en&&(io.sc2buf_wmb_rd_addr(conf.CBUF_BANK_SLICE_max, conf.CBUF_BANK_SLICE_min) === (CBUF_BANK_NUMBER-1).U)&&(io.sc2buf_wmb_rd_addr(0)===kdiv4.U)
+    //        }         
+    //    }                                    
+    //}
+
+    //get sram wmb read address.
+    //: print  "`ifdef  CBUF_WEIGHT_COMPRESSED";
+    //: for(my $j=CBUF_BANK_NUMBER-1; $j<CBUF_BANK_NUMBER ; $j++){
+    //:     for(my $k=0; $k<CBUF_RAM_PER_BANK ; $k++){
+    //:         if((CBUF_BANK_RAM_CASE==0)||(CBUF_BANK_RAM_CASE==2)||(CBUF_BANK_RAM_CASE==4)){
+    //:         print qq(
+    //:     wire [CBUF_RAM_DEPTH_BITS-1:0] bank${j}_ram${k}_wmb_rd_addr = {CBUF_RAM_DEPTH_BITS{bank${j}_ram${k}_wmb_rd_en}}&(sc2buf_wmb_rd_addr[CBUF_RAM_DEPTH_BITS-1:0]); )
+    //:             }
+    //:         if((CBUF_BANK_RAM_CASE==1)||(CBUF_BANK_RAM_CASE==3)||(CBUF_BANK_RAM_CASE==5)){
+    //:         print qq(
+    //:     wire [CBUF_RAM_DEPTH_BITS-1:0] bank${j}_ram${k}_wmb_rd_addr = {CBUF_RAM_DEPTH_BITS{bank${j}_ram${k}_wmb_rd_en}}&(sc2buf_wmb_rd_addr[CBUF_RAM_DEPTH_BITS:1]); )
+    //:         }
+    //:     }
+    //: }
+    //：`endif
+    
+    //if(conf.CBUF_WEIGHT_COMPRESSED){
+    //    val bank_selected_ram_wmb_rd_addr = Wire(Vec(conf.CBUF_RAM_PER_BANK, UInt(conf.CBUF_RAM_DEPTH_BITS.W)))) 
+    //    for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
+    //        if ((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+    //            bank_selected_ram_wmb_rd_addr(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_selected_ram_wmb_rd_en(k))&io.sc2buf_wmb_rd_addr(conf.CBUF_RAM_DEPTH_BITS-1, 0)
+    //        }
+    //        if ((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
+    //            bank_selected_ram_wmb_rd_addr(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_selected_ram_wmb_rd_en(k))&io.sc2buf_wmb_rd_addr(conf.CBUF_RAM_DEPTH_BITS, 1)
+    //        }    
+    //    }                                    
+    //}
+
+    //add flop for sram wmb read en
+    //: print  "`ifdef  CBUF_WEIGHT_COMPRESSED \n";
+    //: for(my $j=CBUF_BANK_NUMBER-1; $j<CBUF_BANK_NUMBER ; $j++){
+    //:     for(my $k=0; $k<CBUF_RAM_PER_BANK ; $k++){
+    //: &eperl::flop("-q bank${j}_ram${k}_wmb_rd_en_d1 -d  bank${j}_ram${k}_wmb_rd_en"); 
+    //: &eperl::flop("-q bank${j}_ram${k}_wmb_rd_en_d2 -d  bank${j}_ram${k}_wmb_rd_en_d1"); 
+    //:         }
+    //: }
+    //：`endif
+
+    //if(conf.CBUF_WEIGHT_COMPRESSED){
+    //    val bank_selected_ram_wmb_rd_en_d1 = Reg(Vec(conf.CBUF_RAM_PER_BANK, Bool())) 
+    //    val bank_selected_ram_wmb_rd_en_d2 = Reg(Vec(conf.CBUF_RAM_PER_BANK, Bool())) 
+    //    for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
+    //        withClockAndReset(io.nvdla_core_clk){
+    //            bank_selected_ram_wmb_rd_en_d1(k):=bank_selected_ram_wmb_rd_en(k)
+    //            bank_selected_ram_wmb_rd_en_d2(k):=bank_selected_ram_wmb_rd_en_d1(k)
+    //        }
+    //    }                                    
+    //}
+
+    //get sram wmb read valid.
+    //: print  "`ifdef  CBUF_WEIGHT_COMPRESSED";
+    //: for(my $j=CBUF_BANK_NUMBER-1; $j<CBUF_BANK_NUMBER ; $j++){
+    //:     for(my $k=0; $k<CBUF_RAM_PER_BANK ; $k++){
+    //:     print qq(
+    //:     wire  bank${j}_ram${k}_wmb_rd_valid = bank${j}_ram${k}_wmb_rd_en_d2; )
+    //:     }
+    //: }
+    //:`endif
+
+    //if(conf.CBUF_WEIGHT_COMPRESSED){
+    //    val bank_selected_ram_wmb_rd_valid = Wire(Vec(conf.CBUF_RAM_PER_BANK, Bool())) 
+    //    for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
+    //        bank_selected_ram_wmb_rd_valid(k):=bank_selected_ram_wmb_rd_en_d2(k)
+    //  }                                    
+    //}  
+
+    //get sc wmb read valid.
+    //: print  "`ifdef  CBUF_WEIGHT_COMPRESSED";
+    //: my $t1="";
+    //: for(my $j=CBUF_BANK_NUMBER-1; $j<CBUF_BANK_NUMBER ; $j++){
+    //:     for(my $k=0; $k<CBUF_RAM_PER_BANK ; $k++){
+    //:     $t1 .= "bank${j}_ram${k}_wmb_rd_valid|";
+    //:     }
+    //: }
+    //: print " wire [0:0] sc2buf_wmb_rd_valid_w ="." ${t1}"."1'b0; \n";
+    //: &eperl::retime("-O sc2buf_wmb_rd_valid -i sc2buf_wmb_rd_valid_w -stage 4 -clk nvdla_core_clk");
+    //`endif
+
+    //if(conf.CBUF_WEIGHT_COMPRESSED){
+    //    val sc2buf_wmb_rd_valid_w = bank_selected_ram_wmb_rd_valid.reduce(_ | _)
+    //    withClockAndReset(io.nvdla_core_clk){
+    //        io.sc2buf_wmb_rd_valid := ShiftRegister(sc2buf_wmb_rd_valid_w, 4)
+    //    }                               
+    //}  
+
+    //get sc wmb read data.
+    //: print  "`ifdef  CBUF_WEIGHT_COMPRESSED";
+    //: my $t1="";
+    //: my $t2="";
+    //: my $kk=CBUF_RD_PORT_WIDTH;
+    //: for(my $j=CBUF_BANK_NUMBER-1; $j<CBUF_BANK_NUMBER ; $j++){
+    //:     for(my $k=0; $k<CBUF_RAM_PER_BANK ; $k++){
+    //:         if((CBUF_BANK_RAM_CASE==0)||(CBUF_BANK_RAM_CASE==2)||(CBUF_BANK_RAM_CASE==4)){
+    //:         $t1 .="{CBUF_RAM_WIDTH{bank${j}_ram${k}_wmb_rd_valid}} & bank${j}_ram${k}_wmb_rd_data ,";    
+    //:         }
+    //:     }
+    //: }
+    //: print "wire[${kk}-1:0] sc2buf_wmb_rd_data ="."{"."${t1}"."}; \n";
+    //: for(my $j=CBUF_BANK_NUMBER-1; $j<CBUF_BANK_NUMBER ; $j++){
+    //:         if(CBUF_BANK_RAM_CASE==1){
+    //:         $t1 .="{CBUF_RAM_WIDTH{bank${j}_ram0_wmb_rd_valid}} & bank${j}_ram0_wmb_rd_data"; 
+    //:         $t2 .="{CBUF_RAM_WIDTH{bank${j}_ram1_wmb_rd_valid}} & bank${j}_ram1_wmb_rd_data"; 
+    //:         }
+    //:         if(CBUF_BANK_RAM_CASE==3){
+    //:         $t1 .="{{CBUF_RAM_WIDTH{bank${j}_ram1_wmb_rd_valid}} & bank${j}_ram1_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram0_wmb_rd_valid}} & bank${j}_ram0_wmb_rd_data}"; 
+    //:         $t2 .="{{CBUF_RAM_WIDTH{bank${j}_ram3_wmb_rd_valid}} & bank${j}_ram3_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram2_wmb_rd_valid}} & bank${j}_ram2_wmb_rd_data}";
+    //:     }
+    //:         if(CBUF_BANK_RAM_CASE==5){
+    //:         $t1 .="{{CBUF_RAM_WIDTH{bank${j}_ram3_wmb_rd_valid}} & bank${j}_ram3_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram2_wmb_rd_valid}} & bank${j}_ram2_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram1_wmb_rd_valid}} & bank${j}_ram1_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram0_wmb_rd_valid}} & bank${j}_ram0_wmb_rd_data}"; 
+    //:         $t2 .="{{CBUF_RAM_WIDTH{bank${j}_ram7_wmb_rd_valid}} & bank${j}_ram7_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram6_wmb_rd_valid}} & bank${j}_ram6_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram5_wmb_rd_valid}} & bank${j}_ram5_wmb_rd_data,{CBUF_RAM_WIDTH{bank${j}_ram4_wmb_rd_valid}} & bank${j}_ram4_wmb_rd_data}"; 
+    //:     }
+    //: }
+    //: print "wire[${kk}-1:0] wmb_rd_data ="."(${t1})|(${t2}); \n";
+    //: &eperl::retime("-wid ${kk} -o sc2buf_wmb_rd_data -i wmb_rd_data -stage 4 -clk nvdla_core_clk"); 
+    //:`endif
+
+    //if(conf.CBUF_WEIGHT_COMPRESSED){
+    //    if ((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+    //        val valid_selected_bank_ram_wmb_rd_data = Wire(Vec(conf.CBUF_RAM_PER_BANK, UInt()))
+    //    }
+        
+    //    withClockAndReset(io.nvdla_core_clk){
+    //        val io.sc2buf_wmb_rd_valid = ShiftRegister(sc2buf_wmb_rd_valid_w, 4)
+    //    }                               
+    //}  
