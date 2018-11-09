@@ -121,8 +121,8 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //: wire [${kk}-1:0] dat${i}_pre_mask={${kk}{1'b0}};
     //: )
     //: }
-    io.wt_sd_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W)))        
-    io.dat_pre_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W))) 
+    io.wt_sd_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".UInt((conf.CMAC_ATOMC).W)))        
+    io.dat_pre_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".UInt((conf.CMAC_ATOMC).W))) 
 
 
 
