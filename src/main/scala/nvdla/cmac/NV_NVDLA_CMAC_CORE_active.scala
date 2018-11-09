@@ -212,7 +212,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     val wt_sd_data = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC *conf.CMAC_BPE).W)))
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
         io.wt_sd_pvld(i) := Reg(Bool())
-        val wt_sd_pvld_w(i) := Mux(wt_pre_sel(i), true.B, Mux(dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
+        wt_sd_pvld_w(i) := Mux(wt_pre_sel(i), true.B, Mux(dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
             io.wt_sd_pvld(i) := wt_sd_pvld_w(i)
             when(wt_pre_sel(i)) {wt_sd_nz(i) := wt_pre_nz}
@@ -309,8 +309,8 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //: &eperl::flop(" -q  dat_pre_pvld   -d \"in_dat_pvld\"  -clk nvdla_core_clk -rst nvdla_core_rstn "); 
     //: &eperl::flop(" -q  dat_pre_nz     -en \"in_dat_pvld\" -d  \"dat_pre_mask_w\" -wid ${kk} -clk nvdla_core_clk -rst nvdla_core_rstn"); 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        io.dat_pre_pvld := RegNext(io.in_dat_pvld)
-        when(io.in_dat_pvld) {val dat_pre_nz = RegNext(dat_pre_mask_w) }
+        io.dat_pre_pvld := io.in_dat_pvld
+        when(io.in_dat_pvld) {val dat_pre_nz = dat_pre_mask_w }
     }    
 
 
@@ -338,8 +338,8 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-        io.dat_pre_stripe_st = RegNext(io.in_dat_stripe_st&io.in_dat_pvld)
-        io.dat_pre_stripe_end = RegNext(io.in_dat_stripe_end&io.in_dat_pvld)
+        io.dat_pre_stripe_st = io.in_dat_stripe_st&io.in_dat_pvld
+        io.dat_pre_stripe_end = io.in_dat_stripe_end&io.in_dat_pvld
     } 
 
 
@@ -363,9 +363,9 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-            dat_actv_pvld_reg(i) := RegNext(Fill(conf.CMAC_ATOMC, io.dat_pre_pvld(i)))
+            dat_actv_pvld_reg(i) := Fill(conf.CMAC_ATOMC, io.dat_pre_pvld(i))
             when(io.dat_pre_pvld(i)){
-                dat_actv_nz_reg(i) := RegNext(dat_pre_nz)
+                dat_actv_nz_reg(i) := dat_pre_nz
             }
             for(k <- 0 to conf.CMAC_ATOMC-1){                   
                 withClock(io.nvdla_core_clk){

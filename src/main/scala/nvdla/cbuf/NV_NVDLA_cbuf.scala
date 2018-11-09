@@ -115,9 +115,9 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
             withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
                 bank_ram_wr_en_d1(j)(k) := bank_ram_wr_en_d0(j)(k) 
             }
-            }
         }
     }
+    
 
     // 1 pipe for timing
     //: my $kk=CBUF_ADDR_WIDTH;
@@ -157,9 +157,9 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
             withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
                 bank_wr_en_d1(j)(i) := bank_wr_en_d0(j)(i) 
             }
-            }
         }
     }
+    
 
     //generate bank write addr/data
     //: my $t1="";
@@ -393,7 +393,8 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
                     bank_ram_data_rd0_en_odd_case_d2(j)(k):= bank_ram_data_rd0_en_odd_case_d1(j)(k)
                     bank_ram_data_rd1_en_odd_case_d2(j)(k):= bank_ram_data_rd1_en_odd_case_d1(j)(k)
                 }
-        }       
+            }          
+        }
     }
 
     //get sram data read valid.
@@ -1151,6 +1152,7 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
                 bank_ram_rd_addr(i)(j) := (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en_even_case(i)(j))&bank_ram_data_rd_addr_even_case(i)(j))|(Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(i)(j))&bank_ram_wt_rd_addr(i)(j))
             }
         }
+    }
     //: if ((CBUF_BANK_RAM_CASE==1)||(CBUF_BANK_RAM_CASE==3)||(CBUF_BANK_RAM_CASE==5)){
     //: for (my $i=0; $i<CBUF_BANK_NUMBER-1; $i++){
     //:     for (my $j=0; $j<CBUF_RAM_PER_BANK; $j++){
