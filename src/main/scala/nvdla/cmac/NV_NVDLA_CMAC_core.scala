@@ -56,34 +56,19 @@ class NV_NVDLA_CMAC_REG_single(implicit val conf: cmacConfiguration) extends Mod
     val reg_offset_wr = Wire(UInt(32.W))
 
     io.producer := Reg(Bool())
-    io.reg_rd_data := Wire(UInt(32.W))
+    io.reg_rd_data := Reg(UInt(32.W))
 
-    reg_offset_wr := Cat("b0".UInt(20.W), io.reg_offset)
+    reg_offset_wr := Cat(0.UInt(20.W), io.reg_offset)
 
     // Address decode
 
     val nvdla_cmac_a_s_pointer_0_wren = (reg_offset_wr === ("h7004".UInt(32.W)&"h00000fff".UInt(32.W)))&io.reg_wr_en
-    val nvdla_cmac_a_s_status_0_wren = (reg_offset_wr === ("h7000".UInt(32.W)&"h00000fff".UInt(32.W)))&io.reg_wr_en
-    nvdla_cmac_a_s_pointer_0_out := Cat("b0".UInt(15.W), consumer, "b0".UInt(15.W), producer)
-    nvdla_cmac_a_s_status_0_out:=  Cat("b0".UInt(14.W), status_1, "b0".UInt(14.W), status_0)
+    val nvdla_cmac_a_s_status_0_wren = 
 
-    reg_offset_rd_int := io.reg_offset
 
-    when(reg_offset_rd_int === ("h7004".UInt(32.W)&"h00000fff".UInt(32.W)){
-        io.reg_rd_data = nvdla_cmac_a_s_pointer_0_out 
-    }
-    .elsewhen(reg_offset_rd_int === ("h7000".UInt(32.W)&"h00000fff".UInt(32.W)){
-        io.reg_rd_data := nvdla_cmac_a_s_status_0_out
-    }
-    .otherwise{
-        io.reg_rd_data := "b0".UInt(32.W)
-    }
 
-    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
-        when(nvdla_cmac_a_s_pointer_0_wren){
-            io.producer:= io.reg_wr_data(0)
-        }
-    }
 
+    
+ 
 
 }
