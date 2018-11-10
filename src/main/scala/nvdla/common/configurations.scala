@@ -1,12 +1,9 @@
 package nvdla
 
 
-
-
 {
    
-case class cdpConfiguration()
-{
+case class cdpConfiguration(){
     val pINT8_BW = 8
 }
 
