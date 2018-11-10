@@ -11,22 +11,17 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
         val nvdla_core_clk = Input(Clock())      
         val nvdla_core_rstn = Input(Bool())
 
-        // Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
+        val csb2cmac_a_req_pd = Input(UInt(63.W))
+        val csb2cmac_a_req_pvld = Input(Bool())
+        val dp2reg_done = Input(Bool())
 
-        val reg_wr_en = Input(Bool())
-
-        // Writable register flop/trigger outputs
-
-        val conv_mode = Output(Bool())
-        val proc_precision = Output(UInt(2.W))
-        val op_en_trigger = Output(Bool())
-
-        // Read-only register inputs
-
-        val op_en = Input(Bool())    
+        val cmac_a2csb_resp_pd = Output(UInt(34.W))
+        val cmac_a2csb_resp_valid = Output(Bool())
+        val csb2cmac_a_req_prdy = Output(Bool())
+        val reg2dp_conv_mode = Output(Bool())
+        val reg2dp_op_en = Output(Bool())
+        val reg2dp_proc_precision = Output(UInt(2.W))
+        val slcg_op_en = Output(UInt(conf.CMAC_SLCG_NUM))
     })
 //     
 //          ┌─┐       ┌─┐
@@ -50,9 +45,31 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
-    io.conv_mode := Reg(Bool())
-    io.proc_precision := Reg(UInt(2.W))
-    io.reg_rd_data := Wire(UInt(32.W))
+    val csb_rresp_error = Wire(Bool())
+    val csb_rresp_pd_w = Wire(UInt(34.W))
+    val csb_rresp_rdat = Wire(UInt(32.W))
+    val csb_wresp_error = Wire(Bool())
+    val csb_wresp_pd_w = Wire(UInt(34.W))
+    val csb_wresp_rdat = Wire(UInt(32.W))
+    val d0_reg_offset = Wire(UInt(24.W))
+    val d0_reg_rd_data = Wire(UInt(32.W))
+    val d0_reg_wr_data = Wire(UInt(32.W))
+    val d0_reg_wr_en = Wire(Bool())
+    val d1_reg_offset = Wire(UInt(24.W))
+    val d1_reg_rd_data = Wire(UInt(32.W))
+    val d1_reg_wr_data = Wire(UInt(32.W))
+    val d1_reg_wr_en = Wire(Bool())
+    val dp2reg_consumer_w = Wire(Bool())
+    val reg2dp_d0_conv_mode = Wire(Bool())
+    val reg2dp_d0_op_en_trigger = Wire(Bool())
+    val reg2dp_d0_proc_precision = Wire(UInt(2.W))
+    val reg2dp_d1_conv_mode = Wire(Bool())
+    val reg2dp_d1_op_en_trigger = Wire(Bool())
+    val reg2dp_d1_proc_precision = Wire(UInt(2.W))
+    val reg2dp_op_en_reg_w = Wire(UInt(3.W))
+    val reg2dp_producer = Wire(Bool())
+
+
 
     
 
@@ -82,7 +99,7 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
         }
         .otherwise{
             when(nvdla_cmac_a_s_pointer_0_wren){
-                io.conv_mode:= io.reg_wr_data(0)
+                io.proc_precision:= io.reg_wr_data(0)
             }
             when(nvdla_cmac_a_d_op_enable_0_wren){
                 io.proc_precision:=io.reg_wr_data(13,12)

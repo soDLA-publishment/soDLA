@@ -6,7 +6,7 @@ import chisel3._
 
 //this module is to active dat and wt
 
-class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
@@ -114,9 +114,8 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         mout(i) := ((wt_actv_data_wire(i).zext*(dat_actv_data_wire(i).zext))&Fill(18, op_out_pvld(i)))
     }  
 
-    for(i <- 0 to conf.CMAC_ATOMC-1){
-        sum_out:=sum_out+mout(i)
-    } 
+    sum_out:=mout.reduce(_+_)
+    
 
 
     //add pipeline for retiming
@@ -124,7 +123,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //wire [CMAC_RESULT_WIDTH-1:0] sum_out_d0 = $unsigned(sum_out);
     val sum_out_d0 = sum_out.asUInt
 
-    withClock(nvdla_core_clk){
+    withClock(io.nvdla_core_clk){
         val sum_out_dd = ShiftRegister(sum_out_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
         val pp_pvld_dd = ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     }
