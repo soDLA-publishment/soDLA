@@ -5,28 +5,32 @@ import chisel3._
 
 
 
-class NV_NVDLA_CMAC_REG_single(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())      
         val nvdla_core_rstn = Input(Bool())
 
-        // Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
+        val sc2mac_dat_pvld = Input(Bool())  /* data valid */
+        val sc2mac_dat_mask = Input(UInt(conf.CMAC_ATOMC.W))
+        val sc2mac_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt(conf.CMAC_ATOMC.W)))
+        val sc2mac_wt_sel = Input(UInt(conf.CMAC_ATOMK_HALF.W))
 
-        val reg_wr_en = Input(Bool())
+        val mac2accu_pvld = Output(Bool()) /* data valid */
+        val mac2accu_mask = Output(UInt(conf.CMAC_ATOMK_HALF.W))
+        val mac2accu_mode = Output(Bool())
+        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_RESULT_WIDTH))
+        val mac2accu_pd = Output(UInt(9.W))
 
-        // Writable register flop/trigger outputs
+        val reg2dp_op_en = Input(Bool())
+        val reg2dp_conv_mode = Input(Bool())
+        val dp2reg_done = Output(Bool())
 
-        val producer = Output(Bool())
-
-        // Read-only register inputs
-
-        val consumer = Input(Bool())
-        val status_0 = Input(UInt(2.W))
-        val status_1 = Input(UInt(2.W))       
+        //Port for SLCG
+        val dla_clk_ovr_on_sync = Input(Bool())
+        val global_clk_ovr_on_sync = Input(Bool())
+        val tmc2slcg_disable_clock_gating = Input(Bool())
+        val slcg_op_en = Input(UInt(conf.CMAC_SLCG_NUM))
     })
 //     
 //          ┌─┐       ┌─┐
@@ -50,25 +54,35 @@ class NV_NVDLA_CMAC_REG_single(implicit val conf: cmacConfiguration) extends Mod
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
-    val nvdla_cmac_a_s_pointer_0_out = Wire(UInt(32.W))
-    val nvdla_cmac_a_s_status_0_out = Wire(UInt(32.W))
-    val reg_offset_rd_int = Wire(UInt(12.W))
-    val reg_offset_wr = Wire(UInt(32.W))
+    val cfg_is_wg = Bool()
+    val cfg_reg_en =Bool()
 
-    io.producer := Reg(Bool())
-    io.reg_rd_data := Reg(UInt(32.W))
+    // interface with register config   
+    //==========================================================
+    //: my $i=CMAC_ATOMK_HALF;
+    //: print qq(
+    //:    wire nvdla_op_gated_clk_${i};  );
+    //: print qq(
+    //: NV_NVDLA_CMAC_CORE_cfg u_cfg (
+    //:    .nvdla_core_clk                (nvdla_op_gated_clk_${i})          //|< w
+    //:   ,.nvdla_core_rstn               (nvdla_core_rstn)               //|< i
+    //:   ,.dp2reg_done                   (dp2reg_done)                   //|< o
+    //:   ,.reg2dp_conv_mode              (reg2dp_conv_mode)              //|< i
+    //:   ,.reg2dp_op_en                  (reg2dp_op_en)                  //|< i
+    //:   ,.cfg_is_wg                     (cfg_is_wg)                     //|> w
+    //:   ,.cfg_reg_en                    (cfg_reg_en)                    //|> w
+    //:   );
+    //: );
 
-    reg_offset_wr := Cat(0.UInt(20.W), io.reg_offset)
+    val nvdla_op_gated_clk = Wire(Vec(conf.CMAC_ATOMK_HALF, Clock()))
 
-    // Address decode
-
-    val nvdla_cmac_a_s_pointer_0_wren = (reg_offset_wr === ("h7004".UInt(32.W)&"h00000fff".UInt(32.W)))&io.reg_wr_en
-    val nvdla_cmac_a_s_status_0_wren = 
+    val u_cfg = Module(new nv_ram_rws(conf.CBUF_RAM_DEPTH, conf.CBUF_RAM_WIDTH))
 
 
 
 
-    
- 
+
+
+
 
 }
