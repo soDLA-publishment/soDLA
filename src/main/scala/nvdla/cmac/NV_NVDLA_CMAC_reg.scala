@@ -214,9 +214,9 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
     ////////////////////////////////////////////////////////////////////////
     //EACH subunit has 4KB address space
 
-    select_s := Mux(reg_offset(11,0) < (32'h7008  & 32'hfff), true.B, false.B)
-    select_d0 := (reg_offset(11,0) >= (32'h7008  & 32'hfff))&(reg2dp_producer === false.B)
-    select_d1 := (reg_offset(11,0) >= (32'h7008  & 32'hfff))&(reg2dp_producer === true.B)
+    select_s := Mux(reg_offset(11,0) < ("h7008".asUInt(32.W)  & "hfff".asUInt(32.W), true.B, false.B)
+    select_d0 :=(reg_offset(11,0) >= ("h7008".asUInt(32.W) & "hfff".asUInt(32.W))&(reg2dp_producer === false.B)
+    select_d1 := (reg_offset(11,0) >= ("h7008".asUInt(32.W)  & "hfff".asUInt(32.W))&(reg2dp_producer === true.B)
 
     s_reg_wr_en := reg_wr_en & select_s
     d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en

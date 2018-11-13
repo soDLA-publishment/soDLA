@@ -194,7 +194,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
 
     u_rt_in.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF)          //|< w  );
     u_rt_in.io.nvdla_core_rstn := io.nvdla_core_rstn     //|< i
-    u_rt_in.io.sc2mac_dat_data ：= io.sc2mac_dat_data        //|< i )
+    u_rt_in.io.sc2mac_dat_data := io.sc2mac_dat_data        //|< i )
     u_rt_in.io.sc2mac_dat_mask := io.sc2mac_dat_mask        //|< i
     u_rt_in.io.sc2mac_dat_pd := io.sc2mac_dat_pd            //|< i
     u_rt_in.io.sc2mac_dat_pvld := io.sc2mac_dat_pvld              //|< i
