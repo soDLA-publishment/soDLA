@@ -13,9 +13,9 @@
 //   //lut2inp interface  
 //   val lut2inp = IO(new Bundle {
 //     val pvld  = Output(Bool()) /* data valid */
-//     val prdy = Input(Bool()) /* data return handshake */
-//     val pd = Input(UInt(740.W))
-//   })
+//   val prdy = Input(Bool()) /* data return handshake */
+//   val pd = Input(UInt(740.W))
+// })
 
 //   //idx2lut interface  
 //   val idx2lut = IO(new Bundle {
