@@ -280,7 +280,7 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
 
     csb_rresp_rdat := reg_rd_data
     csb_rresp_error := false.B
-    csb_wresp_rdat := "b0".UInt(32.W)
+    csb_wresp_rdat := "b0".asUInt(32.W)
     csb_wresp_error := false.B
 
     withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){

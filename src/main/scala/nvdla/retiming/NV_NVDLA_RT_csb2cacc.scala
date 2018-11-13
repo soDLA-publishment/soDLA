@@ -58,7 +58,7 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
     //initial condition
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
-        for(t <- 0 to (conf.RT_CSB2CACC_LATENCY-1){
+        for(t <- 0 to (conf.RT_CSB2CACC_LATENCY-1)){
 
             csb2cacc_req_pvld_d(t+1) := csb2cacc_req_pvld_d(t)
             cacc2csb_resp_valid_d(t+1):= cacc2csb_resp_valid_d(t)
@@ -69,7 +69,7 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
     //data flight
     withClock(io.nvdla_core_clk){
 
-        for(t <- 0 to (conf.RT_CSB2CACC_LATENCY-1){
+        for(t <- 0 to (conf.RT_CSB2CACC_LATENCY-1)){
             csb2cacc_req_pd_d(t+1) := csb2cacc_req_pd_d(t)
             cacc2csb_resp_pd_d(t+1) := cacc2csb_resp_pd_d(t)
         }
