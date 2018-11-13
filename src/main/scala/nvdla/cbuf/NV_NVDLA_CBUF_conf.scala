@@ -3,7 +3,6 @@ package nvdla
 import chisel3._
 
 
-{
 
 case class cbufConfiguration(){
     val CBUF_BANK_NUMBER = NVDLA_CBUF_BANK_NUMBER
