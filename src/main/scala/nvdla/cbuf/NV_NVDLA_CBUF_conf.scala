@@ -173,7 +173,6 @@ case class cbufConfiguration(){
             val CBUF_BANK_SLICE_min = 6
         }       
     }    
-}
 
 if(NVDLA_WEIGHT_COMPRESSION_ENABLE){
     val CBUF_WEIGHT_COMPRESSED = true
