@@ -52,7 +52,7 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
     csb2cacc_req_pd_d(0) := io.csb2cacc_req_src_pd
     cacc2csb_resp_valid_d(0) := io.cacc2csb_resp_src_valid
     cacc2csb_resp_pd_d(0) := io.cacc2csb_resp_src_pd
-    csb2cacc_req_src_prdy := true.B
+    io.csb2cacc_req_src_prdy := true.B
 
 
     //initial condition
@@ -78,9 +78,9 @@ class NV_NVDLA_RT_csb2cacc(implicit val conf: csb2caccConfiguration) extends Mod
 
     //output assignment
 
-    csb2cacc_req_dst_pvld:=csb2cacc_req_pvld_d(3)
-    csb2cacc_req_dst_pd:=csb2cacc_req_pd_d(3)
-    cacc2csb_resp_dst_valid:=cacc2csb_resp_valid_d(3)
-    cacc2csb_resp_dst_pd:=cacc2csb_resp_pd_d(3)
+    io.csb2cacc_req_dst_pvld:=csb2cacc_req_pvld_d(3)
+    io.csb2cacc_req_dst_pd:=csb2cacc_req_pd_d(3)
+    io.cacc2csb_resp_dst_valid:=cacc2csb_resp_valid_d(3)
+    io.cacc2csb_resp_dst_pd:=cacc2csb_resp_pd_d(3)
 
 }
