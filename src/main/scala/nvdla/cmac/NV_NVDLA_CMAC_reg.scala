@@ -185,7 +185,7 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
     }
     reg2dp_op_en_ori := Mux(dp2reg_consumer, reg2dp_d1_op_en, reg2dp_d0_op_en)
 
-    reg2dp_op_en_reg_w := Mux(io.dp2reg_done,  "b0".UInt(3.W), Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori.asUInt))
+    reg2dp_op_en_reg_w := Mux(io.dp2reg_done,  "b0".asUInt(3.W), Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori.asUInt))
 
     withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
         reg2dp_op_en_reg:=reg2dp_op_en_reg_w
@@ -215,8 +215,8 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
     //EACH subunit has 4KB address space
 
     select_s := Mux(reg_offset(11,0) < ("h7008".asUInt(32.W)  & "hfff".asUInt(32.W), true.B, false.B)
-    select_d0 :=(reg_offset(11,0) >= ("h7008".asUInt(32.W) & "hfff".asUInt(32.W))&(reg2dp_producer === false.B)
-    select_d1 := (reg_offset(11,0) >= ("h7008".asUInt(32.W)  & "hfff".asUInt(32.W))&(reg2dp_producer === true.B)
+    select_d0 :=(reg_offset(11,0) >= ("h7008".asUInt(32.W) & "hfff".asUInt(32.W)))&(reg2dp_producer === false.B)
+    select_d1 := (reg_offset(11,0) >= ("h7008".asUInt(32.W)  & "hfff".asUInt(32.W)))&(reg2dp_producer === true.B)
 
     s_reg_wr_en := reg_wr_en & select_s
     d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
@@ -243,7 +243,7 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
     }
     withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
         when(csb2cmac_a_req_pvld){
-            req_pvld:=csb2cmac_a_req_pvld
+            req_pd:=csb2cmac_a_req_pd
         }
     }
 
