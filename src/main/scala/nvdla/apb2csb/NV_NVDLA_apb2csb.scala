@@ -39,15 +39,15 @@ class NV_NVDLA_apb2csb extends Module {
   val rd_trans_vld = Wire(Bool())
   val wr_trans_vld = Wire(Bool())
 
-  val wr_trans_vld = io.psel & io.penable & io.pwrite
-  val rd_trans_vld = io.psel & io.penable & !io.pwrite 
+  wr_trans_vld := io.psel & io.penable & io.pwrite
+  rd_trans_vld := io.psel & io.penable & !io.pwrite 
 
 
-  withClockAndReset(io.pclk, !prstn) {
-    when(io.nvdla2csb_valid & io.rd_trans_low){
+  withClockAndReset(io.pclk, !io.prstn) {
+    when(io.nvdla2csb_valid & rd_trans_low){
       rd_trans_low := false.B
     } 
-    .elsewhen(io.csb2nvdla_ready & io.rd_trans_vld){
+    .elsewhen(io.csb2nvdla_ready & rd_trans_vld){
       rd_trans_low := true.B
     }   
   } 
