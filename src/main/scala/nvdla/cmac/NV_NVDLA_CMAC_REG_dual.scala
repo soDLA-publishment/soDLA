@@ -58,27 +58,27 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
 
     // Address decode
 
-    val nvdla_cmac_a_d_misc_cfg_0_wren = (reg_offset_wr === ("h700c".UInt(32.W)&"h00000fff".UInt(32.W)))&io.reg_wr_en
-    val nvdla_cmac_a_d_op_enable_0_wren = (reg_offset_wr === ("h7008".UInt(32.W)&"h00000fff".UInt(32.W)))&io.reg_wr_en
-    nvdla_cmac_a_d_misc_cfg_0_out := Cat("b0".UInt(18.W), proc_precision, "b0".UInt(11.W), conv_mode)
-    nvdla_cmac_a_d_op_enable_0_outt:=  Cat("b0".UInt(31.W), op_en)
+    val nvdla_cmac_a_d_misc_cfg_0_wren = (reg_offset_wr === ("h700c".asUInt(32.W)&"h00000fff".asUInt(32.W)))&io.reg_wr_en
+    val nvdla_cmac_a_d_op_enable_0_wren = (reg_offset_wr === ("h7008".asUInt(32.W)&"h00000fff".asUInt(32.W)))&io.reg_wr_en
+    nvdla_cmac_a_d_misc_cfg_0_out := Cat("b0".asUInt(18.W), proc_precision, "b0".asUInt(11.W), conv_mode)
+    nvdla_cmac_a_d_op_enable_0_outt:=  Cat("b0".asUInt(31.W), op_en)
 
     reg_offset_rd_int := io.reg_offset
 
-    when(reg_offset_rd_int === ("h700c".UInt(32.W)&"h00000fff".UInt(32.W)){
+    when(reg_offset_rd_int === ("h700c".asUInt(32.W)&"h00000fff".asUInt(32.W))){
         io.reg_rd_data = nvdla_cmac_a_d_misc_cfg_0_out 
     }
-    .elsewhen(reg_offset_rd_int === ("h7008".UInt(32.W)&"h00000fff".UInt(32.W)){
+    .elsewhen(reg_offset_rd_int === ("h7008".asUInt(32.W)&"h00000fff".asUInt(32.W))){
         io.reg_rd_data := nvdla_cmac_a_d_op_enable_0_out
     }
     .otherwise{
-        io.reg_rd_data := "b0".UInt(32.W)
+        io.reg_rd_data := "b0".asUInt(32.W)
     }
 
     withClock(io.nvdla_core_clk|!io.nvdla_core_rstn.asBool){
         when(!io.nvdla_core_rstn){
             io.conv_mode := false.B
-            io.proc_precision := "b01".UInt(2.W)
+            io.proc_precision := "b01".asUInt(2.W)
         }
         .otherwise{
             when(nvdla_cmac_a_s_pointer_0_wren){

@@ -203,7 +203,7 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfigurat
     // spyglass disable_block W484
 
 
-    withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_ {
+    withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_) {
         when (rd_popping) {
             rd_adr := rd_adr_next_popping
         }
