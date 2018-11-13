@@ -5,7 +5,7 @@ import chisel3._
 
 
 
-class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_cmac(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())      

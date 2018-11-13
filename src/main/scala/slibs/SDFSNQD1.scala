@@ -3,7 +3,7 @@ package slibs
 import chisel3._
 
 
-class SDFCNQD1 extends Module {
+class SDFSNQD1 extends Module {
   val io = IO(new Bundle {
     val SI = Input(Bool())
     val D = Input(Bool())
