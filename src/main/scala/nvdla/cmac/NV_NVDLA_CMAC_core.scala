@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 
@@ -143,7 +144,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     //: &eperl::retime("-stage ${i} -wid 9 -i in_dat_pd -o out_pd -cg_en_i in_dat_pvld -cg_en_o out_pvld -cg_en_rtm");
 
     val out_pd = Reg(UInt(9.W))
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         when(in_dat_pvld){
             out_pd := ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY)
             out_pvld := ShiftRegister(in_dat_pvld, conf.MAC_PD_LATENCY)
@@ -324,8 +325,8 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     val u_mac = Vec.fill(conf.CMAC_ATOMK_HALF){Module(new NV_NVDLA_CMAC_CORE_mac)}
 
     for(i<- 0 to conf.CMAC_ATOMK_HALF-1){
-       u_mac(i).io.nvdla_core_clk :=  nvdla_op_gaed_clk(i)
-       u_mac(i).io.nvdla_wg_clk := nvdla_op_gaed_clk(i)
+       u_mac(i).io.nvdla_core_clk :=  nvdla_op_gated_clk(i)
+       u_mac(i).io.nvdla_wg_clk := nvdla_op_gated_clk(i)
        u_mac(i).io.nvdla_core_rstn := io.nvdla_core_rstn
        u_mac(i).io.cfg_is_wg := cfg_is_wg
        u_mac(i).io.cfg_reg_en := cfg_reg_en

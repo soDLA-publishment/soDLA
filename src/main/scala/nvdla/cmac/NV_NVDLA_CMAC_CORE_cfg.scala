@@ -62,12 +62,12 @@ class NV_NVDLA_CMAC_CORE_cfg(implicit val conf: cmacConfiguration) extends Modul
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
         op_en_d1 := io.reg2dp_op_en
         op_done_d1 := io.dp2reg_done
-        cfg_reg_en := io.cfg_reg_en_w
-        cfg_is_wg := io.cfg_is_wg_w
+        io.cfg_reg_en := cfg_reg_en_w
+        io.cfg_is_wg := cfg_is_wg_w
         cfg_reg_en_d1 := io.cfg_reg_en        
     }   
 
-    io.cfg_reg_en_w := (~op_en_d1|op_done_d1) & reg2dp_op_en
-    io.cfg_is_wg_w := false.Bool//wg is not completed by nvdla yet
+    cfg_reg_en_w := (~op_en_d1|op_done_d1) & reg2dp_op_en
+    cfg_is_wg_w := false.B//wg is not completed by nvdla yet
 
     }

@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 
@@ -106,8 +107,8 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends Modul
     //: print "; \n";
     //`endif
 
-    val sum_out = "b0".S((conf.CMAC_RESULT_WIDTH).W)
-    val op_out_pvld = Wire(UInt(conf.CMAC_ATOMC).W)
+    val sum_out = "b0".asSInt((conf.CMAC_RESULT_WIDTH.W))
+    val op_out_pvld = Wire(UInt(conf.CMAC_ATOMC.W))
     val mout = Wire(Vec(conf.CMAC_ATOMC, SInt(18.W)))
  
     for(i <- 0 to conf.CMAC_ATOMC-1){

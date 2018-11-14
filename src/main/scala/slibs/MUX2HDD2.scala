@@ -1,4 +1,4 @@
-package slibs
+package nvdla
 
 import chisel3._
 

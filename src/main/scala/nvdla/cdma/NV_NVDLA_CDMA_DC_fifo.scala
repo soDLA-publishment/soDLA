@@ -98,7 +98,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     wr_busy_in_int := wr_req_in && wr_busy_int
 
     withClockAndReset(clk_mgated, !io.reset_) {
-        io.wr_busy_in := wr_busy_in_next
+        wr_busy_in := wr_busy_in_next
         when (wr_reserving ^ wr_popping) {
             wr_count := wr_count_next
         }
@@ -192,7 +192,8 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
 
     // spyglass enable_block W164a W484
     val rd_count_p_next = Mux(rd_popping,  rd_count_p_next_rd_popping,  rd_count_p_next_no_rd_popping)
-    val rd_count_p_next_rd_popping_not_0 = (rd_count_p_next_rd_popping != 0)
+    val rd_count_p_next_rd_popping_not_0= (rd_count_p_next_rd_popping != 0)
+    val rd_count_p_next_no_rd_popping_not_0 = (rd_count_p_next_no_rd_popping != 0)
     val rd_count_p_next_n = Mux(rd_popping,  rd_count_p_next_rd_popping_not_0,   rd_count_p_next_no_rd_popping_not_0)
 
 

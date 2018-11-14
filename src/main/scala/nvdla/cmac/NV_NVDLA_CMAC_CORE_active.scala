@@ -61,7 +61,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         //: output wt${i}_sd_pvld;
         //: )
         //: } 
-        val wt_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*CMAC_ATOMC).W)))   
+        val wt_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))   
         val wt_actv_nz = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
         val wt_actv_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))
         val wt_sd_mask = Output(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC).W)))        
@@ -122,8 +122,8 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     //: wire [${kk}-1:0] dat${i}_pre_mask={${kk}{1'b0}};
     //: )
     //: }
-    io.wt_sd_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".UInt((conf.CMAC_ATOMC).W)))        
-    io.dat_pre_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".UInt((conf.CMAC_ATOMC).W))) 
+    io.wt_sd_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W)))        
+    io.dat_pre_mask := Wire(Vec(conf.CMAC_ATOMK_HALF, "b0".asUInt((conf.CMAC_ATOMC).W))) 
 
 
 
@@ -213,7 +213,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     val wt_sd_data = Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_ATOMC *conf.CMAC_BPE).W)))
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
         io.wt_sd_pvld(i) := Reg(Bool())
-        wt_sd_pvld_w(i) := Mux(wt_pre_sel(i).asBool(), true.B, Mux(dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
+        wt_sd_pvld_w(i) := Mux(wt_pre_sel(i).asBool(), true.B, Mux(io.dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
             io.wt_sd_pvld(i) := wt_sd_pvld_w(i)
             when(wt_pre_sel(i).asBool()) {wt_sd_nz(i) := wt_pre_nz}
@@ -227,7 +227,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 
  
 
-    val dat_actv_stripe_end = Reg(Bool)
+    val dat_actv_stripe_end = Reg(Bool())
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
         dat_actv_stripe_end := io.dat_pre_stripe_end
     } 
@@ -251,19 +251,19 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 //:     }
 //: }   
 
-    val wt_actv_vld = Reg(conf.CMAC_ATOMK_HALF, Bool())
-    io.wt_actv_data := Reg(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*CMAC_ATOMC).W))
+    val wt_actv_vld = Reg(Vec(conf.CMAC_ATOMK_HALF, Bool()))
+    io.wt_actv_data := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
     val wt_actv_pvld_w = Wire(conf.CMAC_ATOMK_HALF, Bool())
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-        wt_avtc_pvld_w(i) := Mux(dat_pre_stripe_st, io.wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
+        wt_avtc_pvld_w(i) := Mux(io.dat_pre_stripe_st, io.wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
             wt_actv_vld(i) := wt_actv_pvld_w(i)
             io.wt_actv_pvld(i) := Fill(conf.CMAC_ATOMC, wt_sd_pvld_w(i))
-            when(dat_pre_stripe_st& wt_actv_pvld_w(i)) {io.wt_actv_nz(i) := RegNext(wt_sd_nz(i))}
+            when(io.dat_pre_stripe_st& wt_actv_pvld_w(i)) {io.wt_actv_nz(i) := RegNext(wt_sd_nz(i))}
         }
         for(j <- 0 to conf.CMAC_ATOMC-1){
             withClock(io.nvdla_core_clk){
-                when(dat_pre_stripe_st&(wt_actv_pvld_w(i))){
+                when(io.dat_pre_stripe_st&(wt_actv_pvld_w(i))){
                     io.wt_actv_data(i)(j*8+7, j*8) := Fill(8, wt_sd_nz(i)(j))&(wt_sd_data(i)(j*8+7, j*8))
                 }
             }

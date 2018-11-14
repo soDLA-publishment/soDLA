@@ -62,7 +62,7 @@ class int_sum_block_tp1(implicit val conf: cdpConfiguration) extends Module {
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
         when (io.load_din_d) {
             int8_sum_3_5 := sq3 + sq5
-            sq_pd_int8_4_d := sq_pd_int8(4)
+            sq_pd_int8_4_d := io.sq_pd_int8(4)
         }
     }
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {

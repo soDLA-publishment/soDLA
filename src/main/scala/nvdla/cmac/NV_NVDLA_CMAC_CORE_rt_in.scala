@@ -109,12 +109,12 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
     val in_rt_dat_mask_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(UInt(conf.CMAC_ATOMC.W)))
     val in_rt_dat_mask_d = VecInit(in_rt_dat_mask_d_wire +: in_rt_dat_mask_d_regs)
 
-    val in_dat_pd_d_wire = Wire(UInt(9.W))
-    val in_dat_pd_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(UInt(9.W)))
-    val in_dat_pd_d = VecInit(in_dat_pd_d_wire +: in_dat_pd_d_regs)
+    val in_rt_dat_pd_d_wire = Wire(UInt(9.W))
+    val in_rt_dat_pd_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(UInt(9.W)))
+    val in_rt_dat_pd_d = VecInit(in_dat_pd_d_wire +: in_dat_pd_d_regs)
 
-    val in_rt_dat_data_d_wire = Wire(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf*CMAC_ATOMC).W)))
-    val in_rt_dat_data_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf*CMAC_ATOMC).W))))  
+    val in_rt_dat_data_d_wire = Wire(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
+    val in_rt_dat_data_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))))  
     val in_rt_dat_data_d = VecInit(in_rt_dat_data_d_wire +: in_rt_dat_data_d_regs)
 
 
@@ -127,8 +127,8 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
     //: )
     //: }
 
-    val in_rt_wt_data_d_wire = Wire(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf*CMAC_ATOMC).W)))
-    val in_rt_wt_data_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf*CMAC_ATOMC).W))))  
+    val in_rt_wt_data_d_wire = Wire(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
+    val in_rt_wt_data_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))))  
     val in_rt_wt_data_d = VecInit(in_rt_wt_data_d_wire +: in_rt_wt_data_d_regs)
 
     val in_rt_wt_mask_d_wire = Wire(UInt(conf.CMAC_ATOMC.W))
@@ -204,10 +204,10 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
         withClock(io.nvdla_core_clk){
             for(i <- 0 to conf.CMAC_ATOMC-1){
                 when(in_rt_dat_mask_d(t)(i)){
-                    in_rt_dat_data(t+1)(i) := in_rt_dat_data(t)(i)                   
+                    in_rt_dat_data_d(t+1)(i) := in_rt_dat_data_d(t)(i)                   
                 }
                 when(in_rt_wt_mask_d(t)(i)){
-                    in_rt_wt_data(t+1)(i) := in_rt_wt_data(t)(i) 
+                    in_rt_wt_data_d(t+1)(i) := in_rt_wt_data_d(t)(i) 
                 }  
 
             }
@@ -227,7 +227,7 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
     io.in_dat_pd := in_rt_dat_pd_d(conf.CMAC_IN_RT_LATENCY)
     io.in_wt_pvld := in_wt_pvld_d(conf.CMAC_IN_RT_LATENCY)
     io.in_wt_mask := in_wt_mask_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_sel := in_wt_sel(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt_sel := in_wt_sel_d(conf.CMAC_IN_RT_LATENCY)
 
     //: my $k=$latency;
     //: for(my $i=0; $i<CMAC_ATOMC; $i++){

@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 
@@ -61,8 +62,8 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
 
     val nvdla_cmac_a_d_misc_cfg_0_wren = (reg_offset_wr === ("h700c".asUInt(32.W)&"h00000fff".asUInt(32.W)))&io.reg_wr_en
     val nvdla_cmac_a_d_op_enable_0_wren = (reg_offset_wr === ("h7008".asUInt(32.W)&"h00000fff".asUInt(32.W)))&io.reg_wr_en
-    nvdla_cmac_a_d_misc_cfg_0_out := Cat("b0".asUInt(18.W), proc_precision, "b0".asUInt(11.W), conv_mode)
-    nvdla_cmac_a_d_op_enable_0_outt:=  Cat("b0".asUInt(31.W), op_en)
+    nvdla_cmac_a_d_misc_cfg_0_out := Cat("b0".asUInt(18.W), io.proc_precision, "b0".asUInt(11.W), io.conv_mode)
+    nvdla_cmac_a_d_op_enable_0_out:=  Cat("b0".asUInt(31.W), io.op_en)
 
     reg_offset_rd_int := io.reg_offset
 
