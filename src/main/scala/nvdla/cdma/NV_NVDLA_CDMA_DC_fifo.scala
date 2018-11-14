@@ -65,14 +65,14 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     withClockAndReset(io.clk, !io.reset_) {
         wr_busy_in := wr_busy_in_next
         when (!wr_busy_in_int) {
-            wr_req_in := wr_req && !wr_busy_in
+            wr_req_in := io.wr_req && !wr_busy_in
         }
 
     } 
 
     withClock(io.clk){
-         when (!wr_busy_in&&wr_req) {
-            wr_data_in := wr_data
+         when (!wr_busy_in&&io.wr_req) {
+            wr_data_in := io.wr_data
         }       
     }
 
@@ -132,7 +132,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     ore := ram.io.ore
 
     // next wr_adr if wr_pushing=1
-    val wr_adr_next = wr_adr + "d1".UInt(1.W)
+    val wr_adr_next = wr_adr + "d1".asUInt(1.W)
 
     // spyglass disable_block W484
 
@@ -149,7 +149,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
 
     // next    read address 
 
-    val rd_adr_next = rd_adr + "d1".UInt(1.W)
+    val rd_adr_next = rd_adr + "d1".asUInt(1.W)
     rd_adr_p := Mux(rd_popping, rd_adr_next, rd_adr) //for ram
 
     // spyglass disable_block W484
@@ -182,13 +182,13 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
 
     val rd_req_p = Reg(Bool())// data out of fifo is valid
     val rd_req_int = Reg(Bool())// internal copy of rd_req
-    rd_req := rd_req_int
+    io.rd_req := rd_req_int
     rd_popping := rd_req_p && !(rd_req_int && !io.rd_ready)
     val rd_count_p = Reg(UInt(8.W)) // read-side fifo count
     // spyglass disable_block W164a W484
 
-    val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p - "d1".UInt(1.W))
-    val rd_count_p_next_no_rd_popping =  Mux(rd_pushing, rd_count_p  +"d1".UInt(1.W), rd_count_p)
+    val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p - "d1".asUInt(1.W))
+    val rd_count_p_next_no_rd_popping =  Mux(rd_pushing, rd_count_p  +"d1".asUInt(1.W), rd_count_p)
 
     // spyglass enable_block W164a W484
     val rd_count_p_next = Mux(rd_popping,  rd_count_p_next_rd_popping,  rd_count_p_next_no_rd_popping)
@@ -199,7 +199,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     rd_enable := ((rd_count_p_next_not_0) && ((!rd_req_p) || rd_popping))
 
     withClockAndReset(clk_mgated, !io.reset_) {
-        if(rd_pushing || rd_popping){
+        when(rd_pushing || rd_popping){
             rd_count_p:=rd_count_p_next 
         }
     } 

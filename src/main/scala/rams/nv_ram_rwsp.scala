@@ -2,6 +2,8 @@ package nvdla
 
 import chisel3._
 
+import chisel3.util._
+
 // this is a two clock read, synchronous-write memory
 
 class nv_ram_rwsp(dep: Int, wid: Int) extends Module{

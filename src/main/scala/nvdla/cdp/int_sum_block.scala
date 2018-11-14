@@ -4,6 +4,7 @@ package nvdla
 import chisel3._
 
 import chisel3.experimental._
+import chisel3.util._
 
 //https://github.com/freechipsproject/chisel3/wiki/Multiple-Clock-Domains
 
@@ -68,34 +69,34 @@ class int_sum_block extends Module {
 
    //sum process
    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
-        when(load_din_d){
+        when(io.load_din_d){
             int8_sum_3_5:=io.sq_pd_int8_msb(3) + io.sq_pd_int8_msb(5)
         }
-        when(load_din_d & (len5|len7|len9)){
+        when(io.load_din_d & (io.len5|io.len7|io.len9)){
             int8_msb_sum_2_6:=io.sq_pd_int8_msb(2) + io.sq_pd_int8_msb(6)
         }
-        when(load_din_d & (len7|len9)){
+        when(io.load_din_d & (io.len7|io.len9)){
             int8_msb_sum_1_7 := io.sq_pd_int8_msb(1) + io.sq_pd_int8_msb(7)
         }
-        when(load_din_d & (len9)){
+        when(io.load_din_d & (io.len9)){
             int8_msb_sum_0_8 := io.sq_pd_int8_msb(0) + io.sq_pd_int8_msb(8)
         }
-        when(load_din_d){
+        when(io.load_din_d){
             int16_sum_3_5:= sq(3) + sq(5)
         }
-        when(load_din_d & (len5|len7|len9)){
+        when(io.load_din_d & (io.len5|io.len7|io.len9)){
             int16_sum_2_6 := sq(2) + sq(6)
         }
-        when(load_din_d & (len7|len9)){
+        when(io.load_din_d & (io.len7|io.len9)){
             int16_sum_1_7 := sq(1) + sq(7)
         }
-        when(load_din_d & (len9)){
+        when(io.load_din_d & (io.len9)){
             int16_sum_0_8 := sq(0) + sq(8)
         }
-        when(load_din_d){
+        when(io.load_din_d){
             sq4_d:=Cat("d0".U(16.W), io.sq_pd_int8_lsb(4))
         }
-        when(load_din_d){
+        when(io.load_din_d){
             sq_pd_int8_msb_4_d:=io.sq_pd_int8_msb(4)
         }
     }
@@ -107,41 +108,41 @@ class int_sum_block extends Module {
 
     //you may find that int16_sum have nothing to do with the output
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
-        when(load_din_2d){
+        when(io.load_din_2d){
             int8_msb_sum3:=int8_msb_sum_3_5 + Cat("b0".U(1.W), sq_pd_int8_msb_4_d)
         }
-        when(load_din_2d &(len5|len7|len9)){
+        when(io.load_din_2d &(io.len5|io.len7|io.len9)){
             int8_msb_sum5:=(int8_msb_sum_3_5 + Cat("b0".U(1.W), sq_pd_int8_msb_4_d))+ Cat("b0".U(1.W), int8_msb_sum_2_6)
         }
-        when(load_din_2d &(len7|len9)){
+        when(io.load_din_2d &(io.len7|io.len9)){
             int8_msb_sum7:=(int8_msb_sum_3_5 + Cat("b0".U(1.W), sq_pd_int8_msb_4_d))+ (int8_msb_sum_2_6 + int8_msb_sum_1_7)
         }
-        when(load_din_2d &(len9)){
+        when(io.load_din_2d &(io.len9)){
             int8_msb_sum9:=((int8_msb_sum_3_5 + Cat("b0".U(1.W), sq_pd_int8_msb_4_d))+ (int8_msb_sum_2_6 + int8_msb_sum_1_7)) + Cat("d0".U(2.W), int8_msb_sum_0_8)
         }
-        when(load_din_2d){
+        when(io.load_din_2d){
             int16_sum3:= int16_sum_3_5 + Cat("b0".U(1.W), sq4_d)
         }
-        when(load_din_2d&(len5|len7|len9)){
+        when(io.load_din_2d&(io.len5|io.len7|io.len9)){
             int16_sum5:= (int16_sum_3_5 + Cat("b0".U(1.W), sq4_d)) + Cat("b0".U(1.W), int16_sum_2_6)
         } 
-        when(load_din_2d &(len7|len9)){
+        when(io.load_din_2d &(io.len7|io.len9)){
             int16_sum7:= (int16_sum_3_5 + Cat("b0".U(1.W), sq4_d)) + (int16_sum_2_6 + int16_sum_1_7)
         }
-        when(load_din_2d &(len9)){
+        when(io.load_din_2d &(io.len9)){
             int16_sum9:= (int16_sum_3_5 + Cat("b0".U(1.W), sq4_d)) + (int16_sum_2_6 + int16_sum_1_7) +  Cat("d0".U(2.W), int16_sum_0_8)
         }        
     }
 
-    when(reg2dp_normalz_len === "b00".U){
+    when(io.reg2dp_normalz_len === "b00".U){
         int8_lsb_sum := Cat("b00".U, int8_lsb_sum3)
         int8_msb_sum := Cat("b00".U, int8_msb_sum3)
     }
-    .elsewhen(reg2dp_normalz_len === "b01".U){
+    .elsewhen(io.reg2dp_normalz_len === "b01".U){
         int8_lsb_sum := Cat("b0".U, int8_lsb_sum5)
         int8_msb_sum := Cat("b0".U, int8_msb_sum5)  
     }
-    .elsewhen(reg2dp_normalz_len === "b10".U){
+    .elsewhen(io.reg2dp_normalz_len === "b10".U){
         int8_lsb_sum := Cat("b0".U, int8_lsb_sum7)
         int8_msb_sum := Cat("b0".U, int8_msb_sum7) 
     }
@@ -150,6 +151,6 @@ class int_sum_block extends Module {
         int8_msb_sum := int8_msb_sum9
     }
 
-    int8_sum := Cat(int8_msb_sum , int8_lsb_sum )  
+    io.int8_sum := Cat(int8_msb_sum , int8_lsb_sum )  
 
 }

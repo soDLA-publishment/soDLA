@@ -6,6 +6,7 @@ import chisel3.experimental._
 
 
 
+
 class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
