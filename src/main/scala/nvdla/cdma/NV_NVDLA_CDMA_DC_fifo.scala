@@ -1,6 +1,7 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
 
 class NV_NVDLA_CDMA_DC_fifo extends Module {
     val io = IO(new Bundle {

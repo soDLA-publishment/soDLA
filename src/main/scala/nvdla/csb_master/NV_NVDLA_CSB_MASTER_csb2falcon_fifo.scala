@@ -1,6 +1,7 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
 
 class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfiguration)  extends Module {
     val io = IO(new Bundle {

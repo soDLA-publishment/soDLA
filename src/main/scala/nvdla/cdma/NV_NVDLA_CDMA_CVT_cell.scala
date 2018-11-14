@@ -1,8 +1,8 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
 
-import common._
 
 class NV_NVDLA_CDMA_CVT_cell(implicit conf: cdmaConfiguration) extends BlackBox {
 

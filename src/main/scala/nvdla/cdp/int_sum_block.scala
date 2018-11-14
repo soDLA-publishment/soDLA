@@ -3,7 +3,7 @@ package nvdla
 
 import chisel3._
 
-import common._
+import chisel3.experimental._
 
 //https://github.com/freechipsproject/chisel3/wiki/Multiple-Clock-Domains
 

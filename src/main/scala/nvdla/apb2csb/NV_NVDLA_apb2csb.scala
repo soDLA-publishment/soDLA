@@ -1,6 +1,7 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
 
 class NV_NVDLA_apb2csb extends Module {
  
@@ -43,7 +44,7 @@ class NV_NVDLA_apb2csb extends Module {
   rd_trans_vld := io.psel & io.penable & !io.pwrite 
 
 
-  withClockAndReset(io.pclk, !io.prstn) {
+  withClockAndReset(io.pclk, !io.prstn){
     when(io.nvdla2csb_valid & rd_trans_low){
       rd_trans_low := false.B
     } 

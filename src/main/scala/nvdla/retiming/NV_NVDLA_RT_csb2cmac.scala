@@ -1,6 +1,7 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
 
 
 class NV_NVDLA_RT_csb2cmac(implicit val conf: csb2cmacConfiguration) extends Module {
