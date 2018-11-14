@@ -33,7 +33,7 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Mo
         //: output[CMAC_RESULT_WIDTH-1:0] mac2accu_data${i}; )
         //: }
 
-        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF.W, UInt(conf.CMAC_RESULT_WIDTH.W)))
+        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
         val mac2accu_mask = Output(UInt(conf.CMAC_ATOMK_HALF.W))
         val mac2accu_pd = Output(UInt(9.W))
         val mac2accu_pvld = Output(Bool())

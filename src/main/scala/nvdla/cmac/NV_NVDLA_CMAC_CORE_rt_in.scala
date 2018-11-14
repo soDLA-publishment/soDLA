@@ -111,7 +111,7 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
 
     val in_rt_dat_pd_d_wire = Wire(UInt(9.W))
     val in_rt_dat_pd_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(UInt(9.W)))
-    val in_rt_dat_pd_d = VecInit(in_dat_pd_d_wire +: in_dat_pd_d_regs)
+    val in_rt_dat_pd_d = VecInit(in_rt_dat_pd_d_wire +: in_rt_dat_pd_d_regs)
 
     val in_rt_dat_data_d_wire = Wire(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
     val in_rt_dat_data_d_regs = Seq.fill(conf.CMAC_IN_RT_LATENCY)(Reg(Vec(conf.CMAC_ATOMC, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W))))  

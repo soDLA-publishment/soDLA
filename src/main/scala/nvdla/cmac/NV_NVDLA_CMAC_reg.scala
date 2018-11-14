@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 
@@ -102,7 +103,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     val reg2dp_d1_op_en_w = Wire(Bool())
     val reg2dp_op_en_ori = Wire(Bool())
     val reg2dp_op_en_reg = Reg(UInt(3.W))
-    io.reg2dp_proc_precision = Reg(UInt(2.W))
+    io.reg2dp_proc_precision := Reg(UInt(2.W))
     val req_pd = Reg(UInt(63.W))
     val req_pvld = Reg(Bool())
     val slcg_op_en_d1 = Reg(UInt(11.W))
@@ -156,7 +157,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     //////////////////////////////////////////////////////////////////////// 
 
     dp2reg_consumer_w := !dp2reg_consumer
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         when(io.dp2reg_done){
             dp2reg_consumer:=dp2reg_consumer_w
         }
@@ -168,8 +169,8 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
 
-    dp2reg_status_0 := Mux(reg2dp_d0_op_en === false.B, "h0".UInt(2.W), Mux(dp2reg_consumer, "h0".UInt(2.W), "h1".UInt(2.W)))
-    dp2reg_status_1 := Mux(reg2dp_d1_op_en === false.B, "h0".UInt(2.W), Mux(dp2reg_consumer === false.Bool, "h2".UInt(2.W), "h1".UInt(2.W)))
+    dp2reg_status_0 := Mux(reg2dp_d0_op_en === false.B, "h0".asUInt(2.W), Mux(dp2reg_consumer, "h0".asUInt(2.W), "h1".asUInt(2.W)))
+    dp2reg_status_1 := Mux(reg2dp_d1_op_en === false.B, "h0".asUInt(2.W), Mux(dp2reg_consumer === false.Bool, "h2".asUInt(2.W), "h1".asUInt(2.W)))
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -178,32 +179,32 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     ////////////////////////////////////////////////////////////////////////
 
     reg2dp_d0_op_en_w := Mux(!reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), Mux(io.dp2reg_done && dp2reg_consumer === false.B, false.B, reg2dp_d0_op_en))
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         reg2dp_d0_op_en:=reg2dp_d0_op_en_w
     }
     reg2dp_d1_op_en_w :=  Mux(!reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), Mux(io.dp2reg_done && dp2reg_consumer === true.B, false.B, reg2dp_d1_op_en))
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         reg2dp_d1_op_en:=reg2dp_d1_op_en_w
     }
     reg2dp_op_en_ori := Mux(dp2reg_consumer, reg2dp_d1_op_en, reg2dp_d0_op_en)
 
     reg2dp_op_en_reg_w := Mux(io.dp2reg_done,  "b0".asUInt(3.W), Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori.asUInt))
 
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         reg2dp_op_en_reg:=reg2dp_op_en_reg_w
     }
 
     io.reg2dp_op_en := reg2dp_op_en_reg(3-1)
 
-    slcg_op_en_d0 := Fill(11, reg2dp_op_en_ori.asUInt)
+    slcg_op_en_d0 := fill(11, reg2dp_op_en_ori.asUInt)
 
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         slcg_op_en_d1:=slcg_op_en_d0
     }   
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         slcg_op_en_d2:=slcg_op_en_d1
     }
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         slcg_op_en_d3:=slcg_op_en_d2
     }
 
@@ -222,7 +223,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
 
     s_reg_wr_en := reg_wr_en & select_s
     d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
-    d1_reg_wr_en = reg_wr_en & select_d1 & !reg2dp_d1_op_en
+    d1_reg_wr_en := reg_wr_en & select_d1 & !reg2dp_d1_op_en
 
     s_reg_offset := reg_offset
     d0_reg_offset := reg_offset
@@ -232,7 +233,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     d0_reg_wr_data := reg_wr_data
     d1_reg_wr_data := reg_wr_data
 
-    reg_rd_data := (Fill(32, select_s)&s_reg_rd_data)|(Fill(32, select_d0)& d0_reg_rd_data)|(Fill(32, select_d1)& d1_reg_rd_data)
+    reg_rd_data := (fill(32, select_s)&s_reg_rd_data)|(fill(32, select_d0)& d0_reg_rd_data)|(fill(32, select_d1)& d1_reg_rd_data)
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -240,10 +241,10 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
 
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         req_pvld:=csb2cmac_a_req_pvld
     }
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         when(csb2cmac_a_req_pvld){
             req_pd:=csb2cmac_a_req_pd
         }
