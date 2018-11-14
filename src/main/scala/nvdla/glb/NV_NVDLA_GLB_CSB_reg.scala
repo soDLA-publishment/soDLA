@@ -158,15 +158,15 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
     //spyglass disable_block W338, W263 
 
     when(reg_offset_rd_int === ("h4".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_mask_0_out
+        io.reg_rd_data := nvdla_glb_s_intr_mask_0_out
     }.elsewhen(reg_offset_rd_int === ("h8".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_set_0_out
+        io.reg_rd_data := nvdla_glb_s_intr_set_0_out
     }.elsewhen(reg_offset_rd_int === ("hc".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_status_0_out
+        io.reg_rd_data := nvdla_glb_s_intr_status_0_out
     }.elsewhen(reg_offset_rd_int === ("h0".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_nvdla_hw_version_0_out
+        io.reg_rd_data := nvdla_glb_s_nvdla_hw_version_0_out
     }.otherwise{
-        io.reg_rd_data = "b0".U(32.W)
+        io.reg_rd_data := "b0".U(32.W)
     }
 
     //spyglass enable_block W338, W263

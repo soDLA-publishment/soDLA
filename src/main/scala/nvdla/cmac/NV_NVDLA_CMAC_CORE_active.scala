@@ -178,7 +178,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
         when(io.in_wt_pvld) {wt_pre_nz := wt_pre_mask_w}
-        wt_pre_sel := io.in_wt_sel&fill(conf.CMAC_ATOMK_HALF, io.in_wt_pvld)
+        wt_pre_sel := io.in_wt_sel&Fill(conf.CMAC_ATOMK_HALF, io.in_wt_pvld)
     } 
 
 

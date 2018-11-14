@@ -170,7 +170,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     ////////////////////////////////////////////////////////////////////////
 
     dp2reg_status_0 := Mux(reg2dp_d0_op_en === false.B, "h0".asUInt(2.W), Mux(dp2reg_consumer, "h0".asUInt(2.W), "h1".asUInt(2.W)))
-    dp2reg_status_1 := Mux(reg2dp_d1_op_en === false.B, "h0".asUInt(2.W), Mux(dp2reg_consumer === false.Bool, "h2".asUInt(2.W), "h1".asUInt(2.W)))
+    dp2reg_status_1 := Mux(reg2dp_d1_op_en === false.B, "h0".asUInt(2.W), Mux(dp2reg_consumer === false.B, "h2".asUInt(2.W), "h1".asUInt(2.W)))
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
