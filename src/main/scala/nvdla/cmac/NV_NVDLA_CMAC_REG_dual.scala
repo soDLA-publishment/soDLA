@@ -77,7 +77,7 @@ class NV_NVDLA_CMAC_REG_dual(implicit val conf: cmacConfiguration) extends Modul
         io.reg_rd_data := "b0".asUInt(32.W)
     }
 
-    withClock(io.nvdla_core_clk|!io.nvdla_core_rstn.asBool){
+    withClock(io.nvdla_core_clk|(!io.nvdla_core_rstn.asBool())){
         when(!io.nvdla_core_rstn){
             io.conv_mode := false.B
             io.proc_precision := "b01".asUInt(2.W)

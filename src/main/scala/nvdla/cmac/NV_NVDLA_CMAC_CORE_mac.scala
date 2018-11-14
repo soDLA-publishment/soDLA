@@ -113,7 +113,7 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends Modul
  
     for(i <- 0 to conf.CMAC_ATOMC-1){
         op_out_pvld(i) := io.wt_actv_pvld(i)&io.dat_actv_pvld(i)&wt_actv_nz_wire(i)&dat_actv_nz_wire(i)
-        mout(i) := ((wt_actv_data_wire(i).zext*(dat_actv_data_wire(i).zext))&Fill(18, op_out_pvld(i)))
+        mout(i) := ((wt_actv_data_wire(i).zext*(dat_actv_data_wire(i).zext))&(Fill(18, op_out_pvld(i))).asSInt)
     }  
 
     sum_out:=mout.reduce(_+_)

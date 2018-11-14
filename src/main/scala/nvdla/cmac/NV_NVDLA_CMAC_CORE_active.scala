@@ -216,11 +216,11 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         wt_sd_pvld_w(i) := Mux(wt_pre_sel(i).asBool, true.B, Mux(io.dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
             io.wt_sd_pvld(i) := wt_sd_pvld_w(i)
-            when(wt_pre_sel(i).asBool) {wt_sd_nz(i) := wt_pre_nz}
+            when(wt_pre_sel(i).asBool()) {wt_sd_nz(i) := wt_pre_nz}
         }
         for(j <- 0 to conf.CMAC_ATOMC-1){
             withClock(io.nvdla_core_clk) { 
-                when(wt_pre_sel(i).asBool&wt_pre_nz(j).asBool) {wt_sd_data(i)(j*8+7, j*8) := wt_pre_data(j*8+7, j*8)}
+                when(wt_pre_sel(i).asBool()&wt_pre_nz(j).asBool()) {wt_sd_data(i)(j*8+7, j*8) := wt_pre_data(j*8+7, j*8)}
             }   
         }      
     }
@@ -255,7 +255,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     io.wt_actv_data := Reg(Vec(conf.CMAC_ATOMK_HALF, UInt((conf.CMAC_BPE*conf.CMAC_ATOMC).W)))
     val wt_actv_pvld_w = Wire(conf.CMAC_ATOMK_HALF, Bool())
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-        wt_avtc_pvld_w(i) := Mux(io.dat_pre_stripe_st, io.wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
+        wt_actv_pvld_w(i) := Mux(io.dat_pre_stripe_st, io.wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
             wt_actv_vld(i) := wt_actv_pvld_w(i)
             io.wt_actv_pvld(i) := fill(conf.CMAC_ATOMC, wt_sd_pvld_w(i))
@@ -264,7 +264,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         for(j <- 0 to conf.CMAC_ATOMC-1){
             withClock(io.nvdla_core_clk){
                 when(io.dat_pre_stripe_st&(wt_actv_pvld_w(i))){
-                    io.wt_actv_data(i)(j*8+7, j*8) := fill(8, wt_sd_nz(i)(j))&(wt_sd_data(i)(j*8+7, j*8))
+                    io.wt_actv_data(i)(j*8+7, j*8) := Fill(8, wt_sd_nz(i)(j))&(wt_sd_data(i)(j*8+7, j*8))
                 }
             }
         }         
@@ -339,8 +339,8 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-        io.dat_pre_stripe_st = io.in_dat_stripe_st&io.in_dat_pvld
-        io.dat_pre_stripe_end = io.in_dat_stripe_end&io.in_dat_pvld
+        io.dat_pre_stripe_st := io.in_dat_stripe_st&io.in_dat_pvld
+        io.dat_pre_stripe_end := io.in_dat_stripe_end&io.in_dat_pvld
     } 
 
 
@@ -364,7 +364,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
-            dat_actv_pvld_reg(i) := fill(conf.CMAC_ATOMC, io.dat_pre_pvld(i))
+            dat_actv_pvld_reg(i) := Fill(conf.CMAC_ATOMC, io.dat_pre_pvld(i))
             when(io.dat_pre_pvld(i)){
                 dat_actv_nz_reg(i) := dat_pre_nz
             }

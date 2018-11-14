@@ -25,7 +25,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
         val mac2accu_pvld = Output(Bool()) /* data valid */
         val mac2accu_mask = Output(UInt(conf.CMAC_ATOMK_HALF.W))
         val mac2accu_mode = Output(Bool())
-        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_RESULT_WIDTH))
+        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W))
         val mac2accu_pd = Output(UInt(9.W))
 
         val reg2dp_op_en = Input(Bool())
@@ -36,7 +36,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
         val dla_clk_ovr_on_sync = Input(Bool())
         val global_clk_ovr_on_sync = Input(Bool())
         val tmc2slcg_disable_clock_gating = Input(Bool())
-        val slcg_op_en = Input(UInt(conf.CMAC_SLCG_NUM))
+        val slcg_op_en = Input(UInt(conf.CMAC_SLCG_NUM.W))
     })
 //     
 //          ┌─┐       ┌─┐

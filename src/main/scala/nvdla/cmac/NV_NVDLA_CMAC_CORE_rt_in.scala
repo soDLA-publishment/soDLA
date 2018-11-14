@@ -225,9 +225,9 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
     io.in_dat_pvld := in_rt_dat_pvld_d(conf.CMAC_IN_RT_LATENCY)
     io.in_dat_mask := in_rt_dat_mask_d(conf.CMAC_IN_RT_LATENCY)
     io.in_dat_pd := in_rt_dat_pd_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_pvld := in_wt_pvld_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_mask := in_wt_mask_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_sel := in_wt_sel_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt_pvld := in_rt_wt_pvld_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt_mask := in_rt_wt_mask_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt_sel := in_rt_wt_sel_d(conf.CMAC_IN_RT_LATENCY)
 
     //: my $k=$latency;
     //: for(my $i=0; $i<CMAC_ATOMC; $i++){

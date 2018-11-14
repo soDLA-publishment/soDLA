@@ -67,7 +67,7 @@ class NV_NVDLA_CMAC_CORE_cfg(implicit val conf: cmacConfiguration) extends Modul
         cfg_reg_en_d1 := io.cfg_reg_en        
     }   
 
-    cfg_reg_en_w := (~op_en_d1|op_done_d1) & reg2dp_op_en
+    cfg_reg_en_w := (~op_en_d1|op_done_d1) & io.reg2dp_op_en
     cfg_is_wg_w := false.B//wg is not completed by nvdla yet
 
     }

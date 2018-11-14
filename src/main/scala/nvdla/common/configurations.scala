@@ -81,7 +81,6 @@ case class glbConfiguration()
     val NVDLA_CDP_ENABLE = true
     val NVDLA_PDP_ENABLE = true
     val NVDLA_RUBIK_ENABLE = true
-    val NVDLA_BDMA_ENABLE = true
 }
 
 case class csbMasterConfiguration(){

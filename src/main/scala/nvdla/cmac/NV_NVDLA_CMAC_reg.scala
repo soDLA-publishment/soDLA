@@ -24,7 +24,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
         val reg2dp_conv_mode = Output(Bool())
         val reg2dp_op_en = Output(Bool())
         val reg2dp_proc_precision = Output(UInt(2.W))
-        val slcg_op_en = Output(UInt(conf.CMAC_SLCG_NUM))
+        val slcg_op_en = Output(UInt(conf.CMAC_SLCG_NUM.W))
     })
 //     
 //          ┌─┐       ┌─┐
@@ -196,7 +196,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
 
     io.reg2dp_op_en := reg2dp_op_en_reg(3-1)
 
-    slcg_op_en_d0 := fill(11, reg2dp_op_en_ori.asUInt)
+    slcg_op_en_d0 := Fill(11, reg2dp_op_en_ori.asUInt)
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         slcg_op_en_d1:=slcg_op_en_d0
@@ -233,7 +233,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     d0_reg_wr_data := reg_wr_data
     d1_reg_wr_data := reg_wr_data
 
-    reg_rd_data := (fill(32, select_s)&s_reg_rd_data)|(fill(32, select_d0)& d0_reg_rd_data)|(fill(32, select_d1)& d1_reg_rd_data)
+    reg_rd_data := (Fill(32, select_s)&s_reg_rd_data)|(Fill(32, select_d0)& d0_reg_rd_data)|(Fill(32, select_d1)& d1_reg_rd_data)
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -264,10 +264,10 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
 
     //Address in CSB master is word aligned while address in regfile is byte aligned.
 
-    reg_offset := Cat(req_addr, "b0".UInt(2.W))
+    reg_offset := Cat(req_addr, "b0".asUInt(2.W))
     reg_wr_data := req_wdat
     reg_wr_en := req_pvld&req_write
-    reg_rd_en := req_pvld&!req_write
+    reg_rd_en := req_pvld&(!req_write)
 
     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
     csb_rresp_pd_w(31, 0) := csb_rresp_rdat
@@ -286,7 +286,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     csb_wresp_rdat := "b0".asUInt(32.W)
     csb_wresp_error := false.B
 
-    withClockAndReset(io.nvdla_core_clk, !nvdla_core_rstn){
+    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         when(reg_rd_en){
             io.cmac_a2csb_resp_pd := csb_rresp_pd_w
         }
