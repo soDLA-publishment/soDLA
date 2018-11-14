@@ -39,7 +39,7 @@ class NV_NVDLA_RT_cmac_a2cacc(implicit val conf: cmacConfiguration) extends Modu
 
     val mac2accu_mask_d_wire = Wire(UInt((conf.CMAC_ATOMK_HALF).W))
     val mac2accu_mask_d_regs = Seq.fill(conf.RT_CMAC_A2CACC_LATENCY)(Reg(UInt((conf.CMAC_ATOMK_HALF).W)))
-    val mac2accu_data_d = VecInit(mac2accu_mask_d_wire +: mac2accu_mask_d_regs)
+    val mac2accu_mask_d = VecInit(mac2accu_mask_d_wire +: mac2accu_mask_d_regs)
 
     val mac2accu_mode_d_wire = Wire(UInt((conf.CMAC_ATOMK_HALF).W))
     val mac2accu_mode_d_regs = Seq.fill(conf.RT_CMAC_A2CACC_LATENCY)(Reg(UInt((conf.CMAC_ATOMK_HALF).W)))
@@ -51,7 +51,7 @@ class NV_NVDLA_RT_cmac_a2cacc(implicit val conf: cmacConfiguration) extends Modu
 
     val mac2accu_pvld_d_wire = Wire(Bool())
     val mac2accu_pvld_d_regs = Seq.fill(conf.RT_CMAC_A2CACC_LATENCY)(Reg(Bool()))   
-    val mac2accu_pvld_d = VecInit(mac2accu_pd_d_wire +: mac2accu_pd_d_regs)  
+    val mac2accu_pvld_d = VecInit(mac2accu_pvld_d_wire +: mac2accu_pvld_d_regs)  
     
     //:    my $delay = RT_CMAC_A2CACC_LATENCY;
     //:    my $i;
@@ -111,10 +111,10 @@ class NV_NVDLA_RT_cmac_a2cacc(implicit val conf: cmacConfiguration) extends Modu
     //output assignment
 
     io.mac2accu_dst_pvld := mac2accu_pvld_d(conf.RT_CMAC_A2CACC_LATENCY)
-    io.mac2accu_dst_mask := mac2accu_dst_mask_d(conf.RT_CMAC_A2CACC_LATENCY) 
-    io.mac2accu_dst_mode := mac2accu_dst_mode_d(conf.RT_CMAC_A2CACC_LATENCY)
-    io.mac2accu_dst_pd := mac2accu_dst_pd_d(conf.RT_CMAC_A2CACC_LATENCY)
-    io.mac2accu_dst_data := mac2accu_dst_data_d(conf.RT_CMAC_A2CACC_LATENCY)
+    io.mac2accu_dst_mask := mac2accu_mask_d(conf.RT_CMAC_A2CACC_LATENCY) 
+    io.mac2accu_dst_mode := mac2accu_mode_d(conf.RT_CMAC_A2CACC_LATENCY)
+    io.mac2accu_dst_pd := mac2accu_pd_d(conf.RT_CMAC_A2CACC_LATENCY)
+    io.mac2accu_dst_data := mac2accu_data_d(conf.RT_CMAC_A2CACC_LATENCY)
 
 
 

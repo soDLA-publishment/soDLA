@@ -410,19 +410,19 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     val u_slcg_op = Vec.fill(conf.CMAC_SLCG_NUM){Module(new NV_NVDLA_CMAC_CORE_slcg)}
 
     for(i<- 0 to conf.CMAC_SLCG_NUM-1){
-       u_mac(i).io.nvdla_core_clk :=  nvdla_op_gated_clk(i)
-       u_mac(i).io.nvdla_wg_clk := nvdla_op_gated_clk(i)
-       u_mac(i).io.nvdla_core_rstn := io.nvdla_core_rstn
-       u_mac(i).io.cfg_is_wg := cfg_is_wg
-       u_mac(i).io.cfg_reg_en := cfg_reg_en
-       u_mac(i).io.dat_actv_data := dat_actv_data(i)
-       u_mac(i).io.dat_actv_nz := dat_actv_nz(i)
-       u_mac(i).io.dat_actv_pvld := dat_actv_pvld(i)
-       u_mac(i).io.wt_actv_data := wt_actv_data(i)
-       u_mac(i).io.wt_actv_nz := wt_actv_nz(i)
-       u_mac(i).io.wt_actv_pvld := wt_actv_pvld(i)
-       u_mac(i).io.mac_out_data := out_data(i)
-       u_mac(i).io.mac_out_pvld := out_mask(i)                                                                                 
+       u_slcg_op(i).io.nvdla_core_clk :=  nvdla_op_gated_clk(i)
+       u_slcg_op(i).io.nvdla_wg_clk := nvdla_op_gated_clk(i)
+       u_slcg_op(i).io.nvdla_core_rstn := io.nvdla_core_rstn
+       u_slcg_op(i).io.cfg_is_wg := cfg_is_wg
+       u_slcg_op(i).io.cfg_reg_en := cfg_reg_en
+       u_slcg_op(i).io.dat_actv_data := dat_actv_data(i)
+       u_slcg_op(i).io.dat_actv_nz := dat_actv_nz(i)
+       u_slcg_op(i).io.dat_actv_pvld := dat_actv_pvld(i)
+       u_slcg_op(i).io.wt_actv_data := wt_actv_data(i)
+       u_slcg_op(i).io.wt_actv_nz := wt_actv_nz(i)
+       u_slcg_op(i).io.wt_actv_pvld := wt_actv_pvld(i)
+       u_slcg_op(i).io.mac_out_data := out_data(i)
+       u_slcg_op(i).io.mac_out_pvld := out_mask(i)                                                                                 
     }
 
 

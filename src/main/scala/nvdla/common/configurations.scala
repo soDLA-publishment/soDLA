@@ -21,20 +21,6 @@ case class ramSizeCongiguration()
     val phy_cols = 288
 }
 
-case class cmacv1Configuration()
-{
-    //谜一样的变量
-    val CMAC_ATOMC = 128
-    val CMAC_ATOMK_HALF = 8
-    val CMAC_RESULT_WIDTH = 176
-    val RT_CMAC_A2CACC_LATENCY = 2
-    val CMAC_INPUT_NUM = 128
-    val CMAC_BPE = 8
-    val EXP = 192
-    val PVLD = 104
-    val NAN = 64
-}
-
 case class cmacConfiguration()
 {
     //谜一样的变量

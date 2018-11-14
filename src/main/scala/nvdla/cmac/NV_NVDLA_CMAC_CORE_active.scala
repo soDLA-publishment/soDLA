@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 
@@ -216,11 +217,11 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         wt_sd_pvld_w(i) := Mux(wt_pre_sel(i).asBool, true.B, Mux(io.dat_pre_stripe_st, false.B, io.wt_sd_pvld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
             io.wt_sd_pvld(i) := wt_sd_pvld_w(i)
-            when(wt_pre_sel(i).asBool()) {wt_sd_nz(i) := wt_pre_nz}
+            when(wt_pre_sel(i)) {wt_sd_nz(i) := wt_pre_nz}
         }
         for(j <- 0 to conf.CMAC_ATOMC-1){
             withClock(io.nvdla_core_clk) { 
-                when(wt_pre_sel(i).asBool()&wt_pre_nz(j).asBool()) {wt_sd_data(i)(j*8+7, j*8) := wt_pre_data(j*8+7, j*8)}
+                when(wt_pre_sel(i) & wt_pre_nz(j)) {wt_sd_data(i)(j*8+7, j*8) := wt_pre_data(j*8+7, j*8)}
             }   
         }      
     }

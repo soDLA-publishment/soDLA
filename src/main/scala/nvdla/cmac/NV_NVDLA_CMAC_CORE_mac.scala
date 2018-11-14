@@ -107,7 +107,7 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends Modul
     //: print "; \n";
     //`endif
 
-    val sum_out = "b0".asSInt((conf.CMAC_RESULT_WIDTH.W))
+    val sum_out = "b0".S(conf.CMAC_RESULT_WIDTH.W)
     val op_out_pvld = Wire(UInt(conf.CMAC_ATOMC.W))
     val mout = Wire(Vec(conf.CMAC_ATOMC, SInt(18.W)))
  
