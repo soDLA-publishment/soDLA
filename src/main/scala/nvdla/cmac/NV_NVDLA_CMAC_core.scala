@@ -25,7 +25,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
         val mac2accu_pvld = Output(Bool()) /* data valid */
         val mac2accu_mask = Output(UInt(conf.CMAC_ATOMK_HALF.W))
         val mac2accu_mode = Output(Bool())
-        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W))
+        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
         val mac2accu_pd = Output(UInt(9.W))
 
         val reg2dp_op_en = Input(Bool())
