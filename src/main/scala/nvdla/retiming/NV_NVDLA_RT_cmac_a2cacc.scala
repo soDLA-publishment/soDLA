@@ -110,11 +110,11 @@ class NV_NVDLA_RT_cmac_a2cacc(implicit val conf: cmacConfiguration) extends Modu
 
     //output assignment
 
-    io.mac2accu_dst_pvld = mac2accu_pvld_d(conf.RT_CMAC_A2CACC_LATENCY)
-    io.mac2accu_dst_mask = mac2accu_dst_mask_d(conf.RT_CMAC_A2CACC_LATENCY) 
-    io.mac2accu_dst_mode = mac2accu_dst_mode_d(conf.RT_CMAC_A2CACC_LATENCY)
-    io.mac2accu_dst_pd = mac2accu_dst_pd_d(conf.RT_CMAC_A2CACC_LATENCY)
-    io.mac2accu_dst_data = mac2accu_dst_data_d(conf.RT_CMAC_A2CACC_LATENCY)
+    io.mac2accu_dst_pvld := mac2accu_pvld_d(conf.RT_CMAC_A2CACC_LATENCY)
+    io.mac2accu_dst_mask := mac2accu_dst_mask_d(conf.RT_CMAC_A2CACC_LATENCY) 
+    io.mac2accu_dst_mode := mac2accu_dst_mode_d(conf.RT_CMAC_A2CACC_LATENCY)
+    io.mac2accu_dst_pd := mac2accu_dst_pd_d(conf.RT_CMAC_A2CACC_LATENCY)
+    io.mac2accu_dst_data := mac2accu_dst_data_d(conf.RT_CMAC_A2CACC_LATENCY)
 
 
 

@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 
@@ -141,8 +142,8 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
     val nvdla_glb_s_intr_status_0_wren = (reg_offset_wr === ("hc".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
     val nvdla_glb_s_nvdla_hw_version_0_wren = (reg_offset_wr === ("h0".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
 
-    io.major = "h31".U(8.W)
-    io.minor = "h3030".U(16.W)
+    major = "h31".U(8.W)
+    minor = "h3030".U(16.W)
 
     nvdla_glb_s_intr_mask_0_out := Cat("b0".U(10.W), io.cacc_done_mask1, io.cacc_done_mask0, io.cdma_wt_done_mask1, io.cdma_wt_done_mask0, io.cdma_dat_done_mask1, io.cdma_dat_done_mask0, "b0".U(6.W), io.rubik_done_mask1, io.rubik_done_mask0, io.bdma_done_mask1, io.bdma_done_mask0, io.pdp_done_mask1, io.pdp_done_mask0, io.cdp_done_mask1, io.cdp_done_mask0, io.sdp_done_mask1, io.sdp_done_mask0 )
     nvdla_glb_s_intr_set_0_wren := Cat("b0".U(10.W), io.cacc_done_set1, io.reg_offset_rd_int, io.cdma_wt_done_set1, io.cdma_wt_done_set0, io.cdma_dat_done_set1, io.cdma_dat_done_set0, "b0".U(6.W), io.rubik_done_set1, io.rubik_done_set0, io.bdma_done_set1, io.bdma_done_set0, io.pdp_done_set1, io.pdp_done_set0, io.cdp_done_set1, io.cdp_done_set0, io.sdp_done_set1, io.sdp_done_set0)
