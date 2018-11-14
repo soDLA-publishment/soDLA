@@ -258,7 +258,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
         wt_actv_pvld_w(i) := Mux(io.dat_pre_stripe_st, io.wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
         withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
             wt_actv_vld(i) := wt_actv_pvld_w(i)
-            io.wt_actv_pvld(i) := fill(conf.CMAC_ATOMC, wt_sd_pvld_w(i))
+            io.wt_actv_pvld(i) := Fill(conf.CMAC_ATOMC, wt_sd_pvld_w(i))
             when(io.dat_pre_stripe_st& wt_actv_pvld_w(i)) {io.wt_actv_nz(i) := RegNext(wt_sd_nz(i))}
         }
         for(j <- 0 to conf.CMAC_ATOMC-1){

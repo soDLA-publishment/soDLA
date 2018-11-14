@@ -242,11 +242,11 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
     ////////////////////////////////////////////////////////////////////////
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
-        req_pvld:=csb2cmac_a_req_pvld
+        req_pvld:=io.csb2cmac_a_req_pvld
     }
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
-        when(csb2cmac_a_req_pvld){
-            req_pd:=csb2cmac_a_req_pd
+        when(io.csb2cmac_a_req_pvld){
+            req_pd:=io.csb2cmac_a_req_pd
         }
     }
 

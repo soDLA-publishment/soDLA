@@ -144,6 +144,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     //: &eperl::retime("-stage ${i} -wid 9 -i in_dat_pd -o out_pd -cg_en_i in_dat_pvld -cg_en_o out_pvld -cg_en_rtm");
 
     val out_pd = Reg(UInt(9.W))
+    val out_pvld = Reg(Bool())
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
         when(in_dat_pvld){
             out_pd := ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY)
@@ -409,8 +410,8 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     val u_slcg_op = Vec.fill(conf.CMAC_SLCG_NUM){Module(new NV_NVDLA_CMAC_CORE_slcg)}
 
     for(i<- 0 to conf.CMAC_SLCG_NUM-1){
-       u_mac(i).io.nvdla_core_clk :=  nvdla_op_gaed_clk(i)
-       u_mac(i).io.nvdla_wg_clk := nvdla_op_gaed_clk(i)
+       u_mac(i).io.nvdla_core_clk :=  nvdla_op_gated_clk(i)
+       u_mac(i).io.nvdla_wg_clk := nvdla_op_gated_clk(i)
        u_mac(i).io.nvdla_core_rstn := io.nvdla_core_rstn
        u_mac(i).io.cfg_is_wg := cfg_is_wg
        u_mac(i).io.cfg_reg_en := cfg_reg_en

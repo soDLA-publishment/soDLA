@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 
@@ -89,7 +90,7 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Mo
     // Output retiming
     //==========================================================
 
-    out_layer_done := out_pd(conf.PKT_nvdla_stripe_info_layer_end_FIELD) &out_pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)& io.out_pvld
+    out_layer_done := io.out_pd(conf.PKT_nvdla_stripe_info_layer_end_FIELD) &io.out_pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)& io.out_pvld
 
     //:     my $kk = CMAC_ATOMK_HALF;
     //:     my $jj = CMAC_RESULT_WIDTH;
