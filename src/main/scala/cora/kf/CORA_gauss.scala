@@ -1,8 +1,8 @@
-package cora
+// package cora
 
-import chisel3._
-import scala.math._
+// import chisel3._
+// import scala.math._
 
-class CORA_gauss extends Module {
+// class CORA_gauss extends Module {
 
-}
+// }

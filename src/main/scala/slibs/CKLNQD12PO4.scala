@@ -1,9 +1,10 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
+import chisel3.util._
 
-
-class CKLNQD12PO4 extends Module {
+class CKLNQD12PO4 extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle {
     val CP = Input(Clock())
     val TE = Input(Bool())
@@ -12,13 +13,9 @@ class CKLNQD12PO4 extends Module {
   })
 
 
-  withClock (!io.CP) {
-    // In this withClock scope, all synchronous elements are clocked against io.clockB.
-
-    // This register is clocked against io.clockB, but uses implict reset from the parent context.
-    val qd = RegNext(io.TE || io.E)
+  withClock((!io.CP.asUInt()).asClock){
+    val qd = RegNext(io.TE|io.E)
+    io.Q := io.CP.asUInt() & qd   
   }
-
-  io.Q := (qd & io.CP).asClock
 }
 

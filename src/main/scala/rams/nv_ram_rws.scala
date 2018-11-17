@@ -1,6 +1,8 @@
 package nvdla
 
 import chisel3._
+import chisel3.util._
+import chisel3.experimental._
 
 // this is a synchronous-read, synchronous-write memory
 

@@ -23,6 +23,8 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
         val pwrbus_ram_pd = Input(UInt(32.W))
 
     })
+
+    withClockAndReset(io.clk, !io.reset_){
     
     // Master Clock Gating (SLCG)
     //
@@ -42,8 +44,8 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     val clk_mgate = Module(new NV_CLK_gate_power)
     io.clk := clk_mgate.io.clk 
     io.reset_ := clk_mgate.io.reset_ 
-    clk_mgated_enable := clk_mgate.io.clk_en 
-    clk_mgated := clk_mgate.io.clk_gated
+    clk_mgate.io.clk_en := clk_mgated_enable 
+    clk_mgate.io.clk_gated := clk_mgated
 
     // 
     // WRITE SIDE

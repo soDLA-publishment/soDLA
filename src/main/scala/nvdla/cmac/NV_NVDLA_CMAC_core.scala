@@ -372,7 +372,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     //,.mac2accu_pvld                 (mac2accu_pvld)                 //|> o
     //);
 
-    val u_rt_out = Module(new NV_NVDLA_CMAC_CORE_rt_out)
+    val u_rt_out = Module(new NV_NVDLA_CMAC_CORE_rt_out)  // use seq
 
     u_rt_out.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+2)         //|< w 
     u_rt_out.io.nvdla_wg_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+2)           //|< w );

@@ -35,8 +35,9 @@ class NV_NVDLA_apb2csb extends Module {
   })
 
   //input  nvdla2csb_wr_complete
+  withClockAndReset(io.pclk, !io.prstn){
 
-  val rd_trans_low = Reg(Bool())
+  val rd_trans_low = RegInit(Bool())
   val rd_trans_vld = Wire(Bool())
   val wr_trans_vld = Wire(Bool())
 
@@ -44,14 +45,12 @@ class NV_NVDLA_apb2csb extends Module {
   rd_trans_vld := io.psel & io.penable & !io.pwrite 
 
 
-  withClockAndReset(io.pclk, !io.prstn){
-    when(io.nvdla2csb_valid & rd_trans_low){
-      rd_trans_low := false.B
-    } 
-    .elsewhen(io.csb2nvdla_ready & rd_trans_vld){
-      rd_trans_low := true.B
-    }   
+  when(io.nvdla2csb_valid & rd_trans_low){
+    rd_trans_low := false.B
   } 
+  .elsewhen(io.csb2nvdla_ready & rd_trans_vld){
+    rd_trans_low := true.B
+  }    
 
   io.csb2nvdla_valid := wr_trans_vld | rd_trans_vld & !rd_trans_low
   io.csb2nvdla_addr := io.paddr(17,2)
@@ -61,6 +60,8 @@ class NV_NVDLA_apb2csb extends Module {
 
   io.prdata := io.nvdla2csb_data(31,0)
   io.pready := !(wr_trans_vld&(!io.csb2nvdla_ready)|rd_trans_vld&(!io.nvdla2csb_valid))
+
+  }
 
 }
 

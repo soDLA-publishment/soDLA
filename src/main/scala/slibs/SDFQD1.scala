@@ -1,6 +1,7 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
 
 
 class SDFQD1 extends Module {
@@ -13,14 +14,12 @@ class SDFQD1 extends Module {
 
   })
 
-  val sel = Mux(SE, I1,  D)
-
   withClock (io.CP) {
     // In this withClock scope, all synchronous elements are clocked against io.clockB.
 
     // This register is clocked against io.clockB, but uses implict reset from the parent context.
-
-    io.Q := RegNext(sel)
+  val sel = Mux(io.SE, io.SI,  io.D)
+  io.Q := RegNext(sel)
     
   }
 
