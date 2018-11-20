@@ -30,6 +30,11 @@ are doing this for the first time, sbt will automatically download the
 appropriate versions of Chisel3, the Chisel Testers harness
 and Scala and cache them (usually in `~/.ivy2`).
 
+Jupyter Notebook Demo
+----------------
+
+https://github.com/redpanda3/soDLA-ipynb 
+
 Discussion
 ----------------
 
