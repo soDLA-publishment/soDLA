@@ -21,16 +21,16 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends RawMo
         val cfg_reg_en = Input(Bool())
 
         //input
-        val dat_actv_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
+        val dat_actv_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val dat_actv_nz = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val dat_actv_pvld = Input(Vec(conf.CMAC_ATOMC, Bool()))
 
-        val wt_actv_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
+        val wt_actv_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val wt_actv_nz = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val wt_actv_pvld = Input(Vec(conf.CMAC_ATOMC, Bool()))
 
         //output
-        val mac_out_data = Output(UInt((conf.CMAC_RESULT_WIDTH).W))
+        val mac_out_data = Output(conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W))
         val mac_out_pvld = Output(Bool())         
     })
 
@@ -62,29 +62,27 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends RawMo
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
-    val sum_out = 0.asSInt(conf.CMAC_RESULT_WIDTH.W)
-    val op_out_pvld = Wire(Vec(conf.CMAC_ATOMC, false.B))
-    val mout = Wire(Vec(conf.CMAC_ATOMC, SInt(18.W)))
+    val op_out_pvld = VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B))
+    val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0)))
  
     for(i <- 0 to conf.CMAC_ATOMC-1){
         op_out_pvld(i) := io.wt_actv_pvld(i)&io.dat_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_nz(i)
         when(op_out_pvld(i)){
-            mout(i) := io.wt_actv_data(i).zext*io.dat_actv_data(i).zext
+            mout(i) := io.wt_actv_data(i)*io.dat_actv_data(i)
         }
         .otherwise{
-            mout(i) := 0.asSInt(conf.mul_result_width.W)
+            mout(i) := conf.CMAC_TYPE(0, conf.CMAC_RESULT_WIDTH)
         }
     }  
 
-    sum_out:=mout.reduce(_+_)
+    val sum_out = mout.reduce(_+_)
     
-    //add pipeline for retiming
+    //add retiming
     val pp_pvld_d0 = io.dat_actv_pvld(0) & io.wt_actv_pvld(0)
-    //wire [CMAC_RESULT_WIDTH-1:0] sum_out_d0 = $unsigned(sum_out);
-    val sum_out_d0 = sum_out.asUInt
 
-    io.mac_out_data := ShiftRegister(sum_out_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
+    io.mac_out_data := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     io.mac_out_pvld := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
+
 
     }
   }

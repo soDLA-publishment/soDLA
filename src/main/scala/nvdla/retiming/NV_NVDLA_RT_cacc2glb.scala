@@ -6,7 +6,7 @@ import chisel3.util._
 
 
 
-class NV_NVDLA_RT_cacc2glb(implicit val conf: cacc2glbConfiguration) extends Module {
+class NV_NVDLA_RT_cacc2glb(implicit val conf: cacc2glbConfiguration) extends RawModule {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
@@ -19,6 +19,7 @@ class NV_NVDLA_RT_cacc2glb(implicit val conf: cacc2glbConfiguration) extends Mod
     })
 
     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
+        io.cacc2glb_done_intr_dst_pd := RegInit(0.asUInt(2.W))
         io.cacc2glb_done_intr_dst_pd := ShiftRegister(io.cacc2glb_done_intr_src_pd, 2, true.B)
     } 
   }

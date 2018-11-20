@@ -7,7 +7,7 @@ import chisel3.util._
 
 
 
-class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends RawModule {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock()) 
@@ -19,13 +19,13 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Mo
         val cfg_reg_en = Input(Bool())
 
         //input:(atomk_half, cmac_result)
-        val out_data = Input(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
+        val out_data = Input(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W)))
         val out_mask = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
         val out_pd = Input(UInt(9.W))
         val out_pvld = Input(Bool())
 
         //output:(atomk_half, cmac_result)  
-        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
+        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W)))
         val mac2accu_mask = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
         val mac2accu_pd = Output(UInt(9.W))
         val mac2accu_pvld = Output(Bool())
@@ -75,7 +75,7 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Mo
     val out_rt_pvld_d = retimingInit(false.B, conf.CMAC_OUT_RT_LATENCY)
     val out_rt_mask_d = retimingInit(Vec(conf.CMAC_ATOMK_HALF, false.B), conf.CMAC_OUT_RT_LATENCY)  
     val out_rt_pd_d = retimingInit(0.asUInt(9.W), conf.CMAC_OUT_RT_LATENCY)  
-    val out_rt_data_d = retiming(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)), conf.CMAC_OUT_RT_LATENCY)
+    val out_rt_data_d = retiming(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W)), conf.CMAC_OUT_RT_LATENCY)
 
     //delay input
     out_rt_pvld_d(0) := io.out_pvld
