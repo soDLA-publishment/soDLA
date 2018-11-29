@@ -53,37 +53,30 @@ class NV_NVDLA_CMAC_REG_single extends RawModule {
 //             └──┴──┘       └──┴──┘ 
 withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
-    val reg_offset_rd_int = Wire(UInt(12.W))
-    val reg_offset_wr = Wire(UInt(32.W))
-
-    val producer_out = RegInit(false.B)
-
-    reg_offset_wr := Cat("b0".asUInt(20.W), io.reg_offset)
-
     // Address decode
 
-    val nvdla_cmac_a_s_pointer_0_wren = (reg_offset_wr === ("h7004".asUInt(32.W)&"h00000fff".asUInt(32.W)))&io.reg_wr_en
-    val nvdla_cmac_a_s_status_0_wren = (reg_offset_wr === ("h7000".asUInt(32.W)&"h00000fff".asUInt(32.W)))&io.reg_wr_en
+    val nvdla_cmac_a_s_pointer_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
+    val nvdla_cmac_a_s_status_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
+    
     val nvdla_cmac_a_s_pointer_0_out = Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
     val nvdla_cmac_a_s_status_0_out = Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 
+    // Output mux
+   
+    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    Seq(      
+    "h4".asUInt(32.W)  -> nvdla_cmac_a_s_pointer_0_out,
+    "h0".asUInt(32.W)  -> nvdla_cmac_a_s_status_0_out
+    ))
 
-    reg_offset_rd_int := io.reg_offset
+    // Register flop declarations
 
-    when(reg_offset_rd_int === ("h7004".asUInt(32.W)&"h00000fff".asUInt(32.W))){
-        io.reg_rd_data := nvdla_cmac_a_s_pointer_0_out 
-    }
-    .elsewhen(reg_offset_rd_int === ("h7000".asUInt(32.W)&"h00000fff".asUInt(32.W))){
-        io.reg_rd_data := nvdla_cmac_a_s_status_0_out
-    }
-    .otherwise{
-        io.reg_rd_data := "b0".asUInt(32.W)
-    }
+    val producer_out = RegInit(false.B)
 
     when(nvdla_cmac_a_s_pointer_0_wren){
         producer_out:= io.reg_wr_data(0)
     }
-
+        
     io.producer := producer_out
 
 }}
