@@ -90,36 +90,36 @@ class NV_NVDLA_CSC_dual_reg extends RawModule{
 
     // Address decode
 
-    val nvdla_csc_d_atomics_0_wren = (reg_offset_wr === "h44".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_bank_0_wren = (reg_offset_wr ===  "h5c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_batch_number_0_wren = (reg_offset_wr ===  "h1c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_conv_stride_ext_0_wren = (reg_offset_wr ===  "h4c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_cya_0_wren = (reg_offset_wr == "h64".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_datain_format_0_wren = (reg_offset_wr === "h10".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_datain_size_ext_0_0_wren = (reg_offset_wr === "h14".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_datain_size_ext_1_0_wren = (reg_offset_wr === "h18".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_dataout_size_0_0_wren = (reg_offset_wr === "h3c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_dataout_size_1_0_wren = (reg_offset_wr === "h40".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_dilation_ext_0_wren = (reg_offset_wr === "h50".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_entry_per_slice_0_wren = (reg_offset_wr === "h24".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_misc_cfg_0_wren = (reg_offset_wr === "h0c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_op_enable_0_wren = (reg_offset_wr === "h08".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_post_y_extension_0_wren = (reg_offset_wr === "h20".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_pra_cfg_0_wren = (reg_offset_wr === "h60".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_release_0_wren = (reg_offset_wr === "h48".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_weight_bytes_0_wren = (reg_offset_wr === "h34".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_weight_format_0_wren = (reg_offset_wr === "h28".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_weight_size_ext_0_0_wren = (reg_offset_wr === "h2c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_weight_size_ext_1_0_wren = (reg_offset_wr === "h30".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_wmb_bytes_0_wren = (reg_offset_wr === "h38".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_zero_padding_0_wren = (reg_offset_wr === "h54".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_csc_d_zero_padding_value_0_wren = (reg_offset_wr === "h58".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_atomics_0_wren = (io.reg_offset === "h44".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_bank_0_wren = (io.reg_offset ===  "h5c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_batch_number_0_wren = (io.reg_offset ===  "h1c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_conv_stride_ext_0_wren = (io.reg_offset ===  "h4c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_cya_0_wren = (io.reg_offset === "h64".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_datain_format_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_datain_size_ext_0_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_datain_size_ext_1_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_dataout_size_0_0_wren = (io.reg_offset === "h3c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_dataout_size_1_0_wren = (io.reg_offset === "h40".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_dilation_ext_0_wren = (io.reg_offset === "h50".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_entry_per_slice_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_misc_cfg_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_op_enable_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_post_y_extension_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_pra_cfg_0_wren = (io.reg_offset === "h60".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_release_0_wren = (io.reg_offset === "h48".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_weight_bytes_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_weight_format_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_weight_size_ext_0_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_weight_size_ext_1_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_wmb_bytes_0_wren = (io.reg_offset === "h38".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_zero_padding_0_wren = (io.reg_offset === "h54".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_csc_d_zero_padding_value_0_wren = (io.reg_offset === "h58".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
 
     val nvdla_csc_d_atomics_0_out = Cat("b0".asUInt(11.W), io.atomics )
     val nvdla_csc_d_bank_0_out = Cat("b0".asUInt(11.W), io.weight_bank, "b0".asUInt(11.W), io.data_bank)
     val nvdla_csc_d_batch_number_0_out = Cat("b0".asUInt(27.W), io.batches )
     val nvdla_csc_d_conv_stride_ext_0_out = Cat("b0".asUInt(13.W), io.conv_y_stride_ext, "b0".asUInt(13.W), io.conv_x_stride_ext )
-    val nvdla_csc_d_cya_0_out =  cya 
+    val nvdla_csc_d_cya_0_out =  io.cya 
     val nvdla_csc_d_datain_format_0_out = Cat("b0".asUInt(31.W), io.datain_format)
     val nvdla_csc_d_datain_size_ext_0_0_out = Cat("b0".asUInt(3.W), io.datain_height_ext, "b0".asUInt(3.W), io.datain_width_ext )
     val nvdla_csc_d_datain_size_ext_1_0_out = Cat("b0".asUInt(19.W), io.datain_channel_ext)
@@ -142,7 +142,7 @@ class NV_NVDLA_CSC_dual_reg extends RawModule{
     val nvdla_csc_d_zero_padding_0_out = Cat("b0".asUInt(11.W), io.pad_top, "b0".asUInt(11.W), io.pad_left)
     val nvdla_csc_d_zero_padding_value_0_out = Cat("b0".asUInt(16.W), io.pad_value)
 
-    io.op_en_trigger := nvdla_cmac_a_d_op_enable_0_wren
+    io.op_en_trigger := nvdla_csc_d_op_enable_0_wren
 
     // Output mux
 
@@ -215,228 +215,228 @@ class NV_NVDLA_CSC_dual_reg extends RawModule{
     val pad_value_out = RegInit("b0".asUInt(16.W))
 
     when(nvdla_csc_d_atomics_0_wren) {
-        atomics_out  := reg_wr_data(20,0)
+        atomics_out  := io.reg_wr_data(20,0)
     }
 
     // Register: NVDLA_CSC_D_BANK_0    Field  data_bank
     when  (nvdla_csc_d_bank_0_wren) {
-        data_bank_out  := reg_wr_data(4,0)
+        data_bank_out  := io.reg_wr_data(4,0)
     }
 
     // Register: NVDLA_CSC_D_BANK_0    Field: weight_bank
     when (nvdla_csc_d_bank_0_wren) {
-        weight_bank_out  := reg_wr_data(20,16)
+        weight_bank_out  := io.reg_wr_data(20,16)
     }
 
     // Register: NVDLA_CSC_D_BATCH_NUMBER_0    Field: batches
     when (nvdla_csc_d_batch_number_0_wren) {
-        batches_out  := reg_wr_data(4,0)
+        batches_out  := io.reg_wr_data(4,0)
     }
 
     // Register: NVDLA_CSC_D_CONV_STRIDE_EXT_0    Field: conv_x_stride_ext
     when (nvdla_csc_d_conv_stride_ext_0_wren) {
-        conv_x_stride_ext_out  := reg_wr_data(2,0)
+        conv_x_stride_ext_out  := io.reg_wr_data(2,0)
     }
 
     // Register: NVDLA_CSC_D_CONV_STRIDE_EXT_0    Field: conv_y_stride_ext
     when (nvdla_csc_d_conv_stride_ext_0_wren) {
-        conv_y_stride_ext_out  := reg_wr_data(18,16)
+        conv_y_stride_ext_out  := io.reg_wr_data(18,16)
     }
 
     // Register: NVDLA_CSC_D_CYA_0    Field: cya
     when (nvdla_csc_d_cya_0_wren) {
-        cya_out  := reg_wr_data
+        cya_out  := io.reg_wr_data
     }
 
     // Register: NVDLA_CSC_D_DATAIN_FORMAT_0    Field: datain_format
     when (nvdla_csc_d_datain_format_0_wren) {
-        datain_format_out  := reg_wr_data(0)
+        datain_format_out  := io.reg_wr_data(0)
     }
 
     // Register: NVDLA_CSC_D_DATAIN_SIZE_EXT_0_0    Field: datain_height_ext
     when (nvdla_csc_d_datain_size_ext_0_0_wren) {
-        datain_height_ext_out  := reg_wr_data(28,16)
+        datain_height_ext_out  := io.reg_wr_data(28,16)
     }
 
     // Register: NVDLA_CSC_D_DATAIN_SIZE_EXT_0_0    Field: datain_width_ext
     when (nvdla_csc_d_datain_size_ext_0_0_wren) {
-        datain_width_ext_out  := reg_wr_data(12,0)
+        datain_width_ext_out  := io.reg_wr_data(12,0)
     }
 
     // Register: NVDLA_CSC_D_DATAIN_SIZE_EXT_1_0    Field: datain_channel_ext
     when (nvdla_csc_d_datain_size_ext_1_0_wren) {
-        datain_channel_ext_out  := reg_wr_data(12,0)
+        datain_channel_ext_out  := io.reg_wr_data(12,0)
     }
 
     // Register: NVDLA_CSC_D_DATAOUT_SIZE_0_0    Field: dataout_height
     when (nvdla_csc_d_dataout_size_0_0_wren) {
-        dataout_height_out  := reg_wr_data(28,16)
+        dataout_height_out  := io.reg_wr_data(28,16)
     }
 
     // Register: NVDLA_CSC_D_DATAOUT_SIZE_0_0    Field: dataout_width
     when (nvdla_csc_d_dataout_size_0_0_wren) {
-        dataout_width_out  := reg_wr_data(12,0)
+        dataout_width_out  := io.reg_wr_data(12,0)
     }
 
     // Register: NVDLA_CSC_D_DATAOUT_SIZE_1_0    Field: dataout_channel
     when (nvdla_csc_d_dataout_size_1_0_wren) {
-        dataout_channel_out  := reg_wr_data(12,0)
+        dataout_channel_out  := io.reg_wr_data(12,0)
     }
 
     // Register: NVDLA_CSC_D_DILATION_EXT_0    Field: x_dilation_ext
     when (nvdla_csc_d_dilation_ext_0_wren) {
-        x_dilation_ext_out  := reg_wr_data(4,0)
+        x_dilation_ext_out  := io.reg_wr_data(4,0)
     }
 
     // Register: NVDLA_CSC_D_DILATION_EXT_0    Field: y_dilation_ext
     when (nvdla_csc_d_dilation_ext_0_wren) {
-        y_dilation_ext_out  := reg_wr_data(20,16)
+        y_dilation_ext_out  := io.reg_wr_data(20,16)
     }
 
     // Register: NVDLA_CSC_D_ENTRY_PER_SLICE_0    Field: entries
     when (nvdla_csc_d_entry_per_slice_0_wren) {
-        entries_out  := reg_wr_data(13,0)
+        entries_out  := io.reg_wr_data(13,0)
     }
 
     // Register: NVDLA_CSC_D_MISC_CFG_0    Field: conv_mode
     when (nvdla_csc_d_misc_cfg_0_wren) {
-        conv_mode_out  := reg_wr_data(0)
+        conv_mode_out  := io.reg_wr_data(0)
     }
 
     // Register: NVDLA_CSC_D_MISC_CFG_0    Field: data_reuse
     when (nvdla_csc_d_misc_cfg_0_wren) {
-        data_reuse_out  := reg_wr_data(16)
+        data_reuse_out  := io.reg_wr_data(16)
     }
 
     // Register: NVDLA_CSC_D_MISC_CFG_0    Field: in_precision
     when (nvdla_csc_d_misc_cfg_0_wren) {
-        in_precision_out  := reg_wr_data(9,8)
+        in_precision_out  := io.reg_wr_data(9,8)
     }
 
     // Register: NVDLA_CSC_D_MISC_CFG_0    Field: proc_precision
     when (nvdla_csc_d_misc_cfg_0_wren) {
-        proc_precision_out  := reg_wr_data(13, 12)
+        proc_precision_out  := io.reg_wr_data(13, 12)
     }
 
     // Register: NVDLA_CSC_D_MISC_CFG_0    Field: skip_data_rls
     when (nvdla_csc_d_misc_cfg_0_wren) {
-        skip_data_rls_out  := reg_wr_data(24)
+        skip_data_rls_out  := io.reg_wr_data(24)
     }
 
     // Register: NVDLA_CSC_D_MISC_CFG_0    Field: skip_weight_rls
     when (nvdla_csc_d_misc_cfg_0_wren) {
-        skip_weight_rls_out  := reg_wr_data(28)
+        skip_weight_rls_out  := io.reg_wr_data(28)
     }
 
     // Register: NVDLA_CSC_D_MISC_CFG_0    Field: weight_reuse
     when (nvdla_csc_d_misc_cfg_0_wren) {
-        weight_reuse_out  := reg_wr_data(20)
+        weight_reuse_out  := io.reg_wr_data(20)
     }
 
     // Not generating flops for field NVDLA_CSC_D_OP_ENABLE_0::op_en (to be implemented outside)
 
     // Register: NVDLA_CSC_D_POST_Y_EXTENSION_0    Field: y_extension
     when (nvdla_csc_d_post_y_extension_0_wren) {
-        y_extension_out  := reg_wr_data(1,0)
+        y_extension_out  := io.reg_wr_data(1,0)
     }
 
     // Register: NVDLA_CSC_D_PRA_CFG_0    Field: pra_truncate
     when (nvdla_csc_d_pra_cfg_0_wren) {
-        pra_truncate_out  := reg_wr_data(1,0)
+        pra_truncate_out  := io.reg_wr_data(1,0)
     }
 
     // Register: NVDLA_CSC_D_RELEASE_0    Field: rls_slices
     when (nvdla_csc_d_release_0_wren) {
-        rls_slices_out  := reg_wr_data(11,0)
+        rls_slices_out  := io.reg_wr_data(11,0)
     }
 
     // Register: NVDLA_CSC_D_WEIGHT_BYTES_0    Field: weight_bytes
     when (nvdla_csc_d_weight_bytes_0_wren) {
-        weight_bytes_out  := reg_wr_data(31,0)
+        weight_bytes_out  := io.reg_wr_data(31,0)
     }
 
     // Register: NVDLA_CSC_D_WEIGHT_FORMAT_0    Field: weight_format
     when (nvdla_csc_d_weight_format_0_wren) {
-        weight_format_out  := reg_wr_data(0)
+        weight_format_out  := io.reg_wr_data(0)
     }
 
     // Register: NVDLA_CSC_D_WEIGHT_SIZE_EXT_0_0    Field: weight_height_ext
     when (nvdla_csc_d_weight_size_ext_0_0_wren) {
-        weight_height_ext_out  := reg_wr_data(20,16)
+        weight_height_ext_out  := io.reg_wr_data(20,16)
     }
 
     // Register: NVDLA_CSC_D_WEIGHT_SIZE_EXT_0_0    Field: weight_width_ext
     when (nvdla_csc_d_weight_size_ext_0_0_wren) {
-        weight_width_ext_out  := reg_wr_data(4,0)
+        weight_width_ext_out  := io.reg_wr_data(4,0)
     }
 
     // Register: NVDLA_CSC_D_WEIGHT_SIZE_EXT_1_0    Field: weight_channel_ext
     when (nvdla_csc_d_weight_size_ext_1_0_wren) {
-        weight_channel_ext_out  := reg_wr_data(12,0)
+        weight_channel_ext_out  := io.reg_wr_data(12,0)
     }
 
     // Register: NVDLA_CSC_D_WEIGHT_SIZE_EXT_1_0    Field: weight_kernel
     when (nvdla_csc_d_weight_size_ext_1_0_wren) {
-        weight_kernel_out  := reg_wr_data(28,16)
+        weight_kernel_out  := io.reg_wr_data(28,16)
     }
 
     // Register: NVDLA_CSC_D_WMB_BYTES_0    Field: wmb_bytes
     when (nvdla_csc_d_wmb_bytes_0_wren) {
-        wmb_bytes_out  := reg_wr_data(27,0)
+        wmb_bytes_out  := io.reg_wr_data(27,0)
     }
 
     // Register: NVDLA_CSC_D_ZERO_PADDING_0    Field: pad_left
     when (nvdla_csc_d_zero_padding_0_wren) {
-        pad_left_out  := reg_wr_data(4,0)
+        pad_left_out  := io.reg_wr_data(4,0)
     }
 
     // Register: NVDLA_CSC_D_ZERO_PADDING_0    Field: pad_top
     when (nvdla_csc_d_zero_padding_0_wren) {
-        pad_top_out  := reg_wr_data(20,16)
+        pad_top_out  := io.reg_wr_data(20,16)
     }
 
     // Register: NVDLA_CSC_D_ZERO_PADDING_VALUE_0    Field: pad_value
     when (nvdla_csc_d_zero_padding_value_0_wren) {
-        pad_value_out  := reg_wr_data(15,0)
+        pad_value_out  := io.reg_wr_data(15,0)
     }
 
     io.atomics := atomics_out
     io.data_bank := data_bank_out
     io.weight_bank := weight_bank_out
     io.batches := batches_out
-    io.conv_x_stride_ext = conv_x_stride_ext_out
-    io.conv_y_stride_ext = conv_y_stride_ext_out
-    io.cya = cya_out
-    io.datain_format = datain_format_out
-    io.datain_height_ext = datain_height_ext_out
-    io.datain_width_ext = datain_width_ext_out
-    io.datain_channel_ext = datain_channel_ext_out
-    io.dataout_height = dataout_height_out
-    io.dataout_width = dataout_width_out
-    io.dataout_channel = dataout_channel_out
-    io.x_dilation_ext = x_dilation_ext_out
-    io.y_dilation_ext = y_dilation_ext_out
-    io.entries = entries_out
-    io.conv_mode = conv_mode_out
-    io.data_reuse = data_reuse_out
-    io.in_precision = in_precision_out
-    io.proc_precision = proc_precision_out
-    io.skip_data_rls = skip_data_rls_out
-    io.skip_weight_rls = skip_weight_rls_out
-    io.weight_reuse = weight_reuse_out
-    io.y_extension = y_extension_out
-    io.pra_truncate = pra_truncate_out
-    io.rls_slices = rls_slices_out
-    io.weight_bytes = weight_bytes_out
-    io.weight_format = weight_format_out
-    io.weight_height_ext = weight_height_ext_out
-    io.weight_width_ext = weight_width_ext_out
-    io.weight_channel_ext = weight_channel_ext_out
-    io.weight_kernel = weight_kernel_out
-    io.wmb_bytes = wmb_bytes_out
-    io.pad_left = pad_left_out
-    io.pad_top = pad_top_out
-    io.pad_value = pad_value_out                                                                   
+    io.conv_x_stride_ext := conv_x_stride_ext_out
+    io.conv_y_stride_ext := conv_y_stride_ext_out
+    io.cya := cya_out
+    io.datain_format := datain_format_out
+    io.datain_height_ext := datain_height_ext_out
+    io.datain_width_ext := datain_width_ext_out
+    io.datain_channel_ext := datain_channel_ext_out
+    io.dataout_height := dataout_height_out
+    io.dataout_width := dataout_width_out
+    io.dataout_channel := dataout_channel_out
+    io.x_dilation_ext := x_dilation_ext_out
+    io.y_dilation_ext := y_dilation_ext_out
+    io.entries := entries_out
+    io.conv_mode := conv_mode_out
+    io.data_reuse := data_reuse_out
+    io.in_precision := in_precision_out
+    io.proc_precision := proc_precision_out
+    io.skip_data_rls := skip_data_rls_out
+    io.skip_weight_rls := skip_weight_rls_out
+    io.weight_reuse := weight_reuse_out
+    io.y_extension := y_extension_out
+    io.pra_truncate := pra_truncate_out
+    io.rls_slices := rls_slices_out
+    io.weight_bytes := weight_bytes_out
+    io.weight_format := weight_format_out
+    io.weight_height_ext := weight_height_ext_out
+    io.weight_width_ext := weight_width_ext_out
+    io.weight_channel_ext := weight_channel_ext_out
+    io.weight_kernel := weight_kernel_out
+    io.wmb_bytes := wmb_bytes_out
+    io.pad_left := pad_left_out
+    io.pad_top := pad_top_out
+    io.pad_value := pad_value_out                                                                   
 
 
 }}

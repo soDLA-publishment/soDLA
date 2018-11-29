@@ -75,7 +75,7 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends RawMo
         }
     }  
 
-    val sum_out = mout.reduce(_+_)
+    val sum_out = mout.reduce(_+&_)
     
     //add retiming
     val pp_pvld_d0 = io.dat_actv_pvld(0) & io.wt_actv_pvld(0)

@@ -69,7 +69,7 @@ withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
     val producer_out = RegInit(false.B)
 
-    when(nvdla_cmac_a_s_pointer_0_wren){
+    when(nvdla_csc_s_pointer_0_wren){
         producer_out:= io.reg_wr_data(0)
     }
         
