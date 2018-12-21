@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 
 
-class p_SSYNC3DO_C_PPP extends Module {
+class p_SSYNC3DO_C_PPP extends RawModule {
     val io = IO(new Bundle {
         val clk= Input(Clock())
         val d = Input(Bool())

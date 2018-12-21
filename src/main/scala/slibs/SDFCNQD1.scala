@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 
 
-class SDFCNQD1 extends Module {
+class SDFCNQD1 extends RawModule {
   val io = IO(new Bundle {
     val SI = Input(Bool())
     val D = Input(Bool())
@@ -20,8 +20,9 @@ class SDFCNQD1 extends Module {
     // In this withClock scope, all synchronous elements are clocked against io.clockB.
     // This register is clocked against io.clockB, but uses implict reset from the parent context.
     val sel = Mux(io.SE, io.SI,  io.D)
-    io.Q := RegInit(false.B)
-    io.Q := sel
+    val Q_out = RegInit(false.B)
+    Q_out := sel
+    io.Q := Q_out
     
   }
 

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 
 
-class NV_CLK_gate_power extends Module {
+class NV_CLK_gate_power extends RawModule {
    val io = IO(new Bundle {
         //nvdla core clock
         val clk = Input(Clock())
@@ -16,7 +16,7 @@ class NV_CLK_gate_power extends Module {
 
     })
 
-
+withClockAndReset(io.clk, io.reset_){
     val p_clkgate = Module(new CKLNQD12())
     p_clkgate.io.TE := false.B
     p_clkgate.io.CP := io.clk
@@ -24,5 +24,5 @@ class NV_CLK_gate_power extends Module {
     io.clk_gated := p_clkgate.io.Q
      
 
-}
+}}
 

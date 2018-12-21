@@ -23,11 +23,10 @@ case class ramSizeCongiguration()
 
 case class cmacConfiguration()
 {
-    //谜一样的变量
     val CMAC_ATOMC = 128
     val CMAC_ATOMK_HALF = 8
-    val CMAC_RESULT_WIDTH = 176
     val RT_CMAC_A2CACC_LATENCY = 2
+    val RT_CMAC_B2CACC_LATENCY = 3   
     val CMAC_INPUT_NUM = 128
     val CMAC_BPE = 8
     val EXP = 192
@@ -42,6 +41,7 @@ case class cmacConfiguration()
     val PKT_nvdla_stripe_info_stripe_end_FIELD = 6
     val MAC_PD_LATENCY = (CMAC_OUT_RETIMING + CMAC_ACTV_LATENCY - 3)     //pd must be 3T earlier than data
     val CMAC_SLCG_NUM = CMAC_ATOMK_HALF + 3
+    val CMAC_TYPE = SInt
     
 }
 
@@ -74,5 +74,11 @@ case class csbMasterConfiguration(){
     val FPGA = true
 }
 
+case class ppregCongiguration()
+{
+    val rbk_pointer_0 = "h004"
+    val rbk_status_0 = "h10000"
+
+}
 
 

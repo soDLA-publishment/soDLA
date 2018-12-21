@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 
-class OR2D1 extends Module {
+class OR2D1 extends RawModule {
   val io = IO(new Bundle {
     val A1  = Input(Bool())
     val A2 = Input(Bool())

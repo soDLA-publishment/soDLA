@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class CKLNQD12PO4 extends BlackBox with HasBlackBoxResource {
+class CKLNQD12PO4 extends Module {
   val io = IO(new Bundle {
     val CP = Input(Clock())
     val TE = Input(Bool())
@@ -13,9 +13,9 @@ class CKLNQD12PO4 extends BlackBox with HasBlackBoxResource {
   })
 
 
-  withClock((!io.CP.asUInt()).asClock){
+  withClock((!io.CP.asUInt.toBool).asClock){
     val qd = RegNext(io.TE|io.E)
-    io.Q := io.CP.asUInt() & qd   
+    io.Q := io.CP.asUInt.toBool & qd   
   }
 }
 

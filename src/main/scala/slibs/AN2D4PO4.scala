@@ -5,7 +5,7 @@ import chisel3._
 import chisel3.experimental._
 
 
-class AN2D4PO4 extends Module {
+class AN2D4PO4 extends RawModule {
   val io = IO(new Bundle{
     val A1  = Input(Bool())
     val A2 = Input(Bool())

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class p_SDFCNQD1PO4 extends Module {
+class p_SDFCNQD1PO4 extends RawModule {
   val io = IO(new Bundle {
     val D = Input(Bool())
     val CP = Input(Clock())
