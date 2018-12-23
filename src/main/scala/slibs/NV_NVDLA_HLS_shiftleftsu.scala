@@ -24,7 +24,7 @@ class NV_NVDLA_HLS_shiftleftsu extends Module {
     val data_sign = Wire(Bool())
     val left_shift_sat = Wire(Bool())
     
-    data_sign := io.data_in
+    data_sign := io.data_in(IN_WIDTH-1)
     
     data_high := (Cat(Fill(SHIFT_MAX, data_sign), io.data_in) << io.shift_num)(HIGH_WIDTH + OUT_WIDTH - 1, OUT_WIDTH)
     
@@ -32,7 +32,7 @@ class NV_NVDLA_HLS_shiftleftsu extends Module {
     
     left_shift_sat := Cat(data_high, data_shift) != Fill(HIGH_WIDTH+1, data_sign)
     
-    data_max := Mux(data_sign, Cat(true.B, Fill(OUT_WIDTH-1, false.B)), !Cat(true.B, Fill(OUT_WIDTH-1, false.B)))
+    data_max := Mux(data_sign, Cat(true.B, Fill(OUT_WIDTH-1, false.B)), ~Cat(true.B, Fill(OUT_WIDTH-1, false.B)))
     
     io.data_out := Mux(left_shift_sat, data_max, data_shift)
     
