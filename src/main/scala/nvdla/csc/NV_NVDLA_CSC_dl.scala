@@ -103,7 +103,7 @@ withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 //////////////////////////////////////////////////////////////
 val is_sg_idle = (io.sc_state === 0.U)
 val is_sg_running = (io.sc_state === 2.U)
-val is_sg_done = (io.sc_state == 3)
+val is_sg_done = (io.sc_state == 3.U)
 
 val is_sg_running_d1 = RegInit(false.B); is_sg_running_d1 := is_sg_running
 //////////////////////////////////////////////////////////////
