@@ -2,11 +2,12 @@
 
 // import chisel3._
 // import chisel3.experimental._
+// import chisel3.util._
 
 
 
 
-// class NV_NVDLA_GLB_csb(implicit val conf: glbConfiguration)extends Module {
+// class NV_NVDLA_GLB_csb(implicit val conf: glbConfiguration)extends RawModule {
 //     val io = IO(new Bundle {
 
 //         //clock
@@ -14,29 +15,29 @@
 //         val nvdla_core_clk = Input(Clock())
 //         val nvdla_core_rstn = Input(Bool())
 
-//         //if(conf.NVDLA_BDMA_ENABLE){
+//         if(conf.NVDLA_BDMA_ENABLE){
 //         val bdma_done_status0 = Input(UInt(1.W))
 //         val bdma_done_status1 = Input(UInt(1.W))
 //         val bdma_done_mask0 = Input(UInt(1.W))
 //         val bdma_done_mask1 = Input(UInt(1.W))            
-//         //} 
+//         } 
 
-//         //if(conf.NVDLA_CDP_ENABLE){
+//         if(conf.NVDLA_CDP_ENABLE){
 //         val cdp_done_status0 = Input(UInt(1.W))
 //         val cdp_done_status1 = Input(UInt(1.W))
 //         val cdp_done_mask0 = Input(UInt(1.W))
 //         val cdp_done_mask1 = Input(UInt(1.W))           
-//         //}
+//         }
 
-//         //if(conf.NVDLA_PDP_ENABLE){
+//         if(conf.NVDLA_PDP_ENABLE){
 //         val pdp_done_status0 = Input(UInt(1.W))
 //         val pdp_done_status1 = Input(UInt(1.W))
-//         //}
+//         }
 
-//         //if(conf.NVDLA_RUBIK_ENABLE ){
+//         if(conf.NVDLA_RUBIK_ENABLE ){
 //         val rubik_done_status0 = Input(UInt(1.W))
 //         val rubik_done_status1 = Input(UInt(1.W))
-//         //}
+//         }
 
 //         val cacc_done_status0 = Input(UInt(1.W))
 //         val cacc_done_status1 = Input(UInt(1.W))

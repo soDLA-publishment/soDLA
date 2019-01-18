@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 class NV_NVDLA_HLS_shiftleftsu extends Module {
@@ -30,7 +31,7 @@ class NV_NVDLA_HLS_shiftleftsu extends Module {
     
     data_shift := (Cat(Fill(SHIFT_MAX, data_sign), io.data_in) << io.shift_num)(OUT_WIDTH - 1, 0)
     
-    left_shift_sat := Cat(data_high, data_shift) != Fill(HIGH_WIDTH+1, data_sign)
+    left_shift_sat := Cat(data_high, data_shift) =/= Fill(HIGH_WIDTH+1, data_sign)
     
     data_max := Mux(data_sign, Cat(true.B, Fill(OUT_WIDTH-1, false.B)), ~Cat(true.B, Fill(OUT_WIDTH-1, false.B)))
     

@@ -17,6 +17,7 @@ class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
         val re = Input(Bool())
         val we = Input(Bool())
         val byp_sel = Input(Bool())
+        val ore = Input(Bool())
 
         //data signal
         val dbyp = Input(UInt(wid.W))
@@ -33,11 +34,11 @@ class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
 val mem = SyncReadMem(dep, UInt(wid.W))
 // Create one write port and one read port.
 when (io.we) { 
-    mem.write(wa, di) 
+    mem.write(io.wa, io.di) 
     io.dout := DontCare
 }
 .otherwise{ 
-    val dout_ram = mem.read(ra, read)
+    val dout_ram = mem.read(io.ra, io.re)
     val fbypass_dout_ram = Mux(io.byp_sel, io.dbyp, dout_ram)
     when (io.ore){
         io.dout := RegNext(fbypass_dout_ram)

@@ -31,11 +31,11 @@ class nv_ram_rwsp(dep: Int, wid: Int) extends Module{
 val mem = SyncReadMem(dep, UInt(wid.W))
 // Create one write port and one read port.
 when (io.we) { 
-    mem.write(wa, di) ;
+    mem.write(io.wa, io.di) ;
     io.dout := DontCare
 }
 .otherwise{ 
-    val dout_ram = mem.read(ra, read)
+    val dout_ram = mem.read(io.ra, io.re)
     when (io.ore){
         io.dout := RegNext(dout_ram)
     }

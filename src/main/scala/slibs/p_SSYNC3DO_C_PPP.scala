@@ -2,6 +2,7 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
 
 class p_SSYNC3DO_C_PPP extends RawModule {
@@ -14,8 +15,8 @@ class p_SSYNC3DO_C_PPP extends RawModule {
     withClockAndReset(io.clk, !io.clr_){
 
     io.q := Reg(false.B)
-    val d1 = Reg(false.B)
-    val d0 = Reg(false.B)
+    val d1 = RegInit(false.B)
+    val d0 = RegInit(false.B)
     
     d0:=io.d
     d1:=d0

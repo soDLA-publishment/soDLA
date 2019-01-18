@@ -3,3 +3,7 @@
 
 #perl
 /src/plugins/
+
+#output dir
+
+/test_run_dir/
