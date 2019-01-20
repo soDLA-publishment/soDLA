@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
 class NV_NVDLA_HLS_shiftrightsu extends Module {
     
     val IN_WIDTH  = 49
@@ -51,4 +50,6 @@ class NV_NVDLA_HLS_shiftrightsu extends Module {
 
   
 }
+
+
 

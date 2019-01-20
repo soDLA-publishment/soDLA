@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
 class NV_NVDLA_HLS_saturate extends Module {
     
     val IN_WIDTH = 49
@@ -26,7 +25,8 @@ class NV_NVDLA_HLS_saturate extends Module {
     data_max := Mux(data_sign, Cat(true.B, Fill(OUT_WIDTH-1, false.B)), ~Cat(true.B, Fill(OUT_WIDTH-1, false.B)))
     
     io.data_out := Mux(tru_need_sat, data_max, io.data_in)
-    
-       
+         
 }
+
+
 

@@ -18,3 +18,5 @@ class CKLNQD12 extends Module {
     io.Q := io.CP.asUInt.toBool & qd   
   }
 }
+
+

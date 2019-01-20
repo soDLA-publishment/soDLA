@@ -12,3 +12,4 @@ class MUX2D4 extends RawModule {
   })
   io.Z := Mux(io.S, io.I1, io.I0)
 }
+

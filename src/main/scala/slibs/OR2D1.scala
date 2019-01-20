@@ -11,3 +11,5 @@ class OR2D1 extends RawModule {
   })
   io.Z := io.A1 | io.A2
 }
+
+

@@ -3,7 +3,6 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 
-
 class NV_CLK_gate_power extends RawModule {
    val io = IO(new Bundle {
         //nvdla core clock
@@ -25,4 +24,7 @@ withClockAndReset(io.clk, io.reset_){
      
 
 }}
+
+
+
 

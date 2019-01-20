@@ -36,8 +36,8 @@ class NV_NVDLA_HLS_shiftleftsu extends Module {
     data_max := Mux(data_sign, Cat(true.B, Fill(OUT_WIDTH-1, false.B)), ~Cat(true.B, Fill(OUT_WIDTH-1, false.B)))
     
     io.data_out := Mux(left_shift_sat, data_max, data_shift)
-    
-
-       
+          
 }
+
+
 

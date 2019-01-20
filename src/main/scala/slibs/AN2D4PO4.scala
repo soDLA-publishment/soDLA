@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-
 import chisel3.experimental._
-
 
 class AN2D4PO4 extends RawModule {
   val io = IO(new Bundle{
@@ -14,4 +12,5 @@ class AN2D4PO4 extends RawModule {
 
   io.Z := io.A1 & io.A2
 }
+
 

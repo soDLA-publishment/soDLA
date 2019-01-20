@@ -42,3 +42,5 @@ class p_STRICTSYNC3DOTM_C_PPP extends Module {
   io.DST_Q:=sync3d.io.q 
 
 }
+
+

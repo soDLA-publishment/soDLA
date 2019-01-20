@@ -24,6 +24,6 @@ class SDFSNQD1 extends RawModule {
     io.Q := Q_out
     
   }
-    
-
 }
+
+

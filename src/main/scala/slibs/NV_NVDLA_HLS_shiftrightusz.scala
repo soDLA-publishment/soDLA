@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
 class NV_NVDLA_HLS_shiftrightsuz extends Module {
     
     val IN_WIDTH  = 49
@@ -57,4 +56,7 @@ class NV_NVDLA_HLS_shiftrightsuz extends Module {
     io.frac_out := Mux(shift_sign, Fill(FRAC_WIDTH, false.B), frac_shift)
   
 }
+
+
+
 

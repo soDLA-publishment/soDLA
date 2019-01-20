@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
 class NV_NVDLA_HLS_shiftrightsatsu extends Module {
     
     val IN_WIDTH  = 49
@@ -54,4 +53,7 @@ class NV_NVDLA_HLS_shiftrightsatsu extends Module {
     io.sat_out :=  Mux(io.shift_num >= IN_WIDTH.U, false.B, tru_need_sat) 
   
 }
+
+
+
 
