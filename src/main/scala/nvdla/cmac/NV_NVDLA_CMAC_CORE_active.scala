@@ -8,7 +8,7 @@ import chisel3.util._
 
 //this module is to active dat and wt
 
-class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends RawModule {
+class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
         //input_num
         val in_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))

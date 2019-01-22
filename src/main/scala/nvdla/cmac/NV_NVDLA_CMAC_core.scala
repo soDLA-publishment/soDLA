@@ -9,17 +9,15 @@
 
 // class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
 //     val io = IO(new Bundle {
-//         //general clock
-//         val nvdla_core_clk = Input(Clock())      
-//         val nvdla_core_rstn = Input(Bool())
 
 //         val sc2mac_dat_pvld = Input(Bool())  /* data valid */
 //         val sc2mac_dat_mask = Input(UInt(conf.CMAC_ATOMC.W))
 //         val sc2mac_dat_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt(conf.CMAC_BPE.W)))
 //         val sc2mac_dat_pd = Input(UInt(9.W))
+
 //         val sc2mac_wt_pvld = Input(Bool())
 //         val sc2mac_wt_mask = Input(UInt(conf.CMAC_ATOMC.W))
-//         val sc2mac_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt(conf.CMAC_ATOMC.W)))
+//         val sc2mac_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt(conf.CMAC_BPE.W)))
 //         val sc2mac_wt_sel = Input(UInt(conf.CMAC_ATOMK_HALF.W))
 
 //         val mac2accu_pvld = Output(Bool()) /* data valid */
@@ -32,11 +30,6 @@
 //         val reg2dp_conv_mode = Input(Bool())
 //         val dp2reg_done = Output(Bool())
 
-//         //Port for SLCG
-//         val dla_clk_ovr_on_sync = Input(Bool())
-//         val global_clk_ovr_on_sync = Input(Bool())
-//         val tmc2slcg_disable_clock_gating = Input(Bool())
-//         val slcg_op_en = Input(UInt(conf.CMAC_SLCG_NUM.W))
 //     })
 // //     
 // //          ┌─┐       ┌─┐

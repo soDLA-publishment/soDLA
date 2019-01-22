@@ -4,17 +4,11 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
-
 //this module is to active dat and wt
 
 class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
 
     val io = IO(new Bundle {
-        //config
-        val cfg_is_wg = Input(Bool())
-        val cfg_reg_en = Input(Bool())
-
         //input
         val dat_actv_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val dat_actv_nz = Input(Vec(conf.CMAC_ATOMC, Bool()))
@@ -28,9 +22,6 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
         val mac_out_data = Output(conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W))
         val mac_out_pvld = Output(Bool())         
     })
-
-
-
 
 //     
 //          ┌─┐       ┌─┐
@@ -54,13 +45,10 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
                 
-
-    val op_out_pvld = VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B))
     val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0)))
- 
+
     for(i <- 0 to conf.CMAC_ATOMC-1){
-        op_out_pvld(i) := io.wt_actv_pvld(i)&io.dat_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_nz(i)
-        when(op_out_pvld(i)){
+        when(io.wt_actv_pvld(i)&io.dat_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_nz(i)){
             mout(i) := io.wt_actv_data(i)*io.dat_actv_data(i)
         }
         .otherwise{
