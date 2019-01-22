@@ -10,10 +10,6 @@ import chisel3.util._
 
 class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends RawModule {
     val io = IO(new Bundle {
-        //general clock
-        val nvdla_core_clk = Input(Clock())
-        val nvdla_core_rstn = Input(Bool())
-
         //input_num
         val in_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val in_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
@@ -62,7 +58,6 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Ra
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
                 
-    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
 
 //==========================================================
 // wt&dat:in --> pre
@@ -190,6 +185,6 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Ra
     io.dat_actv_pvld := dat_actv_pvld_reg
     io.dat_actv_data := dat_actv_data_reg
     io.dat_actv_nz := dat_actv_nz_reg
-  }}
+  }
 
 

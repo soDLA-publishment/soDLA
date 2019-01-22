@@ -8,14 +8,9 @@ import chisel3.util._
 
 //this module is to active dat and wt
 
-class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends RawModule {
+class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
 
     val io = IO(new Bundle {
-        //general clock
-        val nvdla_core_clk = Input(Clock())
-        val nvdla_wg_clk = Input(Clock())       
-        val nvdla_core_rstn = Input(Bool())
-
         //config
         val cfg_is_wg = Input(Bool())
         val cfg_reg_en = Input(Bool())
@@ -60,8 +55,6 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends RawMo
 //             └──┴──┘       └──┴──┘ 
                 
 
-    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
-
     val op_out_pvld = VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B))
     val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0)))
  
@@ -83,6 +76,4 @@ class NV_NVDLA_CMAC_CORE_mac(implicit val conf: cmacConfiguration) extends RawMo
     io.mac_out_data := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     io.mac_out_pvld := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
 
-
-    }
-  }
+}

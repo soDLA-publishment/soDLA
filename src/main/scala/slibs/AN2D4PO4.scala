@@ -3,7 +3,8 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 
-class AN2D4PO4 extends RawModule {
+
+class AN2D4PO4 extends Module {
   val io = IO(new Bundle{
     val A1  = Input(Bool())
     val A2 = Input(Bool())
@@ -13,7 +14,4 @@ class AN2D4PO4 extends RawModule {
   io.Z := io.A1 & io.A2
 }
 
-object AN2D4PO4Driver extends App {
-  chisel3.Driver.execute(args, () => new AN2D4PO4)
-}
 

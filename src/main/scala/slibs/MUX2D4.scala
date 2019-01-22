@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 
-class MUX2D4 extends RawModule {
+class MUX2D4 extends Module {
   val io = IO(new Bundle {
     val I0 = Input(Bool())
     val I1 = Input(Bool())

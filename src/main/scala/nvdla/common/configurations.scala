@@ -2,26 +2,25 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
-   
-case class cdpConfiguration(){
+class cdpConfiguration(){
     val pINT8_BW = 8
 }
 
-case class cdmaConfiguration()
+class cdmaConfiguration()
 {
     val rscid = 1
     val width = 8
 }
 
-
-case class ramSizeCongiguration()
+class ramSizeCongiguration()
 {
     val phy_rows = 20
     val phy_cols = 288
 }
 
-case class cmacConfiguration()
+class cmacConfiguration()
 {
     val CMAC_ATOMC = 128
     val CMAC_ATOMK_HALF = 8
@@ -41,28 +40,25 @@ case class cmacConfiguration()
     val PKT_nvdla_stripe_info_stripe_end_FIELD = 6
     val MAC_PD_LATENCY = (CMAC_OUT_RETIMING + CMAC_ACTV_LATENCY - 3)     //pd must be 3T earlier than data
     val CMAC_SLCG_NUM = CMAC_ATOMK_HALF + 3
-    val CMAC_TYPE = SInt
-    
+    val CMAC_TYPE = SInt  
 }
 
-
-case class cacc2glbConfiguration()
+class cacc2glbConfiguration()
 {
     val RT_CMAC_CACC2GLB_LATENCY = 2
 }
 
-case class csb2caccConfiguration()
+class csb2caccConfiguration()
 {
     val RT_CSB2CACC_LATENCY = 3   
 }
 
-case class csb2cmacConfiguration()
+class csb2cmacConfiguration()
 {
     val RT_CSB2CMAC_LATENCY = 3   
 }
 
-
-case class glbConfiguration()
+class glbConfiguration()
 {
     val NVDLA_BDMA_ENABLE = true
     val NVDLA_CDP_ENABLE = true
@@ -70,11 +66,11 @@ case class glbConfiguration()
     val NVDLA_RUBIK_ENABLE = true
 }
 
-case class csbMasterConfiguration(){
+class csbMasterConfiguration(){
     val FPGA = true
 }
 
-case class ppregCongiguration()
+class ppregCongiguration()
 {
     val rbk_pointer_0 = "h004"
     val rbk_status_0 = "h10000"

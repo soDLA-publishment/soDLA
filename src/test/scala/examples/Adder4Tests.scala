@@ -12,6 +12,8 @@ class Adder4Tests(c: Adder4) extends PeekPokeTester(c) {
     poke(c.io.A,   rnd0)
     poke(c.io.B,   rnd1)
     poke(c.io.Cin, rnd2)
+    peek(c.io.Cin)
+    
     step(1)
     val rsum = (rnd0 & 0xF) + (rnd1 & 0xF) + (rnd2 & 0x1)
     expect(c.io.Sum, (rsum & 0xF))
