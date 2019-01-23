@@ -6,7 +6,7 @@ import chisel3.util._
 
 //this module is to active dat and wt
 
-class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_macSINT(implicit conf: cmacSINTConfiguration) extends Module {
 
     val io = IO(new Bundle {
         //input
@@ -48,12 +48,13 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
     val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0, (2*conf.CMAC_BPE).W)))
 
     for(i <- 0 to conf.CMAC_ATOMC-1){
-        when(io.wt_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_pvld(i)&io.dat_actv_nz(i)){                       
+        when(io.wt_actv_pvld(i)&io.dat_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_nz(i)){
              mout(i) := io.wt_actv_data(i)*io.dat_actv_data(i)
+            
         }
-        .otherwise{
+         .otherwise{
              mout(i) := conf.CMAC_TYPE(0, conf.CMAC_RESULT_WIDTH)
-        }
+         }
     }  
 
     val sum_out = mout.reduce(_+&_)
@@ -63,8 +64,5 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
 
     io.mac_out_data := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     io.mac_out_pvld := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
-
-    io.mac_out_data := sum_out
-    io.mac_out_pvld := pp_pvld_d0
 
 }

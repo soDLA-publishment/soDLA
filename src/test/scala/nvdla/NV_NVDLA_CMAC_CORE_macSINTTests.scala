@@ -3,9 +3,9 @@ package nvdla
 import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 
 
-class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTester(c) {
+class NV_NVDLA_CMAC_CORE_macSINTTests(c: NV_NVDLA_CMAC_CORE_macSINT) extends PeekPokeTester(c) {
  
-  implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: cmacSINTConfiguration = new cmacSINTConfiguration
 
   for (t <- 0 until 100) {
 
@@ -21,13 +21,13 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
 
     for (i <- 0 until conf.CMAC_ATOMC-1){
 
-      wt(i) = rnd.nextInt(1<<conf.CMAC_BPE)
-      wt_nz(i) = rnd.nextBoolean()
-      wt_pvld(i) = rnd.nextBoolean()
+      wt(i) = rnd.nextInt(2*(1<<(conf.CMAC_BPE-1)-1)) - (1 << (conf.CMAC_BPE-1) - 1)
+      wt_nz(i) = true
+      wt_pvld(i) = true
 
-      dat(i) = rnd.nextInt(1<<conf.CMAC_BPE)
-      dat_nz(i) = rnd.nextBoolean()
-      dat_pvld(i) = rnd.nextBoolean()
+      dat(i) = rnd.nextInt(2*(1<<(conf.CMAC_BPE-1)-1)) - (1 << (conf.CMAC_BPE-1) - 1) 
+      dat_nz(i) = true
+      dat_pvld(i) = true
 
       poke(c.io.wt_actv_data(i), wt(i))
       poke(c.io.wt_actv_nz(i), wt_nz(i))
@@ -41,7 +41,7 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
            mout(i) = wt(i)*dat(i)
       }
       else{
-           mout(i) = 0
+          mout(i) = 0
       }
     }
     
@@ -56,13 +56,13 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
   }
 }
 
-class NV_NVDLA_CMAC_CORE_macTester extends ChiselFlatSpec {
+class NV_NVDLA_CMAC_CORE_macSINTTester extends ChiselFlatSpec {
 
-  behavior of "NV_NVDLA_CMAC_CORE_mac"
+  behavior of "NV_NVDLA_CMAC_CORE_macSINT"
   backends foreach {backend =>
     it should s"correctly perform mac logic $backend" in {
-      implicit val conf: cmacConfiguration = new cmacConfiguration
-      Driver(() => new NV_NVDLA_CMAC_CORE_mac())(c => new NV_NVDLA_CMAC_CORE_macTests(c)) should be (true)
+      implicit val conf: cmacSINTConfiguration = new cmacSINTConfiguration
+      Driver(() => new NV_NVDLA_CMAC_CORE_macSINT())(c => new NV_NVDLA_CMAC_CORE_macSINTTests(c)) should be (true)
     }
   }
 }
