@@ -64,7 +64,5 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
     io.mac_out_data := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     io.mac_out_pvld := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
 
-    io.mac_out_data := sum_out
-    io.mac_out_pvld := pp_pvld_d0
 
 }

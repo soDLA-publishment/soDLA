@@ -6,15 +6,11 @@ import chisel3.util._
 
 object retiming {
 
-def apply[T <: Data](delay_input: T, t: Int): Vec[T] =  Reg(Vec(Seq.fill(t)(delay_input)))
+def apply[T <: Data](delay_input: T, t: Int): Seq[T] = Wire(delay_input) +: Seq.fill(t)(Reg(delay_input))
 
 }
 
-object retimingInit {
 
-def apply[T <: Data](delay_input: T, t: Int): Vec[T] =  RegInit(VecInit(Seq.fill(t)(delay_input)))
-
-}
 
 
 

@@ -3,15 +3,15 @@ package nvdla
 import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 
 
-class NV_NVDLA_CMAC_CORE_macSINTTests(c: NV_NVDLA_CMAC_CORE_macSINT) extends PeekPokeTester(c) {
+class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPokeTester(c) {
  
-  implicit val conf: cmacSINTConfiguration = new cmacSINTConfiguration
-
+  implicit val conf: cmacConfiguration = new cmacConfiguration
   for (t <- 0 until 100) {
 
-    val wt = Array.fill(conf.CMAC_ATOMC){0}
-    val wt_nz = Array.fill(conf.CMAC_ATOMC){false}
-    val wt_pvld = Array.fill(conf.CMAC_ATOMC){false}
+    val sc2mac_dat_data = Array.fill(conf.CMAC_ATOMC){0}
+    val sc2mac_dat_mask = Array.fill(conf.CMAC_ATOMC){false}
+    val sc2mac_dat_pd = Array.fill(conf.CMAC_ATOMC){false}
+    val sc2mac_dat_pd = 
 
     val dat = Array.fill(conf.CMAC_ATOMC){0}
     val dat_nz = Array.fill(conf.CMAC_ATOMC){false}
@@ -21,11 +21,11 @@ class NV_NVDLA_CMAC_CORE_macSINTTests(c: NV_NVDLA_CMAC_CORE_macSINT) extends Pee
 
     for (i <- 0 until conf.CMAC_ATOMC-1){
 
-      wt(i) = rnd.nextInt(2*(1<<(conf.CMAC_BPE-1)-1)) - (1 << (conf.CMAC_BPE-1) - 1)
+      wt(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       wt_nz(i) = rnd.nextBoolean()
       wt_pvld(i) = rnd.nextBoolean()
 
-      dat(i) = rnd.nextInt(2*(1<<(conf.CMAC_BPE-1)-1)) - (1 << (conf.CMAC_BPE-1) - 1) 
+      dat(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       dat_nz(i) = rnd.nextBoolean()
       dat_pvld(i) = rnd.nextBoolean()
 
@@ -41,7 +41,7 @@ class NV_NVDLA_CMAC_CORE_macSINTTests(c: NV_NVDLA_CMAC_CORE_macSINT) extends Pee
            mout(i) = wt(i)*dat(i)
       }
       else{
-          mout(i) = 0
+           mout(i) = 0
       }
     }
     
@@ -54,15 +54,16 @@ class NV_NVDLA_CMAC_CORE_macSINTTests(c: NV_NVDLA_CMAC_CORE_macSINT) extends Pee
       expect(c.io.mac_out_pvld, wt_pvld(0)&dat_pvld(0))
     }
   }
+
 }
 
-class NV_NVDLA_CMAC_CORE_macSINTTester extends ChiselFlatSpec {
+class NV_NVDLA_CMAC_CORE_rt_inTester extends ChiselFlatSpec {
 
-  behavior of "NV_NVDLA_CMAC_CORE_macSINT"
+  behavior of "NV_NVDLA_CMAC_CORE_rt_in"
   backends foreach {backend =>
-    it should s"correctly perform mac logic $backend" in {
-      implicit val conf: cmacSINTConfiguration = new cmacSINTConfiguration
-      Driver(() => new NV_NVDLA_CMAC_CORE_macSINT())(c => new NV_NVDLA_CMAC_CORE_macSINTTests(c)) should be (true)
+    it should s"correctly retiming wt and dat $backend" in {
+      implicit val conf: cmacConfiguration = new cmacConfiguration
+      Driver(() => new NV_NVDLA_CMAC_CORE_rt_in())(c => new NV_NVDLA_CMAC_CORE_rt_inTests(c)) should be (true)
     }
   }
 }

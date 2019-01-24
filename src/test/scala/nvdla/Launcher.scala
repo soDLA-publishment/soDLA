@@ -29,7 +29,20 @@ object cmacLauncher {
         Driver.execute(() => new NV_NVDLA_CMAC_CORE_mac(), manager) {
           (c) => new NV_NVDLA_CMAC_CORE_macTests(c)
         }
-      }    
+      },
+      "NV_NVDLA_CMAC_CORE_active" -> { 
+        (manager: TesterOptionsManager) =>
+        Driver.execute(() => new NV_NVDLA_CMAC_CORE_active(), manager) {
+          (c) => new NV_NVDLA_CMAC_CORE_activeTests(c)
+        }
+      },
+      "NV_NVDLA_CMAC_CORE_rt_in" -> { 
+        (manager: TesterOptionsManager) =>
+        Driver.execute(() => new NV_NVDLA_CMAC_CORE_rt_in(), manager) {
+          (c) => new NV_NVDLA_CMAC_CORE_rt_inTests(c)
+        }
+      }       
+   
 
   )
   def main(args: Array[String]): Unit = {

@@ -4,20 +4,19 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
-
 //this module is to active dat and wt
 
 class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
-        //input_num
+
+        //input_dat
         val in_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val in_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val in_dat_pvld = Input(Bool())
         val in_dat_stripe_st = Input(Bool())
         val in_dat_stripe_end = Input(Bool())
 
-        //input_num
+        //input_wt
         val in_wt_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val in_wt_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val in_wt_pvld = Input(Bool())

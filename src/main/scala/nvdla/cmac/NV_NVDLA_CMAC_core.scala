@@ -4,15 +4,12 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-
-
-
 // class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
 //     val io = IO(new Bundle {
 
 //         val sc2mac_dat_pvld = Input(Bool())  /* data valid */
 //         val sc2mac_dat_mask = Input(UInt(conf.CMAC_ATOMC.W))
-//         val sc2mac_dat_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt(conf.CMAC_BPE.W)))
+//         val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
 //         val sc2mac_dat_pd = Input(UInt(9.W))
 
 //         val sc2mac_wt_pvld = Input(Bool())
@@ -25,10 +22,6 @@
 //         val mac2accu_mode = Output(Bool())
 //         val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
 //         val mac2accu_pd = Output(UInt(9.W))
-
-//         val reg2dp_op_en = Input(Bool())
-//         val reg2dp_conv_mode = Input(Bool())
-//         val dp2reg_done = Output(Bool())
 
 //     })
 // //     
@@ -52,38 +45,6 @@
 // //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 // //             │ ─┤ ─┤       │ ─┤ ─┤         
 // //             └──┴──┘       └──┴──┘ 
-
-//     val cfg_is_wg = Wire(Bool())
-//     val cfg_reg_en = Wire(Bool())
-
-//     // interface with register config   
-//     //==========================================================
-//     //: my $i=CMAC_ATOMK_HALF;
-//     //: print qq(
-//     //:    wire nvdla_op_gated_clk_${i};  );
-//     //: print qq(
-//     //: NV_NVDLA_CMAC_CORE_cfg u_cfg (
-//     //:    .nvdla_core_clk                (nvdla_op_gated_clk_${i})          //|< w
-//     //:   ,.nvdla_core_rstn               (nvdla_core_rstn)               //|< i
-//     //:   ,.dp2reg_done                   (dp2reg_done)                   //|< o
-//     //:   ,.reg2dp_conv_mode              (reg2dp_conv_mode)              //|< i
-//     //:   ,.reg2dp_op_en                  (reg2dp_op_en)                  //|< i
-//     //:   ,.cfg_is_wg                     (cfg_is_wg)                     //|> w
-//     //:   ,.cfg_reg_en                    (cfg_reg_en)                    //|> w
-//     //:   );
-//     //: );
-
-//     val nvdla_op_gated_clk = Wire(Vec(conf.CMAC_ATOMK_HALF+2, Clock()))
-
-//     val u_cfg = Module(new NV_NVDLA_CMAC_CORE_cfg)
-
-//     u_cfg.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF)
-//     u_cfg.io.nvdla_core_rstn := io.nvdla_core_rstn
-//     u_cfg.io.dp2reg_done := io.dp2reg_done
-//     u_cfg.io.reg2dp_conv_mode := io.reg2dp_conv_mode
-//     u_cfg.io.reg2dp_op_en := io.reg2dp_op_en
-//     u_cfg.io.cfg_is_wg := cfg_is_wg
-//     u_cfg.io.cfg_reg_en := cfg_reg_en 
 
 //     val in_dat_pvld = Wire(Bool())
 //     io.mac2accu_mode := false.B
@@ -136,13 +97,9 @@
 //     //: my $i=MAC_PD_LATENCY;
 //     //: &eperl::retime("-stage ${i} -wid 9 -i in_dat_pd -o out_pd -cg_en_i in_dat_pvld -cg_en_o out_pvld -cg_en_rtm");
 
-//     val out_pd = Reg(UInt(9.W))
-//     val out_pvld = Reg(Bool())
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
-//         when(in_dat_pvld){
-//             out_pd := ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY)
-//             out_pvld := ShiftRegister(in_dat_pvld, conf.MAC_PD_LATENCY)
-//         }
+//     when(in_dat_pvld){
+//         out_pd := ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY)
+//         out_pvld := ShiftRegister(in_dat_pvld, conf.MAC_PD_LATENCY)
 //     }
 
 //     //==========================================================
@@ -289,41 +246,12 @@
 //     //==========================================================
 //     // MAC CELLs
 //     //==========================================================
-//     //:     my $total_num = CMAC_ATOMK_HALF;
-//     //:     for(my $i = 0; $i < $total_num; $i ++) {
-//     //:         print qq {
-//     //: wire nvdla_op_gated_clk_${i};
-//     //: wire nvdla_wg_gated_clk_${i};
-//     //: wire [CMAC_RESULT_WIDTH-1:0] out_data${i};
-//     //: NV_NVDLA_CMAC_CORE_mac u_mac_${i} (
-//     //:    .nvdla_core_clk                (nvdla_op_gated_clk_${i})          //|< w
-//     //:   ,.nvdla_wg_clk                  (nvdla_op_gated_clk_${i})          //|< w , need update for winograd
-//     //:   ,.nvdla_core_rstn               (nvdla_core_rstn)               //|< i
-//     //:   ,.cfg_is_wg                     (cfg_is_wg)                     //|< w
-//     //:   ,.cfg_reg_en                    (cfg_reg_en)                    //|< w
-//     //:   ,.dat_actv_data                 (dat${i}_actv_data)        //|< w
-//     //:   ,.dat_actv_nz                   (dat${i}_actv_nz)           //|< w
-//     //:   ,.dat_actv_pvld                 (dat${i}_actv_pvld)         //|< w
-//     //:   ,.wt_actv_data                  (wt${i}_actv_data)         //|< w
-//     //:   ,.wt_actv_nz                    (wt${i}_actv_nz)            //|< w
-//     //:   ,.wt_actv_pvld                  (wt${i}_actv_pvld)          //|< w
-//     //:   ,.mac_out_data                  (out_data${i})              //|> w
-//     //:   ,.mac_out_pvld                  (out_mask[${i}])            //|> w
-//     //:   );
-//     //:     }
-//     //:}
-
-    
+  
 //     val out_data = Wire(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
 
 //     val u_mac = Vec.fill(conf.CMAC_ATOMK_HALF){Module(new NV_NVDLA_CMAC_CORE_mac)}
 
 //     for(i<- 0 to conf.CMAC_ATOMK_HALF-1){
-//        u_mac(i).io.nvdla_core_clk :=  nvdla_op_gated_clk(i)
-//        u_mac(i).io.nvdla_wg_clk := nvdla_op_gated_clk(i)
-//        u_mac(i).io.nvdla_core_rstn := io.nvdla_core_rstn
-//        u_mac(i).io.cfg_is_wg := cfg_is_wg
-//        u_mac(i).io.cfg_reg_en := cfg_reg_en
 //        u_mac(i).io.dat_actv_data := dat_actv_data(i)
 //        u_mac(i).io.dat_actv_nz := dat_actv_nz(i)
 //        u_mac(i).io.dat_actv_pvld := dat_actv_pvld(i)

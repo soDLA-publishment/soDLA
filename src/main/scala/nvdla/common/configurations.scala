@@ -26,7 +26,7 @@ class cmacConfiguration()
     val CMAC_ATOMK_HALF = 8
     val RT_CMAC_A2CACC_LATENCY = 2
     val RT_CMAC_B2CACC_LATENCY = 3   
-    val CMAC_INPUT_NUM = 128
+    val CMAC_INPUT_NUM = CMAC_ATOMC
     val CMAC_BPE = 8
     val EXP = 192
     val PVLD = 104
@@ -49,7 +49,7 @@ class cmacSINTConfiguration()
     val CMAC_ATOMK_HALF = 8
     val RT_CMAC_A2CACC_LATENCY = 2
     val RT_CMAC_B2CACC_LATENCY = 3   
-    val CMAC_INPUT_NUM = 128
+    val CMAC_INPUT_NUM = CMAC_ATOMC 
     val CMAC_BPE = 8
     val EXP = 192
     val PVLD = 104
