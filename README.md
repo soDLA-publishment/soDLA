@@ -7,33 +7,33 @@ These are the tutorials for [chisel3](https://chisel.eecs.berkeley.edu/index.htm
 
 
 
-Getting the Repo
+Getting Started
 ----------------
 
     $ git clone https://github.com/redpanda3/soDLA.git
     $ cd soDLA
+    $ sbt
+    
 
 
-Executing Chisel
+Executing Test
 ----------------
 
-####Testing Your System
-First make sure that you have sbt (the scala build tool) installed. See details
-in [sbt](http://www.scala-sbt.org/release/docs/Getting-Started/Setup.html).
+####CMAC
 
-    $ sbt run
+CMAC_CORE_mac for unsigned data, see nvdla/common/configurations for detail configurations:
 
-This will generate and test a simple block (`Hello`) that always outputs the
-number [42](https://simple.wikipedia.org/wiki/42_(answer))(aka 0x2a). You should see `[success]` on the last line of output (from sbt) and
-`PASSED` on the line before indicating the block passed the testcase. If you
-are doing this for the first time, sbt will automatically download the
-appropriate versions of Chisel3, the Chisel Testers harness
-and Scala and cache them (usually in `~/.ivy2`).
+    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
+    
+CMAC_CORE_mac for signed data, 
+ 
+    $ test:runMain nvdla.cmacSINTLauncher NV_NVDLA_CMAC_CORE_macSINT
+    
+CMAC_CORE_rt_in,
 
-Jupyter Notebook Demo
-----------------
+    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_rt_in
+    
 
-https://github.com/redpanda3/soDLA-ipynb 
 
 Discussion
 ----------------
