@@ -1,65 +1,91 @@
-// package nvdla
+package nvdla
 
-// import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
+import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 
 
-// class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekPokeTester(c) {
+class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekPokeTester(c) {
  
-//   implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: cmacConfiguration = new cmacConfiguration
 
-//   for (t <- 0 until 100) {
+//test dat data forwading
 
-//     //input_dat 
-//     val in_dat_data = Array.fill(conf.CMAC_ATOMC){0}
-//     val in_dat_mask = Array.fill(conf.CMAC_ATOMC){false}
-//     val in_dat_pvld = false
-//     val in_dat_stripe_st = false
-//     val in_dat_stripe_end = false
+  for (t <- 0 until 100) {
 
-//     //input_wt
-//     val in_wt_data = Array.fill(conf.CMAC_ATOMC){0}
-//     val in_wt_mask = Array.fill(conf.CMAC_ATOMC){false}
-//     val in_wt_pvld = false
-//     val in_wt_sel = Array.fill(conf.CMAC_ATOMK_HALF){false}
+    //input_dat 
+    val in_dat_data = Array.fill(conf.CMAC_ATOMC){0}
+    val in_dat_mask = Array.fill(conf.CMAC_ATOMC){false}
+    val in_dat_pvld = rnd.nextBoolean()
+    val in_dat_stripe_st = false
+    val in_dat_stripe_end = false
 
-//     for (i <- 0 until conf.CMAC_ATOMC-1){
+    //input_wt
+    val in_wt_data = Array.fill(conf.CMAC_ATOMC){0}
+    val in_wt_mask = Array.fill(conf.CMAC_ATOMC){false}
+    val in_wt_pvld = rnd.nextBoolean()
+    val in_wt_sel = Array.fill(conf.CMAC_ATOMK_HALF){false}
 
-//       in_dat_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
-//       in_dat_mask(i) = rnd.nextBoolean()
-//       wt_pvld(i) = rnd.nextBoolean()
+    //assign st, end, pvld
+    poke(c.io.in_dat_pvld, in_dat_pvld)
+    poke(c.io.in_wt_pvld, in_wt_pvld)
 
-//       in_wt_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
-//       in_wt_mask(i) = rnd.nextBoolean()
-//       dat_pvld(i) = rnd.nextBoolean()
+    poke(c.io.in_dat_stripe_st, in_dat_stripe_st)
+    poke(c.io.in_dat_stripe_end, in_dat_stripe_end)    
 
-//       poke(c.io.wt_actv_data(i), wt(i))
-//       poke(c.io.wt_actv_nz(i), wt_nz(i))
-//       poke(c.io.wt_actv_pvld(i), wt_pvld(i))
+    //assign data, mask
+    for (i <- 0 until conf.CMAC_ATOMC-1){
 
-//       poke(c.io.dat_actv_data(i), dat(i))
-//       poke(c.io.dat_actv_nz(i), dat_nz(i))
-//       poke(c.io.dat_actv_pvld(i), dat_pvld(i))
+      in_dat_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
+      in_dat_mask(i) = rnd.nextBoolean()
 
-//     }
-    
-//     val sum_out = mout.reduce(_+_)
+      in_wt_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
+      in_wt_mask(i) = rnd.nextBoolean()
 
-//     step(conf.CMAC_OUT_RETIMING)
+      poke(c.io.in_dat_data(i), in_dat_data(i))
+      poke(c.io.in_dat_mask(i), in_dat_mask(i))
 
-//     if(wt_pvld(0)&dat_pvld(0)){
-//       expect(c.io.mac_out_data, sum_out)
-//       expect(c.io.mac_out_pvld, wt_pvld(0)&dat_pvld(0))
-//     }
-//   }
-// }
+      poke(c.io.in_wt_data(i), in_wt_data(i))
+      poke(c.io.in_wt_mask(i), in_wt_mask(i))
 
-// class NV_NVDLA_CMAC_CORE_activeTester extends ChiselFlatSpec {
+    }
 
-//   behavior of "NV_NVDLA_CMAC_CORE_active"
-//   backends foreach {backend =>
-//     it should s"correctly activate wt and dat $backend" in {
-//       implicit val conf: cmacConfiguration = new cmacConfiguration
-//       Driver(() => new NV_NVDLA_CMAC_CORE_active())(c => new NV_NVDLA_CMAC_CORE_activeTests(c)) should be (true)
-//     }
-//   }
-// }
+    //assign wt sel
+    for(i <- 0 until conf.CMAC_ATOMK_HALF-1){
+
+      in_wt_sel(i) = rnd.nextBoolean()
+
+    }
+
+    step(2)
+
+    //check dat valid
+    for(i <- 0 until conf.CMAC_ATOMK_HALF-1){
+        for(j <- 0 until conf.CMAC_ATOMC-1){
+            expect(c.io.dat_actv_pvld(i)(j), in_dat_pvld)
+      }
+    }
+    //check dat pack
+    if(in_dat_pvld){
+      for(i <- 0 until conf.CMAC_ATOMK_HALF-1){
+        if(in_wt_sel(i)){
+          for(j <- 0 until conf.CMAC_ATOMC-1){
+            expect(c.io.dat_actv_nz(i)(j), in_dat_mask(j))
+            if(in_dat_mask(j)){
+              expect(c.io.dat_actv_data(i)(j), in_dat_data(j))
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+class NV_NVDLA_CMAC_CORE_activeTester extends ChiselFlatSpec {
+
+  behavior of "NV_NVDLA_CMAC_CORE_active"
+  backends foreach {backend =>
+    it should s"correctly activate wt and dat $backend" in {
+      implicit val conf: cmacConfiguration = new cmacConfiguration
+      Driver(() => new NV_NVDLA_CMAC_CORE_active())(c => new NV_NVDLA_CMAC_CORE_activeTests(c)) should be (true)
+    }
+  }
+}

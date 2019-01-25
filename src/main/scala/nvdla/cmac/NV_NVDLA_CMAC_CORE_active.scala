@@ -144,7 +144,9 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
             wt_actv_pvld_out(i)(j) := wt_actv_pvld_w(i)
             when(dat_pre_stripe_st_out(i)&wt_actv_pvld_w(i)){
                 wt_actv_nz_out(i)(j) := wt_sd_nz(i)(j)
-                when(wt_sd_nz(i)(j)){wt_actv_data_out(i)(j):=wt_sd_data(i)(j)}.otherwise{wt_actv_data_out(i)(j):=conf.CMAC_TYPE(0, conf.CMAC_BPE)}
+                when(wt_sd_nz(i)(j)){
+                    wt_actv_data_out(i)(j):=wt_sd_data(i)(j)
+                }
 
             }
         }

@@ -8,7 +8,6 @@ class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPok
   implicit val conf: cmacConfiguration = new cmacConfiguration
 
   for (t <- 0 until 100) {
-
     //load random inputs
 
     val sc2mac_dat_data = Array.fill(conf.CMAC_ATOMC){0}
@@ -85,6 +84,8 @@ class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPok
         expect(c.io.in_wt_sel(j), sc2mac_wt_sel(j))      
       }  
     }
+
+
 }}
 
 class NV_NVDLA_CMAC_CORE_rt_inTester extends ChiselFlatSpec {
