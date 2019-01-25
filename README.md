@@ -19,7 +19,7 @@ Getting Started
 Executing Test
 ----------------
 
-####CMAC
+###CMAC
 
 CMAC_CORE_mac for unsigned data, see nvdla/common/configurations for detail configurations:
 
