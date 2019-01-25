@@ -33,6 +33,14 @@ CMAC_CORE_rt_in:
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_rt_in
     
+CMAC_CORE_rt_out:
+
+    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_rt_out
+    
+CMAC_CORE_active:
+
+    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_active
+    
 
 
 Discussion
