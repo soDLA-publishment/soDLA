@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-//this module is to active dat and wt
+//this module is to mac dat and wt
 
 class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
 
