@@ -19,17 +19,17 @@ Getting Started
 Executing Test
 ----------------
 
-###CMAC
+CMAC
 
 CMAC_CORE_mac for unsigned data, see nvdla/common/configurations for detail configurations:
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
     
-CMAC_CORE_mac for signed data, 
+CMAC_CORE_mac for signed data: 
  
     $ test:runMain nvdla.cmacSINTLauncher NV_NVDLA_CMAC_CORE_macSINT
     
-CMAC_CORE_rt_in,
+CMAC_CORE_rt_in:
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_rt_in
     
