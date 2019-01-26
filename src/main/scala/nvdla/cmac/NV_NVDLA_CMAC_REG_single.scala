@@ -5,8 +5,6 @@ import chisel3.experimental._
 import chisel3.util._
 
 
-
-
 class NV_NVDLA_CMAC_REG_single extends RawModule {
     val io = IO(new Bundle {
         //general clock

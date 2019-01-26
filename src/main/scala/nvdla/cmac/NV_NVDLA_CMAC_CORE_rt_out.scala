@@ -17,6 +17,8 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Mo
         val mac2accu_mask = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
         val mac2accu_pd = Output(UInt(9.W))
         val mac2accu_pvld = Output(Bool())
+
+        val dp2reg_done = Output(Bool())
     })
 //     
 //          ┌─┐       ┌─┐
@@ -55,11 +57,15 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Mo
                        
     val out_rt_data_d = retiming(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W)), conf.CMAC_OUT_RT_LATENCY)
 
+    val dp2reg_done_d = Wire(Bool()) +: 
+                        Seq.fill(conf.CMAC_OUT_RT_LATENCY)(RegInit(false.B))
     //delay input
     out_rt_pvld_d(0) := io.out_pvld
     out_rt_mask_d(0) := io.out_mask
     out_rt_pd_d(0) := io.out_pd
     out_rt_data_d(0) := io.out_data
+
+    dp2reg_done_d(0) := io.out_pd(conf.PKT_nvdla_stripe_info_layer_end_FIELD)&io.out_pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)&io.out_pvld
 
     //passing logic
 
@@ -73,13 +79,16 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: cmacConfiguration) extends Mo
             when(out_rt_mask_d(t)(i)){  
                 out_rt_data_d(t+1)(i) := out_rt_data_d(t)(i)
             } 
-        }      
+        }
+        dp2reg_done_d(t+1) := dp2reg_done_d(t)      
     } 
     //assign output
     io.mac2accu_pvld := out_rt_pvld_d(conf.CMAC_OUT_RT_LATENCY)
     io.mac2accu_mask := out_rt_mask_d(conf.CMAC_OUT_RT_LATENCY)
     io.mac2accu_pd := out_rt_pd_d(conf.CMAC_OUT_RT_LATENCY)
     io.mac2accu_data := out_rt_data_d(conf.CMAC_OUT_RT_LATENCY)
+
+    io.dp2reg_done := dp2reg_done_d(conf.CMAC_OUT_RT_LATENCY)
   
 }
     
