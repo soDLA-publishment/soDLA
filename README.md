@@ -41,6 +41,10 @@ CMAC_CORE_active:
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_active
     
+CMAC_core(untested, but you can generate fir):
+
+    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core
+    
 
 
 Discussion
