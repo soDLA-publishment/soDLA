@@ -52,3 +52,14 @@ Discussion
 
 gitter: [link](https://gitter.im/NVDLA_chisel/Lobby)
 
+
+Coffee
+----------------
+Thanks for buying me a coffee.
+
+
+Wechat: ![](wechat_QR.jpg){:.some-css-class style="width: 200px"}
+
+Payme: [link](https://paypal.me/redpanda3)
+
+
