@@ -9,7 +9,7 @@
 		extra-sbtVersion="1.0"
 		conf="provided"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20181022110509"/>
+		date="20190127021624"/>
 	<dependencies>
 		<module organisation="org.scala-sbt" name="sbt">
 			<revision name="1.1.1" status="release" pubdate="20180208024419" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/sbt/sbt" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="1">

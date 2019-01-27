@@ -6,12 +6,8 @@
 
 // class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends RawModule {
 //     val io = IO(new Bundle {
-//         //general clock
-//         val nvdla_core_clk = Input(Clock())      
-//         val nvdla_core_rstn = Input(Bool())
-
 //         //input 
-//         val input_data = Input(UInt((conf.CSC_ATOMC * conf.CSC_BPE).W))
+//         val input_data = Input(Vec(conf.CSC_ATOMC, conf.CSC_TYPE(conf.CSC_BPE.W)))
 //         val input_mask = Input(UInt(conf.CSC_ATOMC.W))
 //         val input_mask_en = Input(UInt(10.W))
 //         val input_pipe_valid = Input(Bool())

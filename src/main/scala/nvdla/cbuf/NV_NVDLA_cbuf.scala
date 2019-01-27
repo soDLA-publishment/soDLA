@@ -7,10 +7,6 @@
 //   //csb interface  
 //   val io = IO(new Bundle {
 
-//     //clock
-//     val nvdla_core_clk = Input(Clock())
-//     val nvdla_core_rstn = Input(Bool())
-
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     //cdma2buf
