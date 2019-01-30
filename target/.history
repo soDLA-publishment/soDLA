@@ -1,0 +1,7 @@
+test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core --backend-name verilator
+ls
+exit
+test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core --backend-name verilator
+exit
+test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core --backend-name verilator
+exit

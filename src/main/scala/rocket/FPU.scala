@@ -12,7 +12,7 @@ import chisel3.internal.sourceinfo.SourceInfo
 import chisel3.experimental._
 
 
-class MulAddRecFNPipe(latency: Int = 2, expWidth: Int = 9, sigWidth: Int = 23， ) extends Module
+class MulAddRecFNPipe(latency: Int = 2, expWidth: Int = 9, sigWidth: Int = 23 ) extends Module
 {
     require(latency<=2) 
 
