@@ -10,7 +10,7 @@ class MulAddRecFNPipeTester extends ChiselFlatSpec {
   behavior of "MulAddRecFNPipe"
   backends foreach {backend =>
     it should s"correctly randomly and generated logic $backend" in {
-      Driver(() => new MulAddRecFNPipe(2, 18, 18))(c => new MulAddRecFNPipeTests(c)) should be (true)
+      Driver(() => new MulAddRecFNPipe)(c => new MulAddRecFNPipeTests(c)) should be (true)
     }
   }
 }

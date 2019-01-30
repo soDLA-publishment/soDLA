@@ -8,7 +8,7 @@ import utils.TutorialRunner
 object FPULauncher {
   val fpu = Map(
     "MulAddRecFNPipe" -> { (manager: TesterOptionsManager) =>
-      Driver.execute(() => new MulAddRecFNPipe(2, 18, 18), manager) {
+      Driver.execute(() => new MulAddRecFNPipe, manager) {
         (c) => new MulAddRecFNPipeTests(c)
       }
     }
