@@ -30,7 +30,7 @@ version := "3.1.0"
 
 name := "sodla"
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.4"
 
 crossScalaVersions := Seq("2.11.12", "2.12.4")
 
@@ -45,6 +45,9 @@ val defaultVersions = Map(
 
 libraryDependencies ++= (Seq("chisel3","chisel-iotesters").map {
   dep: String => "edu.berkeley.cs" %% dep % sys.props.getOrElse(dep + "Version", defaultVersions(dep)) })
+
+libraryDependencies ++= Seq("org.json4s" %% "json4s-jackson" % "3.6.1")
+
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
