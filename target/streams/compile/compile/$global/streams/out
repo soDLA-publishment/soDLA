@@ -1,25 +1,55 @@
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/cora/matrix/C_CORA_MATRIX_predictx.scala:53:83: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width)[0m
-[0m[[0m[33mwarn[0m] [0m[0m    val mout = VecInit(Seq.fill(conf.KF_STAT)(VecInit(Seq.fill(conf.KF_STAT)(conf.KF_TYPE(0, (2*conf.KF_BPE).W)))))[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                                  ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/cora/matrix/C_CORA_MATRIX_predictx.scala:63:36: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width.W)[0m
-[0m[[0m[33mwarn[0m] [0m[0m                mout(i)(j) := conf.KF_TYPE(0, conf.KF_RESULT_WIDTH)[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:115:28: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m                           UInt(0), smaller_mant >> io.mant_shift)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                           ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:116:21: method apply in object Reg is deprecated (since chisel3): Use Reg(t), RegNext(next, [init]) or RegInit([t], init) instead[0m
+[0m[[0m[33mwarn[0m] [0m[0m    val reg_manta = Reg(next = larger_mant)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                    ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:117:21: method apply in object Reg is deprecated (since chisel3): Use Reg(t), RegNext(next, [init]) or RegInit([t], init) instead[0m
+[0m[[0m[33mwarn[0m] [0m[0m    val reg_mantb = Reg(next = shifted_mant)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                    ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:118:20: method apply in object Reg is deprecated (since chisel3): Use Reg(t), RegNext(next, [init]) or RegInit([t], init) instead[0m
+[0m[[0m[33mwarn[0m] [0m[0m    val reg_sign = Reg(next = io.sign_in)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                   ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:119:19: method apply in object Reg is deprecated (since chisel3): Use Reg(t), RegNext(next, [init]) or RegInit([t], init) instead[0m
+[0m[[0m[33mwarn[0m] [0m[0m    val reg_sub = Reg(next = io.sub_in)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                  ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:120:19: method apply in object Reg is deprecated (since chisel3): Use Reg(t), RegNext(next, [init]) or RegInit([t], init) instead[0m
+[0m[[0m[33mwarn[0m] [0m[0m    val reg_exp = Reg(next = io.exp_in)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                  ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:147:25: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width.W)[0m
+[0m[[0m[33mwarn[0m] [0m[0m    val manta_ext = Cat(UInt(0, 1), io.manta)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                        ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:148:25: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width.W)[0m
+[0m[[0m[33mwarn[0m] [0m[0m    val mantb_ext = Cat(UInt(0, 1), io.mantb)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                        ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:158:39: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m    when (mant_sum(mantWidth + 1) === UInt(1)) {[0m
+[0m[[0m[33mwarn[0m] [0m[0m                                      ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:167:36: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m            reg_exp := io.exp_in + UInt(1)[0m
 [0m[[0m[33mwarn[0m] [0m[0m                                   ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/cora/matrix/C_CORA_MATRIX_predictx.scala:71:55: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width.W)[0m
-[0m[[0m[33mwarn[0m] [0m[0m    val sum_out = VecInit(Seq.fill(conf.KF_STAT)(conf.KF_TYPE(0, conf.KF_RESULT_WIDTH)))[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                      ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/nvdla/cmac/NV_NVDLA_CMAC_CORE_mac.scala:48:55: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width)[0m
-[0m[[0m[33mwarn[0m] [0m[0m    val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0, (2*conf.CMAC_BPE).W)))[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                      ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/nvdla/cmac/NV_NVDLA_CMAC_CORE_mac.scala:55:30: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width.W)[0m
-[0m[[0m[33mwarn[0m] [0m[0m             mout(i) := conf.CMAC_TYPE(0, conf.CMAC_RESULT_WIDTH)[0m
-[0m[[0m[33mwarn[0m] [0m[0m                             ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/nvdla/cmac/NV_NVDLA_CMAC_CORE_macSINT.scala:48:55: method apply in trait SIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.S(width)[0m
-[0m[[0m[33mwarn[0m] [0m[0m    val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0, (2*conf.CMAC_BPE).W)))[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                      ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/nvdla/cmac/NV_NVDLA_CMAC_CORE_macSINT.scala:56:30: method apply in trait SIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.S(width.W)[0m
-[0m[[0m[33mwarn[0m] [0m[0m             mout(i) := conf.CMAC_TYPE(0, conf.CMAC_RESULT_WIDTH)[0m
-[0m[[0m[33mwarn[0m] [0m[0m                             ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/home/yuda/soDLA/src/main/scala/slibs/NV_NVDLA_HLS_shiftrightusz.scala:43:78: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m    left_shift_sat := shift_sign & Cat(data_high, data_shift_l(OUT_WIDTH-1)) != Fill(HIGH_WIDTH+1, false.B)[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                             ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m8 warnings found[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:198:26: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m    when (io.mant_in === UInt(0)) {[0m
+[0m[[0m[33mwarn[0m] [0m[0m                         ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:199:24: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m        io.mant_out := UInt(0)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                       ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPAdd.scala:200:23: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m        io.exp_out := UInt(0)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                      ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPMult.scala:49:28: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width.W)[0m
+[0m[[0m[33mwarn[0m] [0m[0m        stage2_exponent := UInt(0, exponentSize)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                           ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPMult.scala:50:26: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U(width.W)[0m
+[0m[[0m[33mwarn[0m] [0m[0m        rounder.io.in := UInt(0, mantissaSize + 1)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                         ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPMult.scala:51:49: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m    } .elsewhen (mantissa_reg(mantissaLead) === Bits(1)) {[0m
+[0m[[0m[33mwarn[0m] [0m[0m                                                ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPMult.scala:52:43: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m        stage2_exponent := exponent_reg - UInt(exponentSub - 1)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                                          ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\chisel-float\FPMult.scala:56:43: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m        stage2_exponent := exponent_reg - UInt(exponentSub)[0m
+[0m[[0m[33mwarn[0m] [0m[0m                                          ^[0m
+[0m[[0m[33mwarn[0m] [0m[0m18 warnings found[0m

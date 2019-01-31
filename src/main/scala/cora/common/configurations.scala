@@ -6,7 +6,7 @@ import chisel3.util._
 
 class matrixConfiguration()
 {
-    val KF_STAT = 6
+    val KF_STAT = 4
     val CMAC_ATOMK_HALF = 8
     val RT_CMAC_A2CACC_LATENCY = 2
     val RT_CMAC_B2CACC_LATENCY = 3   
