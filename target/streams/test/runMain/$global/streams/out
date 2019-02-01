@@ -1,37 +1,25 @@
-[0m[[0m[31merror[0m] [0m[0mjava.io.IOException: No space left on device[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.FileDispatcherImpl.pwrite0(Native Method)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.FileDispatcherImpl.pwrite(FileDispatcherImpl.java:66)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:89)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.IOUtil.write(IOUtil.java:51)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.FileChannelImpl.writeInternal(FileChannelImpl.java:778)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.FileChannelImpl.write(FileChannelImpl.java:764)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.FileChannelImpl.transferFromFileChannel(FileChannelImpl.java:636)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sun.nio.ch.FileChannelImpl.transferFrom(FileChannelImpl.java:708)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.loop$1(IO.scala:720)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.$anonfun$copyFile$4(IO.scala:723)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.$anonfun$copyFile$4$adapted(IO.scala:714)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.Using.apply(Using.scala:22)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.$anonfun$copyFile$3(IO.scala:714)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.$anonfun$copyFile$3$adapted(IO.scala:713)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.Using.apply(Using.scala:22)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.copyFile(IO.scala:713)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.copyFile(IO.scala:698)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.io.IO$.copyFile(IO.scala:690)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.internal.AbstractBackgroundJobService.syncTo$1(DefaultBackgroundJobService.scala:196)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.internal.AbstractBackgroundJobService.$anonfun$copyClasspath$2(DefaultBackgroundJobService.scala:201)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.TraversableLike.$anonfun$map$1(TraversableLike.scala:234)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.immutable.List.foreach(List.scala:389)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.TraversableLike.map(TraversableLike.scala:234)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.TraversableLike.map$(TraversableLike.scala:227)[0m
-[0m[[0m[31merror[0m] [0m[0m	at scala.collection.immutable.List.map(List.scala:295)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.internal.AbstractBackgroundJobService.copyClasspath(DefaultBackgroundJobService.scala:201)[0m
-[0m[[0m[31merror[0m] [0m[0m	at sbt.Defaults$.$anonfun$bgRunMainTask$6(Defaults.scala:1145)[0m
+[0m[[0m[31merror[0m] [0m[0mjava.lang.ClassNotFoundException: ChiselFloat.ChiselFloat[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.lang.ClassLoader.findClass(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.lang.ClassLoader.loadClass(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.internal.inc.classpath.ClasspathFilter.loadClass(ClassLoaders.scala:70)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.lang.ClassLoader.loadClass(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.lang.Class.forName0(Native Method)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.lang.Class.forName(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.Run.getMainMethod(Run.scala:98)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.Run.run0(Run.scala:86)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.Run.execute$1(Run.scala:65)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.Run.$anonfun$run$3(Run.scala:69)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:12)[0m
+[0m[[0m[31merror[0m] [0m[0m	at scala.util.Try$.apply(Try.scala:209)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.Run.directExecute$1(Run.scala:69)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.Run.run(Run.scala:78)[0m
+[0m[[0m[31merror[0m] [0m[0m	at sbt.Defaults$.$anonfun$bgRunMainTask$6(Defaults.scala:1147)[0m
 [0m[[0m[31merror[0m] [0m[0m	at sbt.Defaults$.$anonfun$bgRunMainTask$6$adapted(Defaults.scala:1142)[0m
 [0m[[0m[31merror[0m] [0m[0m	at sbt.internal.BackgroundThreadPool.$anonfun$run$1(DefaultBackgroundJobService.scala:366)[0m
 [0m[[0m[31merror[0m] [0m[0m	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:12)[0m
 [0m[[0m[31merror[0m] [0m[0m	at scala.util.Try$.apply(Try.scala:209)[0m
 [0m[[0m[31merror[0m] [0m[0m	at sbt.internal.BackgroundThreadPool$BackgroundRunnable.run(DefaultBackgroundJobService.scala:289)[0m
-[0m[[0m[31merror[0m] [0m[0m	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)[0m
-[0m[[0m[31merror[0m] [0m[0m	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)[0m
-[0m[[0m[31merror[0m] [0m[0m	at java.lang.Thread.run(Thread.java:748)[0m
-[0m[[0m[31merror[0m] [0m[0m(Test / [31mrunMain[0m) java.io.IOException: No space left on device[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m	at java.lang.Thread.run(Unknown Source)[0m
+[0m[[0m[31merror[0m] [0m[0m(Test / [31mrunMain[0m) java.lang.ClassNotFoundException: ChiselFloat.ChiselFloat[0m

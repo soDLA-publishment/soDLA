@@ -5,3 +5,21 @@ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core --backend-name verilator
 exit
 test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core --backend-name verilator
 exit
+test:Main ChiselFloat FPAdd32
+test:Main ChiselFloat.ChiselFloat FPAdd32
+test:runMain ChiselFloat.ChiselFloat FPAdd32
+clear
+test:runMain ChiselFloat.ChiselFloat FPAdd32
+test:runMain ChiselFloat FPAdd32
+test:runMain ChiselFloat.ChiselFloat FPAdd32
+test:runMain ChiselFloat.ChiselFloatLauncher FPAdd32
+test:runMain ChiselFloat.ChiselFloat FPAdd32
+test:runMain ChiselFloat.ChiselFloatLauncher FPAdd32
+test:runMain ChiselFloat.ChiselFloat FPAdd32
+test:runMain ChiselFloat.ChiselFloatLauncher FPAdd32
+test:runMain ChiselFloat.ChiselFloatLauncher FPAdd32\
+test:runMain ChiselFloat.ChiselFloatLauncher FPAdd32
+sbt run
+test:runMain ChiselFloat.ChiselFloatLauncher FPAdd32
+test:runMain nvdla.FPULauncher MulAddRecFNPipe
+exit

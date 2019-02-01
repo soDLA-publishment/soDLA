@@ -24,7 +24,8 @@ class matrixConfiguration()
     val PKT_nvdla_stripe_info_stripe_end_FIELD = 6
     val MAC_PD_LATENCY = (KF_OUT_RETIMING + CMAC_ACTV_LATENCY - 3)     //pd must be 3T earlier than data
     val CMAC_SLCG_NUM = CMAC_ATOMK_HALF + 3
-    val KF_TYPE = UInt  
+    val KF_TYPE = UInt 
+    val PREDICTX_OUT_RETIMING = 4 
 }
 
 
