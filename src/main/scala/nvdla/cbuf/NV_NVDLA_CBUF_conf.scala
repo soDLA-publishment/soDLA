@@ -4,19 +4,19 @@
 
 
 
-// case class cbufConfiguration(){
+
+// class cbufConfiguration(){
     
 //     val NVDLA_CBUF_BANK_NUMBER = 32
 //     val NVDLA_CBUF_BANK_DEPTH = 512
 //     val NVDLA_CBUF_ENTRY_WIDTH = 8
-//     val NVDLA_CBUF_BANK_DEPTH_LOG2 = 9
 //     val NVDLA_CBUF_BANK_DEPTH_LOG2 = 9
 
 
 //     val CBUF_BANK_NUMBER = NVDLA_CBUF_BANK_NUMBER
 //     val CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH
 //     val CBUF_ENTRY_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
-//     val CBUF_ENTRY_BYTE = NVDLA_CBUF_ENTRY_WIDTH/8
+//     val CBUF_ENTRY_BYTE = CBUF_ENTRY_WIDTH/8
 //     val CBUF_RAM_DEPTH = NVDLA_CBUF_BANK_DEPTH 
 //     val CBUF_BANK_DEPTH_BIT = NVDLA_CBUF_BANK_DEPTH_LOG2  //log2(bank_depth), how many bits need to give an address in BANK
 //     val CBUF_RD_DATA_SHIFT_WIDTH =  NVDLA_CBUF_WIDTH_MUL2_LOG2  //log2(ram_width*2),width of data shift

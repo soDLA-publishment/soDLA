@@ -1,4 +1,5 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix\C_CORA_MATRIX_predictx.scala:26:13: stat_actv_data is already defined as value stat_actv_data[0m
-[0m[[0m[31merror[0m] [0m[0m        val stat_actv_data = Output(UInt(conf.KF_BPE.W))[0m
-[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix\C_CORA_MATRIX_predictx_noshareFMA.scala:60:37: not enough arguments for constructor MulAddRecFNPipe: (expWidth: Int, sigWidth: Int)cora.MulAddRecFNPipe.[0m
+[0m[[0m[31merror[0m] [0m[0mUnspecified value parameters expWidth, sigWidth.[0m
+[0m[[0m[31merror[0m] [0m[0m    val umac = Array.fill(5)(Module(new MulAddRecFNPipe()))[0m
+[0m[[0m[31merror[0m] [0m[0m                                    ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

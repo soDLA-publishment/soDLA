@@ -3,36 +3,36 @@
 
 package cora
 
-import chisel3._
+
+import Chisel._
 import Chisel.ImplicitConversions._
 import chisel3.internal.sourceinfo.SourceInfo
 import chisel3.experimental._
-import chisel3.util._
-import hardfloat._
 
-class MulAddRecFNPipe(latency: Int = 2, expWidth: Int = 9, sigWidth: Int = 23) extends Module
+class MulAddRecFNPipe(expWidth: Int = 9, sigWidth: Int = 23) extends Module
 {
+    val latency = 2
     require(latency<=2) 
 
     val io = new Bundle {
-        val validin = Input(Bool())
-        val op = Input(UInt(2.W))
-        val a = Input(UInt((expWidth + sigWidth + 1).W))
-        val b = Input(UInt((expWidth + sigWidth + 1).W))
-        val c = Input(UInt((expWidth + sigWidth + 1).W))
-        val roundingMode   = Input(UInt(3.W))
-        val detectTininess = Input(UInt(1.W))
-        val out = Output(UInt((expWidth + sigWidth + 1).W))
-        val exceptionFlags = Output(UInt(5.W))
-        val validout = Output(Bool())
+        val validin = Bool(INPUT)
+        val op = Bits(INPUT, 2)
+        val a = Bits(INPUT, expWidth + sigWidth + 1)
+        val b = Bits(INPUT, expWidth + sigWidth + 1)
+        val c = Bits(INPUT, expWidth + sigWidth + 1)
+        val roundingMode   = UInt(INPUT, 3)
+        val detectTininess = UInt(INPUT, 1)
+        val out = Bits(OUTPUT, expWidth + sigWidth + 1)
+        val exceptionFlags = Bits(OUTPUT, 5)
+        val validout = Bool(OUTPUT)
     }
 
     //------------------------------------------------------------------------
     //------------------------------------------------------------------------
     val mulAddRecFNToRaw_preMul =
-        Module(new MulAddRecFNToRaw_preMul(expWidth, sigWidth))
+        Module(new hardfloat.MulAddRecFNToRaw_preMul(expWidth, sigWidth))
     val mulAddRecFNToRaw_postMul =
-        Module(new MulAddRecFNToRaw_postMul(expWidth, sigWidth))
+        Module(new hardfloat.MulAddRecFNToRaw_postMul(expWidth, sigWidth))
 
     mulAddRecFNToRaw_preMul.io.op := io.op
     mulAddRecFNToRaw_preMul.io.a  := io.a
@@ -45,8 +45,8 @@ class MulAddRecFNPipe(latency: Int = 2, expWidth: Int = 9, sigWidth: Int = 23) e
             mulAddRecFNToRaw_preMul.io.mulAddC
 
     val valid_stage0 = Wire(Bool())
-    val roundingMode_stage0 = Wire(UInt(3.W))
-    val detectTininess_stage0 = Wire(UInt(1.W))
+    val roundingMode_stage0 = Wire(UInt(width=3))
+    val detectTininess_stage0 = Wire(UInt(width=1))
   
     val postmul_regs = if(latency>0) 1 else 0
     mulAddRecFNToRaw_postMul.io.fromPreMul   := Pipe(io.validin, mulAddRecFNToRaw_preMul.io.toPostMul, postmul_regs).bits
@@ -58,7 +58,7 @@ class MulAddRecFNPipe(latency: Int = 2, expWidth: Int = 9, sigWidth: Int = 23) e
     
     //------------------------------------------------------------------------
     //------------------------------------------------------------------------
-    val roundRawFNToRecFN = Module(new RoundRawFNToRecFN(expWidth, sigWidth, 0))
+    val roundRawFNToRecFN = Module(new hardfloat.RoundRawFNToRecFN(expWidth, sigWidth, 0))
 
     val round_regs = if(latency==2) 1 else 0
     roundRawFNToRecFN.io.invalidExc         := Pipe(valid_stage0, mulAddRecFNToRaw_postMul.io.invalidExc, round_regs).bits
@@ -67,8 +67,9 @@ class MulAddRecFNPipe(latency: Int = 2, expWidth: Int = 9, sigWidth: Int = 23) e
     roundRawFNToRecFN.io.detectTininess     := Pipe(valid_stage0, detectTininess_stage0, round_regs).bits
     io.validout                             := Pipe(valid_stage0, false.B, round_regs).valid
 
-    roundRawFNToRecFN.io.infiniteExc := false.B
+    roundRawFNToRecFN.io.infiniteExc := Bool(false)
 
     io.out            := roundRawFNToRecFN.io.out
     io.exceptionFlags := roundRawFNToRecFN.io.exceptionFlags
 }
+

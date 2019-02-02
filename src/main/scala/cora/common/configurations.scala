@@ -11,7 +11,7 @@ class matrixConfiguration()
     val RT_CMAC_A2CACC_LATENCY = 2
     val RT_CMAC_B2CACC_LATENCY = 3   
     val CMAC_INPUT_NUM = KF_STAT
-    val KF_BPE = 8
+    val KF_BPE = 33
     val EXP = 192
     val PVLD = 104
     val NAN = 64

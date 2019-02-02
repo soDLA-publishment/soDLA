@@ -10,10 +10,10 @@
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     //cdma2buf
-//     val cdma2buf_wr_addr = Input(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_ADDR_WIDTH.W)))
-//     val cdma2buf_wr_data = Input(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_WR_PORT_WIDTH.W)))
 //     val cdma2buf_wr_en = Input(Vec(conf.CBUF_WR_PORT_NUMBER, Bool()))
-//     val cdma2buf_wr_sel = Input(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_WR_BANK_SEL_WIDTH).W)) 
+//     val cdma2buf_wr_sel = Input(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_WR_BANK_SEL_WIDTH).W))
+//     val cdma2buf_wr_addr = Input(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_ADDR_WIDTH.W))) 
+//     val cdma2buf_wr_data = Input(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_WR_PORT_WIDTH.W)))
 
 //     //sc2buf
 //     val sc2buf_dat_rd_en = Input(Bool())     /* data valid */
@@ -30,8 +30,6 @@
 //     val sc2buf_wt_rd_data = Output(UInt(CBUF_RD_PORT_WIDTH.W))
 
 //   })
-
-//   withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
 // //////////step1:write handle  
 //     val bank_ram_wr_en_d0 = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(conf.CBUF_WR_PORT_NUMBER, Bool()))))
@@ -468,11 +466,10 @@
       
 
 //     //instance SRAM
-//           val u_cbuf_ram_bank_ram = Vec.fill(conf.CBUF_BANK_NUMBER){Vec.fill(conf.CBUF_RAM_PER_BANK){Module(new nv_ram_rws(conf.CBUF_RAM_DEPTH, conf.CBUF_RAM_WIDTH))}}
+//     val u_cbuf_ram_bank_ram = Vec.fill(conf.CBUF_BANK_NUMBER){Vec.fill(conf.CBUF_RAM_PER_BANK){Module(new nv_ram_rws(conf.CBUF_RAM_DEPTH, conf.CBUF_RAM_WIDTH))}}
      
 //     for(i<- 0 to conf.CBUF_BANK_NUMBER-1){
 //         for(j<- 0 to conf.CBUF_RAM_PER_BANK-1){
-//             io.nvdla_core_clk:=u_cbuf_ram_bank_ram(i)(j).io.clk
 //             bank_ram_rd_addr_d1(i)(j)(conf.CBUF_RAM_DEPTH_BITS-1,0):=u_cbuf_ram_bank_ram(i)(j).io.ra
 //             bank_ram_rd_en_d1(i)(j):=u_cbuf_ram_bank_ram(i)(j).io.re   
 //             bank_ram_rd_data(i)(j):=u_cbuf_ram_bank_ram(i)(j).io.dout
@@ -483,7 +480,7 @@
 //         }
 //     }
 
-// }}
+// }
 
 
 

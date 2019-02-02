@@ -23,3 +23,15 @@ sbt run
 test:runMain ChiselFloat.ChiselFloatLauncher FPAdd32
 test:runMain nvdla.FPULauncher MulAddRecFNPipe
 exit
+test:runMain cora.matrixLauncher  C_CORA_MATRIX_predictx_fp_noshareFMA
+test:runMain nvdla.FPULauncher MulAddRecFNPipe
+test:runMain cora.matrixLauncher  C_CORA_MATRIX_predictx_fp_noshareFMA
+test:runMain nvdla.FPULauncher MulAddRecFNPipe
+test:runMain cora.matrixLauncher  C_CORA_MATRIX_predictx_fp_noshareFMA
+test:runMain nvdla.FPULauncher MulAddRecFNPipe
+test:runMain nvdla.FPULauncher ValExec_MulAddRecFNPipeF32
+test:runMain cora.FPULauncher ValExec_MulAddRecFNPipeF32
+test:runMain cora.FPULauncher MulAddRecFNPipe
+test:runMain cora.matrixLauncher C_CORA_MATRIX_predictx_fp_noshareFMA
+test:runMain cora.matrixLauncher C_CORA_MATRIX_v2v_fp_noshareFMA
+test:runMain cora.matrixLauncher C_CORA_MATRIX_v2m

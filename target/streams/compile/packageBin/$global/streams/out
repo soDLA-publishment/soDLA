@@ -26,10 +26,14 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_MulAddRecF16_mul.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\SRAMAnnotation.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\SRAMAnnotation.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\C_CORA_MATRIX_v2m$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\C_CORA_MATRIX_v2m$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_DivSqrtRecFN_small_sqrt.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_DivSqrtRecFN_small_sqrt.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecFNToRecFN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecFNToRecFN.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\C_CORA_MATRIX_v2m.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\C_CORA_MATRIX_v2m.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\Counter$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Counter$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\ResetShiftRegister.class[0m
@@ -106,6 +110,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Adder.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\RoundRawFNToRecFN$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\RoundRawFNToRecFN$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\C_CORA_MATRIX_v2v_fp_noshareFMA.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\C_CORA_MATRIX_v2v_fp_noshareFMA.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hello\HelloTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hello\HelloTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\VecShiftRegisterSimple.class[0m
@@ -266,8 +272,6 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_CompareRecFN_lt.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\INToRecFN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\INToRecFN.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	cora\C_CORA_MATRIX_predictx_fp$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\C_CORA_MATRIX_predictx_fp$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\Counter$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Counter$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\rawFloatFromFN$.class[0m
@@ -374,8 +378,6 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_CompareRecF16_le.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Parity$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Parity$$anon$1.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	cora\C_CORA_MATRIX_predictx_fp.class[0m
-[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\C_CORA_MATRIX_predictx_fp.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecFNToUIN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecFNToUIN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_mac.class[0m
@@ -432,6 +434,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\SRAMAnnotation$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\SDFSNQD1$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\SDFSNQD1$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\C_CORA_MATRIX_v2v_fp_noshareFMA$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\C_CORA_MATRIX_v2v_fp_noshareFMA$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_HLS_saturate$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_HLS_saturate$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_INToRecFN$$anon$4$$anon$6.class[0m
