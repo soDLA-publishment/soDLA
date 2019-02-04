@@ -154,8 +154,6 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends RawModule {
 
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
-            var kdiv2 = k/2
-            var kdiv4 = k/4
             if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
                 bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd_en)&&(io.sc2buf_dat_rd_addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)
             }
@@ -197,21 +195,33 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends RawModule {
 //add flop for sram data read en
 //get sram data read valid.
     if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-        val bank_ram_data_rd_en_d1 = RegInit(VecInit(conf.CBUF_BANK_NUMBER, VecInit(conf.CBUF_RAM_PER_BANK, VecInit(1, false.B))))
-        val bank_ram_data_rd_valid = RegInit(VecInit(conf.CBUF_BANK_NUMBER, VecInit(conf.CBUF_RAM_PER_BANK, VecInit(1, false.B))))
+        val bank_ram_data_rd_en_d1 = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(1)(false.B)))))
+        val bank_ram_data_rd_valid = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(1)(false.B)))))
     }
     if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-        val bank_ram_data_rd_en_d1 = RegInit(VecInit(conf.CBUF_BANK_NUMBER, VecInit(conf.CBUF_RAM_PER_BANK, VecInit(2, false.B))))
-        val bank_ram_data_rd_valid = RegInit(VecInit(conf.CBUF_BANK_NUMBER, VecInit(conf.CBUF_RAM_PER_BANK, VecInit(2, false.B)))) 
+        val bank_ram_data_rd_en_d1 = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(2)(false.B)))))
+        val bank_ram_data_rd_valid = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(2)(false.B)))))
     }
 
-    bank_ram_data_rd_en_d1:= bank_ram_data_rd_en
-    bank_ram_data_rd_valid:= bank_ram_data_rd_en_d1
+    for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+        for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
+            if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
+                bank_ram_data_rd_en_d1(j)(k)(0) := bank_ram_data_rd_en(j)(k)(0)
+                bank_ram_data_rd_valid(j)(k)(0) := bank_ram_data_rd_en_d1(j)(k)(0)
+            }
+            if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
+                for(i <- 0 to 1){
+                    bank_ram_data_rd_en_d1(j)(k)(i) := bank_ram_data_rd_en(j)(k)(i)
+                    bank_ram_data_rd_valid(j)(k)(i) := bank_ram_data_rd_en_d1(j)(k)(i)
+                }
+            }       
+        }
+    }
 
 //get sc data read valid
     val sc2buf_dat_rd_valid_w = bank_ram_data_rd_valid.asUInt.orR
     io.sc2buf_dat_rd_valid := ShiftRegister(sc2buf_dat_rd_valid_w, 4)
-
+    
     val bank_ram_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, UInt(conf.CBUF_RAM_WIDTH.W))))
 
 //get sc data read bank output data. 
