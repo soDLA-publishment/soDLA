@@ -35,3 +35,6 @@ test:runMain cora.FPULauncher MulAddRecFNPipe
 test:runMain cora.matrixLauncher C_CORA_MATRIX_predictx_fp_noshareFMA
 test:runMain cora.matrixLauncher C_CORA_MATRIX_v2v_fp_noshareFMA
 test:runMain cora.matrixLauncher C_CORA_MATRIX_v2m
+exit
+run
+exit
