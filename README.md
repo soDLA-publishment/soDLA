@@ -5,16 +5,6 @@ This is a suite of packages for working with nvdla in chisel
 .
 These are the tutorials for [chisel3](https://chisel.eecs.berkeley.edu/index.html#getstarted) and [nvdla](http://nvdla.org/hw/v1/hwarch.html)
 
-cora package(building):
-
-This is a accelerator of self-driving car with following features:
-
-1. 4-d or 6-d floating point matrix operations.
-
-2. cordic
-
-3. A pipeline of kalman-filter
-
 Getting Started
 ----------------
 
@@ -56,7 +46,16 @@ CBUF(untested, but you can generate fir):
 
     $ test:runMain nvdla.cbufLauncher NV_NVDLA_cbuf
     
+About the buiding cora package
+----------------
 
+This is a accelerator of self-driving car with following features:
+
+1. 4-d or 6-d floating point matrix operations.
+
+2. cordic
+
+3. A pipeline of kalman-filter
 
 Discussion
 ----------------
