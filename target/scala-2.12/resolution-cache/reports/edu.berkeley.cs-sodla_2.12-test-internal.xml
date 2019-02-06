@@ -7,7 +7,7 @@
 		revision="3.1.0"
 		conf="test-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190130152735"/>
+		date="20190205172532"/>
 	<dependencies>
 		<module organisation="org.json4s" name="json4s-jackson_2.12">
 			<revision name="3.6.1" status="release" pubdate="20180904073050" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/json4s/json4s" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="34">

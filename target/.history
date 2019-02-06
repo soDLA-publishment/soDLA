@@ -38,3 +38,18 @@ test:runMain cora.matrixLauncher C_CORA_MATRIX_v2m
 exit
 run
 exit
+test:Main nvdla.cbuf NV_NVDLA_cbuf
+test:runMain nvdla.cbuf NV_NVDLA_cbuf
+clear
+test:runMain nvdla.cbuf NV_NVDLA_cbuf
+clear
+test:runMain nvdla.cbuf NV_NVDLA_cbuf
+exit
+test:runMain nvdla.cbuf NV_NVDLA_cbuf
+clean
+test:runMain nvdla.cbuf NV_NVDLA_cbuf
+test:runMain nvdla.cmac NV_NVDLA_CMAC_CORE_mac
+test:runMain nvdla.cmacLauncher  NV_NVDLA_CMAC_CORE_mac
+test:runMain nvdla.cbufLauncher  NV_NVDLA_cbuf
+test:runMain nvdla.matrixLauncher C_CORA_MATRIX_v2v_fp_noshareFMA
+test:runMain nvdla.cbufLauncher  NV_NVDLA_cbuf

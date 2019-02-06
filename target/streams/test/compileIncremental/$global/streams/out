@@ -1,1 +1,10 @@
+[0m[[0m[0mdebug[0m] [0m[0mThe nvdla.NV_NVDLA_cbuf has the following regular definitions changed:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	UsedName(bank_data_rd_data,[Default]), UsedName(bank_ram_data_rd_addr,[Default]), UsedName(io,[Default]), UsedName(bank_ram_data_rd_en,[Default]), UsedName(pwrbus_ram_pd,[Default]), UsedName(sc2buf_dat_rd_valid_w,[Default]), UsedName(sc2buf_wt_rd_valid_out,[Default]).[0m
+[0m[[0m[0mdebug[0m] [0m[0mAll member reference dependencies will be considered within this context.[0m
+[0m[[0m[0mdebug[0m] [0m[0mFiles invalidated by inheriting from (external) nvdla.NV_NVDLA_cbuf: Set(); now invalidating by inheritance (internally).[0m
+[0m[[0m[0mdebug[0m] [0m[0mGetting direct dependencies of all classes transitively invalidated by inheritance.[0m
+[0m[[0m[0mdebug[0m] [0m[0mGetting classes that directly depend on (external) nvdla.NV_NVDLA_cbuf.[0m
+[0m[[0m[0mdebug[0m] [0m[0mNone of the modified names appears in source file of nvdla.NV_NVDLA_cbufTests. This dependency is not being considered for invalidation.[0m
+[0m[[0m[0mdebug[0m] [0m[0mNone of the modified names appears in source file of nvdla.cbufLauncher. This dependency is not being considered for invalidation.[0m
+[0m[[0m[0mdebug[0m] [0m[0mNone of the modified names appears in source file of nvdla.NV_NVDLA_cbufTester. This dependency is not being considered for invalidation.[0m
 [0m[[0m[0mdebug[0m] [0m[0mNo changes[0m

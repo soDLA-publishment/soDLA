@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mjava.lang.ClassNotFoundException: nvdla.FPULauncher[0m
+[0m[[0m[31merror[0m] [0m[0mjava.lang.ClassNotFoundException: nvdla.cmac[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.lang.ClassLoader.findClass(Unknown Source)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.lang.ClassLoader.loadClass(Unknown Source)[0m
 [0m[[0m[31merror[0m] [0m[0m	at sbt.internal.inc.classpath.ClasspathFilter.loadClass(ClassLoaders.scala:70)[0m
@@ -22,4 +22,4 @@
 [0m[[0m[31merror[0m] [0m[0m	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.lang.Thread.run(Unknown Source)[0m
-[0m[[0m[31merror[0m] [0m[0m(Test / [31mrunMain[0m) java.lang.ClassNotFoundException: nvdla.FPULauncher[0m
+[0m[[0m[31merror[0m] [0m[0m(Test / [31mrunMain[0m) java.lang.ClassNotFoundException: nvdla.cmac[0m

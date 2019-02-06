@@ -5,7 +5,15 @@ This is a suite of packages for working with nvdla in chisel
 .
 These are the tutorials for [chisel3](https://chisel.eecs.berkeley.edu/index.html#getstarted) and [nvdla](http://nvdla.org/hw/v1/hwarch.html)
 
+cora package(building):
 
+This is a accelerator of self-driving car with following features:
+
+1. 4-d or 6-d floating point matrix operations.
+
+2. cordic
+
+3. A pipeline of kalman-filter
 
 Getting Started
 ----------------
@@ -14,7 +22,6 @@ Getting Started
     $ cd soDLA
     $ sbt
     
-
 
 Executing Test
 ----------------
@@ -44,6 +51,10 @@ CMAC_CORE_active:
 CMAC_core(untested, but you can generate fir):
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core
+
+CBUF(untested, but you can generate fir):
+
+    $ test:runMain nvdla.cbufLauncher NV_NVDLA_cbuf
     
 
 

@@ -1,10 +1,27 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\rocket\Launcher.scala:12:20: not found: type MulAddRecFNPipeTests[0m
-[0m[[0m[31merror[0m] [0m[0m        (c) => new MulAddRecFNPipeTests(c)[0m
-[0m[[0m[31merror[0m] [0m[0m                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\rocket\Launcher.scala:16:32: not found: type ValExec_MulAddRecFNPipeF32[0m
-[0m[[0m[31merror[0m] [0m[0m      Driver.execute(() => new ValExec_MulAddRecFNPipeF32, manager) {[0m
-[0m[[0m[31merror[0m] [0m[0m                               ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\rocket\Launcher.scala:17:20: not found: type ValExec_MulAddRecFNPipeF32Tests[0m
-[0m[[0m[31merror[0m] [0m[0m        (c) => new ValExec_MulAddRecFNPipeF32Tests(c)[0m
-[0m[[0m[31merror[0m] [0m[0m                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\nvdla\cbuf\Launcher.scala:13:16: inferred type arguments [nvdla.NV_NVDLA_cbuf] do not conform to method execute's type parameter bounds [T <: chisel3.experimental.MultiIOModule][0m
+[0m[[0m[31merror[0m] [0m[0m        Driver.execute(() => new NV_NVDLA_cbuf, manager) {[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\nvdla\cbuf\Launcher.scala:13:27: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : () => nvdla.NV_NVDLA_cbuf[0m
+[0m[[0m[31merror[0m] [0m[0m required: () => T[0m
+[0m[[0m[31merror[0m] [0m[0m        Driver.execute(() => new NV_NVDLA_cbuf, manager) {[0m
+[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\nvdla\cbuf\NV_NVDLA_cbufTests.scala:6:52: inferred type arguments [nvdla.NV_NVDLA_cbuf] do not conform to class PeekPokeTester's type parameter bounds [+T <: chisel3.experimental.MultiIOModule][0m
+[0m[[0m[31merror[0m] [0m[0mError occurred in an application involving default arguments.[0m
+[0m[[0m[31merror[0m] [0m[0mclass NV_NVDLA_cbufTests(c: NV_NVDLA_cbuf) extends PeekPokeTester(c) {[0m
+[0m[[0m[31merror[0m] [0m[0m                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\nvdla\cbuf\NV_NVDLA_cbufTests.scala:6:67: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : nvdla.NV_NVDLA_cbuf[0m
+[0m[[0m[31merror[0m] [0m[0m required: T[0m
+[0m[[0m[31merror[0m] [0m[0mError occurred in an application involving default arguments.[0m
+[0m[[0m[31merror[0m] [0m[0mclass NV_NVDLA_cbufTests(c: NV_NVDLA_cbuf) extends PeekPokeTester(c) {[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\nvdla\cbuf\NV_NVDLA_cbufTests.scala:16:7: inferred type arguments [nvdla.NV_NVDLA_cbuf] do not conform to method apply's type parameter bounds [T <: chisel3.experimental.MultiIOModule][0m
+[0m[[0m[31merror[0m] [0m[0m      Driver(() => new NV_NVDLA_cbuf)(c => new NV_NVDLA_cbufTests(c)) should be (true)[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\nvdla\cbuf\NV_NVDLA_cbufTests.scala:16:17: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : () => nvdla.NV_NVDLA_cbuf[0m
+[0m[[0m[31merror[0m] [0m[0m required: () => T[0m
+[0m[[0m[31merror[0m] [0m[0m      Driver(() => new NV_NVDLA_cbuf)(c => new NV_NVDLA_cbufTests(c)) should be (true)[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0m6 errors found[0m
