@@ -7,6 +7,9 @@ class NV_NVDLA_CMAC_coreTests(c: NV_NVDLA_CMAC_core) extends PeekPokeTester(c) {
  
   implicit val conf: cmacConfiguration = new cmacConfiguration
 
+
+
+
 }
 
 class NV_NVDLA_CMAC_coreTester extends ChiselFlatSpec {

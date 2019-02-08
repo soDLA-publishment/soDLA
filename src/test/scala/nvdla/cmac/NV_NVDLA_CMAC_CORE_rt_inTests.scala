@@ -24,7 +24,7 @@ class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPok
     poke(c.io.sc2mac_dat_pvld, sc2mac_dat_pvld)
     poke(c.io.sc2mac_wt_pvld, sc2mac_wt_pvld)
 
-    for (i <- 0 until conf.CMAC_ATOMC-1){
+    for (i <- 0 to conf.CMAC_ATOMC-1){
 
       sc2mac_dat_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       sc2mac_dat_mask(i) = rnd.nextBoolean()
@@ -40,7 +40,7 @@ class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPok
 
     }
 
-    for (i <- 0 until conf.CMAC_ATOMK_HALF-1){
+    for (i <- 0 to conf.CMAC_ATOMK_HALF-1){
 
       sc2mac_wt_sel(i) = rnd.nextBoolean()
 
@@ -56,7 +56,7 @@ class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPok
     //dat valid
     expect(c.io.in_dat_pvld, sc2mac_dat_pvld) 
     if(sc2mac_dat_pvld){
-      for (i <- 0 until conf.CMAC_ATOMC-1){
+      for (i <- 0 to conf.CMAC_ATOMC-1){
         //dat mask
         expect(c.io.in_dat_mask(i), sc2mac_dat_mask(i))
         //dat data
@@ -70,7 +70,7 @@ class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPok
     //wt valid
     expect(c.io.in_wt_pvld, sc2mac_wt_pvld) 
     if(sc2mac_wt_pvld){
-      for (i <- 0 until conf.CMAC_ATOMC-1){
+      for (i <- 0 to conf.CMAC_ATOMC-1){
         //wt mask
         expect(c.io.in_wt_mask(i), sc2mac_wt_mask(i))
 
@@ -79,7 +79,7 @@ class NV_NVDLA_CMAC_CORE_rt_inTests(c: NV_NVDLA_CMAC_CORE_rt_in) extends PeekPok
           expect(c.io.in_wt_data(i), sc2mac_wt_data(i))
         }
       }     
-      for (j <- 0 until conf.CMAC_ATOMK_HALF-1){
+      for (j <- 0 to conf.CMAC_ATOMK_HALF-1){
         //wt sel
         expect(c.io.in_wt_sel(j), sc2mac_wt_sel(j))      
       }  

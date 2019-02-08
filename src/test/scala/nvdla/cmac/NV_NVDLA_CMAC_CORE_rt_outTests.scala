@@ -7,7 +7,7 @@ class NV_NVDLA_CMAC_CORE_rt_outTests(c: NV_NVDLA_CMAC_CORE_rt_out) extends PeekP
  
   implicit val conf: cmacConfiguration = new cmacConfiguration
 
-  for (t <- 0 until 100) {
+  for (t <- 0 to 99) {
     //load random inputs
     val out_data = Array.fill(conf.CMAC_ATOMK_HALF){0}
     val out_mask = Array.fill(conf.CMAC_ATOMK_HALF){false}
@@ -17,7 +17,7 @@ class NV_NVDLA_CMAC_CORE_rt_outTests(c: NV_NVDLA_CMAC_CORE_rt_out) extends PeekP
     poke(c.io.out_pd, out_pd)
     poke(c.io.out_pvld, out_pvld)
 
-    for (i <- 0 until conf.CMAC_ATOMK_HALF-1){
+    for (i <- 0 to conf.CMAC_ATOMK_HALF-1){
 
       out_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       out_mask(i) = rnd.nextBoolean()
@@ -34,7 +34,7 @@ class NV_NVDLA_CMAC_CORE_rt_outTests(c: NV_NVDLA_CMAC_CORE_rt_out) extends PeekP
     //dat valid
     expect(c.io.mac2accu_pvld, out_pvld) 
     if(out_pvld){
-      for (i <- 0 until conf.CMAC_ATOMK_HALF-1){
+      for (i <- 0 to conf.CMAC_ATOMK_HALF-1){
         //dat mask
         expect(c.io.mac2accu_mask(i), out_mask(i))
         //dat data

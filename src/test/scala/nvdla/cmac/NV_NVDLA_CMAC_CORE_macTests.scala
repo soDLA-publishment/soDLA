@@ -7,7 +7,7 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
  
   implicit val conf: cmacConfiguration = new cmacConfiguration
 
-  for (t <- 0 until 100) {
+  for (t <- 0 until 1000) {
 
     val wt = Array.fill(conf.CMAC_ATOMC){0}
     val wt_nz = Array.fill(conf.CMAC_ATOMC){false}
@@ -19,7 +19,7 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
 
     val mout = Array.fill(conf.CMAC_ATOMC){0}
 
-    for (i <- 0 until conf.CMAC_ATOMC-1){
+    for (i <- 0 to conf.CMAC_ATOMC-1){
 
       wt(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       wt_nz(i) = rnd.nextBoolean()

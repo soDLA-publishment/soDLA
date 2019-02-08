@@ -55,7 +55,7 @@ class RED_CORA_MATRIX_v2m(implicit val conf: matrixConfiguration) extends Module
     // MulAddRecFNPipe CELLs
     //==========================================================
 
-    val u_v2v = Array.fill(conf.KF_STAT)(Module(new C_CORA_MATRIX_v2v_fp_noshareFMA()))
+    val u_v2v = Array.fill(conf.KF_STAT)(Module(new RED_CORA_MATRIX_v2v_fp_noshareFMA()))
     
     //setup config
     for (i <- 0 to conf.KF_STAT-1){
