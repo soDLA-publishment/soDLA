@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 
 
-class cbufConfiguration(){
+class cscConfiguration(){
     
     val NVDLA_CBUF_BANK_NUMBER = 32
     val NVDLA_CBUF_BANK_DEPTH = 512
@@ -13,46 +13,67 @@ class cbufConfiguration(){
     val NVDLA_CBUF_DEPTH_LOG2 = 14
     val NVDLA_CC_ATOMC_DIV_ATOMK = 1
 
-    var CBUF_BANK_NUMBER = NVDLA_CBUF_BANK_NUMBER
-    var CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH
-    var CBUF_ENTRY_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
-    var CBUF_ENTRY_BYTE = 1
-    var CBUF_RAM_DEPTH = NVDLA_CBUF_BANK_DEPTH 
-    var CBUF_BANK_DEPTH_BITS = NVDLA_CBUF_BANK_DEPTH_LOG2  //log2(bank_depth), how many bits need to give an address in BANK
-    var CBUF_RD_DATA_SHIFT_WIDTH =  NVDLA_CBUF_WIDTH_MUL2_LOG2  //log2(ram_width*2),width of data shift
-    var CBUF_ADDR_WIDTH  =  NVDLA_CBUF_DEPTH_LOG2       //log2(bank_depth*bank_num)for both read and write
-    var CBUF_RD_PORT_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
-    var CBUF_WR_PORT_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
-    var CBUF_WR_PORT_NUMBER = 2   //how many write ports.
-    var CSC_IMAGE_MAX_STRIDE_BYTE = 32  //=stride_max* 
-    var CBUF_BANK_RAM_CASE = 1
+    val CSC_ATOMC = NVDLA_MAC_ATOMIC_C_SIZE
+    val CSC_ATOMK = NVDLA_MAC_ATOMIC_K_SIZE
+    val CBUF_BANK_NUM = NVDLA_CBUF_BANK_NUMBER
+    val CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH
+    val CSC_BPE = NVDLA_BPE
+    val CBUF_ENTRY_BITS = NVDLA_CBUF_ENTRY_WIDTH
+    val CSC_ATOMK_HF = CSC_ATOMK/2
+    val CSC_TWICE_ENTRY_BITS = CBUF_ENTRY_BITS*2         //entry*2
+    val CSC_ENTRY_BITS = CBUF_ENTRY_BITS   //entry
+    val CSC_HALF_ENTRY_BITS = CBUF_ENTRY_BITS/2          //entry/2
+    val CSC_QUAT_ENTRY_BITS = CBUF_ENTRY_BITS/4          //entry/4
+    val CSC_3QUAT_ENTRY_BITS = CBUF_ENTRY_BITS*3/4        //entry*3/4
+    val CSC_ATOMC_HALF = CSC_ATOMC/2           //atomC/2
+    val CSC_ATOMC_QUAT = CSC_ATOMC/4           //atomC/4
+    val LOG2_ATOMC = NVDLA_MAC_ATOMIC_C_SIZE_LOG2           //log2(atomC)
+    val LOG2_ATOMK = NVDLA_MAC_ATOMIC_K_SIZE_LOG2           //log2(atomK)
+    val LOG2_CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH_LOG2              //log2(bank_depth)
+    val CBUF_ADDR_WIDTH = NVDLA_CBUF_DEPTH_LOG2                   //log2(bank_num*bank_depth)
+    val LOG2_BANK_NUM = NVDLA_CBUF_BANK_NUMBER_LOG2             //log2(bank_num)
+    val NVDLA_VMOD_CBUF_WRITE_LATENCY = 3
+    val NVDLA_VMOD_CBUF_READ_LATENCY = 6
+    val NVDLA_HLS_CSC_PRA_LATENCY = 5
+    val NVDLA_CBUF_READ_LATENCY = NVDLA_VMOD_CBUF_READ_LATENCY
+    val NVDLA_MACCELL_NUMBER = CSC_ATOMK
+    val CSC_DL_PRA_LATENCY = NVDLA_HLS_CSC_PRA_LATENCY
+    val CSC_WL_LATENCY = 4
+    val RT_CSC2CMAC_A_LATENCY = 2
+    val RT_CSC2CMAC_B_LATENCY = 1
+    val CSC_ENTRIES_NUM_WIDTH = 15
 
-    if((NVDLA_CC_ATOMC_DIV_ATOMK==1)& (CBUF_ENTRY_BYTE >= CSC_IMAGE_MAX_STRIDE_BYTE)){
-        CBUF_BANK_RAM_CASE = 0
-    }
-    else if((NVDLA_CC_ATOMC_DIV_ATOMK==1)& (CBUF_ENTRY_BYTE < CSC_IMAGE_MAX_STRIDE_BYTE)){
-        CBUF_BANK_RAM_CASE = 1
-    }
-    else if((NVDLA_CC_ATOMC_DIV_ATOMK==2)& (CBUF_ENTRY_BYTE >= CSC_IMAGE_MAX_STRIDE_BYTE)){
-        CBUF_BANK_RAM_CASE = 2
-    }
-    else if((NVDLA_CC_ATOMC_DIV_ATOMK==2)& (CBUF_ENTRY_BYTE < CSC_IMAGE_MAX_STRIDE_BYTE)){
-        CBUF_BANK_RAM_CASE = 3
-    } 
-    else if((NVDLA_CC_ATOMC_DIV_ATOMK==4)& (CBUF_ENTRY_BYTE >= CSC_IMAGE_MAX_STRIDE_BYTE)){
-        CBUF_BANK_RAM_CASE = 4
-    }
-    else if((NVDLA_CC_ATOMC_DIV_ATOMK==4)& (CBUF_ENTRY_BYTE < CSC_IMAGE_MAX_STRIDE_BYTE)){
-        CBUF_BANK_RAM_CASE = 5
-    }  
-   
+    var CSC_WL_PIPELINE_ADDITION = 0 
+    var CSC_DL_PIPELINE_ADDITION = 0
 
-    //ram case could be 0/1/2/3/4/5  0:1ram/bank; 1:1*2ram/bank; 2:2*1ram/bank; 3:2*2ram/bank  4:4*1ram/bank  5:4*2ram/bank 
+    if(CSC_WL_LATENCY >= CSC_DL_PRA_LATENCY){
+        CSC_DL_PIPELINE_ADDITION = CSC_WL_LATENCY-CSC_DL_PRA_LATENCY
+        CSC_WL_PIPELINE_ADDITION = 0
+    }
+    else{
+        CSC_DL_PIPELINE_ADDITION = 0
+        CSC_WL_PIPELINE_ADDITION = CSC_DL_PRA_LATENCY-CSC_WL_LATENCY
+    }
+    val CSC_SG_DONE_FLUSH = "h30".asUInt(6.W)
+    val CSC_SG_PEND_FLUSH = "h20".asUInt(6.W)
 
-    var CBUF_RAM_PER_BANK = 1
-    var CBUF_WR_BANK_SEL_WIDTH = 1
-    var CBUF_RAM_WIDTH = NVDLA_CBUF_ENTRY_WIDTH 
-    var CBUF_RAM_DEPTH_BITS = 1
+    //entry bits
+    var CSC_WMB_ELEMENTS = "h200".asUInt(11.W)
+    //atomC
+    var CSC_WT_ELEMENTS = "h40"
+    //in bytes, entry/8
+    var CSC_ENTRY_HEX                                       8'h40  
+    //CSC_ENTRY_HEX/2
+    var CSC_HALF_ENTRY_HEX                                  8'h20
+    //CSC_ENTRY_HEX/4
+    var CSC_QUAT_ENTRY_HEX                                  8'h10
+    //CSC_ENTRY_HEX-1
+    var CSC_ENTRY_MINUS1_HEX                                8'h3f
+    var CSC_ENTRY_HEX_MUL2                                  8'h80
+    
+    var CSC_ATOMC_HEX                                       7'h40
+    var CSC_ATOMC_HEX_STR                                   "\"7'h40\""
+
 
     if(CBUF_BANK_RAM_CASE==0){
         CBUF_RAM_PER_BANK = 1

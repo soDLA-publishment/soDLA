@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends RawModule {
+// class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
 //     val io = IO(new Bundle {
 //         //input 
 //         val input_data = Input(Vec(conf.CSC_ATOMC, conf.CSC_TYPE(conf.CSC_BPE.W)))
@@ -12,7 +12,6 @@
 //         val input_mask_en = Input(UInt(10.W))
 //         val input_pipe_valid = Input(Bool())
 //         val input_sel = Input(UInt(conf.CSC_ATOMK.W))
-
 
 //         //output
 //         val output_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
@@ -42,7 +41,6 @@
 //     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //     //             │ ─┤ ─┤       │ ─┤ ─┤         
 //     //             └──┴──┘       └──┴──┘ 
-// withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
 //     /////////////////////////////////////////////////////////////////////////////////////////////
 //     // Decoder of compressed weight                                                  

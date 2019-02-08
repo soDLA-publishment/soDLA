@@ -8,7 +8,7 @@ import hardfloat._
 
 //this module is to mac tr and stat
 
-class C_CORA_MATRIX_v2v_fp_noshareFMA(implicit val conf: matrixConfiguration) extends Module {
+class RED_CORA_MATRIX_v2v_fp_noshareFMA(implicit val conf: matrixConfiguration) extends Module {
 
     val io = IO(new Bundle {
         //input
