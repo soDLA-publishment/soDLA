@@ -1,4 +1,41 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\nvdla\cmac\Launcher.scala:54:22: not found: type NV_NVDLA_CMAC_coreTests[0m
-[0m[[0m[31merror[0m] [0m[0m          (c) => new NV_NVDLA_CMAC_coreTests(c)[0m
-[0m[[0m[31merror[0m] [0m[0m                     ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\ram\nv_ram_rwsTests.scala:15:5: overloaded method value peek with alternatives:[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bundle)scala.collection.mutable.LinkedHashMap[String,BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.core.Aggregate)Seq[BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bits)BigInt <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (path: String)BigInt[0m
+[0m[[0m[31merror[0m] [0m[0m cannot be applied to (chisel3.core.Bool, Boolean)[0m
+[0m[[0m[31merror[0m] [0m[0m    peek(c.io.we, true)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\ram\nv_ram_rwsTests.scala:16:5: overloaded method value peek with alternatives:[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bundle)scala.collection.mutable.LinkedHashMap[String,BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.core.Aggregate)Seq[BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bits)BigInt <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (path: String)BigInt[0m
+[0m[[0m[31merror[0m] [0m[0m cannot be applied to (chisel3.core.UInt, Int)[0m
+[0m[[0m[31merror[0m] [0m[0m    peek(c.io.wa, in_address)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\ram\nv_ram_rwsTests.scala:17:5: overloaded method value peek with alternatives:[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bundle)scala.collection.mutable.LinkedHashMap[String,BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.core.Aggregate)Seq[BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bits)BigInt <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (path: String)BigInt[0m
+[0m[[0m[31merror[0m] [0m[0m cannot be applied to (chisel3.core.UInt, Int)[0m
+[0m[[0m[31merror[0m] [0m[0m    peek(c.io.di, in_data)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\ram\nv_ram_rwsTests.scala:22:5: overloaded method value peek with alternatives:[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bundle)scala.collection.mutable.LinkedHashMap[String,BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.core.Aggregate)Seq[BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bits)BigInt <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (path: String)BigInt[0m
+[0m[[0m[31merror[0m] [0m[0m cannot be applied to (chisel3.core.Bool, Boolean)[0m
+[0m[[0m[31merror[0m] [0m[0m    peek(c.io.re, true)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\test\scala\ram\nv_ram_rwsTests.scala:23:5: overloaded method value peek with alternatives:[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bundle)scala.collection.mutable.LinkedHashMap[String,BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.core.Aggregate)Seq[BigInt] <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (signal: chisel3.Bits)BigInt <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (path: String)BigInt[0m
+[0m[[0m[31merror[0m] [0m[0m cannot be applied to (chisel3.core.UInt, Int)[0m
+[0m[[0m[31merror[0m] [0m[0m    peek(c.io.ra, in_address)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m5 errors found[0m

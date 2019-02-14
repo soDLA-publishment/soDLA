@@ -9,19 +9,13 @@
 
 // class NV_NVDLA_CSC_dual_reg extends RawModule{
 //     val io = IO(new Bundle{
-//         general clock
-//         val nvdla_core_clk = Input(Clock())      
-//         val nvdla_core_rstn = Input(Bool())
-
-//         Register control interface
+//         //Register control interface
 //         val reg_rd_data = Output(UInt(32.W))
 //         val reg_offset = Input(UInt(12.W))
 //         val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
-
 //         val reg_wr_en = Input(Bool())
 
-//         Writable register flop/trigger outputs
-
+//         //Writable register flop/trigger outputs
 //         val atomics = Output(UInt(21.W))
 //         val data_bank = Output(UInt(5.W))
 //         val weight_bank = Output(UInt(5.W))
@@ -61,35 +55,32 @@
 //         val pad_top = Output(UInt(5.W))
 //         val pad_value = Output(UInt(16.W))
 
-//         Read-only register inputs
-
+//         //Read-only register inputs
 //         val op_en = Input(Bool())    
 //     })
     
-//          ┌─┐       ┌─┐
-//       ┌──┘ ┴───────┘ ┴──┐
-//       │                 │
-//       │       ───       │
-//       │  ─┬┘       └┬─  │
-//       │                 │
-//       │       ─┴─       │
-//       │                 │
-//       └───┐         ┌───┘
-//           │         │
-//           │         │
-//           │         │
-//           │         └──────────────┐
-//           │                        │
-//           │                        ├─┐
-//           │                        ┌─┘    
-//           │                        │
-//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-//             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘ 
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+//     //      ┌─┐       ┌─┐
+//     //   ┌──┘ ┴───────┘ ┴──┐
+//     //   │                 │
+//     //   │       ───       │
+//     //   │  ─┬┘       └┬─  │
+//     //   │                 │
+//     //   │       ─┴─       │
+//     //   │                 │
+//     //   └───┐         ┌───┘
+//     //       │         │
+//     //       │         │
+//     //       │         │
+//     //       │         └──────────────┐
+//     //       │                        │
+//     //       │                        ├─┐
+//     //       │                        ┌─┘    
+//     //       │                        │
+//     //       └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//     //         │ ─┤ ─┤       │ ─┤ ─┤         
+//     //         └──┴──┘       └──┴──┘ 
 
-//     Address decode
-
+//     // Address decode
 //     val nvdla_csc_d_atomics_0_wren = (io.reg_offset === "h44".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
 //     val nvdla_csc_d_bank_0_wren = (io.reg_offset ===  "h5c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
 //     val nvdla_csc_d_batch_number_0_wren = (io.reg_offset ===  "h1c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
@@ -144,7 +135,7 @@
 
 //     io.op_en_trigger := nvdla_csc_d_op_enable_0_wren
 
-//     Output mux
+//     //Output mux
 
 //     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
 //     Seq(      
@@ -174,7 +165,7 @@
 //     "h58".asUInt(32.W)  -> nvdla_csc_d_zero_padding_value_0_out                                                                                    
 //     ))
 
-//     Register flop declarations
+//     //Register flop declarations
 
 //     val atomics_out = RegInit("b1".asUInt(21.W))
 //     val data_bank_out = RegInit("b0".asUInt(5.W))
@@ -437,6 +428,5 @@
 //     io.pad_left := pad_left_out
 //     io.pad_top := pad_top_out
 //     io.pad_value := pad_value_out                                                                   
-
 
 // }}

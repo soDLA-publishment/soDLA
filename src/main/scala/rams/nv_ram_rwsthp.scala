@@ -9,10 +9,6 @@ import chisel3.experimental._
 class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
 
     val io = IO(new Bundle {
-        //clock
-        val clk = Input(Clock())
-
-
         //control signal
         val re = Input(Bool())
         val we = Input(Bool())

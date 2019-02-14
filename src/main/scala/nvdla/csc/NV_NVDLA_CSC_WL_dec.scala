@@ -8,16 +8,16 @@
 //     val io = IO(new Bundle {
 //         //input 
 //         val input_data = Input(Vec(conf.CSC_ATOMC, conf.CSC_TYPE(conf.CSC_BPE.W)))
-//         val input_mask = Input(UInt(conf.CSC_ATOMC.W))
-//         val input_mask_en = Input(UInt(10.W))
+//         val input_mask = Input(Vec(conf.CSC_ATOMC, Bool()))
+//         val input_mask_en = Input(Vec(10, Bool()))
 //         val input_pipe_valid = Input(Bool())
-//         val input_sel = Input(UInt(conf.CSC_ATOMK.W))
+//         val input_sel = Input(Vec(conf.CSC_ATOMK, Bool()))
 
 //         //output
-//         val output_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-//         val output_mask = Output(UInt(CSC_ATOMC.W))
+//         val output_data = Output(Vec(conf.CSC_ATOMC, conf.CSC_TYPE(conf.CSC_BPE.W)))
+//         val output_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
 //         val output_pvld = Output(Bool())
-//         val output_sel = Output(UInt(CSC_ATOMK.W))    
+//         val output_sel = Output(Vec(conf.CSC_ATOMK, Bool()))    
 
 //     })
 //     //     
@@ -56,7 +56,7 @@
 //     /////////////////////////////////////////////////////////////////////////////////////////////
 
 //     ////////////////////////////////// phase I: calculate sums for mux //////////////////////////////////
-//     val input_mask_gated = Mux(~io.input_mask_en(8), "b0".asUInt(conf.CSC_BPE.W), io.input_mask)
+//     val input_mask_gated = Mux(io.input_mask_en(8), io.input_mask, Vec(conf.CSC_ATOMC, false.B))
 //     val vec_sum = MixedVec((0 to conf.CSC_ATOMC-1) map { i => UInt((log2Ceil(i+2)).W) })
 //     for(i <- 0 to conf.CSC_ATOMC-1){
 //         for(j <- 0 to i){
@@ -71,9 +71,9 @@
 
 //     ////////////////////////////////// phase I: registers //////////////////////////////////
 //     val valid_d1 = RegInit(false.B)
-//     val data_d1 = Reg(UInt((conf.CSC_ATOMC * conf.CSC_BPE).W))
-//     val mask_d1 = Reg(UInt(conf.CSC_ATOMC.W))
-//     val sel_d1 = Reg(UInt(conf.CSC_ATOMK.W))
+//     val data_d1 = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
+//     val mask_d1 = Reg(Vec(conf.CSC_ATOMC, Bool()))
+//     val sel_d1 = Reg(Vec(conf.CSC_ATOMK, Bool()))
 //     val vec_sum_d1 = RegInit(MixedVecInit((0 to conf.CSC_ATOMC-1) map { i => Fill(log2Ceil(i+2), false.B) }))
 
 //     valid_d1 := io.input_pipe_valid
@@ -91,7 +91,7 @@
 //     }  
 
 //     ////////////////////////////////// phase II: mux //////////////////////////////////
-//     val vec_data = VecInit(conf.CSC_ATOMC, "b0".asUInt(conf.CSC_BPE.W)))
+//     val vec_data = Vec(conf.CSC_ATOMC, "b0".asUInt(conf.CSC_BPE.W))
 
 //     for(j <- 0 to conf.CSC_ATOMC-1){
 //         vec_data(j) := MuxLookup(vec_sum_d1(j), 
@@ -111,13 +111,13 @@
 //     }
 //     for(i <- 0 to conf.CSC_ATOMC-1){
 //         when(valid_d1){
-//             vec_data_d2(i) := vec_data(i)&Fill(conf.CSC_BPE.W, mask_d1(i))
+//             vec_data_d2(i) := vec_data(i)&Fill(conf.CSC_BPE, mask_d1(i))
 //         }
 //     }     
 
 //     ////////////////////////////////// phase III: registers //////////////////////////////////
-//     val mask_d2_int8_w = VecInit(conf.CSC_ATOMC, Bool())
-//     val mask_d2_w = VecInit(UInt(conf.CSC_ATOMC.W))
+//     val mask_d2_int8_w = Vec(conf.CSC_ATOMC, Bool())
+//     val mask_d2_w = Vec(UInt(conf.CSC_ATOMC.W))
 //     for(i <- 0 to conf.CSC_ATOMC-1){
 //         mask_d2_int8_w(i) := vec_data_d2(i).orR
 //     }
@@ -133,10 +133,11 @@
 //     when(valid_d2){
 //         mask_d3 := mask_d2_w
 //         sel_d3 := sel_d2
+//         vec_data_d3
 //     }
 //     for(i <- 0 to conf.CSC_ATOMC-1){
 //         when(valid_d2){
-//             vec_data_d3(i) := vec_data_d2(i)
+//             (i) := vec_data_d2(i)
 //         }
 //     }    
 
@@ -146,5 +147,5 @@
 //     io.output_sel := sel_d3
 //     io.output_data := vec_data_d3
     
-// }}
+// }
 

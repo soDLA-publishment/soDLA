@@ -57,19 +57,5 @@ This is a accelerator of self-driving car with following features:
 
 3. A pipeline of kalman-filter
 
-Discussion
-----------------
-
-gitter: [link](https://gitter.im/NVDLA_chisel/Lobby)
-
-
-Coffee
-----------------
-Thanks for buying me a coffee.
-
-
-Wechat: ![](wechat_QR.jpg)
-
-Payme: [link](https://paypal.me/redpanda3)
 
 

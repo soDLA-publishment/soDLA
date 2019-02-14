@@ -64,3 +64,6 @@ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
 test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_macSINT
 test:runMain nvdla.cmacSINTLauncher NV_NVDLA_CMAC_CORE_macSINT
 test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_active
+exit
+test:runMain nvdla.ramLauncher nv_ram_rws
+test:runMain nvdla.ramLauncher nv_ram_rwsp

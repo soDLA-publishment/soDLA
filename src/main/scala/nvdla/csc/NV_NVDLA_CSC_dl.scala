@@ -8,9 +8,6 @@
 
 // class NV_NVDLA_CSC_dl(implicit val conf: cscConfiguration) extends RawModule {
 //     val io = IO(new Bundle {
-//         //general clock
-//         val nvdla_core_clk = Input(Clock())
-//         val nvdla_core_rstn = Input(Bool())
 
 //         val sg2dl_pvld = Input(Bool()) /* data valid */
 //         val sg2dl_pd = Input(UInt(31.W))
@@ -36,12 +33,12 @@
 //         val sc2buf_dat_rd_next1_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
 
 //         val sc2mac_dat_a_pvld = Output(Bool())              /* data valid */
-//         val sc2mac_dat_a_mask = Output(UInt(CSC_ATOMC.W))
+//         val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
 //         val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 //         val sc2mac_dat_a_pd = Output(UInt(9.W))
 
 //         val sc2mac_dat_b_pvld = Output(Bool())              /* data valid */
-//         val sc2mac_dat_b_mask = Output(UInt(CSC_ATOMC.W))
+//         val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
 //         val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 //         val sc2mac_dat_b_pd = Output(UInt(9.W))
 
@@ -96,8 +93,6 @@
 // /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-
 // //////////////////////////////////////////////////////////////
 // ///// status from sequence generator                     /////
 // //////////////////////////////////////////////////////////////
@@ -105,58 +100,74 @@
 // val is_sg_running = (io.sc_state === 2.U)
 // val is_sg_done = (io.sc_state == 3.U)
 
-// val is_sg_running_d1 = RegInit(false.B); is_sg_running_d1 := is_sg_running
+// val is_sg_running_d1 = RegInit(false.B)
+// is_sg_running_d1 := is_sg_running
 // //////////////////////////////////////////////////////////////
 // ///// input signals from registers                       /////
 // //////////////////////////////////////////////////////////////
+
 // val layer_st = io.reg2dp_op_en & is_sg_idle
 // val is_pixel = io.reg2dp_datain_format 
 // val is_winograd =  if(conf.NVDLA_WINOGRAD_ENABLE) io.reg2dp_conv_mode else false.B
-// val is_conv = !io.reg2dp_conv_mode
+// val is_conv = (io.reg2dp_conv_mode == 0.U)
 // val is_img = is_conv & is_pixel
 // val data_bank_w = io.reg2dp_data_bank + 1.U
-// val data_batch_w = if(NVDLA_BATCH_ENABLE) Mux(is_winograd | is_img, "b1".asUInt(6.W), io.reg2dp_batches+1.U) else "b1".asUInt(6.W)
+// val data_batch_w = if(NVDLA_BATCH_ENABLE) Mux(is_winograd | is_img, "b1".asUInt(6.W), io.reg2dp_batches +& 1.U) else "b1".asUInt(6.W)
 // val batch_cmp_w = if(NVDLA_BATCH_ENABLE) Mux(is_winograd | is_img, "b0".asUInt(5.W), io.reg2dp_batches) else "b0".asUInt(5.W) 
 // val is_int8 = (io.reg2dp_proc_precision === 0.U)
 // val is_fp16 = (io.reg2dp_proc_precision === 2.U)
-// val datain_width_w = Mux(is_winograd, Cat("b0".asUInt(2.W), io.reg2dp_datain_width_ext(12, 2)) + 1.U, io.reg2dp_datain_width_ext + 1.U)
+// val datain_width_w = Mux(is_winograd, Cat("b0".asUInt(2.W), io.reg2dp_datain_width_ext(12, 2)) +& 1.U, io.reg2dp_datain_width_ext +& 1.U)
 // val datain_width_cmp_w = io.reg2dp_datain_width_ext
 // val datain_height_cmp_w = io.reg2dp_datain_height_ext
 // val datain_channel_cmp_w = Mux(is_winograd, io.reg2dp_datain_width_ext(12, 2) , Cat(Fill(conf.LOG2_ATOMC-2, false.B), io.reg2dp_weight_channel_ext(12, conf.LOG2_ATOMC)))
 
 // //y_ex=0,sub_h_total=1;y_ex=1,sub_h_total=2; y_ext=2,sub_h_total=4; non_image, sub_h_total=1;
 // //sub_h_total means how many h lines are used in post-extention
-// val sub_h_total_w = Mux(is_img, 9.U << io.reg2dp_y_extension, "h8".asUInt(6.W))(5,3)  
+// val sub_h_total_w = Mux(is_img, "h9".asUInt(6.W) << io.reg2dp_y_extension, "h8".asUInt(6.W))(5,3)  
 // val sub_h_cmp_w = Mux(is_img, sub_h_total_w, Mux(is_winograd, "h2".asUInt(3.W), "h1".asUInt(3.W)))
-// val dataout_w_init = sub_h_cmp_w - 1.U
-// val conv_x_stride_w = Mux(is_winograd, "b1".asUInt(4.W), io.reg2dp_conv_x_stride_ext + "b1".asUInt(1.W))
-// val pixel_x_stride_w = MuxLookUp(io.reg2dp_datain_channel_ext(1,0), Cat("b0".asUInt(2.W), conv_x_stride_w),
-//                                  Array(3.U -> Cat(conv_x_stride_w, "b0".asUInt(2.W)), 
-//                                        2.U -> Cat(conv_x_stride_w, "b0".asUInt(1.W)) + conv_x_stride_w))
+// val dataout_w_init = Wire(UInt(13.W))
+// dataout_w_init := sub_h_cmp_w -& 1.U
+// val conv_x_stride_w = Mux(is_winograd, "b1".asUInt(4.W), io.reg2dp_conv_x_stride_ext +& "b1".asUInt(1.W))
+// val pixel_x_stride_w = MuxLookUp(io.reg2dp_datain_channel_ext(1,0), Cat("b0".asUInt(2.W), conv_x_stride_w), 
+//                                  Array(3.U -> Cat(conv_x_stride_w, "b0".asUInt(2.W)), //*4, after pre_extension
+//                                        2.U -> Cat(conv_x_stride_w, "b0".asUInt(1.W)) +& conv_x_stride_w))//*3
 
 // if(conf.LOG2_ATOMC == 6){
-//     val pixel_x_init_w = MuxLookUp(io.reg2dp_y_extension, Mux(io.reg2dp_weight_channel_ext >= conf.CSC_ATOMC_HEX.U, Fill(conf.LOG2_ATOMC, true.B), io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0)),
+// val pixel_x_init_w = if(conf.LOG2_ATOMC == 6)
+//                     MuxLookUp(io.reg2dp_y_extension, Mux(io.reg2dp_weight_channel_ext >= conf.CSC_ATOMC_HEX.U, Fill(conf.LOG2_ATOMC, true.B), io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0)),
+//                                Array(2.U -> Cat(pixel_x_stride_w, "b0".asUInt(1.W)) + pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0), 
+//                                      1.U -> pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0)))
+//                     else
+//                     MuxLookUp(io.reg2dp_y_extension, Mux(io.reg2dp_weight_channel_ext >= conf.CSC_ATOMC_HEX.U, Fill(conf.LOG2_ATOMC, true.B), io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0)),
 //                                  Array(2.U -> Cat(pixel_x_stride_w, "b0".asUInt(1.W)) + pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0), 
 //                                        1.U -> pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0)))
-// }
-// else{
-//     val pixel_x_init_w = MuxLookUp(io.reg2dp_y_extension, Mux(io.reg2dp_weight_channel_ext >= conf.CSC_ATOMC_HEX.U, Fill(conf.LOG2_ATOMC, true.B), Cat(Fill(6-conf.LOG2_ATOMC, false.B), io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0))),
-//                                  Array(2.U -> Cat(pixel_x_stride_w, "b0".asUInt(1.W)) + pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0), 
-//                                        1.U -> pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0)))
-// }
 
-// val pixel_x_init_offset_w = io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0) + "b1".asUInt(1.W)
-// val pixel_x_add_w = MuxLookUp(io.reg2dp_y_extension, Cat("b0".asUInt(2.W), pixel_x_stride_w),
+
+// val pixel_x_init_offset_w = Wire(UInt(7.W))
+// pixel_x_init_offset_w := io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0) +& "b1".asUInt(1.W)
+// val pixel_x_add_w = Wire(UInt(8.W))
+// pixel_x_add_w := MuxLookUp(io.reg2dp_y_extension, Cat("b0".asUInt(2.W), pixel_x_stride_w),
 //                                Array(2.U -> Cat(pixel_x_stride_w, "b0".asUInt(2.W)), 
 //                                      1.U -> Cat("b1".asUInt(1.W), pixel_x_stride_w, "b0".asUInt(1.W))))
 // val pixel_x_byte_stride_w = Cat("b0".asUInt(1.W), pixel_x_stride_w) 
 
+// val pixel_ch_stride_w = Wire(UInt(12.W))
 // if(conf.LOG2_ATOMK == 5){
-//     val pixel_ch_stride_w = Cat(pixel_x_stride_w, "b0".asUInt((conf.LOG2_ATOMK+1).W)) //stick to 2*atomK  no matter which config.  
-// }
+//     if(conf.CC_ATOMC_DIV_ATOMK==1|conf.CC_ATOMC_DIV_ATOMK==2){
+//         pixel_ch_stride_w := Cat(pixel_x_stride_w, "b0".asUInt((conf.LOG2_ATOMK+1).W)) //stick to 2*atomK  no matter which config. 
+//     }
+//     else if(conf.CC_ATOMC_DIV_ATOMK==4){
+//         pixel_ch_stride_w := Cat(pixel_x_stride_w, "b0".asUInt((conf.LOG2_ATOMK+2).W)) //stick to 4*atomK  no matter which config.
+//     }
 // else{
-//     val pixel_ch_stride_w = Cat(Fill(5-conf.LOG2_ATOMK, false.B), pixel_x_stride_w, Fill(conf.LOG2_ATOMK+1, false.B)) //stick to 2*atomK  no matter which config. 
+//     if(conf.CC_ATOMC_DIV_ATOMK==1|conf.CC_ATOMC_DIV_ATOMK==2){
+//         pixel_ch_stride_w := Cat(Fill(5-conf.LOG2_ATOMK, false.B), pixel_x_stride_w, Fill(conf.LOG2_ATOMK+1, false.B)) //stick to 2*atomK  no matter which config.
+//     }
+//     else if(conf.CC_ATOMC_DIV_ATOMK==4){
+//         pixel_ch_stride_w := Cat(Fill(5-conf.LOG2_ATOMK, false.B), pixel_x_stride_w, Fill(conf.LOG2_ATOMK+2, false.B)) //stick to 2*atomK  no matter which config. 
+//     }  
 // } 
+
 
 
 // val layer_st_d1 = RegInit(false.B)
@@ -212,18 +223,19 @@
 // val pra_precision = RegInit(Fill(8, false.B))
 
 
-// val conv_y_stride_w = Mux(is_winograd, "b1".asUInt(4.W), io.reg2dp_conv_y_stride_ext + "b1".asUInt(1.W))
-// val x_dilate_w = Mux(is_winograd | is_img, "b1".asUInt(6.W), io.reg2dp_x_dilation_ext + "b1".asUInt(1.W)) 
-// val y_dilate_w = Mux(is_winograd | is_img, "b1".asUInt(6.W), io.reg2dp_y_dilation_ext + "b1".asUInt(1.W)) 
+// val conv_y_stride_w = Mux(is_winograd, "b1".asUInt(4.W), io.reg2dp_conv_y_stride_ext +& "b1".asUInt(1.W))
+// val x_dilate_w = Mux(is_winograd | is_img, "b1".asUInt(6.W), io.reg2dp_x_dilation_ext +& "b1".asUInt(1.W)) 
+// val y_dilate_w = Mux(is_winograd | is_img, "b1".asUInt(6.W), io.reg2dp_y_dilation_ext +& "b1".asUInt(1.W)) 
 
 // //reg2dp_entries means entry per slice
 
-// val entries_single_w = (io.reg2dp_entries + "b1".asUInt(1.W))(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
+// val entries_single_w = (io.reg2dp_entries +& "b1".asUInt(1.W))(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
 // val entries_batch_w = (entries_single_w * data_batch_w)(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
-// val entries_w = Mux(is_winograd, Cat(io.reg2dp_entries(12,0), "b0".asUInt(2.W)) + "h4".asUInt(3.W), entries_single_w)(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
+// val entries_w = Mux(is_winograd, Cat(io.reg2dp_entries(12,0), "b0".asUInt(2.W)) +& "h4".asUInt(3.W), entries_single_w)(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
 // val h_offset_slice_w = Cat("b0".asUInt(2.W), (data_batch_w * y_dilate_w)(11, 0))
 // val h_bias_0_stride_w = (entries * data_batch)(conf.CBUF_ADDR_WIDTH-1, 0)
 // val h_bias_1_stride_w = (entries * h_offset_slice)(conf.CBUF_ADDR_WIDTH-1, 0)
+// val rls_slices_w = Wire()
 // val rls_slices_w = (io.reg2dp_rls_slices + "b1".asUInt(1.W))(14, 0)
 // val slice_left_w = Mux(io.reg2dp_skip_data_rls, io.reg2dp_datain_height_ext + "b1".asUInt(1.W), io.reg2dp_datain_height_ext - io.reg2dp_rls_slices)(13, 0)
 // val slices_oprand = Mux(layer_st_d1, rls_slices, slice_left)

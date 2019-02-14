@@ -12,6 +12,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\cora\RED_CORA_MATRIX_v2mTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_macTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\NV_NVDLA_CMAC_CORE_macTests.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\nv_ram_rwsTester.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\nv_ram_rwsTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\TblTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\TblTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\StackTests.class[0m
@@ -26,6 +28,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\cbufLauncher.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\HiLoMultiplierTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\HiLoMultiplierTests.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\nv_ram_rwspTests.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\nv_ram_rwspTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\cbufLauncher$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\cbufLauncher$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_macSINTTests.class[0m
@@ -88,6 +92,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\solutions\VecShiftRegisterTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\DarkenTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\DarkenTester.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\nv_ram_rwsTests.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\nv_ram_rwsTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	cora\matrixLauncher.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\cora\matrixLauncher.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	cora\RED_CORA_MATRIX_v2v_fp_noshareFMATests.class[0m
@@ -132,6 +138,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\NV_NVDLA_cbufTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Adder4Tester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\Adder4Tester.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\ramLauncher$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\ramLauncher$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_macSINTTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\NV_NVDLA_CMAC_CORE_macSINTTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_CLK_gate_powerTests.class[0m
@@ -150,6 +158,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\solutions\RealGCDTests.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\AN2D4PO4Tester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\AN2D4PO4Tester.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\nv_ram_rwspTester.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\nv_ram_rwspTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\RiscTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\RiscTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\MUX2HDD2Tester.class[0m
@@ -168,6 +178,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\StackTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\TblTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\TblTester.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\ramLauncher.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\nvdla\ramLauncher.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\LifeTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\examples\LifeTester.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\AdderTester.class[0m

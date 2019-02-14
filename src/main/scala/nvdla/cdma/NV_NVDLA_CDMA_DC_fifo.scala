@@ -5,10 +5,6 @@
 
 // class NV_NVDLA_CDMA_DC_fifo extends Module {
 //     val io = IO(new Bundle {
-//         // spyglass disable_block W401 -- clock is not input to module
-//         //general clock
-//         val clk = Input(Clock())
-//         val reset_ = Input(Bool())
 
 //         //control signal
 //         val wr_ready = Output(Bool())
@@ -23,20 +19,6 @@
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     })
-
-//     withClockAndReset(io.clk, !io.reset_){
-    
-//     // Master Clock Gating (SLCG)
-//     //
-//     // We gate the clock(s) when idle or stalled.
-//     // This allows us to turn off numerous miscellaneous flops
-//     // that don't get gated during synthesis for one reason or another.
-//     //
-//     // We gate write side and read side separately. 
-//     // If the fifo is synchronous, we also gate the ram separately, but if
-//     // -master_clk_gated_unified or -status_reg/-status_logic_reg is specified, 
-//     // then we use one clk gate for write, ram, and read.
-//     //
 
 //     val clk_mgated_enable = Wire(Bool())
 //     val clk_mgated = Wire(Clock())

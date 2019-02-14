@@ -9,10 +9,6 @@ import chisel3.util._
 class nv_ram_rwsp(dep: Int, wid: Int) extends Module{
 
     val io = IO(new Bundle {
-        //clock
-        val clk = Input(Clock())
-
-
         //control signal
         val re = Input(Bool())
         val we = Input(Bool())
@@ -31,7 +27,7 @@ class nv_ram_rwsp(dep: Int, wid: Int) extends Module{
 val mem = SyncReadMem(dep, UInt(wid.W))
 // Create one write port and one read port.
 when (io.we) { 
-    mem.write(io.wa, io.di) ;
+    mem.write(io.wa, io.di) 
     io.dout := DontCare
 }
 .otherwise{ 
