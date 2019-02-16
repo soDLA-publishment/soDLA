@@ -47,13 +47,7 @@ object cmacLauncher {
         Driver.execute(() => new NV_NVDLA_CMAC_CORE_rt_out(), manager) {
           (c) => new NV_NVDLA_CMAC_CORE_rt_outTests(c)
         }
-      },
-      "NV_NVDLA_CMAC_core" -> { 
-        (manager: TesterOptionsManager) =>
-        Driver.execute(() => new NV_NVDLA_CMAC_core(), manager) {
-          (c) => new NV_NVDLA_CMAC_coreTests(c)
-        }
-      }                   
+      }       
    
 
   )

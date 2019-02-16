@@ -3,8 +3,11 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 
-class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
+        //clock
+        val nvdla_core_clk = Input(Clock())
+
         // sc2mac dat&wt
         val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val sc2mac_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
@@ -52,6 +55,9 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+    val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
+
+    class rt_inImpl{
 
     // retiming init
 
@@ -122,9 +128,17 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: cmacConfiguration) extends Mod
 
     io.in_dat_stripe_st := io.in_dat_pd(conf.PKT_nvdla_stripe_info_stripe_st_FIELD)
     io.in_dat_stripe_end := io.in_dat_pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)
+    }
 
+    val rt_in = withClock(internal_clock){new rt_inImpl}
 
 }
+
+object NV_NVDLA_CMAC_CORE_rt_inDriver extends App {
+  implicit val conf: cmacConfiguration = new cmacConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_rt_in(useRealClock = true))
+}
+
     
     
 

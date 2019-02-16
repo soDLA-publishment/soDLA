@@ -4,10 +4,12 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
+class NV_NVDLA_cbuf(useRealClock:Boolean = false)(implicit val conf: cbufConfiguration) extends Module {
  
   //csb interface  
   val io = IO(new Bundle {
+    //clock
+    val nvdla_core_clk = Input(Clock())
 
     //cdma2buf
     //port 0 for data, 1 for weight
@@ -32,6 +34,10 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
 
   })
 
+   val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
+
+
+class cbufImpl{
 //////////step1:write handle  
     val bank_ram_wr_en_d0 = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(conf.CBUF_WR_PORT_NUMBER, Bool()))))
    
@@ -481,4 +487,15 @@ class NV_NVDLA_cbuf(implicit val conf: cbufConfiguration) extends Module {
             bank_ram_rd_data(i)(j):=u_cbuf_ram_bank_ram(i)(j).io.dout
         }
     }
+
 }
+
+    val cbuf = withClock(internal_clock){new cbufImpl} 
+
+}
+
+object NV_NVDLA_cbufDriver extends App {
+  implicit val conf: cbufConfiguration = new cbufConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_cbuf(useRealClock = true))
+}
+

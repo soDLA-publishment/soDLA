@@ -6,7 +6,13 @@
 
 #output dir
 
-#/test_run_dir/
+/test_run_dir/
+
+*.fir
+*.v
+*.json
+
+/vsrc
 
 #wechat QR
 #wechat_QR.jpg

@@ -1,7 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_sg.scala:219:98: ')' expected but integer literal found.[0m
-[0m[[0m[31merror[0m] [0m[0m                             Mux(is_winograd, Cat("b0".asUInt(2.W), io.reg2dp_atomics(20, 2) + & 1.U),[0m
-[0m[[0m[31merror[0m] [0m[0m                                                                                                 ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_sg.scala:223:5: ')' expected but '}' found.[0m
-[0m[[0m[31merror[0m] [0m[0m    }[0m
-[0m[[0m[31merror[0m] [0m[0m    ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cmac\NV_NVDLA_CMAC_core.scala:186:42: not found: value slcg_op_en[0m
+[0m[[0m[31merror[0m] [0m[0m        u_slcg_op(i).io.slcg_en_src_0 := slcg_op_en(i)[0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

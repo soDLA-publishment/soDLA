@@ -16,7 +16,11 @@ Getting Started
 Executing Test
 ----------------
 
+The following modules are suitable for peekpoke tester.
+
 CMAC
+
+CMAC_core component test in Peekpoke Tester:
 
 CMAC_CORE_mac for unsigned data, see nvdla/common/configurations for detail configurations:
 
@@ -37,14 +41,10 @@ CMAC_CORE_rt_out:
 CMAC_CORE_active:
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_active
-    
-CMAC_core(untested, but you can generate fir):
 
-    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_core
+Some modules are suitable for VCS. I will post a scipt for generating vsrc later.
 
-CBUF(untested, but you can generate fir):
 
-    $ test:runMain nvdla.cbufLauncher NV_NVDLA_cbuf
     
 About the buiding cora package
 ----------------

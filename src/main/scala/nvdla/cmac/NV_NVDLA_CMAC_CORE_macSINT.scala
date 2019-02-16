@@ -6,9 +6,12 @@ import chisel3.util._
 
 //this module is to active dat and wt
 
-class NV_NVDLA_CMAC_CORE_macSINT(implicit conf: cmacSINTConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_macSINT(useRealClock:Boolean = false)(implicit conf: cmacSINTConfiguration) extends Module {
 
     val io = IO(new Bundle {
+        //clock
+        val nvdla_core_clk = Input(Clock())
+
         //input
         val dat_actv_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val dat_actv_nz = Input(Vec(conf.CMAC_ATOMC, Bool()))
@@ -44,6 +47,9 @@ class NV_NVDLA_CMAC_CORE_macSINT(implicit conf: cmacSINTConfiguration) extends M
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+    val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
+
+    class cmacSINTImpl{
                 
     val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0, (2*conf.CMAC_BPE).W)))
 
@@ -65,4 +71,13 @@ class NV_NVDLA_CMAC_CORE_macSINT(implicit conf: cmacSINTConfiguration) extends M
     io.mac_out_data := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     io.mac_out_pvld := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
 
+    }
+
+    val cmacSINT = withClock(internal_clock){new cmacSINTImpl}
+
+}
+
+object NV_NVDLA_CMAC_CORE_macSINTDriver extends App {
+  implicit val conf: cmacSINTConfiguration = new cmacSINTConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_macSINT(useRealClock = true))
 }

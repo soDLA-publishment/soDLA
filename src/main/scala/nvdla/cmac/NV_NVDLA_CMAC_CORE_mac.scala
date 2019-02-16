@@ -3,13 +3,16 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 import chisel3.util._
+import chisel3.iotesters.Driver
 
 //this module is to mac dat and wt
 
-class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
-
+class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
-        //input
+        //clock
+        val nvdla_core_clk = Input(Clock())
+
+        //wt and dat
         val dat_actv_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val dat_actv_nz = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val dat_actv_pvld = Input(Vec(conf.CMAC_ATOMC, Bool()))
@@ -44,7 +47,13 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-                
+
+    val internal_clock = if(useRealClock) io.nvdla_core_clk 
+                         else clock
+
+
+    class macImpl{
+
     val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0, (2*conf.CMAC_BPE).W)))
 
     for(i <- 0 to conf.CMAC_ATOMC-1){
@@ -64,5 +73,13 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: cmacConfiguration) extends Module {
     io.mac_out_data := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     io.mac_out_pvld := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
 
+    }
 
+    val mac = withClock(internal_clock){new macImpl} 
+
+}
+
+object NV_NVDLA_CMAC_CORE_macDriver extends App {
+  implicit val conf: cmacConfiguration = new cmacConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_mac(useRealClock = true))
 }

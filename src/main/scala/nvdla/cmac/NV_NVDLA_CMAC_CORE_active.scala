@@ -4,10 +4,13 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+
 //this module is to active dat and wt
 
-class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
+        //clock
+        val nvdla_core_clk = Input(Clock())
 
         //input_dat
         val in_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
@@ -56,8 +59,12 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-                
 
+    val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
+
+
+                
+    class activeImpl{
 //==========================================================
 // wt&dat:in --> pre
 //==========================================================   
@@ -187,5 +194,16 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: cmacConfiguration) extends Mo
     io.dat_actv_data := dat_actv_data_reg
     io.dat_actv_nz := dat_actv_nz_reg
   }
+
+  val active = withClock(internal_clock){new activeImpl} 
+
+}
+
+
+
+object NV_NVDLA_CMAC_CORE_activeDriver extends App {
+  implicit val conf: cmacConfiguration = new cmacConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_active(useRealClock = true))
+}
 
 
