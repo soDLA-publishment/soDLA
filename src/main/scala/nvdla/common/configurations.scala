@@ -23,7 +23,7 @@ class ramSizeCongiguration()
 class cmacConfiguration()
 {
     val CMAC_ATOMC = 8
-    val CMAC_ATOMK_HALF = 1
+    val CMAC_ATOMK_HALF = 4
     val RT_CMAC_A2CACC_LATENCY = 2
     val RT_CMAC_B2CACC_LATENCY = 3   
     val CMAC_INPUT_NUM = CMAC_ATOMC

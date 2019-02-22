@@ -26,6 +26,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_MulAddRecFN$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_MulAddRecF16_mul.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_MulAddRecF16_mul.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_REG_dual.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_REG_dual.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\SRAMAnnotation.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\SRAMAnnotation.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_DivSqrtRecFN_small_sqrt.class[0m
@@ -92,8 +94,12 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\cmacSINTConfiguration.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\SDFQD1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\SDFQD1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_reg$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_reg$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_reg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_reg.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_activeDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_CORE_activeDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	cora[0m
@@ -150,6 +156,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\cdmaConfiguration.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_CompareRecF16_eq.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_CompareRecF16_eq.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cmacDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cmacDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecF32ToUI64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF32ToUI64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cbuf$.class[0m
@@ -242,6 +250,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Cell$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\SDFCNQD1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\SDFCNQD1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_REG_single.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_REG_single.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Life$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Life$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_UINToRecFN$$anon$1$$anon$3.class[0m
@@ -266,6 +276,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\MulAddRecFNPipe.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_I64ToRecF16.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_I64ToRecF16.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_REG_single$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_REG_single$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_DivSqrtRecFN_small_div.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_DivSqrtRecFN_small_div.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_RT_cmac_b2cacc$$anon$1.class[0m
@@ -550,6 +562,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_DivSqrtRecFN_small_sqrt$$anon$5.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecF64ToUI64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF64ToUI64.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cmacDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cmacDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_activeDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_CORE_activeDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cbuf$$anon$1.class[0m
@@ -564,6 +578,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF16ToUI64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Adder4.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Adder4.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cmac$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cmac$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\RoundAnyRawFNToRecFN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\RoundAnyRawFNToRecFN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_DivSqrtRecFN_small_sqrt$$anon$5$$anon$8.class[0m
@@ -610,6 +626,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_coreDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cbufDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cbufDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_REG_dual$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_REG_dual$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_HLS_shiftrightsatsu$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_HLS_shiftrightsatsu$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hello\Hello.class[0m
@@ -796,6 +814,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF32ToI64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecF16ToUI32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF16ToUI32.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cmacDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cmacDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_UI64ToRecF64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_UI64ToRecF64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\WriteCmd.class[0m
@@ -824,6 +844,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_UINToRecFN$$anon$1$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\FullAdder$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\FullAdder$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cmac.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cmac.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_UI64ToRecF16.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_UI64ToRecF16.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_CompareRecFN_le$$anon$4.class[0m
