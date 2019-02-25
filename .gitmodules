@@ -1,6 +1,4 @@
 [submodule "hardfloat"]
 	path = hardfloat
 	url = https://github.com/ucb-bar/berkeley-hardfloat.git
-[submodule "firrtl"]
-	path = firrtl
-	url = https://github.com/freechipsproject/firrtl.git
+
