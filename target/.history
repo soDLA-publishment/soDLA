@@ -101,3 +101,4 @@ runMain nvdla.NV_NVDLA_CMAC_CORE_macDriver
 runMain nvdla.NV_NVDLA_slcgDriver 
 runMain NV_NVDLA_CMAC_coreDriver
 runMain nvdla.NV_NVDLA_CMAC_coreDriver
+exit

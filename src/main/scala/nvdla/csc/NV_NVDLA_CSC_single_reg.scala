@@ -6,9 +6,13 @@ import chisel3.util._
 
 class NV_NVDLA_CSC_single_reg extends Module {
     val io = IO(new Bundle {
+        // clk
+        val nvdla_core_clk = Input(Clock())
+
         // Register control interface
         val reg_rd_data = Output(UInt(32.W))
         val reg_offset = Input(UInt(12.W))
+
         val reg_wr_en = Input(Bool())
         val reg_wr_data = Input(UInt(32.W))
 

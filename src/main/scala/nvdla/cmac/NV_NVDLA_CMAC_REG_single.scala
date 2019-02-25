@@ -18,6 +18,7 @@ class NV_NVDLA_CMAC_REG_single extends Module {
 
         // producer, consumer, status
         val producer = Output(Bool())
+        
         val consumer = Input(Bool())
         val status_0 = Input(UInt(2.W))
         val status_1 = Input(UInt(2.W))    

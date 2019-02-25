@@ -4,22 +4,17 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-
-
-// //this module is to active dat and wt
-
-// class NV_NVDLA_cfgrom_rom extends RawModule {
-
+// class NV_NVDLA_cfgrom_rom extends Module {
 //     val io = IO(new Bundle {
-//         //general clock
+//         general clock
 //         val nvdla_core_clk = Input(Clock())     
-//         val nvdla_core_rstn = Input(Bool())
 
 //         val reg_rd_data = Output(UInt(32.W))
 //         val reg_offset = Input(UInt(12.W))
 //         val reg_wr_data = Input(UInt(32.W))
 //         val reg_wr_en = Input(Bool())
-//     })  
+//     }) 
+//     withClock(io.nvdla_core_clk){
 
 //     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
 //     Seq( 
@@ -133,4 +128,4 @@
 
 
     
-//   }
+//   }}

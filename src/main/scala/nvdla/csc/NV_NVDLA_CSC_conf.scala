@@ -78,7 +78,6 @@ class cscConfiguration(){
     var CSC_ENTRY_HEX_MUL2 = "h80"
     
     var CSC_ATOMC_HEX  = "h40"
-    var CSC_ATOMC_HEX_STR = "h40"
 
 
     if(NVDLA_MAC_ATOMIC_C_SIZE==64){
@@ -97,7 +96,6 @@ class cscConfiguration(){
         CSC_ENTRY_HEX_MUL2 = "h80"
 
         CSC_ATOMC_HEX = "h40"
-        CSC_ATOMC_HEX_STR = "h40"
     }
     else if(NVDLA_MAC_ATOMIC_C_SIZE==32){
         //entry bits
@@ -115,7 +113,6 @@ class cscConfiguration(){
         CSC_ENTRY_HEX_MUL2 = "h40"
         
         CSC_ATOMC_HEX = "h20"
-        CSC_ATOMC_HEX_STR = "h20"
 
     }
     else if(NVDLA_MAC_ATOMIC_C_SIZE==8){
@@ -134,7 +131,6 @@ class cscConfiguration(){
         CSC_ENTRY_HEX_MUL2 = "h10"
         
         CSC_ATOMC_HEX = "h08"
-        CSC_ATOMC_HEX_STR = "h08"
 
     }
 
@@ -142,49 +138,38 @@ class cscConfiguration(){
     var CSC_MIN_STRIPE = "d32"
     //atomK
     var CSC_ATOMK_HEX = "h20"
-    var CSC_ATOMK_HEX_STR = "h20"
     //atomK*2
     var CSC_ATOMK_MUL2_HEX  = "h40"
-    var CSC_ATOMK_MUL2_HEX_STR  = "h40"
     //atomK*4
     var CSC_ATOMK_MUL4_HEX = "h40"
-    var CSC_ATOMK_MUL4_HEX_STR = "h40"
 
     if(NVDLA_MAC_ATOMIC_K_SIZE==32){
         //atomK
         CSC_MIN_STRIPE = "d32"
         //atomK
         CSC_ATOMK_HEX = "h20"
-        CSC_ATOMK_HEX_STR = "h20"
         //atomK*2
         CSC_ATOMK_MUL2_HEX  = "h40"
-        CSC_ATOMK_MUL2_HEX_STR  = "h40"
     }
     else if(NVDLA_MAC_ATOMIC_K_SIZE==16){
         //atomK
         CSC_MIN_STRIPE = "d16"
         //atomK
         CSC_ATOMK_HEX = "h10"
-        CSC_ATOMK_HEX_STR = "h10"
         //atomK*2
         CSC_ATOMK_MUL2_HEX  = "h20"
-        CSC_ATOMK_MUL2_HEX_STR  = "h20" 
         //atomK*4
         CSC_ATOMK_MUL4_HEX = "h40"
-        CSC_ATOMK_MUL4_HEX_STR = "h40"
     }
     else if(NVDLA_MAC_ATOMIC_K_SIZE==8){
         //atomK
         CSC_MIN_STRIPE = "d16"
         //atomK
         CSC_ATOMK_HEX = "h10"
-        CSC_ATOMK_HEX_STR = "h10"
         //atomK*2
         CSC_ATOMK_MUL2_HEX  = "h20"
-        CSC_ATOMK_MUL2_HEX_STR  = "h20" 
         //atomK*4
         CSC_ATOMK_MUL4_HEX = "h40"
-        CSC_ATOMK_MUL4_HEX_STR = "h40"  
     }
 
     //notice, for image case, first atom OP within one strip OP must fetch from entry align place, in the middle of an entry is not supported.

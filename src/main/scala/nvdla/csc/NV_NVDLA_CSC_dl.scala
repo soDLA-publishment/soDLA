@@ -4,15 +4,17 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-
-
-// class NV_NVDLA_CSC_dl(implicit val conf: cscConfiguration) extends RawModule {
+// class NV_NVDLA_CSC_dl(implicit val conf: cscConfiguration) extends Module {
 //     val io = IO(new Bundle {
+
+//         val nvdla_core_clk = Input(Clock())
+//         val nvdla_core_ng_clk = Input(Clock())
 
 //         val sg2dl_pvld = Input(Bool()) /* data valid */
 //         val sg2dl_pd = Input(UInt(31.W))
 //         val sc_state = Input(UInt(2.W))
 //         val sg2dl_reuse_rls = Input(Bool())
+
 //         val sc2cdma_dat_pending_req = Input(Bool())
 
 //         val cdma2sc_dat_updt = Input(Bool())    /* data valid */
@@ -41,10 +43,6 @@
 //         val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
 //         val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 //         val sc2mac_dat_b_pd = Output(UInt(9.W))
-
-//         //
-//         val nvdla_core_ng_clk = Input(Clock())
-//         val nvdla_wg_clk = Input(Clock())
 
 //         val reg2dp_op_en = Input(Bool())
 //         val reg2dp_conv_mode = Input(Bool())
@@ -91,7 +89,7 @@
 // //                          MAC                    
 // //
 // /////////////////////////////////////////////////////////////////////////////////////////////
-
+// withClock(io.nvdla_core_clk){
 
 // //////////////////////////////////////////////////////////////
 // ///// status from sequence generator                     /////
@@ -102,10 +100,10 @@
 
 // val is_sg_running_d1 = RegInit(false.B)
 // is_sg_running_d1 := is_sg_running
+
 // //////////////////////////////////////////////////////////////
 // ///// input signals from registers                       /////
 // //////////////////////////////////////////////////////////////
-
 // val layer_st = io.reg2dp_op_en & is_sg_idle
 // val is_pixel = io.reg2dp_datain_format 
 // val is_winograd =  if(conf.NVDLA_WINOGRAD_ENABLE) io.reg2dp_conv_mode else false.B
@@ -132,7 +130,6 @@
 //                                  Array(3.U -> Cat(conv_x_stride_w, "b0".asUInt(2.W)), //*4, after pre_extension
 //                                        2.U -> Cat(conv_x_stride_w, "b0".asUInt(1.W)) +& conv_x_stride_w))//*3
 
-// if(conf.LOG2_ATOMC == 6){
 // val pixel_x_init_w = if(conf.LOG2_ATOMC == 6)
 //                     MuxLookUp(io.reg2dp_y_extension, Mux(io.reg2dp_weight_channel_ext >= conf.CSC_ATOMC_HEX.U, Fill(conf.LOG2_ATOMC, true.B), io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0)),
 //                                Array(2.U -> Cat(pixel_x_stride_w, "b0".asUInt(1.W)) + pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0), 
@@ -159,6 +156,7 @@
 //     else if(conf.CC_ATOMC_DIV_ATOMK==4){
 //         pixel_ch_stride_w := Cat(pixel_x_stride_w, "b0".asUInt((conf.LOG2_ATOMK+2).W)) //stick to 4*atomK  no matter which config.
 //     }
+// }
 // else{
 //     if(conf.CC_ATOMC_DIV_ATOMK==1|conf.CC_ATOMC_DIV_ATOMK==2){
 //         pixel_ch_stride_w := Cat(Fill(5-conf.LOG2_ATOMK, false.B), pixel_x_stride_w, Fill(conf.LOG2_ATOMK+1, false.B)) //stick to 2*atomK  no matter which config.
@@ -167,7 +165,6 @@
 //         pixel_ch_stride_w := Cat(Fill(5-conf.LOG2_ATOMK, false.B), pixel_x_stride_w, Fill(conf.LOG2_ATOMK+2, false.B)) //stick to 2*atomK  no matter which config. 
 //     }  
 // } 
-
 
 
 // val layer_st_d1 = RegInit(false.B)
@@ -297,9 +294,10 @@
 // when(is_sg_done){
 //     last_slices := slice_left
 //     last_entries := slice_entries_w 
+// }
 // }}
 
-// withClockAndReset(io.nvdla_core_ng_clk, !io.nvdla_core_rstn) {
+// withClock(io.nvdla_core_ng_clk) {
 
 // ////////////////////////////////////////////////////////////////////////
 // //  SLCG control signal                                               //
@@ -407,7 +405,7 @@
 
 
 
-// }
+// }}
 
 
 

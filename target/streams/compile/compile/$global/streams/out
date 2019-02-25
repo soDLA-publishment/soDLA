@@ -1,4 +1,10 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cmac\NV_NVDLA_CMAC_reg.scala:208:35: value UInt is not a member of String[0m
-[0m[[0m[31merror[0m] [0m[0m    val csb_wresp_rdat = Wire("b0"UInt(32.W))[0m
-[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_SG_dat_fifo.scala:95:56: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
+[0m[[0m[33mwarn[0m] [0m[0m    wr_busy_next := wr_count_next_is_4 ||(wr_limit_reg != 0.U && (wr_count_next >= wr_limit_reg))[0m
+[0m[[0m[33mwarn[0m] [0m[0m                                                       ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_SG_dat_fifo.scala:158:26: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
+[0m[[0m[33mwarn[0m] [0m[0m    io.rd_req := rd_count!= 0.U|rd_pushing[0m
+[0m[[0m[33mwarn[0m] [0m[0m                         ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_SG_dat_fifo.scala:164:70: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
+[0m[[0m[33mwarn[0m] [0m[0m                         (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next)) || [0m
+[0m[[0m[33mwarn[0m] [0m[0m                                                                     ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mthree warnings found[0m

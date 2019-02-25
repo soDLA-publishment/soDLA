@@ -6,6 +6,10 @@
 
 // class NV_NVDLA_CSC_sg(implicit val conf: cscConfiguration) extends Module {
 //     val io = IO(new Bundle {
+//         //clk
+//         val nvdla_core_clk = Input(Clock())
+//         val nvdla_core_ng_clk = Input(Clock())
+
 //         // reg2dp
 //         val reg2dp_op_en = Input(UInt(1.W))
 //         val reg2dp_conv_mode = Input(UInt(1.W))
@@ -118,8 +122,8 @@
 //     val dat_pop_ready = Wire(Bool())
 //     val wt_pop_req = Wire(Bool())
 //     val wt_push_empty = Wire(Bool())
-//     val last_data_bank = RegInit(Fill(5, true.B))
-//     val last_weight_bank = RegInit(Fill(5, true.B)) 
+//     val last_data_bank = RegInit(31.U)
+//     val last_weight_bank = RegInit(31.U) 
 //     val dat_pending_clr = RegInit(false.B)
 //     val dat_pending_req = RegInit(false.B)
 //     val dat_pending_ack = RegInit(false.B)
@@ -127,11 +131,11 @@
 //     val wt_pending_req = RegInit(false.B)
 //     val wt_pending_ack = RegInit(false.B)
 //     val is_pending = Wire(Bool())
-//     val dat_stripe_size = RegInit(Fill(7, false.B))
+//     val dat_stripe_size = RegInit("b0".asUInt(7.W))
 //     val is_done = Wire(Bool())
 //     val is_nxt_done = Wire(Bool())
-//     val flush_cycles = RegInit(Fill(7, false.B))
-//     val sg_dn_cnt = RegInit(Fill(8, false.B))
+//     val flush_cycles = RegInit("b0".asUInt(7.W))
+//     val sg_dn_cnt = RegInit("b0".asUInt(8.W))
 //     val sg2dat_layer_end = Wire(Bool())
  
 //     val fifo_is_clear = ~dat_pop_req & ~wt_pop_req & dat_push_empty & wt_push_empty
@@ -171,7 +175,7 @@
 //     val dat_pending_clr_w = Mux(is_pending & dat_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), dat_pending_clr))
 //     val wt_pending_clr_w =  Mux(is_pending & dat_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), wt_pending_clr))
 
-//     io.dp2reg_done := RegNext(is_done && (sg_dn_cnt == 1.U), false.B)
+//     io.dp2reg_done := RegNext(is_done && (sg_dn_cnt === 1.U), false.B)
 //     dat_pending_req := dat_pending_req_w
 //     wt_pending_req := wt_pending_req_w
 //     dat_pending_clr := dat_pending_clr_w
@@ -179,7 +183,7 @@
 
 //     // sg send pending status to cdma
 //     io.sc2cdma_dat_pending_req := dat_pending_req
-//     io.sc2cdma_wt_pending_req := = wt_pending_req
+//     io.sc2cdma_wt_pending_req := wt_pending_req
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //  registers to keep last layer status                               //
@@ -209,7 +213,7 @@
 //     val weight_width_cmp_w = Wire(UInt(5.W))
 //     val weight_height_cmp_w = Wire(UInt(5.W))
 
-//     cur_mode :=  Cat(is_img, 0.U, is_dc)
+//     cur_mode :=  Cat(is_img, false.B, is_dc)
 //     data_out_atomic_w := Mux(is_img, io.reg2dp_dataout_width +& 1.U, io.reg2dp_atomics +& 1.U)
 //     weight_width_cmp_w := Mux(is_img, "b0".asUInt(5.W), io.reg2dp_weight_width_ext)
 //     weight_height_cmp_w := io.reg2dp_weight_height_ext
@@ -537,15 +541,29 @@
         
 //     }
 
-//     //================  Non-SLCG clock domain end ================//
 
 //     ////////////////////////////////////////////////////////////////////////
-//     //  convolution buffer local status                                   //
+//     //  credit controll logic                                             //
 //     ////////////////////////////////////////////////////////////////////////
-//     //================  Non-SLCG clock domain ================//
+//     withClock(io.nvdla_core_ng_clk){
+
+//     val credit_cnt = RegInit(conf.NVDLA_CC_CREDIT_SIZE.U)
+
 //     val dat_impact_cnt = Cat("b0".asUInt(2.W), dat_stripe_size)
 //     val credit_req_size = dat_impact_cnt
-//     val credit_cnt_add = Mux(cre)
+//     val credit_cnt_add = Mux(credit_vld,  credit_size,  "b0".asUInt(4.W))
+//     val credit_cnt_dec = Mux(dat_pop_ready&sg2dat_channel_end, dat_impact_cnt, "b0".asUInt(9.W))
+//     val credit_cnt_w = credit_cnt + credit_cnt_add - credit_cnt_dec
+//     val credit_ready = ~sg2dat_channel_end | (credit_cnt >= credit_req_size)
+
+//     credit_cnt := credit_cnt_w
+//     }
+
+
+
+
+
+
 
 
 
