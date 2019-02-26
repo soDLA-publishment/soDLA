@@ -20,17 +20,17 @@ class NV_NVDLA_cmac(implicit val conf: cmacConfiguration) extends Module {
         val mac2accu_pvld = Output(Bool()) /* data valid */
         val mac2accu_mask = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
         val mac2accu_mode = Output(Bool())
-        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
+        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W)))
         val mac2accu_pd = Output(UInt(9.W))
 
         val sc2mac_dat_pvld = Input(Bool()) /* data valid */
         val sc2mac_dat_mask= Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
+        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val sc2mac_dat_pd = Input(UInt(9.W))
 
         val sc2mac_wt_pvld = Input(Bool()) /* data valid */
         val sc2mac_wt_mask= Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_wt_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
+        val sc2mac_wt_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
         val sc2mac_wt_sel = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
 
         //Port for SLCG

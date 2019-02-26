@@ -21,11 +21,11 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
 
     for (i <- 0 to conf.CMAC_ATOMC-1){
 
-      wt(i) = rnd.nextInt(1<<conf.CMAC_BPE)
+      wt(i) = rnd.nextInt(2*(1<<(conf.CMAC_BPE-1)-1)) - (1 << (conf.CMAC_BPE-1) - 1)
       wt_nz(i) = rnd.nextBoolean()
       wt_pvld(i) = rnd.nextBoolean()
 
-      dat(i) = rnd.nextInt(1<<conf.CMAC_BPE)
+      dat(i) = rnd.nextInt(2*(1<<(conf.CMAC_BPE-1)-1)) - (1 << (conf.CMAC_BPE-1) - 1)
       dat_nz(i) = rnd.nextBoolean()
       dat_pvld(i) = rnd.nextBoolean()
 

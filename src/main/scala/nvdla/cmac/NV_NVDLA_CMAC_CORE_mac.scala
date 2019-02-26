@@ -60,9 +60,6 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: cmacCo
         when(io.wt_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_pvld(i)&io.dat_actv_nz(i)){                       
              mout(i) := io.wt_actv_data(i)*io.dat_actv_data(i)
         }
-        .otherwise{
-             mout(i) := conf.CMAC_TYPE(0, conf.CMAC_RESULT_WIDTH)
-        }
     }  
 
     val sum_out = mout.reduce(_+&_)

@@ -10,7 +10,6 @@ class NV_NVDLA_apb2csb extends Module {
 
     //clock
     val pclk = Input(Clock())
-    val prstn = Input(Bool())
 
     //apb interface
     val psel= Input(Bool())
@@ -35,7 +34,7 @@ class NV_NVDLA_apb2csb extends Module {
   })
 
   //input  nvdla2csb_wr_complete
-  withClockAndReset(io.pclk, !io.prstn){
+  withClock(io.pclk){
 
   val rd_trans_low = RegInit(Bool())
   val rd_trans_vld = Wire(Bool())

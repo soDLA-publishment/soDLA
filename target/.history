@@ -102,3 +102,6 @@ runMain nvdla.NV_NVDLA_slcgDriver
 runMain NV_NVDLA_CMAC_coreDriver
 runMain nvdla.NV_NVDLA_CMAC_coreDriver
 exit
+test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
+sbt run
+test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac

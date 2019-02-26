@@ -1,10 +1,4 @@
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_SG_dat_fifo.scala:95:56: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m    wr_busy_next := wr_count_next_is_4 ||(wr_limit_reg != 0.U && (wr_count_next >= wr_limit_reg))[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                       ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_SG_dat_fifo.scala:158:26: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m    io.rd_req := rd_count!= 0.U|rd_pushing[0m
-[0m[[0m[33mwarn[0m] [0m[0m                         ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_SG_dat_fifo.scala:164:70: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m                         (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next)) || [0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                     ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mthree warnings found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cfgrom\NV_NVDLA_cfgrom.scala:51:44: not found: type NV_NVDLA_CFGROM_rom[0m
+[0m[[0m[31merror[0m] [0m[0m    val u_NV_NVDLA_CFGROM_rom = Module(new NV_NVDLA_CFGROM_rom)[0m
+[0m[[0m[31merror[0m] [0m[0m                                           ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

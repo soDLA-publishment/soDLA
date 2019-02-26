@@ -9,6 +9,9 @@
 // class NV_NVDLA_CACC_CALC_int8(implicit conf: caccConfiguration) extends Module {
 
 //     val io = IO(new Bundle {
+//         //clk
+//         val nvdla_core_clk = Input(Clock())
+
 //         //input
 //         val cfg_truncate = Input(UInt(5.W))
 //         val in_data = Input(UInt(22.W))
