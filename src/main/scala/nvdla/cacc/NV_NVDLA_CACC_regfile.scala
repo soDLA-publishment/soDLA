@@ -12,7 +12,7 @@ class NV_NVDLA_CACC_regfile extends Module {
         //general clock
         val nvdla_core_clk = Input(Clock())      
 
-        //csb2csc
+        //csb2cacc
         val csb2cacc_req_pd = Input(UInt(63.W))
         val csb2cacc_req_pvld = Input(Bool())
         val csb2cacc_req_prdy = Output(Bool())

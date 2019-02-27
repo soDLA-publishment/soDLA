@@ -2,13 +2,10 @@
 
 // import chisel3._
 
-// class NV_NVDLA_sdp(addressWidth: Int) extends Module {
+// class NV_NVDLA_SDP_CORE_Y_lut extends Module {
+//     val io = IO(new Bundle {
 
-//   //nvdla_core interface  
-//   val nvdla_core_clk = IO(new Bundle {
-//     val clk  = Input(Clock())
-//     val rstn = Input(Bool())
-//   })
+
 
 //   //lut2inp interface  
 //   val lut2inp = IO(new Bundle {
