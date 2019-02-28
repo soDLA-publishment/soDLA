@@ -1,4 +1,6 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\bdma\NV_NVDLA_BDMA_gate.scala:29:43: value nvdla_core_clk_slcg_0_en is not a member of chisel3.Bundle{val dla_clk_ovr_on_sync: chisel3.core.Clock; val global_clk_ovr_on_sync: chisel3.core.Clock; val nvdla_core_clk: chisel3.core.Clock; val csb2gate_slcg_en: chisel3.core.Bool; val ld2gate_slcg_en: chisel3.core.Bool; val st2gate_slcg_en: chisel3.core.Bool; val tmc2slcg_disable_clock_gating: chisel3.core.Bool; val nvdla_gated_clk: chisel3.core.Clock}[0m
-[0m[[0m[31merror[0m] [0m[0m    nvdla_core_clk_slcg_0.io.clk_en := io.nvdla_core_clk_slcg_0_en[0m
-[0m[[0m[31merror[0m] [0m[0m                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_WL_dec.scala:99:12: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Seq[scala.collection.immutable.IndexedSeq[(chisel3.core.UInt, chisel3.core.SInt)]][0m
+[0m[[0m[31merror[0m] [0m[0m required: Seq[(?, chisel3.core.Data)][0m
+[0m[[0m[31merror[0m] [0m[0m        Seq(      [0m
+[0m[[0m[31merror[0m] [0m[0m           ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

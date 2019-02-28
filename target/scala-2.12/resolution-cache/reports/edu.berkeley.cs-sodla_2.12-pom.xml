@@ -4,10 +4,10 @@
 	<info
 		organisation="edu.berkeley.cs"
 		module="sodla_2.12"
-		revision="3.1.0"
+		revision="3.2-SNAPSHOT"
 		conf="pom"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190205172532"/>
+		date="20190228085723"/>
 	<dependencies>
 	</dependencies>
 </ivy-report>

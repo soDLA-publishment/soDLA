@@ -26,13 +26,13 @@ def javacOptionsVersion(scalaVersion: String): Seq[String] = {
 
 organization := "edu.berkeley.cs"
 
-version := "3.1.0"
+version := "3.2-SNAPSHOT"
 
 name := "sodla"
 
 scalaVersion := "2.12.4"
 
-crossScalaVersions := Seq("2.11.12", "2.12.4")
+crossScalaVersions := Seq("2.12.6", "2.11.12")
 
 scalacOptions ++= Seq("-deprecation", "-feature", "-unchecked", "-language:reflectiveCalls")
 

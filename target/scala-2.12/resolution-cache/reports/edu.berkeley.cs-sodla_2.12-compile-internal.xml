@@ -4,16 +4,16 @@
 	<info
 		organisation="edu.berkeley.cs"
 		module="sodla_2.12"
-		revision="3.1.0"
+		revision="3.2-SNAPSHOT"
 		conf="compile-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190205172532"/>
+		date="20190228085723"/>
 	<dependencies>
 		<module organisation="org.json4s" name="json4s-jackson_2.12">
 			<revision name="3.6.1" status="release" pubdate="20180904073050" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/json4s/json4s" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="34">
 				<license name="Apache-2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
 				<metadata-artifact status="no" details="" size="3001" time="0" location="C:\Users\yuda\.ivy2\cache\org.json4s\json4s-jackson_2.12\ivy-3.6.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/json4s/json4s-jackson_2.12/3.6.1/json4s-jackson_2.12-3.6.1.pom"/>
-				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="3.6.1" rev-constraint-default="3.6.1" rev-constraint-dynamic="3.6.1" callerrev="3.1.0"/>
+				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="3.6.1" rev-constraint-default="3.6.1" rev-constraint-dynamic="3.6.1" callerrev="3.2-SNAPSHOT"/>
 				<artifacts>
 					<artifact name="json4s-jackson_2.12" type="jar" ext="jar" status="no" details="" size="36269" time="0" location="C:\Users\yuda\.ivy2\cache\org.json4s\json4s-jackson_2.12\jars\json4s-jackson_2.12-3.6.1.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/json4s/json4s-jackson_2.12/3.6.1/json4s-jackson_2.12-3.6.1.jar"/>
@@ -124,7 +124,7 @@
 			<revision name="1.2.8" status="release" pubdate="20181221154418" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="true" default="false" conf="default, compile, runtime, default(compile), master" position="24">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
 				<metadata-artifact status="no" details="" size="3752" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel-iotesters_2.12\ivy-1.2.8.xml" searched="true" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel-iotesters_2.12/1.2.8/chisel-iotesters_2.12-1.2.8.pom"/>
-				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="1.2.+" rev-constraint-default="1.2.+" rev-constraint-dynamic="1.2.+" callerrev="3.1.0"/>
+				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="1.2.+" rev-constraint-default="1.2.+" rev-constraint-dynamic="1.2.+" callerrev="3.2-SNAPSHOT"/>
 				<artifacts>
 					<artifact name="chisel-iotesters_2.12" type="jar" ext="jar" status="no" details="" size="375566" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel-iotesters_2.12\jars\chisel-iotesters_2.12-1.2.8.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel-iotesters_2.12/1.2.8/chisel-iotesters_2.12-1.2.8.jar"/>
@@ -185,8 +185,8 @@
 			<revision name="3.1.6" status="release" pubdate="20181221154240" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="true" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="1">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
 				<metadata-artifact status="no" details="" size="3375" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel3_2.12\ivy-3.1.6.xml" searched="true" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel3_2.12/3.1.6/chisel3_2.12-3.1.6.pom"/>
+				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="3.1.+" rev-constraint-default="3.1.+" rev-constraint-dynamic="3.1.+" callerrev="3.2-SNAPSHOT"/>
 				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="3.1.6" rev-constraint-default="3.1.6" rev-constraint-dynamic="3.1.6" callerrev="1.2.8"/>
-				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="3.1.+" rev-constraint-default="3.1.+" rev-constraint-dynamic="3.1.+" callerrev="3.1.0"/>
 				<artifacts>
 					<artifact name="chisel3_2.12" type="jar" ext="jar" status="no" details="" size="1195938" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel3_2.12\jars\chisel3_2.12-3.1.6.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel3_2.12/3.1.6/chisel3_2.12-3.1.6.jar"/>
@@ -561,10 +561,10 @@
 				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.2.8"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.1.6"/>
 				<caller organisation="com.typesafe.scala-logging" name="scala-logging_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.7.2"/>
-				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.1.0"/>
 				<caller organisation="org.scala-lang.modules" name="scala-xml_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.0.6"/>
 				<caller organisation="org.scalacheck" name="scalacheck_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.13.4"/>
 				<caller organisation="org.json4s" name="json4s-native_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.5.3"/>
+				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile-internal, compile, provided, optional" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.2-SNAPSHOT"/>
 				<caller organisation="net.jcazevedo" name="moultingyaml_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.4.0"/>
 				<caller organisation="org.json4s" name="json4s-core_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.6.1"/>
 				<caller organisation="org.json4s" name="json4s-ast_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.6.1"/>

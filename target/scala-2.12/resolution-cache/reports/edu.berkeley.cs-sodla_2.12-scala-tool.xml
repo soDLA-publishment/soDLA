@@ -4,16 +4,16 @@
 	<info
 		organisation="edu.berkeley.cs"
 		module="sodla_2.12"
-		revision="3.1.0"
+		revision="3.2-SNAPSHOT"
 		conf="scala-tool"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190205172532"/>
+		date="20190228085723"/>
 	<dependencies>
 		<module organisation="org.scala-lang" name="scala-compiler">
 			<revision name="2.12.4" status="release" pubdate="20171011004031" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, optional, optional(default), master" position="0">
 				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
 				<metadata-artifact status="no" details="" size="2974" time="0" location="C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-compiler\ivy-2.12.4.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.12.4/scala-compiler-2.12.4.pom"/>
-				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="scala-tool" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.1.0"/>
+				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="scala-tool" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.2-SNAPSHOT"/>
 				<artifacts>
 					<artifact name="scala-compiler" type="jar" ext="jar" status="no" details="" size="9790479" time="0" location="C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-compiler\jars\scala-compiler-2.12.4.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.12.4/scala-compiler-2.12.4.jar"/>
@@ -61,9 +61,9 @@
 			<revision name="2.12.4" status="release" pubdate="20171011000456" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.4/" downloaded="false" searched="false" default="false" conf="default, master(*), compile, runtime(*), runtime, optional, optional(default), compile(*), master" position="1">
 				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
 				<metadata-artifact status="no" details="" size="2501" time="0" location="C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-library\ivy-2.12.4.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.4/scala-library-2.12.4.pom"/>
+				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="scala-tool" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.2-SNAPSHOT"/>
 				<caller organisation="org.scala-lang" name="scala-reflect" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="2.12.4"/>
 				<caller organisation="org.scala-lang" name="scala-compiler" conf="default, compile, runtime, optional, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="2.12.4"/>
-				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="scala-tool" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.1.0"/>
 				<caller organisation="org.scala-lang.modules" name="scala-xml_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.0.6"/>
 				<artifacts>
 					<artifact name="scala-library" type="jar" ext="jar" status="no" details="" size="5247152" time="0" location="C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-library\jars\scala-library-2.12.4.jar">

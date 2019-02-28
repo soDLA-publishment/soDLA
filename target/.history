@@ -105,3 +105,5 @@ exit
 test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
 sbt run
 test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
+sbt run
+exit
