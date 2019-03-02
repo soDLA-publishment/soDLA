@@ -1,6 +1,31 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_WL_dec.scala:99:12: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : Seq[scala.collection.immutable.IndexedSeq[(chisel3.core.UInt, chisel3.core.SInt)]][0m
-[0m[[0m[31merror[0m] [0m[0m required: Seq[(?, chisel3.core.Data)][0m
-[0m[[0m[31merror[0m] [0m[0m        Seq(      [0m
-[0m[[0m[31merror[0m] [0m[0m           ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:342:41: not found: value p4_skid_ready_flop[0m
+[0m[[0m[31merror[0m] [0m[0m    val p4_skid_catch = io.tout_pvld && p4_skid_ready_flop && !p4_skid_pipe_ready[0m
+[0m[[0m[31merror[0m] [0m[0m                                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:342:64: not found: value p4_skid_pipe_ready[0m
+[0m[[0m[31merror[0m] [0m[0m    val p4_skid_catch = io.tout_pvld && p4_skid_ready_flop && !p4_skid_pipe_ready[0m
+[0m[[0m[31merror[0m] [0m[0m                                                               ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:343:65: not found: value p3_skid_catch[0m
+[0m[[0m[31merror[0m] [0m[0m    val p3_skid_ready = Mux(p3_skid_valid, p3_skid_pipe_ready, !p3_skid_catch)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:345:62: not found: value p3_skid_catch[0m
+[0m[[0m[31merror[0m] [0m[0m    p3_skid_valid := Mux(p3_skid_valid, !p3_skid_pipe_ready, p3_skid_catch)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:348:25: not found: value p3_skid_catch[0m
+[0m[[0m[31merror[0m] [0m[0m    p3_skid_data := Mux(p3_skid_catch, io.tdout, p3_skid_data)[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:348:43: value tdout is not a member of chisel3.Bundle{val nvdla_core_clk: chisel3.core.Clock; val tru_dout_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_dout_int8_ext: chisel3.core.Vec[chisel3.core.SInt]; val final_out_prdy: chisel3.core.Bool; val tout_pvld: chisel3.core.Bool; val tru_data_out_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_data_out_int8: chisel3.core.Vec[chisel3.core.SInt]; val final_out_pvld: chisel3.core.Bool; val tout_prdy: chisel3.core.Bool}[0m
+[0m[[0m[31merror[0m] [0m[0m    p3_skid_data := Mux(p3_skid_catch, io.tdout, p3_skid_data)[0m
+[0m[[0m[31merror[0m] [0m[0m                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:350:8: value mout_prdy is not a member of chisel3.Bundle{val nvdla_core_clk: chisel3.core.Clock; val tru_dout_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_dout_int8_ext: chisel3.core.Vec[chisel3.core.SInt]; val final_out_prdy: chisel3.core.Bool; val tout_pvld: chisel3.core.Bool; val tru_data_out_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_data_out_int8: chisel3.core.Vec[chisel3.core.SInt]; val final_out_pvld: chisel3.core.Bool; val tout_prdy: chisel3.core.Bool}[0m
+[0m[[0m[31merror[0m] [0m[0m    io.mout_prdy := mout_prdy_out[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:352:57: value mout_pvld is not a member of chisel3.Bundle{val nvdla_core_clk: chisel3.core.Clock; val tru_dout_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_dout_int8_ext: chisel3.core.Vec[chisel3.core.SInt]; val final_out_prdy: chisel3.core.Bool; val tout_pvld: chisel3.core.Bool; val tru_data_out_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_data_out_int8: chisel3.core.Vec[chisel3.core.SInt]; val final_out_pvld: chisel3.core.Bool; val tout_prdy: chisel3.core.Bool}[0m
+[0m[[0m[31merror[0m] [0m[0m    val p3_skid_pipe_valid = Mux(p3_skid_ready_flop, io.mout_pvld, p3_skid_valid)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:353:56: value tdout is not a member of chisel3.Bundle{val nvdla_core_clk: chisel3.core.Clock; val tru_dout_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_dout_int8_ext: chisel3.core.Vec[chisel3.core.SInt]; val final_out_prdy: chisel3.core.Bool; val tout_pvld: chisel3.core.Bool; val tru_data_out_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_data_out_int8: chisel3.core.Vec[chisel3.core.SInt]; val final_out_pvld: chisel3.core.Bool; val tout_prdy: chisel3.core.Bool}[0m
+[0m[[0m[31merror[0m] [0m[0m    val p3_skid_pipe_data = Mux(p3_skid_ready_flop, io.tdout, p3_skid_data)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_pra_cell.scala:367:8: value tdata_out is not a member of chisel3.Bundle{val nvdla_core_clk: chisel3.core.Clock; val tru_dout_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_dout_int8_ext: chisel3.core.Vec[chisel3.core.SInt]; val final_out_prdy: chisel3.core.Bool; val tout_pvld: chisel3.core.Bool; val tru_data_out_int16: chisel3.core.Vec[chisel3.core.SInt]; val tru_data_out_int8: chisel3.core.Vec[chisel3.core.SInt]; val final_out_pvld: chisel3.core.Bool; val tout_prdy: chisel3.core.Bool}[0m
+[0m[[0m[31merror[0m] [0m[0m    io.tdata_out := p3_pipe_data[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0m10 errors found[0m

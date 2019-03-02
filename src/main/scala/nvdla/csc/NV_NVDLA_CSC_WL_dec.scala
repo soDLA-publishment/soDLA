@@ -1,8 +1,9 @@
-package nvdla
+ package nvdla
 
-import chisel3._
-import chisel3.experimental._
-import chisel3.util._
+ import chisel3._
+ import chisel3.experimental._
+ import chisel3.util._
+ import chisel3.iotesters.Driver
 
 class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     val io = IO(new Bundle {
@@ -56,18 +57,11 @@ class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////// phase I: calculate sums for mux //////////////////////////////////
-    val input_mask_gated = Mux(io.input_mask_en(8), io.input_mask, Vec(conf.CSC_ATOMC, false.B))
+    val input_mask_gated = Mux(io.input_mask_en(8), io.input_mask, VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
+    val vec_sum = Wire(MixedVec((0 to conf.CSC_ATOMC-1) map { i => UInt((log2Ceil(i+2)).W) }))
 
-    val vec_sum = MixedVec((0 to conf.CSC_ATOMC-1) map { i => UInt((log2Ceil(i+2)).W) })
-    for(i <- 0 to conf.CSC_ATOMC-1){
-        for(j <- 0 to i){
-            if(j==0){
-                vec_sum(i) := input_mask_gated(0)
-            }
-            else{
-                vec_sum(i) := vec_sum(i) + input_mask_gated(j)
-            }
-        }
+    for(i <- 0 to conf.CSC_ATOMC-1){     
+        vec_sum(i) := PopCount(Cat(input_mask_gated.asUInt)(i, 0))        
     }  
 
     ////////////////////////////////// phase I: registers //////////////////////////////////
@@ -92,13 +86,12 @@ class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     }  
 
     ////////////////////////////////// phase II: mux //////////////////////////////////
-    val vec_data = Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W))
+    val vec_data = Wire(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
 
     for(j <- 0 to conf.CSC_ATOMC-1){
-        vec_data(j) := MuxLookup(vec_sum_d1(j), 0.asSInt(conf.CSC_BPE.W),
-        Seq(      
-        (1 to j) map { i => ( (i+1).U -> data_d1(i) ) }
-        ))
+        vec_data(j) := MuxLookup(vec_sum_d1(j), 0.asSInt(conf.CSC_BPE.W),            
+        (0 to j) map { i => (i+1).U -> data_d1(i) }
+        )
     }     
 
     ////////////////////////////////// phase II: registers //////////////////////////////////
@@ -123,7 +116,7 @@ class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     }     
 
     ////////////////////////////////// phase III: registers //////////////////////////////////
-    val mask_d2_int8_w = Vec(conf.CSC_ATOMC, Bool())
+    val mask_d2_int8_w = Wire(Vec(conf.CSC_ATOMC, Bool()))
     for(i <- 0 to conf.CSC_ATOMC-1){
         mask_d2_int8_w(i) := vec_data(i).asUInt.orR
     }
@@ -149,4 +142,10 @@ class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     io.output_data := vec_data_d3
     
 }
+
+object NV_NVDLA_CSC_WL_decDriver extends App {
+  implicit val conf: cscConfiguration = new cscConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_WL_dec)
+}
+
 

@@ -15,7 +15,7 @@ class cscConfiguration(){
     val NVDLA_CC_ATOMC_DIV_ATOMK = 1
     val NVDLA_MAC_ATOMIC_C_SIZE = 8
     val NVDLA_MAC_ATOMIC_K_SIZE = 8
-    val CSC_TYPE = UInt
+    val CSC_TYPE = SInt
     val NVDLA_BPE = 8
 
 
