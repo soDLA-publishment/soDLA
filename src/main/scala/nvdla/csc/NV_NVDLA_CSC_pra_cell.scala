@@ -13,11 +13,11 @@ class NV_NVDLA_CSC_pra_cell(implicit val conf: cscConfiguration) extends Module 
         val nvdla_core_clk = Input(Clock())
 
         // cfg
+        val cfg_precision = Input(UInt(2.W))
         val cfg_truncate_rsc_z = Input(UInt(2.W))
 
         //chn vz&z
         val chn_data_in_rsc_vz = Input(Bool())
-        val chn_data_in_rsc_z = Input(UInt(2.W))
         val chn_data_in_rsc_z = Input(Vec(16, SInt(conf.CSC_BPE.W)))
         val chn_data_out_rsc_vz = Input(Bool())
 
@@ -57,9 +57,9 @@ class NV_NVDLA_CSC_pra_cell(implicit val conf: cscConfiguration) extends Module 
     val cfg_truncate = io.cfg_truncate_rsc_z
     val chn_data_in = io.chn_data_in_rsc_z
 
-    val chn_data_out_rsc_z = chn_data_out
-    val chn_data_in_rsc_lz = chn_in_prdy
-    val chn_data_out_rsc_lz = chn_out_pvld
+    io.chn_data_out_rsc_z := chn_data_out
+    io.chn_data_in_rsc_lz := chn_in_prdy
+    io.chn_data_out_rsc_lz := chn_out_pvld
 
     val din_prdy = Wire(Bool())
 
@@ -117,6 +117,8 @@ class NV_NVDLA_CSC_pra_cell(implicit val conf: cscConfiguration) extends Module 
     tdout(15) := mdata_out(7) -& mdata_out(15)
 
     //row
+    
+    val mout_prdy = Wire(Bool())
 
     val pipe_p2 = Module(new NV_NVDLA_CSC_PRA_CELL_pipe_p2)
     pipe_p2.io.nvdla_core_clk := io.nvdla_core_clk
@@ -128,39 +130,57 @@ class NV_NVDLA_CSC_pra_cell(implicit val conf: cscConfiguration) extends Module 
     val mout_pvld = pipe_p2.io.mout_pvld
 
     //col
+    val tout_prdy = Wire(Bool())
+
     val pipe_p3 = Module(new NV_NVDLA_CSC_PRA_CELL_pipe_p3)
-    pipe_p2.io.nvdla_core_clk := io.nvdla_core_clk
-    pipe_p2.io.tdout := tdout
-    pipe_p2.io.mout_pvld := mout_pvld
-    pipe_p2.io.tout_prdy := tout_prdy
-    mout_prdy := pipe_p2.io.mout_prdy 
-    tdata_out := pipe_p2.io.tdata_out
-    val tout_pvld = pipe_p2.io.tout_pvld
+    pipe_p3.io.nvdla_core_clk := io.nvdla_core_clk
+    pipe_p3.io.tdout := tdout
+    pipe_p3.io.mout_pvld := mout_pvld
+    pipe_p3.io.tout_prdy := tout_prdy
+    mout_prdy := pipe_p3.io.mout_prdy 
+    val tdata_out = pipe_p3.io.tdata_out
+    val tout_pvld = pipe_p3.io.tout_pvld
 
     val int16_shiftright_su = Array.fill(16){Module(new NV_NVDLA_HLS_shiftrightsu(18, 16, 2))}
     val int8_shiftright_su = Array.fill(16){Module(new NV_NVDLA_HLS_shiftrightsu(18, 8, 2))}
 
+    val tru_dout_int16 = Wire(Vec(16, SInt(16.W)))
+    val tru_dout_int8 = Wire(Vec(16, SInt(8.W)))
+
     for(i <- 0 to 15){
-    
-
-
+        int16_shiftright_su(i).io.data_in := tdata_out(i).asUInt
+        int16_shiftright_su(i).io.shift_num := cfg_truncate
+        tru_dout_int16(i) := int16_shiftright_su(i).io.data_out.asSInt
     }
+    for(i <- 0 to 15){
+        int8_shiftright_su(i).io.data_in := tdata_out(i).asUInt
+        int8_shiftright_su(i).io.shift_num := cfg_truncate
+        tru_dout_int8(i) := int8_shiftright_su(i).io.data_out.asSInt
+    }
+  
+    val final_out_prdy = Wire(Bool())
+    val final_out_pvld = Wire(Bool())
+    val pipe_p4 = Module(new NV_NVDLA_CSC_PRA_CELL_pipe_p4)
+    pipe_p4.io.nvdla_core_clk := io.nvdla_core_clk
+    pipe_p4.io.tru_dout_int16 := tru_dout_int16
+    pipe_p4.io.tru_dout_int8_ext := tru_dout_int8
+    pipe_p4.io.tout_pvld := tout_pvld
+    pipe_p4.io.final_out_prdy := final_out_prdy
+    tout_prdy := pipe_p4.io.tout_prdy 
+    final_out_pvld := pipe_p4.io.final_out_pvld
+    val tru_data_out_int16 = pipe_p4.io.tru_data_out_int16
+    val tru_data_out_int8 = pipe_p4.io.tru_data_out_int8
 
+    val chn_dout = Mux(io.cfg_precision===1.U, tru_data_out_int16, tru_data_out_int8)
 
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
+    val pipe_p5 = Module(new NV_NVDLA_CSC_PRA_CELL_pipe_p5)
+    pipe_p5.io.nvdla_core_clk := io.nvdla_core_clk
+    pipe_p5.io.chn_dout := chn_dout
+    pipe_p5.io.final_out_pvld := final_out_pvld
+    pipe_p5.io.chn_out_prdy := chn_out_prdy
+    final_out_prdy := pipe_p5.io.final_out_prdy 
+    chn_data_out := pipe_p5.io.chn_data_out
+    chn_out_pvld := pipe_p5.io.chn_out_pvld
 
 
 
@@ -435,10 +455,10 @@ class NV_NVDLA_CSC_PRA_CELL_pipe_p4 extends Module {
     withClock(io.nvdla_core_clk){
 
     //## pipe (2) skid buffer
-    val p3_skid_valid = RegInit(false.B)
-    val p3_skid_ready_flop = RegInit(true.B)
+    val p4_skid_valid = RegInit(false.B)
+    val p4_skid_ready_flop = RegInit(true.B)
     val tout_prdy_out = RegInit(true.B)
-    val p3_skid_pipe_ready = Wire(Bool())
+    val p4_skid_pipe_ready = Wire(Bool())
     val p4_skid_data_0 = RegInit(VecInit(Seq.fill(16)(0.asSInt(16.W))))
     val p4_skid_data_1 = RegInit(VecInit(Seq.fill(16)(0.asSInt(16.W))))
 
@@ -483,7 +503,7 @@ class NV_NVDLA_CSC_PRA_CELL_pipe_p5 extends Module {
         val nvdla_core_clk = Input(Clock())
 
         //input 
-        val chn_dout = Input(Vec(16, SInt(16.W))
+        val chn_dout = Input(Vec(16, SInt(16.W)))
         val final_out_pvld = Input(Bool())
         val chn_out_prdy = Input(Bool())
 
@@ -520,8 +540,8 @@ class NV_NVDLA_CSC_PRA_CELL_pipe_p5 extends Module {
     val p5_skid_valid = RegInit(false.B)
     val p5_skid_ready_flop = RegInit(true.B)
     val final_out_prdy_out = RegInit(true.B)
-    val p3_skid_pipe_ready = Wire(Bool())
-    val p3_skid_data = RegInit(VecInit(Seq.fill(16)(0.asSInt(16.W))))
+    val p5_skid_pipe_ready = Wire(Bool())
+    val p5_skid_data = RegInit(VecInit(Seq.fill(16)(0.asSInt(16.W))))
 
     val p5_skid_catch = io.final_out_pvld && p5_skid_ready_flop && !p5_skid_pipe_ready
     val p5_skid_ready = Mux(p5_skid_valid, p5_skid_pipe_ready, !p5_skid_catch)
@@ -555,7 +575,8 @@ class NV_NVDLA_CSC_PRA_CELL_pipe_p5 extends Module {
 
 
 
-object NV_NVDLA_CSC_PRA_CELL_pipe_p1Driver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_PRA_CELL_pipe_p1())
+object NV_NVDLA_CSC_pra_cellDriver extends App {
+  implicit val conf: cscConfiguration = new cscConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_pra_cell())
 }
 

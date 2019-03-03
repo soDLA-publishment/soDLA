@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 
-class NV_NVDLA_HLS_shiftleftsu(IN_WIDTH: Int, OUT_WIDTH: Int, SHIFT_WIDTH: Int) extends Module {
+class NV_NVDLA_HLS_shiftleftsu(IN_WIDTH:Int, OUT_WIDTH:Int, SHIFT_WIDTH:Int) extends Module {
     
     val SHIFT_MAX = (1<<SHIFT_WIDTH)-1
     val HIGH_WIDTH = SHIFT_MAX + IN_WIDTH - OUT_WIDTH

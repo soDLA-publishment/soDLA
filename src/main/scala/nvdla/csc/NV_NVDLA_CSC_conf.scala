@@ -33,8 +33,8 @@ class cscConfiguration(){
     // val CSC_3QUAT_ENTRY_BITS = CBUF_ENTRY_BITS*3/4        //entry*3/4
     // val CSC_ATOMC_HALF = CSC_ATOMC/2           //atomC/2
     // val CSC_ATOMC_QUAT = CSC_ATOMC/4           //atomC/4
-    // val LOG2_ATOMC = log2Ceil(NVDLA_MAC_ATOMIC_C_SIZE)           //log2(atomC)
-    // val LOG2_ATOMK = log2Ceil(NVDLA_MAC_ATOMIC_C_SIZE)            //log2(atomK)
+    val LOG2_ATOMC = log2Ceil(NVDLA_MAC_ATOMIC_C_SIZE)           //log2(atomC)
+    val LOG2_ATOMK = log2Ceil(NVDLA_MAC_ATOMIC_C_SIZE)            //log2(atomK)
     // val LOG2_CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH_LOG2              //log2(bank_depth)
     // val CBUF_ADDR_WIDTH = NVDLA_CBUF_DEPTH_LOG2                   //log2(bank_num*bank_depth)
     // val LOG2_BANK_NUM = NVDLA_CBUF_BANK_NUMBER_LOG2             //log2(bank_num)

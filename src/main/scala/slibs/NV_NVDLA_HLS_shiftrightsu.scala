@@ -4,12 +4,8 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_HLS_shiftrightsu extends Module {
-    
-    val IN_WIDTH  = 49
-    val OUT_WIDTH = 32
-    val SHIFT_WIDTH = 6
-    
+class NV_NVDLA_HLS_shiftrightsu(IN_WIDTH:Int, OUT_WIDTH:Int, SHIFT_WIDTH:Int) extends Module {
+
     val io = IO(new Bundle {      
         val data_in = Input(UInt(IN_WIDTH.W))
         val shift_num = Input(UInt(SHIFT_WIDTH.W))
@@ -38,7 +34,7 @@ class NV_NVDLA_HLS_shiftrightsu extends Module {
 
     point5 := guide & (~data_sign | stick.orR)
 
-    data_round := (data_shift(OUT_WIDTH-1, 0) + point5)(OUT_WIDTH-1, 0)
+    data_round := data_shift(OUT_WIDTH-1, 0) + point5
 
     tru_need_sat :=   ( data_sign & ~(data_shift(IN_WIDTH-2, OUT_WIDTH-1).andR)) |
                       (~data_sign &  (data_shift(IN_WIDTH-2, OUT_WIDTH-1).orR)) |
