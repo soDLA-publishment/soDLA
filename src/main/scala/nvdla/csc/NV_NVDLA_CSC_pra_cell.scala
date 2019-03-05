@@ -181,10 +181,7 @@ class NV_NVDLA_CSC_pra_cell(implicit val conf: cscConfiguration) extends Module 
     final_out_prdy := pipe_p5.io.final_out_prdy 
     chn_data_out := pipe_p5.io.chn_data_out
     chn_out_pvld := pipe_p5.io.chn_out_pvld
-
-
-
-    
+ 
 }
 
 class NV_NVDLA_CSC_PRA_CELL_pipe_p1 extends Module {
