@@ -5,10 +5,11 @@ import chisel3.util._
 
 
 class cscConfiguration(){
-    
+
+
     val NVDLA_CBUF_BANK_NUMBER = 32
     val NVDLA_CBUF_BANK_DEPTH = 512
-    val NVDLA_CBUF_ENTRY_WIDTH = 8
+    val NVDLA_CBUF_ENTRY_WIDTH = 8*8
     val NVDLA_CBUF_BANK_DEPTH_LOG2 = 9
     val NVDLA_CBUF_WIDTH_MUL2_LOG2 = 4
     val NVDLA_CBUF_DEPTH_LOG2 = 14
@@ -17,6 +18,9 @@ class cscConfiguration(){
     val NVDLA_MAC_ATOMIC_K_SIZE = 8
     val CSC_TYPE = SInt
     val NVDLA_BPE = 8
+    val CBUF_RD_DATA_SHIFT_WIDTH = 4
+    val NVDLA_BATCH_ENABLE = false
+    val NVDLA_WINOGRAD_ENABLE = false
 
 
     val CSC_ATOMC = NVDLA_MAC_ATOMIC_C_SIZE
@@ -25,19 +29,19 @@ class cscConfiguration(){
     val CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH
     val CSC_BPE = NVDLA_BPE
     val CBUF_ENTRY_BITS = NVDLA_CBUF_ENTRY_WIDTH
-    // val CSC_ATOMK_HF = CSC_ATOMK/2
-    // val CSC_TWICE_ENTRY_BITS = CBUF_ENTRY_BITS*2         //entry*2
-    // val CSC_ENTRY_BITS = CBUF_ENTRY_BITS   //entry
-    // val CSC_HALF_ENTRY_BITS = CBUF_ENTRY_BITS/2          //entry/2
-    // val CSC_QUAT_ENTRY_BITS = CBUF_ENTRY_BITS/4          //entry/4
-    // val CSC_3QUAT_ENTRY_BITS = CBUF_ENTRY_BITS*3/4        //entry*3/4
-    // val CSC_ATOMC_HALF = CSC_ATOMC/2           //atomC/2
-    // val CSC_ATOMC_QUAT = CSC_ATOMC/4           //atomC/4
+    val CSC_ATOMK_HF = CSC_ATOMK/2
+    val CSC_TWICE_ENTRY_BITS = CBUF_ENTRY_BITS*2         //entry*2
+    val CSC_ENTRY_BITS = CBUF_ENTRY_BITS   //entry
+    val CSC_HALF_ENTRY_BITS = CBUF_ENTRY_BITS/2          //entry/2
+    val CSC_QUAT_ENTRY_BITS = CBUF_ENTRY_BITS/4          //entry/4
+    val CSC_3QUAT_ENTRY_BITS = CBUF_ENTRY_BITS*3/4        //entry*3/4
+    val CSC_ATOMC_HALF = CSC_ATOMC/2           //atomC/2
+    val CSC_ATOMC_QUAT = CSC_ATOMC/4           //atomC/4
     val LOG2_ATOMC = log2Ceil(NVDLA_MAC_ATOMIC_C_SIZE)           //log2(atomC)
     val LOG2_ATOMK = log2Ceil(NVDLA_MAC_ATOMIC_C_SIZE)            //log2(atomK)
-    // val LOG2_CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH_LOG2              //log2(bank_depth)
-    // val CBUF_ADDR_WIDTH = NVDLA_CBUF_DEPTH_LOG2                   //log2(bank_num*bank_depth)
-    // val LOG2_BANK_NUM = NVDLA_CBUF_BANK_NUMBER_LOG2             //log2(bank_num)
+    val LOG2_CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH_LOG2              //log2(bank_depth)
+    val CBUF_ADDR_WIDTH = NVDLA_CBUF_DEPTH_LOG2                   //log2(bank_num*bank_depth)
+    val LOG2_BANK_NUM = 5            //log2(bank_num)
     val NVDLA_VMOD_CBUF_WRITE_LATENCY = 3
     val NVDLA_VMOD_CBUF_READ_LATENCY = 6
     val NVDLA_HLS_CSC_PRA_LATENCY = 5
