@@ -1,7 +1,7 @@
 package nvdla
 
 import chisel3._
-
+import chisel3.experimental._
 import chisel3.util._
 
 // this is a two clock read, synchronous-write memory
@@ -9,6 +9,9 @@ import chisel3.util._
 class nv_ram_rwsp(dep: Int, wid: Int) extends Module{
 
     val io = IO(new Bundle {
+        //clock
+        val clk = Input(Clock())
+
         //control signal
         val re = Input(Bool())
         val we = Input(Bool())
@@ -21,25 +24,23 @@ class nv_ram_rwsp(dep: Int, wid: Int) extends Module{
         val di = Input(UInt(wid.W))
         val dout = Output(UInt(wid.W))
     })
+ withClock(io.clk){
 
-// assign data...
-// Create a synchronous-read, synchronous-write memory (like in FPGAs).
-val mem = SyncReadMem(dep, UInt(wid.W))
-// Create one write port and one read port.
-when (io.we) { 
-    mem.write(io.wa, io.di) 
-    io.dout := DontCare
-}
-.otherwise{ 
-    val dout_ram = mem.read(io.ra, io.re)
-    when (io.ore){
-        io.dout := RegNext(dout_ram)
+    // assign data...
+    // Create a synchronous-read, synchronous-write memory (like in FPGAs).
+    val mem = SyncReadMem(dep, UInt(wid.W))
+    // Create one write port and one read port.
+    when (io.we) { 
+        mem.write(io.wa, io.di) 
+        io.dout := DontCare
     }
-    .otherwise{
-        io.dout := DontCare       
-    }
+    .otherwise{ 
+        val dout_ram = mem.read(io.ra, io.re)
+        when (io.ore){
+            io.dout := RegNext(dout_ram)
+        }
+        .otherwise{
+            io.dout := DontCare       
+        }
 
-}
-
-
-}
+}}}

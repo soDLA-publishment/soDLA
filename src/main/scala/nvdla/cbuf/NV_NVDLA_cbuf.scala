@@ -479,12 +479,14 @@ class cbufImpl{
      
     for(i<- 0 to conf.CBUF_BANK_NUMBER-1){
         for(j<- 0 to conf.CBUF_RAM_PER_BANK-1){
+            u_cbuf_ram_bank_ram(i)(j).io.clk := internal_clock
             u_cbuf_ram_bank_ram(i)(j).io.re := bank_ram_rd_en_d1(i)(j)
             u_cbuf_ram_bank_ram(i)(j).io.ra := bank_ram_rd_addr_d1(i)(j)(conf.CBUF_RAM_DEPTH_BITS-1,0)
             u_cbuf_ram_bank_ram(i)(j).io.we := bank_ram_wr_en_d2(i)(j)
             u_cbuf_ram_bank_ram(i)(j).io.wa := bank_ram_wr_addr_d2(i)(j)(conf.CBUF_RAM_DEPTH_BITS-1,0)
             u_cbuf_ram_bank_ram(i)(j).io.di := bank_ram_wr_data_d2(i)(j)
             bank_ram_rd_data(i)(j):=u_cbuf_ram_bank_ram(i)(j).io.dout
+
         }
     }
 

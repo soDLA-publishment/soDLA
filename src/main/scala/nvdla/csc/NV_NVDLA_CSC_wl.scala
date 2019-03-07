@@ -181,8 +181,8 @@ withClockAndReset(io.nvdla_core_clk){
     val wt_entry_end = withClock(io.nvdla_core_ng_clk){Reg(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))}
 
     val wt_entry_end_inc = wt_entry_end + io.cdma2sc_wt_entries
-    val wt_entry_end_inc_wrap = wt_entry_end_inc - Cat("b0".asUInt(1.W), weight_bank, "b0".asUInt(conf.LOG2_CBUF_BANK_DEPTH.W))
-    val is_wt_entry_end_wrap = (wt_entry_end_inc >=  Cat("b0".asUInt(1.W), weight_bank, "b0".asUInt(conf.LOG2_CBUF_BANK_DEPTH.W)))
+    val wt_entry_end_inc_wrap = wt_entry_end_inc - Cat(weight_bank, "b0".asUInt(conf.LOG2_CBUF_BANK_DEPTH.W))
+    val is_wt_entry_end_wrap = (wt_entry_end_inc >=  Cat(weight_bank, "b0".asUInt(conf.LOG2_CBUF_BANK_DEPTH.W)))
     val wt_entry_end_w = Mux(cbuf_reset, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), Mux(is_wt_entry_end_wrap, wt_entry_end_inc_wrap, wt_entry_end_inc)) 
 
     //////////////////////////////////// calculate wmb entries start offset ////////////////////////////////////
@@ -289,7 +289,7 @@ withClockAndReset(io.nvdla_core_clk){
     val stripe_cnt_inc = stripe_cnt + 1.U
     val stripe_cnt_w = Mux(layer_st, "b0".asUInt(5.W), Mux(is_stripe_end, "b0".asUInt(5.W), stripe_cnt_inc))
     val stripe_length = wl_kernel_size(4, 0)
-    is_stripe_end := (stripe_cnt_inc == stripe_length)
+    is_stripe_end := (stripe_cnt_inc === stripe_length)
     val is_stripe_st = wl_pvld
     val wmb_pipe_valid = Mux(wl_pvld, true.B, Mux(~(stripe_cnt.orR), false.B, wmb_pipe_valid_d1))
     val stripe_cnt_reg_en = layer_st | wmb_pipe_valid
@@ -311,7 +311,7 @@ withClockAndReset(io.nvdla_core_clk){
     val wmb_req_ori_element = wl_weight_size
     val wmb_req_cycle_element = Cat("b0".asUInt(1.W), wl_weight_size)
 
-    val wmb_req_element = MuxLookup(wl_cur_sub_h,  Cat(wmb_req_cycle_element(5, 0), "b0".asUInt(2.W)),
+    val wmb_req_element = MuxLookup(wl_cur_sub_h,  Cat("b0".asUInt(1.W), wmb_req_cycle_element(5, 0), "b0".asUInt(2.W)),
                                 Seq(
                                     "h0".asUInt(2.W) -> wmb_req_cycle_element,
                                     "h1".asUInt(2.W) -> Cat( "b0".asUInt(1.W), wmb_req_cycle_element(6, 0), "b0".asUInt(1.W)),
@@ -417,15 +417,23 @@ withClockAndReset(io.nvdla_core_clk){
     val wmb_req_pipe_pd = Cat(wmb_req_d1_cur_sub_h, "b0".asUInt(1.W), wmb_req_d1_rls, wmb_req_d1_group_end, wmb_req_d1_channel_end
                             , wmb_req_d1_stripe_end, wmb_req_d1_rls_entries, wmb_req_d1_element, wmb_req_d1_ori_element)
 
-    if(conf.NVDLA_CBUF_READ_LATENCY == 0){
-        val wmb_rsp_pipe_pvld = wmb_req_pipe_pvld
-        val wmb_rsp_pipe_pd = wmb_req_pipe_pd
-    }
-    else{
-        val wmb_rsp_pipe_pvld = ShiftRegister(wmb_req_pipe_pvld, conf.CSC_WL_PIPELINE_ADDITION, false.B, true.B)
-        val wmb_rsp_pipe_pd = ShiftRegister(wmb_req_pipe_pd, conf.CSC_WL_PIPELINE_ADDITION, "b0".asUInt(31.W), wmb_req_pipe_pvld)        
+    val wmb_rsp_pipe_pvld_d = Wire(Bool()) +: 
+                              Seq.fill(conf.NVDLA_CBUF_READ_LATENCY)(RegInit(false.B))
+    val wmb_rsp_pipe_pd_d = Wire(UInt(31.W)) +: 
+                            Seq.fill(conf.NVDLA_CBUF_READ_LATENCY)(RegInit("b0".asUInt(31.W)))
+
+    wmb_rsp_pipe_pvld_d(0) := wmb_req_pipe_pvld
+    wmb_rsp_pipe_pd_d(0) := wmb_req_pipe_pd
+
+    for(t<- 0 to conf.NVDLA_CBUF_READ_LATENCY -1){
+        wmb_rsp_pipe_pvld_d(t+1) := wmb_rsp_pipe_pvld_d(t)
+        when(wmb_rsp_pipe_pvld_d(t)){
+            wmb_rsp_pipe_pd_d(t+1) := wmb_rsp_pipe_pd_d(t)
+        }
     }
 
+    val wmb_rsp_pipe_pvld = wmb_rsp_pipe_pvld_d(conf.NVDLA_CBUF_READ_LATENCY)
+    val wmb_rsp_pipe_pd = wmb_rsp_pipe_pd_d(conf.NVDLA_CBUF_READ_LATENCY)
     //////////////////////////////////////////////////////////////
     ///// wmb data process                                   /////
     //////////////////////////////////////////////////////////////
@@ -446,7 +454,7 @@ withClockAndReset(io.nvdla_core_clk){
     val wmb_rsp_bit_remain_last = RegInit("b0".asUInt(10.W))
     val wmb_rsp_bit_remain = RegInit("b0".asUInt(10.W))
 
-    val wmb_rsp_bit_remain_w = Mux(layer_st, "b0".asUInt(10.W), Mux(wmb_rsp_channel_end & ~wmb_rsp_group_end, wmb_rsp_bit_remain_last, wmb_rsp_bit_remain + wmb_rsp_bit_remain_add - wmb_rsp_bit_remain_sub))(9, 0)
+    val wmb_rsp_bit_remain_w = Mux(layer_st, "b0".asUInt(10.W), Mux(wmb_rsp_channel_end & ~wmb_rsp_group_end, wmb_rsp_bit_remain_last, wmb_rsp_bit_remain +& wmb_rsp_bit_remain_add -& wmb_rsp_bit_remain_sub))(9, 0)
     val wmb_rsp_bit_remain_last_reg_en = layer_st | (wmb_rsp_pipe_pvld & wmb_rsp_group_end & is_compressed_d1)
 
     when(layer_st | (wmb_rsp_pipe_pvld & is_compressed_d1)){
@@ -757,7 +765,7 @@ withClockAndReset(io.nvdla_core_clk){
 
     //////////////////////////////////// generate select signal ////////////////////////////////////
     val wt_rsp_last_stripe_end = RegInit(1.U)
-    val wt_rsp_sel_d1 = RegInit(1.U)
+    val wt_rsp_sel_d1 = RegInit("b1".asUInt(conf.CSC_ATOMK.W))
 
     val wt_rsp_sel_w = Mux(wt_rsp_last_stripe_end, "b1".asUInt(conf.CSC_ATOMK.W), 
                        Cat(wt_rsp_sel_d1(conf.CSC_ATOMK-2, 0), wt_rsp_sel_d1(conf.CSC_ATOMK-1))
@@ -767,15 +775,11 @@ withClockAndReset(io.nvdla_core_clk){
         wt_rsp_sel_d1 := wt_rsp_sel_w
     }
     
-    val dec_input_sel = wt_rsp_sel_d1
+    val dec_input_sel = VecInit((0 to conf.CSC_ATOMK-1) map { i => wt_rsp_sel_d1(i).toBool})
 
     //////////////////////////////////// prepare other signals ////////////////////////////////////
-    val sc2mac_out_mask = Wire(UInt(conf.CSC_ATOMC.W))
-    val sc2mac_out_pvld = Wire(Bool())
-    val sc2mac_out_sel = Wire(UInt(conf.CSC_ATOMK.W))
-
     dec_input_pipe_valid = RegInit(false.B)
-    dec_input_mask = RegInit("b0".asUInt(conf.CSC_ATOMC.W))
+    dec_input_mask = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
     dec_input_mask_en = RegInit("b0".asUInt(10.W))
 
     dec_input_pipe_valid := wt_rsp_pipe_pvld
@@ -786,16 +790,15 @@ withClockAndReset(io.nvdla_core_clk){
 
     val u_dec = Module(new NV_NVDLA_CSC_WL_dec)
     u_dec.io.nvdla_core_clk := io.nvdla_core_clk          //|< i
-    u_dec.io.nvdla_core_clk := io.nvdla_core_rstn         //|< i
     u_dec.io.input_data := dec_input_data  //|< r
     u_dec.io.input_mask := dec_input_mask  //|< r
     u_dec.io.input_mask_en := dec_input_mask_en  //|< r
     u_dec.io.input_pipe_valid := dec_input_pipe_valid    //|< r
     u_dec.io.input_sel := dec_input_sel     //|< w
     val sc2mac_out_data = u_dec.io.output_data
-    sc2mac_out_mask = u_dec.io.output_mask 
-    sc2mac_out_pvld = u_dec.io.output_pvld
-    sc2mac_out_sel = u_dec.io.output_sel
+    val sc2mac_out_mask = u_dec.io.output_mask 
+    val sc2mac_out_pvld = u_dec.io.output_pvld
+    val sc2mac_out_sel = u_dec.io.output_sel
 
     //////////////////////////////////////////////////////////////
     ///// registers for retiming                             /////

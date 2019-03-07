@@ -9,6 +9,9 @@ import chisel3.experimental._
 class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
 
     val io = IO(new Bundle {
+        //clock
+        val clk = Input(Clock())
+
         //control signal
         val re = Input(Bool())
         val we = Input(Bool())
@@ -23,7 +26,7 @@ class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
         val di = Input(UInt(wid.W))
         val dout = Output(UInt(wid.W))
     })
-
+ withClock(io.clk){
 // assign data...
 
 // Create a synchronous-read, synchronous-write memory (like in FPGAs).
@@ -44,4 +47,4 @@ when (io.we) {
     }
 
 }
-}
+}}
