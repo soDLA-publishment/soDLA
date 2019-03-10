@@ -188,6 +188,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF32ToUI32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_f32FromRecF32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_f32FromRecF32.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cscDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cscDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\RealGCD$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\RealGCD$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_HLS_shiftrightsu$$anon$1.class[0m
@@ -218,6 +220,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\MUX2D4$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_macDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_CORE_macDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_wlDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_wlDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_regfileDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CDMA_regfileDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_rt_inDriver$delayedInit$body.class[0m
@@ -232,6 +236,10 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_regfileDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_dlDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_dlDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cscDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cscDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_wl$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_wl$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Router.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Router.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_DivSqrtRecF64_sqrt.class[0m
@@ -358,6 +366,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Counter$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cfgromDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cfgromDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_wl.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_wl.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\rawFloatFromFN$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\rawFloatFromFN$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\RealGCDInput.class[0m
@@ -512,6 +522,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\consts.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\SingleFilter.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\SingleFilter.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_csc$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_csc$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_I32ToRecF16.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_I32ToRecF16.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\PredicateFilter.class[0m
@@ -838,6 +850,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\SqrtRecFN_io.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\EnableShiftRegister.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\EnableShiftRegister.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_wlDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_wlDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\VecShiftRegisterParam.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\VecShiftRegisterParam.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_MulAddRecFN_mul$$anon$7$$anon$8.class[0m
@@ -902,6 +916,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_RT_csb2cacc$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\VecShiftRegister.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\VecShiftRegister.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_csc.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_csc.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_CompareRecFN_le$$anon$4$$anon$6.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_CompareRecFN_le$$anon$4$$anon$6.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_HLS_shiftrightsuz$$anon$1.class[0m
@@ -984,8 +1000,12 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_BDMA_cq.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cmacDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cmacDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cscDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cscDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_WL_decDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_WL_decDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_wlDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_wlDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_UI64ToRecF64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_UI64ToRecF64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\WriteCmd.class[0m

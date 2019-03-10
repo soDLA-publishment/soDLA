@@ -13,12 +13,13 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         //abuf
-//         val abuf_rd_addr = Input(UInt(conf.CACC_ABUF_AWIDTH.W))
-//         val abuf_rd_en = Input(Bool())
-//         val abuf_wr_addr = Input(UInt(conf.CACC_ABUF_AWIDTH.W))
-//         val abuf_wr_data = Input(UInt(conf.CACC_ABUF_WIDTH.W))
 //         val abuf_wr_en = Input(Bool())
-//         val abuf_rd_data = Output(UInt(conf.CACC_ABUF_WIDTH.W))
+//         val abuf_wr_addr = Input(UInt(conf.CACC_ABUF_AWIDTH.W))
+//         val abuf_wr_data = Input(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
+
+//         val abuf_rd_en = Input(Bool())
+//         val abuf_rd_addr = Input(UInt(conf.CACC_ABUF_AWIDTH.W))                
+//         val abuf_rd_data = Output(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
 
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 //     })
@@ -58,7 +59,7 @@
 // u_accu_abuf_0.io.we := io.abuf_wr_en
 // u_accu_abuf_0.io.wa := io.abuf_wr_addr
 // u_accu_abuf_0.io.di := io.abuf_wr_data
-// abuf_rd_data_ecc:=u_cbuf_ram_bank_ram.io.dout
+// abuf_rd_data_ecc := u_accu_abuf_0.io.dout
 
 // val abuf_rd_en_d1 = RegNext(io.abuf_rd_en, false.B)
 // val abuf_rd_raw_data = abuf_rd_data_ecc

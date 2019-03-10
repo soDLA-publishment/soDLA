@@ -20,26 +20,20 @@
 //         //cacc2glb
 //         val cacc2glb_done_intr_pd = Output(UInt(2.W))
 
-//         //dbud
-//         val dbuf_rd_addr = Input(UInt(conf.CACC_ABUF_AWIDTH.W))
-//         val dbuf_rd_en = Input(Bool())
-//         val dbuf_rd_layer_end = Input(Bool())
-//         val dbuf_wr_addr = Input(UInt(conf.CACC_DBUF_AWIDTH.W))
-// input   [CACC_DBUF_WIDTH-1:0]   dbuf_wr_data;
-// input                           dbuf_wr_en;
-//         val reg2dp_dataout_width = Input(UInt(13.W))
-//         val reg2dp_dataout_height = Input(UInt(13.W))
-//         val reg2dp_dataout_channel = Input(UInt(13.W))
-//         val reg2dp_dataout_addr = Input(UInt((31-conf.NVDLA_MEMORY_ATOMIC_LOG2).W))
-//         val reg2dp_line_packed = Input(Bool())
-//         val reg2dp_surf_packed = Input(Bool())
-//         val reg2dp_batches = Input(UInt(5.W))
-//         val reg2dp_line_stride = Input(UInt(24.W))
-//         val reg2dp_surf_stride = Input(UInt(24.W)) 
-
 //         //accu2sc
 //         val accu2sc_credit_size = Output(UInt(3.W))
 //         val accu2sc_credit_vld = Output(Bool())
+
+//         //dbuf
+//         val dbuf_wr_en = Input(Bool())
+//         val dbuf_wr_addr = Input(UInt(conf.CACC_DBUF_AWIDTH.W))
+//         val dbuf_wr_data = Input(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
+
+//         val dbuf_rd_en = Input(Bool())
+//         val dbuf_rd_layer_end = Input(Bool())
+//         val dbuf_rd_ready = Output(Bool())
+//         val dbuf_rd_addr = Input(UInt(conf.CACC_ABUF_AWIDTH.W))
+
 
 //         //pwrbus
 //         val pwrbus_ram_pd = Input(UInt(32.W))
@@ -62,62 +56,45 @@
 // //           │         │
 // //           │         └──────────────┐
 // //           │                        │
-// //           │                        ├─┐         addition --> narrow down to 34 bit-->narrow down to 32 bit
+// //           │                        ├─┐         
 // //           │                        ┌─┘    
 // //           │                        │
 // //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 // //             │ ─┤ ─┤       │ ─┤ ─┤         
 // //             └──┴──┘       └──┴──┘
 
-//     //====================
-//     // Addition
-//     //====================
-//     val i_sat_vld = RegInit(false.B)
-//     val i_sat_sel  = RegInit(false.B)
-//     val i_sum_pd = Reg(UInt(35.W))
+// // Instance RAMs  
+// val data_left_mask = RegInit("b0".asUInt(conf.CACC_DWIDTH_DIV_SWIDTH.W))
+// val dbuf_rd_en_new = ~(data_left_mask.orR) & io.dbuf_rd_en
 
-//     i_sat_vld := i_vld
-//     when(io.in_valid){
-//         i_sat_sel := io.in_sel
-//         i_sum_pd := io.in_data +& Mux(io.in_op_valid, io.in_op, "b0".asUInt(34.W))
-//     } 
+// val u_accu_dbuf = Module(new nv_ram_rws(conf.CACC_DBUF_DEPTH, conf.CACC_DBUF_WIDTH))
+// val dbuf_rd_data = Wire(Vec(CACC_DWIDTH_DIV_SWIDTH, SInt()))
 
-//     //====================
-//     // narrow down to 34bit, and need satuation only
-//     //====================
-//     val i_sat_bits = WireInit("b0".asUInt(33.W))
-//     val i_partial_result = WireInit("b0".asUInt(34.W))
+// u_accu_dbuf.io.clk := io.nvdla_core_clk
+// u_accu_dbuf.io.ra := io.dbuf_rd_addr
+// u_accu_dbuf.io.re := dbuf_rd_en_new
+// u_accu_dbuf.io.we := io.dbuf_wr_en
+// u_accu_dbuf.io.wa := io.dbuf_wr_addr
+// u_accu_dbuf.io.di := io.dbuf_wr_data
+// val dbuf_rd_data = u_accu_dbuf.io.dout
 
-//     when(i_sum_pd(34)^i_sum_pd(33)){//saturation condition, sign and msb
-//         i_sat_bits := Fill(33, ~i_sum_pd(34))
-//     }
-//     .otherwise{
-//         i_sat_bits := i_sum_pd(32, 0)
-//     }
+// //get signal for SDP
+// val dbuf_rd_valid = RegInit(false.B)
+// val rd_data_mask = RegInit("b1".asUInt(conf.CACC_DWIDTH_DIV_SWIDTH.W))
+// val rd_data_mask_pre = if(conf.CACC_DWIDTH_DIV_SWIDTH>=2) 
+//                        Mux(io.cacc2sdp_valid & io.cacc2sdp_ready, Cat(rd_data_mask(conf.CACC_DWIDTH_DIV_SWIDTH-2, 0), rd_data_mask(conf.CACC_DWIDTH_DIV_SWIDTH-1)), rd_data_mask)
+//                        else
+//                        rd_data_mask
+// rd_data_mask := rd_data_mask_pre
+// val data_left_mask_pre = Mux(dbuf_rd_en_new, Fill(conf.CACC_DWIDTH_DIV_SWIDTH, true.B), 
+//                          Mux(io.cacc2sdp_valid & io.cacc2sdp_ready, data_left_mask<<1.U, data_left_mask))(conf.CACC_DWIDTH_DIV_SWIDTH-1, 0)
+// data_left_mask := data_left_mask_pre
+// io.cacc2sdp_valid := data_left_mask.orR
+// io.dbuf_rd_ready := ~(data_left_mask.orR)
 
-//     i_partial_result := Cat(i_sum_pd(34), i_sat_bits)
 
-//     //====================
-//     // narrow down to 32bit, and need rounding and saturation 
-//     //====================  
-//     val i_pre_sft_pd = Mux(i_sat_sel, i_sat_pd(33, 0), Fill(34, false.B))
-//     val i_sft_pd = (Cat(i_pre_sft_pd, "b0".asUInt(16.W)) >> cfg_truncate)(49, 16)
-//     val i_guide = (Cat(i_pre_sft_pd, "b0".asUInt(16.W)) >> cfg_truncate)(15)
-//     val i_stick = (Cat(i_pre_sft_pd, "b0".asUInt(16.W)) >> cfg_truncate)(14, 0)
-//     val i_point5 = i_sat_sel & i_guide & (~i_sat_sign|(i_stick.orR))
-//     val i_sft_need_sat = (i_sat_sign & (~(i_sft_pd(32, 31).andR)))|
-//                          (~i_sat_sign & (i_sft_pd(32, 31).orR)) |
-//                          (~i_sat_sign & Cat(i_sft_pd(30,0), i_point5).andR) 
-//     val i_sft_max = Mux(i_sat_sign, Cat(true.B, "b0".asUInt(31.W)), ~Cat(true.B, "b0".asUInt(31.W)))
-//     val i_tru_pd = i_pos_pd
-//     val i_final_result = Mux(i_sft_need_sat, i_sft_max, i_tru_pd)
-//     val i_partial_vld = i_sat_vld & ~i_sat_sel
-//     val i_final_vld = i_sat_vld&i_sat_sel
 
-//     io.out_final_valid := RegNext(i_partial_vld, false.B)
-//     io.out_final_sat := RegNext(i_final_vld & i_sft_need_sat, false.B)
-//     io.out_partial_data := RegNext(i_partial_result)
-//     io.out_final_data := RegNext(i_final_result)
+
 
 // }
 

@@ -18,6 +18,7 @@ class NV_NVDLA_CSC_sg(implicit val conf: cscConfiguration) extends Module {
         val reg2dp_skip_data_rls = Input(Bool())
         val reg2dp_weight_reuse = Input(Bool()) 
         val reg2dp_skip_weight_rls = Input(Bool()) 
+        val reg2dp_batches = Input(UInt(5.W))
         val reg2dp_datain_format = Input(Bool()) 
         val reg2dp_datain_height_ext = Input(UInt(13.W)) 
         val reg2dp_y_extension = Input(UInt(2.W)) 
@@ -44,6 +45,7 @@ class NV_NVDLA_CSC_sg(implicit val conf: cscConfiguration) extends Module {
         val cdma2sc_wt_updt = Input(Bool())       
         val cdma2sc_wt_kernels = Input(UInt(14.W))
         val cdma2sc_wt_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+        val cdma2sc_wmb_entries = Input(UInt(9.W))
         val sc2cdma_wt_pending_req = Output(Bool())   //send wt pending to cdma
         val cdma2sc_wt_pending_ack = Input(Bool())  //cdma ask sg to clr pending
 
@@ -142,8 +144,8 @@ withClock(io.nvdla_core_clk){
     val sg2dat_layer_end = Wire(Bool())
  
     fifo_is_clear := ~dat_pop_req & ~wt_pop_req & dat_push_empty & wt_push_empty
-    val dat_bank_change = (last_data_bank != io.reg2dp_data_bank)
-    val wt_bank_change = (last_weight_bank != io.reg2dp_weight_bank)
+    val dat_bank_change = (last_data_bank =/= io.reg2dp_data_bank)
+    val wt_bank_change = (last_weight_bank =/= io.reg2dp_weight_bank)
     need_pending := (dat_bank_change | wt_bank_change)
     pending_done := is_pending & ~(dat_pending_clr^dat_pending_req) & ~(wt_pending_clr^wt_pending_req)
     val flush_cycles_w = dat_stripe_size +& conf.CSC_SG_DONE_FLUSH.U
@@ -174,7 +176,7 @@ withClock(io.nvdla_core_clk){
     io.sc_state := Mux(is_idle, "b00".asUInt(2.W), Mux(is_pending, "b01".asUInt(2.W), Mux(is_running, "b10".asUInt(2.W), "b11".asUInt(2.W))))
     val dat_pending_req_w = Mux(is_nxt_pending & dat_bank_change, "b1".asUInt(1.W), Mux( ~is_nxt_pending, "b0".asUInt(1.W), dat_pending_req))
     val wt_pending_req_w = Mux(is_nxt_pending, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), wt_pending_req))
-    val is_mode_change = (last_mode != cur_mode)
+    val is_mode_change = (last_mode =/= cur_mode)
     val dat_pending_clr_w = Mux(is_pending & dat_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), dat_pending_clr))
     val wt_pending_clr_w =  Mux(is_pending & dat_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), wt_pending_clr))
 

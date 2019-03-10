@@ -7,10 +7,12 @@
 
 class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     val io = IO(new Bundle {
+        //clock
+        val nvdla_core_clk = Input(Clock())    
         //input 
         val input_data = Input(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
         val input_mask = Input(Vec(conf.CSC_ATOMC, Bool()))
-        val input_mask_en = Input(Vec(10, Bool()))
+        val input_mask_en = Input(UInt(10.W))
         val input_pipe_valid = Input(Bool())
         val input_sel = Input(Vec(conf.CSC_ATOMK, Bool()))
 
@@ -42,7 +44,7 @@ class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
-
+withClock(io.nvdla_core_clk){
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Decoder of compressed weight                                                  
     //
@@ -141,7 +143,7 @@ class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
     io.output_sel := sel_d3
     io.output_data := vec_data_d3
     
-}
+}}
 
 object NV_NVDLA_CSC_WL_decDriver extends App {
   implicit val conf: cscConfiguration = new cscConfiguration

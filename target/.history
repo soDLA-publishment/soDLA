@@ -110,3 +110,7 @@ exit
 run
 sbt run
 run
+sbt run
+run
+clear
+exit
