@@ -22,12 +22,12 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
 
         val sc2mac_dat_pvld = Input(Bool())  /* data valid */
         val sc2mac_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
+        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, SInt(conf.CMAC_BPE.W)))
         val sc2mac_dat_pd = Input(UInt(9.W))
 
         val sc2mac_wt_pvld = Input(Bool())
         val sc2mac_wt_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt(conf.CMAC_BPE.W)))
+        val sc2mac_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, SInt(conf.CMAC_BPE.W)))
         val sc2mac_wt_sel = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
 
         val mac2accu_pvld = Output(Bool()) /* data valid */

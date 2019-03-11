@@ -92,7 +92,7 @@ class NV_NVDLA_CSC_SG_wt_fifo extends Module {
     val wr_count_next_is_4 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_4)
     val wr_limit_muxed = Wire(UInt(3.W))    // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
-    wr_busy_next := wr_count_next_is_4 ||(wr_limit_reg != 0.U && (wr_count_next >= wr_limit_reg))
+    wr_busy_next := wr_count_next_is_4 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
     wr_busy_in_int := wr_req_in && wr_busy_int
 
     wr_busy_int := wr_busy_next
@@ -155,13 +155,13 @@ class NV_NVDLA_CSC_SG_wt_fifo extends Module {
     val rd_count_next_no_rd_popping = Mux(rd_pushing, rd_count + 1.U, rd_count)
     val rd_count_next = Mux(rd_popping, rd_count_next_rd_popping, rd_count_next_no_rd_popping)
 
-    io.rd_req := rd_count!= 0.U|rd_pushing
+    io.rd_req := rd_count =/= 0.U|rd_pushing
     when(rd_pushing || rd_popping){
         rd_count := rd_count_next
     }
 
     clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
-                         (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next)) || 
+                         (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
                          (rd_pushing || rd_popping || (io.rd_req && io.rd_ready)) || (wr_pushing))
 
     wr_limit_muxed := "d0".asUInt(3.W)

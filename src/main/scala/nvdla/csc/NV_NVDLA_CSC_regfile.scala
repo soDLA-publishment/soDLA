@@ -96,7 +96,7 @@ withClock(io.nvdla_core_clk){
     val dp2reg_status_0 = Wire(Bool())
     val dp2reg_status_1 = Wire(Bool())
 
-    val u_single_reg = Module(new NV_NVDLA_CMAC_REG_single)
+    val u_single_reg = Module(new NV_NVDLA_CSC_single_reg)
 
     u_single_reg.io.reg_offset := reg_offset
     u_single_reg.io.reg_wr_data := reg_wr_data 

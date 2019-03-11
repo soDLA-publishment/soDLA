@@ -3,28 +3,18 @@ package nvdla
 import chisel3._
 
 
-class cbufConfiguration(){
-    
-    val NVDLA_CBUF_BANK_NUMBER = 32
-    val NVDLA_CBUF_BANK_DEPTH = 512
-    val NVDLA_CBUF_ENTRY_WIDTH = 8
-    val NVDLA_CBUF_BANK_DEPTH_LOG2 = 9
-    val NVDLA_CBUF_WIDTH_MUL2_LOG2 = 4
-    val NVDLA_CBUF_DEPTH_LOG2 = 14
-    val NVDLA_CC_ATOMC_DIV_ATOMK = 1
+class cbufConfiguration extends project_spec{
 
-    var CBUF_BANK_NUMBER = NVDLA_CBUF_BANK_NUMBER
-    var CBUF_BANK_DEPTH = NVDLA_CBUF_BANK_DEPTH
-    var CBUF_ENTRY_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
-    var CBUF_ENTRY_BYTE = 1
+    val CBUF_ENTRY_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
+    val CBUF_ENTRY_BYTE = CBUF_ENTRY_WIDTH/8
     var CBUF_RAM_DEPTH = NVDLA_CBUF_BANK_DEPTH 
-    var CBUF_BANK_DEPTH_BITS = NVDLA_CBUF_BANK_DEPTH_LOG2  //log2(bank_depth), how many bits need to give an address in BANK
-    var CBUF_RD_DATA_SHIFT_WIDTH =  NVDLA_CBUF_WIDTH_MUL2_LOG2  //log2(ram_width*2),width of data shift
-    var CBUF_ADDR_WIDTH  =  NVDLA_CBUF_DEPTH_LOG2       //log2(bank_depth*bank_num)for both read and write
-    var CBUF_RD_PORT_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
-    var CBUF_WR_PORT_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
-    var CBUF_WR_PORT_NUMBER = 2   //how many write ports.
-    var CSC_IMAGE_MAX_STRIDE_BYTE = 32  //=stride_max* 
+    val CBUF_BANK_DEPTH_BITS = NVDLA_CBUF_BANK_DEPTH_LOG2  //log2(bank_depth), how many bits need to give an address in BANK
+    val CBUF_RD_DATA_SHIFT_WIDTH =  NVDLA_CBUF_WIDTH_MUL2_LOG2  //log2(ram_width*2),width of data shift
+    val CBUF_ADDR_WIDTH  =  NVDLA_CBUF_DEPTH_LOG2       //log2(bank_depth*bank_num)for both read and write
+    val CBUF_RD_PORT_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
+    val CBUF_WR_PORT_NUMBER = 2   //how many write ports.
+    val CSC_IMAGE_MAX_STRIDE_BYTE = 32  //=stride_max* 
+
     var CBUF_BANK_RAM_CASE = 1
 
     if((NVDLA_CC_ATOMC_DIV_ATOMK==1)& (CBUF_ENTRY_BYTE >= CSC_IMAGE_MAX_STRIDE_BYTE)){
@@ -96,6 +86,7 @@ class cbufConfiguration(){
         CBUF_RAM_DEPTH = NVDLA_CBUF_BANK_DEPTH/2  
         CBUF_RAM_DEPTH_BITS = CBUF_BANK_DEPTH_BITS-1     
     }
+    val CBUF_WR_PORT_WIDTH = CBUF_RAM_WIDTH
 
     var CBUF_BANK_SLICE_max = 9
     var CBUF_BANK_SLICE_min = 9
