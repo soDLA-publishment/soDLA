@@ -5,15 +5,27 @@ This is a suite of packages for working with nvdla in chisel
 .
 These are the tutorials for [chisel3](https://chisel.eecs.berkeley.edu/index.html#getstarted) and [nvdla](http://nvdla.org/hw/v1/hwarch.html)
 
-Getting Started
+
+My Progress
 ----------------
 
-    $ git clone https://github.com/redpanda3/soDLA.git
-    $ cd soDLA
-    $ sbt
-    
 
-Executing Test
+| Unit | Chisel | Validation& Test| Backend |
+| ------ | ------ | ------ |------ |
+| CMAC |  Done | Some Simple Peekpoke Test| Not yet |
+| CBUF | Done | Not yet | Not yet |
+| CSC | Done | Not yet | Not yet |
+| CACC | Done | Not yet | Not yet |
+| CDMA| In Progress | Not yet | Not yet |
+| CORA(self-driving package) | In Progress | Not yet | Not yet |
+
+Generate Verilog Modules
+----------------
+    $ sbt run
+    
+Most verilog sources are not verified yet, but welcome to test on firesim and send me the issues. 
+
+Executing Some Basic Test
 ----------------
 
 The following modules are suitable for peekpoke tester.
@@ -22,13 +34,9 @@ CMAC
 
 CMAC_core component test in Peekpoke Tester:
 
-CMAC_CORE_mac for unsigned data, see nvdla/common/configurations for detail configurations:
+CMAC_CORE_mac 
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
-    
-CMAC_CORE_mac for signed data: 
- 
-    $ test:runMain nvdla.cmacSINTLauncher NV_NVDLA_CMAC_CORE_macSINT
     
 CMAC_CORE_rt_in:
 
@@ -42,7 +50,6 @@ CMAC_CORE_active:
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_active
 
-Some modules are suitable for VCS. I will post a scipt for generating vsrc later.
 
 
     
