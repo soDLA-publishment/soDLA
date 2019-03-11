@@ -77,11 +77,11 @@ withClock(io.nvdla_core_clk){
     // unpack abuffer read data
     val abuf_in_data = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_PARSUM_WIDTH.W)))
     for(i <- 0 to conf.CACC_ATOMK-1){
-        abuf_in_data := io.abuf_rd_data(conf.CACC_PARSUM_WIDTH*(i+1)-1, conf.CACC_PARSUM_WIDTH*1).asSInt
+        abuf_in_data(i) := io.abuf_rd_data(conf.CACC_PARSUM_WIDTH*(i+1)-1, conf.CACC_PARSUM_WIDTH*i).asSInt
     }
 
     //1T delay, the same T with data/mask
-    val accu_ctrl_pd_d1 = RegEnable(io.accu_ctrl_pd, false.B, io.accu_ctrl_valid)
+    val accu_ctrl_pd_d1 = RegEnable(io.accu_ctrl_pd, "b0".asUInt(13.W), io.accu_ctrl_valid)
     val calc_valid_in = (io.mac_b2accu_pvld | io.mac_a2accu_pvld)
 
     val calc_valid = ShiftRegister(calc_valid_in, 3, false.B, true.B)

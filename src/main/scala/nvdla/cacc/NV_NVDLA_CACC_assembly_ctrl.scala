@@ -85,7 +85,7 @@ val is_int8 = (io.reg2dp_proc_precision === conf.NVDLA_CACC_D_MISC_CFG_0_PROC_PR
 val is_winograd = false.B
 
 // SLCG
-val slcg_cell_en = ShiftRegister(io.reg2dp_op_en, 3, false.B, true.B)
+io.slcg_cell_en := ShiftRegister(io.reg2dp_op_en, 3, false.B, true.B)
 
 // get layer operation begin
 val wait_for_op_en_out = RegInit(true.B)

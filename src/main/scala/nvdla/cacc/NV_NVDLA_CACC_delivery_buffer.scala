@@ -63,7 +63,8 @@ class NV_NVDLA_CACC_delivery_buffer(implicit conf: caccConfiguration) extends Mo
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘
 withClock(io.nvdla_core_clk){
-// Instance RAMs  
+
+// Instance RAMs 
 val data_left_mask = RegInit("b0".asUInt(conf.CACC_DWIDTH_DIV_SWIDTH.W))
 val dbuf_rd_en_new = ~(data_left_mask.orR) & io.dbuf_rd_en
 
@@ -106,7 +107,7 @@ dbuf_rd_layer_end_latch := dbuf_rd_layer_end_latch_w
 val last_data = Wire(Bool())
 val cacc2sdp_batch_end = false.B
 val cacc2sdp_layer_end = dbuf_rd_layer_end_latch & last_data & io.cacc2sdp_valid & io.cacc2sdp_ready; //data_left_mask=0;
-val cacc2sdp_pd = Cat(cacc2sdp_layer_end, cacc2sdp_batch_end, cacc2sdp_pd_data)
+io.cacc2sdp_pd := Cat(cacc2sdp_layer_end, cacc2sdp_batch_end, cacc2sdp_pd_data)
 
 // generate CACC done interrupt  
 val intr_sel = RegInit(false.B)

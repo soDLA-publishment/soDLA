@@ -6,14 +6,14 @@ import chisel3.util._
 
 class caccConfiguration extends project_spec
 {
+    val CACC_PARSUM_WIDTH = 34  //sum result width for one layer operation.
+    val CACC_FINAL_WIDTH = 32  //sum result width for one layer operation with saturaton.
     val CACC_IN_WIDTH = NVDLA_MAC_RESULT_WIDTH  //16+log2(atomC),sum result width for one atomic operation.
     val SDP_MAX_THROUGHPUT = NVDLA_SDP_MAX_THROUGHPUT  //2^n, no bigger than atomM
     val CACC_ATOMK = NVDLA_MAC_ATOMIC_K_SIZE
     val CACC_ATOMK_LOG2 = NVDLA_MAC_ATOMIC_K_SIZE_LOG2
     val CACC_ABUF_WIDTH = CACC_PARSUM_WIDTH*CACC_ATOMK
     val CACC_DBUF_WIDTH = CACC_FINAL_WIDTH*CACC_ATOMK
-    val CACC_PARSUM_WIDTH = 34  //sum result width for one layer operation.
-    val CACC_FINAL_WIDTH = 32  //sum result width for one layer operation with saturaton.
     val CACC_SDP_DATA_WIDTH = CACC_FINAL_WIDTH*SDP_MAX_THROUGHPUT
     val CACC_SDP_WIDTH = CACC_SDP_DATA_WIDTH+2    //cacc to sdp pd width
     val CACC_DWIDTH_DIV_SWIDTH = (CACC_DBUF_WIDTH)/(CACC_SDP_DATA_WIDTH)  //1,2,4...

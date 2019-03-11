@@ -36,6 +36,10 @@ class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Modu
         val reg2dp_surf_stride = Input(UInt(24.W))
         val dp2reg_done = Output(Bool())
 
+        //sdp
+        val cacc2sdp_ready = Input(Bool())
+        val cacc2sdp_valid = Input(Bool())
+
         //dlv
         val dlv_data = Input(Vec(conf.CACC_ATOMK, SInt(conf.CACC_FINAL_WIDTH.W)))
         val dlv_mask = Input(Bool())
@@ -121,16 +125,23 @@ val is_winograd = false.B
 ///// generate write signal, 1 pipe for write data
 //////////////////////////////////////////////////////////////
 val dbuf_wr_addr_pre = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
-val dbuf_wr_addr = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
-val dbuf_wr_en = RegInit(false.B)
-val dbuf_wr_data = Reg(UInt(conf.CACC_DBUF_WIDTH.W))
+val dbuf_wr_addr_out = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
+val dbuf_wr_en_out = RegInit(false.B)
+val dbuf_wr_data_out = Reg(UInt(conf.CACC_DBUF_WIDTH.W))
 
+val dbuf_wr_addr_w = dbuf_wr_addr_pre + 1.U
+
+dbuf_wr_en_out := io.dlv_valid
 when(io.dlv_valid){
-    dbuf_wr_addr_pre := dbuf_wr_addr_pre + 1.U
-    dbuf_wr_addr := dbuf_wr_addr_pre
-    dbuf_wr_en := io.dlv_valid
-    dbuf_wr_data := io.dlv_data.asUInt
+    dbuf_wr_addr_pre := dbuf_wr_addr_w
+    dbuf_wr_addr_out := dbuf_wr_addr_pre
+    dbuf_wr_data_out := io.dlv_data.asUInt
 }
+
+io.dbuf_wr_en := dbuf_wr_en_out
+io.dbuf_wr_addr := dbuf_wr_addr_out
+io.dbuf_wr_data := dbuf_wr_data_out
+
 
 ///// generate stored data size, add delay for write, due to ecc,could set 0 currently.
 val dlv_push_valid = io.dlv_valid
