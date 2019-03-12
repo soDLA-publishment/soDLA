@@ -2,6 +2,8 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
+import chisel3.iotesters.Driver
 
 class NV_NVDLA_apb2csb extends Module {
  
@@ -36,7 +38,7 @@ class NV_NVDLA_apb2csb extends Module {
   //input  nvdla2csb_wr_complete
   withClock(io.pclk){
 
-  val rd_trans_low = RegInit(Bool())
+  val rd_trans_low = RegInit(false.B)
   val rd_trans_vld = Wire(Bool())
   val wr_trans_vld = Wire(Bool())
 
@@ -62,6 +64,10 @@ class NV_NVDLA_apb2csb extends Module {
 
   }
 
+}
+
+object NV_NVDLA_apb2csbDriver extends App {
+  chisel3.Driver.execute(args, () => new NV_NVDLA_apb2csb())
 }
 
   

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_cbuf(useRealClock:Boolean = false)(implicit val conf: cbufConfiguration) extends Module {
+class NV_NVDLA_cbuf(useRealClock:Boolean = true)(implicit val conf: cbufConfiguration) extends Module {
  
   //csb interface  
   val io = IO(new Bundle {

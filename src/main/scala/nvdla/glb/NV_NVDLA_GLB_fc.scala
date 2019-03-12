@@ -4,11 +4,14 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_GLB_csb(implicit val conf: project_spec) extends Module {
+class NV_NVDLA_GLB_fc(implicit val conf: project_spec) extends Module {
     val io = IO(new Bundle {
 
         //clock
         val nvdla_core_clk = Input(Clock())
+        val nvdla_falcon_clk = Input(Clock())
+        val nvdla_core_clk = Input(Clock())
+        
  
         //bdma
         val bdma_done_status0 = if(conf.NVDLA_BDMA_ENABLE) Some(Input(Bool())) else None
