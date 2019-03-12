@@ -32,10 +32,6 @@ Executing Some Basic Test
 
 The following modules are suitable for peekpoke tester.
 
-CMAC
-
-CMAC_core component test in Peekpoke Tester:
-
 CMAC_CORE_mac 
 
     $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
