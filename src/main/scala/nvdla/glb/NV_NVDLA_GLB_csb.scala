@@ -53,14 +53,20 @@ class NV_NVDLA_GLB_csb(implicit val conf: project_spec) extends Module {
 
         //csb2glb
         val csb2glb_req_pd = Input(UInt(63.W))
-        val csb2glb_req_pvld = Input(UInt(1.W))    
+        val csb2glb_req_pvld = Input(Bool())  
+        val csb2glb_req_prdy = Output(Bool())  
+        val glb2csb_resp_pd = Output(UInt(34.W))
+        val glb2csb_resp_valid = Output(Bool())
 
         //sdp
         val sdp_done_status0 = Input(Bool())
         val sdp_done_status1 = Input(Bool())
-        val 
+        val sdp_done_mask0 = Output(Bool())
+        val sdp_done_mask1 = Output(Bool())
+        val sdp_done_set0_trigger = Output(Bool())
+        val sdp_done_status0_trigger = Output(Bool())
 
-
+        val req_wdat = Output(UInt(32.W))
 
         
     })
@@ -86,110 +92,179 @@ class NV_NVDLA_GLB_csb(implicit val conf: project_spec) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+withClock(io.nvdla_core_clk){
 
-    val major = Wire(UInt(8.W))
-    val minor = Wire(UInt(16.W))
-    val nvdla_glb_s_intr_mask_0_out = Wire(UInt(32.W))
-    val nvdla_glb_s_intr_set_0_out = Wire(UInt(32.W))
-    val nvdla_glb_s_intr_status_0_out = Wire(UInt(32.W))
-    val nvdla_glb_s_nvdla_hw_version_0_out = Wire(UInt(32.W))
-    val reg_offset_rd_int = Wire(UInt(12.W))
-    val reg_offset_wr = Wire(UInt(32.W))
-              
-    // leda FM_2_23 on
+    //////////////////////////////////////////////////////////
+    ////  register
+    //////////////////////////////////////////////////////////
 
-    io.bdma_done_mask0 := Reg(UInt(1.W))
-    io.bdma_done_mask1 := Reg(UInt(1.W))
+    //tie 0 for wo type register read
+    val  bdma_done_set0 = false.B
+    val  bdma_done_set1 = false.B
+    val  cdp_done_set0  = false.B
+    val  cdp_done_set1  = false.B
+    val  pdp_done_set0  = false.B
+    val  pdp_done_set1  = false.B
+    val  sdp_done_set0  = false.B
+    val  sdp_done_set1  = false.B
+    val  rubik_done_set0  = false.B
+    val  rubik_done_set1  = false.B
+    val  cdma_dat_done_set0  = false.B
+    val  cdma_dat_done_set1  = false.B
+    val  cdma_wt_done_set0  = false.B
+    val  cdma_wt_done_set1  = false.B
+    val  cacc_done_set0  = false.B
+    val  cacc_done_set1  = false.B
 
-    io.cacc_done_mask0 := Reg(UInt(1.W))
-    io.cacc_done_mask1 := Reg(UInt(1.W)) 
+    val req_vld = RegNext(io.csb2glb_req_pvld, false.B)
+    val req_pd = RegEnable(io.csb2glb_req_pd, io.csb2glb_req_pvld)  
+    io.csb2glb_req_prdy := true.B
 
-    io.cdma_dat_done_mask0 := Reg(UInt(1.W)) 
-    io.cdma_dat_done_mask1 := Reg(UInt(1.W))
-    io.cdma_wt_done_mask0 := Reg(UInt(1.W))
-    io.cdma_wt_done_mask1 := Reg(UInt(1.W))
+    // ========
+    // REQUEST
+    // ========
+    // flow=pvld_prdy 
+    val req_level_NC = req_pd(62, 61)
+    val req_nposted = req_pd(55)
+    val req_addr = req_pd(21, 0)
+    val req_wrbe_NC = req_pd(60, 57)
+    val req_srcpriv_NC = req_pd(56)
+    val req_write = req_pd(54)
+    io.req_wdat := req_pd(53, 22)
 
-    io.cdp_done_mask0 := Reg(UInt(1.W))
-    io.cdp_done_mask1:= Reg(UInt(1.W))
+    // ========
+    // RESPONSE
+    // ========
+    // flow=valid 
+    val reg_rd_data = Wire(UInt(32.W))
 
-    io.pdp_done_mask0 := Reg(UInt(1.W))
-    io.pdp_done_mask1 := Reg(UInt(1.W))
 
-    io.reg_rd_data := Wire(UInt(32.W)) //Not really change when clock coming
-    io.rubik_done_mask0 := Reg(UInt(1.W))
-    io.rubik_done_mask1 := Reg(UInt(1.W))
-    io.sdp_done_mask0 := Reg(UInt(1.W))
-    io.sdp_done_mask1 := Reg(UInt(1.W))
+    val rsp_rd_vld  = req_vld & ~req_write;
+    val rsp_rd_rdat = Fill(32, rsp_rd_vld) & reg_rd_data;
+    val rsp_rd_error  = false.B
 
-    reg_offset_wr := Cat("b0".U(20.W), io.reg_offset)
+    val rsp_wr_vld  = req_vld & req_write & req_nposted;
+    val rsp_wr_rdat = "b0".asUInt(32.W)
+    val rsp_wr_error = false.B
 
-    // SCR signals
+    val rsp_rd_pd = Cat(rsp_rd_error, rsp_rd_rdat)
+    val rsp_wr_pd = Cat(rsp_wr_error, rsp_wr_rdat)
 
-    // Address decode
+    // ========
+    // REQUEST
+    // ========
 
-    val nvdla_glb_s_intr_mask_0_wren = (reg_offset_wr === ("h4".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
-    val nvdla_glb_s_intr_set_0_wren = (reg_offset_wr === ("h8".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
-    val nvdla_glb_s_intr_status_0_wren = (reg_offset_wr === ("hc".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
-    val nvdla_glb_s_nvdla_hw_version_0_wren = (reg_offset_wr === ("h0".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
+    val rsp_vld = rsp_rd_vld | rsp_wr_vld
+    val rsp_pd = Cat((rsp_rd_vld&false.B)|(rsp_wr_vld&true.B), 
+                 (Fill(33, rsp_rd_vld)&rsp_rd_pd)|(Fill(33, rsp_wr_vld)&rsp_wr_pd))
+    io.glb2csb_resp_valid := RegNext(rsp_vld, false.B)
+    io.glb2csb_resp_pd := RegEnable(rsp_pd, rsp_vld)
+    val reg_offset = Cat(req_addr(9, 0), "b0".asUInt(2.W))
+    val reg_wr_en = req_vld & req_write
+    val reg_wr_data = io.req_wdat
 
-    io.major := "h31".U(8.W)
-    io.minor := "h3030".U(16.W)
+    val u_reg = Module(new NV_NVDLA_GLB_CSB_reg)
 
-    nvdla_glb_s_intr_mask_0_out := Cat("b0".U(10.W), io.cacc_done_mask1, io.cacc_done_mask0, io.cdma_wt_done_mask1, io.cdma_wt_done_mask0, io.cdma_dat_done_mask1, io.cdma_dat_done_mask0, "b0".U(6.W), io.rubik_done_mask1, io.rubik_done_mask0, io.bdma_done_mask1, io.bdma_done_mask0, io.pdp_done_mask1, io.pdp_done_mask0, io.cdp_done_mask1, io.cdp_done_mask0, io.sdp_done_mask1, io.sdp_done_mask0 )
-    nvdla_glb_s_intr_set_0_wren := Cat("b0".U(10.W), io.cacc_done_set1, io.reg_offset_rd_int, io.cdma_wt_done_set1, io.cdma_wt_done_set0, io.cdma_dat_done_set1, io.cdma_dat_done_set0, "b0".U(6.W), io.rubik_done_set1, io.rubik_done_set0, io.bdma_done_set1, io.bdma_done_set0, io.pdp_done_set1, io.pdp_done_set0, io.cdp_done_set1, io.cdp_done_set0, io.sdp_done_set1, io.sdp_done_set0)
-    nvdla_glb_s_intr_status_0_out := Cat("b0".U(10.W), io.cacc_done_status1, io.cacc_done_status0, io.cdma_wt_done_status1, io.cdma_wt_done_status0, io.cdma_dat_done_status1, io.cdma_dat_done_status0, "b0".U(6.W), io.rubik_done_status1, io.rubik_done_status0, io.bdma_done_status1, io.bdma_done_status0, io.pdp_done_status1, io.pdp_done_status0, io.cdp_done_status1, io.cdp_done_status0, io.sdp_done_status1, io.sdp_done_status0)
-    nvdla_glb_s_nvdla_hw_version_0_out := Cat("b0".U(8.W), minor, major)
+    u_reg.io.nvdla_core_clk := io.nvdla_core_clk
 
-    io.sdp_done_set0_trigger := nvdla_glb_s_intr_set_0_wren  //(W563)
-    io.sdp_done_status0_trigger := nvdla_glb_s_intr_status_0_wren   //(W563)
+    u_reg.io.reg_offset := reg_offset
+    u_reg.io.reg_wr_data := reg_wr_data
+    u_reg.io.reg_wr_en := reg_wr_en
+    reg_rd_data := u_reg.io.reg_rd_data
 
-    reg_offset_rd_int := io.reg_offset
-
-    // Output mux
-    //spyglass disable_block W338, W263 
-
-    when(reg_offset_rd_int === ("h4".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_mask_0_out
-    }.elsewhen(reg_offset_rd_int === ("h8".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_set_0_out
-    }.elsewhen(reg_offset_rd_int === ("hc".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_status_0_out
-    }.elsewhen(reg_offset_rd_int === ("h0".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_nvdla_hw_version_0_out
-    }.otherwise{
-        io.reg_rd_data = "b0".U(32.W)
+    //bdma
+    if(conf.NVDLA_BDMA_ENABLE){
+        u_reg.io.bdma_done_status0 := io.bdma_done_status0.get
+        u_reg.io.bdma_done_status1 := io.bdma_done_status1.get
+        io.bdma_done_mask0.get := u_reg.io.bdma_done_mask0
+        io.bdma_done_mask1.get := u_reg.io.bdma_done_mask1
     }
+    else{
+        u_reg.io.bdma_done_status0 := false.B
+        u_reg.io.bdma_done_status1 := false.B
 
-    //spyglass enable_block W338, W263
+    }
+    u_reg.io.bdma_done_set0 := bdma_done_set0
+    u_reg.io.bdma_done_set1 := bdma_done_set1
 
-    // spyglass disable_block STARC-2.10.1.6, NoConstWithXZ, W443
+    //cdp
+    if(conf.NVDLA_CDP_ENABLE){
+        u_reg.io.cdp_done_status0 := io.cdp_done_status0.get
+        u_reg.io.cdp_done_status1 := io.cdp_done_status1.get
+        io.cdp_done_mask0.get := u_reg.io.cdp_done_mask0
+        io.cdp_done_mask1.get := u_reg.io.cdp_done_mask1
+    }
+    else{
+        u_reg.io.cdp_done_status0 := false.B
+        u_reg.io.cdp_done_status1 := false.B
+    }
+    u_reg.io.cdp_done_set0 := cdp_done_set0
+    u_reg.io.cdp_done_set1 := cdp_done_set1
 
-    // Register flop declarations
+    //pdp
+    if(conf.NVDLA_PDP_ENABLE){
+        u_reg.io.pdp_done_status0 := io.pdp_done_status0.get
+        u_reg.io.pdp_done_status1 := io.pdp_done_status1.get
+        io.pdp_done_mask0.get := u_reg.io.pdp_done_mask0
+        io.pdp_done_mask1.get := u_reg.io.pdp_done_mask1
+    }
+    else{
+        u_reg.io.pdp_done_status0 := false.B
+        u_reg.io.pdp_done_status1 := false.B
+    }
+    u_reg.io.pdp_done_set0 := pdp_done_set0
+    u_reg.io.pdp_done_set1 := pdp_done_set1
 
-    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        when(nvdla_glb_s_intr_mask_0_wren === "b1".U(1.W)){
-            io.bdma_done_mask0 := io.reg_wr_data(6)
-            io.bdma_done_mask1 := io.reg_wr_data(7)
-            io.cacc_done_mask0 := io.reg_wr_data(20)
-            io.cacc_done_mask1 := io.reg_wr_data(21)
-            io.cdma_dat_done_mask0 := io.reg_wr_data(16)
-            io.cdma_dat_done_mask1 := io.reg_wr_data(17)
-            io.cdma_wt_done_mask0 := io.reg_wr_data(18)
-            io.cdma_wt_done_mask1 := io.reg_wr_data(19)
-            io.cdp_done_mask0 := io.reg_wr_data(2)
-            io.cdp_done_mask1 := io.reg_wr_data(3)
-            io.pdp_done_mask0 := io.reg_wr_data(4)
-            io.pdp_done_mask1 := io.reg_wr_data(5)
-            io.rubik_done_mask0 := io.reg_wr_data(8)
-            io.rubik_done_mask1 := io.reg_wr_data(9)
-            io.sdp_done_mask0 := io.reg_wr_data(0)
-            io.sdp_done_mask1 := io.reg_wr_data(1)
-        }
-    }   
+    //rubik
+    if(conf.NVDLA_RUBIK_ENABLE){
+        u_reg.io.rubik_done_status0 := io.rubik_done_status0.get
+        u_reg.io.rubik_done_status1 := io.rubik_done_status1.get
+        io.rubik_done_mask0.get := u_reg.io.rubik_done_mask0
+        io.rubik_done_mask1.get := u_reg.io.rubik_done_mask1
+    }
+    else{
+        u_reg.io.rubik_done_status0 := false.B
+        u_reg.io.rubik_done_status1 := false.B
+    }
+    u_reg.io.rubik_done_set0 := rubik_done_set0
+    u_reg.io.rubik_done_set1 := rubik_done_set1
+
+    //cacc
+    u_reg.io.cacc_done_set0 := cacc_done_set0 
+    u_reg.io.cacc_done_set1 := cacc_done_set1
+    u_reg.io.cacc_done_status0 := io.cacc_done_status0
+    u_reg.io.cacc_done_status1 := io.cacc_done_status1
+    io.cacc_done_mask0 := u_reg.io.cacc_done_mask0
+    io.cacc_done_mask1 := u_reg.io.cacc_done_mask1
+
+    //cdma_dat
+    u_reg.io.cdma_dat_done_set0 := cdma_dat_done_set0
+    u_reg.io.cdma_dat_done_set1 := cdma_dat_done_set1
+    u_reg.io.cdma_dat_done_status0 := io.cdma_dat_done_status0
+    u_reg.io.cdma_dat_done_status1 := io.cdma_dat_done_status1
+    io.cdma_dat_done_mask0 := u_reg.io.cdma_dat_done_mask0
+    io.cdma_dat_done_mask1 := u_reg.io.cdma_dat_done_mask1
+
+    //cdma_wt
+    u_reg.io.cdma_wt_done_set0 := cdma_wt_done_set0
+    u_reg.io.cdma_wt_done_set1 := cdma_wt_done_set1
+    u_reg.io.cdma_wt_done_status0 := io.cdma_wt_done_status0
+    u_reg.io.cdma_wt_done_status1 := io.cdma_wt_done_status1
+    io.cdma_wt_done_mask0 := u_reg.io.cdma_wt_done_mask0
+    io.cdma_wt_done_mask1 := u_reg.io.cdma_wt_done_mask1
+
+    //sdp
+    u_reg.io.sdp_done_status0:= io.sdp_done_status0
+    u_reg.io.sdp_done_status1 := io.sdp_done_status1
+    u_reg.io.sdp_done_set0 := sdp_done_set0 
+    u_reg.io.sdp_done_set1 := sdp_done_set1
+    io.sdp_done_mask0 := u_reg.io.sdp_done_mask0
+    io.sdp_done_mask1 := u_reg.io.sdp_done_mask1  
+    io.sdp_done_set0_trigger := u_reg.io.sdp_done_set0_trigger
+    io.sdp_done_status0_trigger := u_reg.io.sdp_done_status0_trigger
 
 
-
-}
+}}
     
     
 

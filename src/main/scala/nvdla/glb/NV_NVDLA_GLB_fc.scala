@@ -6,66 +6,16 @@ import chisel3.util._
 
 class NV_NVDLA_GLB_fc(implicit val conf: project_spec) extends Module {
     val io = IO(new Bundle {
-
         //clock
         val nvdla_core_clk = Input(Clock())
-        val nvdla_falcon_clk = Input(Clock())
-        val nvdla_core_clk = Input(Clock())
+        //nvdla_falcon_clk, direct_reset_, test_mode is dangling
         
- 
-        //bdma
-        val bdma_done_status0 = if(conf.NVDLA_BDMA_ENABLE) Some(Input(Bool())) else None
-        val bdma_done_status1 = if(conf.NVDLA_BDMA_ENABLE) Some(Input(Bool())) else None
-        val bdma_done_mask0 = if(conf.NVDLA_BDMA_ENABLE) Some(Output(Bool())) else None
-        val bdma_done_mask1 = if(conf.NVDLA_BDMA_ENABLE) Some(Output(Bool())) else None           
-
-        //cdp
-        val cdp_done_status0 = if(conf.NVDLA_CDP_ENABLE) Some(Input(Bool())) else None
-        val cdp_done_status1 = if(conf.NVDLA_CDP_ENABLE) Some(Input(Bool())) else None
-        val cdp_done_mask0 = if(conf.NVDLA_CDP_ENABLE) Some(Output(Bool())) else None
-        val cdp_done_mask1 = if(conf.NVDLA_CDP_ENABLE) Some(Output(Bool())) else None         
-
-        //pdp
-        val pdp_done_status0 = if(conf.NVDLA_PDP_ENABLE) Some(Input(Bool())) else None
-        val pdp_done_status1 = if(conf.NVDLA_PDP_ENABLE) Some(Input(Bool())) else None
-        val pdp_done_mask0 = if(conf.NVDLA_PDP_ENABLE) Some(Output(Bool())) else None
-        val pdp_done_mask1 = if(conf.NVDLA_PDP_ENABLE) Some(Output(Bool())) else None        
-
-        //rubik
-        val rubik_done_status0 = if(conf.NVDLA_RUBIK_ENABLE) Some(Input(Bool())) else None
-        val rubik_done_status1 = if(conf.NVDLA_RUBIK_ENABLE) Some(Input(Bool())) else None
-        val rubik_done_mask0 = if(conf.NVDLA_RUBIK_ENABLE) Some(Output(Bool())) else None
-        val rubik_done_mask1 = if(conf.NVDLA_RUBIK_ENABLE) Some(Output(Bool())) else None         
-
-        //cacc
-        val cacc_done_status0 = Input(Bool())
-        val cacc_done_status1 = Input(Bool())
-        val cacc_done_mask0 = Output(Bool())
-        val cacc_done_mask1 = Output(Bool())
-
-        //cdma
-        val cdma_dat_done_status0 = Input(Bool())
-        val cdma_dat_done_status1 = Input(Bool())
-        val cdma_dat_done_mask0 = Output(Bool())
-        val cdma_dat_done_mask1 = Output(Bool())
-
-        val cdma_wt_done_status0 = Input(Bool())
-        val cdma_wt_done_status1 = Input(Bool())
-        val cdma_wt_done_mask0 = Output(Bool())
-        val cdma_wt_done_mask1 = Output(Bool())
-
-        //csb2glb
-        val csb2glb_req_pd = Input(UInt(63.W))
-        val csb2glb_req_pvld = Input(UInt(1.W))    
-
-        //sdp
-        val sdp_done_status0 = Input(Bool())
-        val sdp_done_status1 = Input(Bool())
-        val 
-
-
-
-        
+        //csb2gec
+        val csb2gec_req_pd = Input(UInt(63.W))
+        val csb2gec_req_pvld = Input(Bool())
+        val csb2gec_req_prdy = Output(Bool())
+        val gec2csb_resp_pd = Output(UInt(63.W))
+        val gec2csb_resp_valid = Output(Bool())   
     })
 
 //     
@@ -89,110 +39,38 @@ class NV_NVDLA_GLB_fc(implicit val conf: project_spec) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+withClock(io.nvdla_core_clk){
+    io.csb2gec_req_prdy := true.B
+    val req_pvld = io.csb2gec_req_pvld
+    val rresp_rdat = "b0".asUInt(32.W)
+    val wresp_rdat = "b0".asUInt(32.W)
+    val rresp_error = false.B
+    val wresp_error = false.B
 
-    val major = Wire(UInt(8.W))
-    val minor = Wire(UInt(16.W))
-    val nvdla_glb_s_intr_mask_0_out = Wire(UInt(32.W))
-    val nvdla_glb_s_intr_set_0_out = Wire(UInt(32.W))
-    val nvdla_glb_s_intr_status_0_out = Wire(UInt(32.W))
-    val nvdla_glb_s_nvdla_hw_version_0_out = Wire(UInt(32.W))
-    val reg_offset_rd_int = Wire(UInt(12.W))
-    val reg_offset_wr = Wire(UInt(32.W))
-              
-    // leda FM_2_23 on
+    // PKT_UNPACK_WIRE( csb2xx_16m_be_lvl ,  req_ ,  csb2gec_req_pd )
+    val req_addr = io.csb2gec_req_pd(21, 0)
+    val req_wdat = io.csb2gec_req_pd(53, 22)
+    val req_write = io.csb2gec_req_pd(54)
+    val req_nposted = io.csb2gec_req_pd(55)
+    val req_srcpriv = io.csb2gec_req_pd(56)
+    val req_wrbe = io.csb2gec_req_pd(60, 57)
+    val req_level = io.csb2gec_req_pd(62, 61)
 
-    io.bdma_done_mask0 := Reg(UInt(1.W))
-    io.bdma_done_mask1 := Reg(UInt(1.W))
+    // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  rresp_ ,  rresp_pd_w )
+    val rresp_pd_w = Cat(false.B, rresp_error, rresp_rdat)  /* PKT_nvdla_xx2csb_resp_dla_xx2csb_rd_erpt_ID  */ ;
 
-    io.cacc_done_mask0 := Reg(UInt(1.W))
-    io.cacc_done_mask1 := Reg(UInt(1.W)) 
+    // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_wr_erpt ,  wresp_ ,  wresp_pd_w )
+    val wresp_pd_w = Cat(true.B, wresp_error, wresp_rdat)
 
-    io.cdma_dat_done_mask0 := Reg(UInt(1.W)) 
-    io.cdma_dat_done_mask1 := Reg(UInt(1.W))
-    io.cdma_wt_done_mask0 := Reg(UInt(1.W))
-    io.cdma_wt_done_mask1 := Reg(UInt(1.W))
+    val wresp_en = req_pvld & req_write & req_nposted;
+    val rresp_en = req_pvld & ~req_write;
+    val resp_pd_w = Mux(wresp_en,  wresp_pd_w,  rresp_pd_w)
+    val resp_en = wresp_en | rresp_en;
 
-    io.cdp_done_mask0 := Reg(UInt(1.W))
-    io.cdp_done_mask1:= Reg(UInt(1.W))
+    io.gec2csb_resp_valid := RegNext(resp_en)
+    io.gec2csb_resp_pd := RegEnable(resp_pd_w, "b0".asUInt(34.W), resp_en)
+}}
 
-    io.pdp_done_mask0 := Reg(UInt(1.W))
-    io.pdp_done_mask1 := Reg(UInt(1.W))
-
-    io.reg_rd_data := Wire(UInt(32.W)) //Not really change when clock coming
-    io.rubik_done_mask0 := Reg(UInt(1.W))
-    io.rubik_done_mask1 := Reg(UInt(1.W))
-    io.sdp_done_mask0 := Reg(UInt(1.W))
-    io.sdp_done_mask1 := Reg(UInt(1.W))
-
-    reg_offset_wr := Cat("b0".U(20.W), io.reg_offset)
-
-    // SCR signals
-
-    // Address decode
-
-    val nvdla_glb_s_intr_mask_0_wren = (reg_offset_wr === ("h4".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
-    val nvdla_glb_s_intr_set_0_wren = (reg_offset_wr === ("h8".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
-    val nvdla_glb_s_intr_status_0_wren = (reg_offset_wr === ("hc".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
-    val nvdla_glb_s_nvdla_hw_version_0_wren = (reg_offset_wr === ("h0".U(32.W) &"h00000fff".U(32.W)))&io.reg_wr_en
-
-    io.major := "h31".U(8.W)
-    io.minor := "h3030".U(16.W)
-
-    nvdla_glb_s_intr_mask_0_out := Cat("b0".U(10.W), io.cacc_done_mask1, io.cacc_done_mask0, io.cdma_wt_done_mask1, io.cdma_wt_done_mask0, io.cdma_dat_done_mask1, io.cdma_dat_done_mask0, "b0".U(6.W), io.rubik_done_mask1, io.rubik_done_mask0, io.bdma_done_mask1, io.bdma_done_mask0, io.pdp_done_mask1, io.pdp_done_mask0, io.cdp_done_mask1, io.cdp_done_mask0, io.sdp_done_mask1, io.sdp_done_mask0 )
-    nvdla_glb_s_intr_set_0_wren := Cat("b0".U(10.W), io.cacc_done_set1, io.reg_offset_rd_int, io.cdma_wt_done_set1, io.cdma_wt_done_set0, io.cdma_dat_done_set1, io.cdma_dat_done_set0, "b0".U(6.W), io.rubik_done_set1, io.rubik_done_set0, io.bdma_done_set1, io.bdma_done_set0, io.pdp_done_set1, io.pdp_done_set0, io.cdp_done_set1, io.cdp_done_set0, io.sdp_done_set1, io.sdp_done_set0)
-    nvdla_glb_s_intr_status_0_out := Cat("b0".U(10.W), io.cacc_done_status1, io.cacc_done_status0, io.cdma_wt_done_status1, io.cdma_wt_done_status0, io.cdma_dat_done_status1, io.cdma_dat_done_status0, "b0".U(6.W), io.rubik_done_status1, io.rubik_done_status0, io.bdma_done_status1, io.bdma_done_status0, io.pdp_done_status1, io.pdp_done_status0, io.cdp_done_status1, io.cdp_done_status0, io.sdp_done_status1, io.sdp_done_status0)
-    nvdla_glb_s_nvdla_hw_version_0_out := Cat("b0".U(8.W), minor, major)
-
-    io.sdp_done_set0_trigger := nvdla_glb_s_intr_set_0_wren  //(W563)
-    io.sdp_done_status0_trigger := nvdla_glb_s_intr_status_0_wren   //(W563)
-
-    reg_offset_rd_int := io.reg_offset
-
-    // Output mux
-    //spyglass disable_block W338, W263 
-
-    when(reg_offset_rd_int === ("h4".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_mask_0_out
-    }.elsewhen(reg_offset_rd_int === ("h8".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_set_0_out
-    }.elsewhen(reg_offset_rd_int === ("hc".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_intr_status_0_out
-    }.elsewhen(reg_offset_rd_int === ("h0".U(32.W) &"h00000fff".U(32.W))){
-        io.reg_rd_data = nvdla_glb_s_nvdla_hw_version_0_out
-    }.otherwise{
-        io.reg_rd_data = "b0".U(32.W)
-    }
-
-    //spyglass enable_block W338, W263
-
-    // spyglass disable_block STARC-2.10.1.6, NoConstWithXZ, W443
-
-    // Register flop declarations
-
-    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-        when(nvdla_glb_s_intr_mask_0_wren === "b1".U(1.W)){
-            io.bdma_done_mask0 := io.reg_wr_data(6)
-            io.bdma_done_mask1 := io.reg_wr_data(7)
-            io.cacc_done_mask0 := io.reg_wr_data(20)
-            io.cacc_done_mask1 := io.reg_wr_data(21)
-            io.cdma_dat_done_mask0 := io.reg_wr_data(16)
-            io.cdma_dat_done_mask1 := io.reg_wr_data(17)
-            io.cdma_wt_done_mask0 := io.reg_wr_data(18)
-            io.cdma_wt_done_mask1 := io.reg_wr_data(19)
-            io.cdp_done_mask0 := io.reg_wr_data(2)
-            io.cdp_done_mask1 := io.reg_wr_data(3)
-            io.pdp_done_mask0 := io.reg_wr_data(4)
-            io.pdp_done_mask1 := io.reg_wr_data(5)
-            io.rubik_done_mask0 := io.reg_wr_data(8)
-            io.rubik_done_mask1 := io.reg_wr_data(9)
-            io.sdp_done_mask0 := io.reg_wr_data(0)
-            io.sdp_done_mask1 := io.reg_wr_data(1)
-        }
-    }   
-
-
-
-}
     
     
 

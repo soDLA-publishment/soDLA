@@ -117,3 +117,6 @@ exit
 printf(p"conf.CACC_DWIDTH_DIV_SWIDTH = $conf.CACC_DWIDTH_DIV_SWIDTH") 
 val a =1 
 exit
+sbt run
+run
+exit

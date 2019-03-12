@@ -60,8 +60,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
-    val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
-
+    val internal_clock = if(useRealClock) io.nvdla_core_clk else clock  
 
                 
     class activeImpl{

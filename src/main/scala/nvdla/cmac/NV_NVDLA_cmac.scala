@@ -8,7 +8,7 @@ import chisel3.iotesters.Driver
 class NV_NVDLA_cmac(implicit val conf: cmacConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
-        val nvdla_core_clk = Input(Clock())      
+        val nvdla_core_clk = Input(Clock())  
 
         val cmac_a2csb_resp_valid = Output(Bool())  /* data valid */
         val cmac_a2csb_resp_pd = Output(UInt(34.W))/* pkt_id_width=1 pkt_widths=33,33  */

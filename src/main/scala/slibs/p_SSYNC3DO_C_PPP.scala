@@ -14,13 +14,16 @@
 //     })
 //     withClockAndReset(io.clk, !io.clr_){
 
-//     io.q := Reg(false.B)
-//     val d1 = RegInit(false.B)
-//     val d0 = RegInit(false.B)
+//     val q_out = RegInit(false.B)
+//     val d1_out = RegInit(false.B)
+//     val d0_out = RegInit(false.B)
     
-//     d0:=io.d
-//     d1:=d0
-//     io.q:=d1
+//     q_out := d1_out
+//     d1_out := d0_out
+//     d0_out := io.q
+
+//     io.q := q_out
+
     
 //   }
 // }
