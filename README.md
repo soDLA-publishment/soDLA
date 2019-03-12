@@ -12,15 +12,15 @@ My Progress
 
 | Unit | Chisel | Validation& Test| Backend |
 | ------ | ------ | ------ |------ |
-| CMAC |  Done | Some Simple Peekpoke Test| Not yet |
-| CBUF | Done | Not yet | Not yet |
-| CSC | Done | Not yet | Not yet |
-| CACC | Done | Not yet | Not yet |
+| cmac |  Done | Some Simple Peekpoke Test| Not yet |
+| cbuf | Done | Not yet | Not yet |
+| csc | Done | Not yet | Not yet |
+| cacc | Done | Not yet | Not yet |
 | cfgrom | Done | Not yet | Not yet |
 | apb2csb | Done | Not yet | Not yet |
 | glb | Done | Not yet | Not yet |
-| CDMA| In Progress | Not yet | Not yet |
-| CORA(self-driving package) | In Progress | Not yet | Not yet |
+| cdma| In Progress | Not yet | Not yet |
+| cora(self-driving package) | In Progress | Not yet | Not yet |
 
 Generate Verilog Modules
 ----------------
