@@ -16,6 +16,7 @@ My Progress
 | CBUF | Done | Not yet | Not yet |
 | CSC | Done | Not yet | Not yet |
 | CACC | Done | Not yet | Not yet |
+| cfgrom | Done | Not yet | Not yet |
 | CDMA| In Progress | Not yet | Not yet |
 | CORA(self-driving package) | In Progress | Not yet | Not yet |
 
