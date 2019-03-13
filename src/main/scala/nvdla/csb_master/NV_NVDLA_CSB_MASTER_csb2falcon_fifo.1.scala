@@ -304,8 +304,8 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfigurat
     nv_AFIFO_rd_popping_sync1.io.DST_CLK := wr_clk_strict_rcv_gated
     nv_AFIFO_rd_popping_sync1.io.ATPG_CTL := false.B
     nv_AFIFO_rd_popping_sync1.io.TEST_MODE := false.B
-    val rd_popping_gray_cntr_1 = nv_AFIFO_rd_popping_sync0.io.SRC_D
-    val rd_popping_gray_cntr_sync_1 = nv_AFIFO_rd_popping_sync0.io.DST_Q
+    val rd_popping_gray_cntr_1 = nv_AFIFO_rd_popping_sync1.io.SRC_D
+    val rd_popping_gray_cntr_sync_1 = nv_AFIFO_rd_popping_sync1.io.DST_Q
 
     rd_popping_gray_cntr := Cat(rd_popping_gray_cntr_1, rd_popping_gray_cntr_0)
     val rd_popping_gray_cntr_sync = Cat(rd_popping_gray_cntr_sync_1, rd_popping_gray_cntr_sync_0)
@@ -336,15 +336,15 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfigurat
         rd_count_p := rd_count_p_next
     }
 
-    val NV_AFIFO_rd_data = withClock(rd_clk_rd_mgated){Reg(UInt(34.W))}
+    val nv_AFIFO_rd_data = withClock(rd_clk_rd_mgated){Reg(UInt(34.W))}
     val rd_req_next = (rd_req_p || (rd_req_int && !io.rd_ready))
 
     rd_req_int := rd_req_next
     when(rd_popping){
-        NV_AFIFO_rd_data := rd_data_p
+        nv_AFIFO_rd_data := rd_data_p
     }
 
-    io.rd_data := NV_AFIFO_rd_data
+    io.rd_data := nv_AFIFO_rd_data
 
     // Master Clock Gating (SLCG) Enables
     wr_clk_wr_mgated_enable := dft_qualifier_wr_enable && (wr_reserving || wr_pushing || wr_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next))
