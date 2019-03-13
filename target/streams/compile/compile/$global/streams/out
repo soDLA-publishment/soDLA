@@ -1,7 +1,19 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\glb\NV_NVDLA_GLB_csb.scala:133:17: reassignment to val[0m
-[0m[[0m[31merror[0m] [0m[0m    io.req_wdat = req_pd(53, 22)[0m
-[0m[[0m[31merror[0m] [0m[0m                ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\glb\NV_NVDLA_GLB_csb.scala:164:23: not found: value req_wdat[0m
-[0m[[0m[31merror[0m] [0m[0m    val reg_wr_data = req_wdat[0m
-[0m[[0m[31merror[0m] [0m[0m                      ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:68:27: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    io.chn_data_in_rsc_lz = chn_in_prdy[0m
+[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:69:26: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    io.chn_alu_in_rsc_lz = chn_alu_prdy[0m
+[0m[[0m[31merror[0m] [0m[0m                         ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:70:28: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    io.chn_data_out_rsc_lz = chn_out_pvld[0m
+[0m[[0m[31merror[0m] [0m[0m                           ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:71:27: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    io.chn_data_out_rsc_z = chn_data_out[0m
+[0m[[0m[31merror[0m] [0m[0m                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:86:30: not found: type NV_NVDLA_CDMA_CVT_CELL_pipe_p1[0m
+[0m[[0m[31merror[0m] [0m[0m    val pipe_p1 = Module(new NV_NVDLA_CDMA_CVT_CELL_pipe_p1)[0m
+[0m[[0m[31merror[0m] [0m[0m                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:98:30: not found: type NV_NVDLA_CDMA_CVT_CELL_pipe_p2[0m
+[0m[[0m[31merror[0m] [0m[0m    val pipe_p2 = Module(new NV_NVDLA_CDMA_CVT_CELL_pipe_p2)[0m
+[0m[[0m[31merror[0m] [0m[0m                             ^[0m
+[0m[[0m[31merror[0m] [0m[0m6 errors found[0m

@@ -1,19 +1,15 @@
 # These are generated when I initialize the sbt
-/target/
-/firrtl/
+target/
 
 #perl
-/src/plugins/
+src/plugins/
 
 #output dir
 
-/test_run_dir/
+test_run_dir/
 
 *.fir
 *.v
 *.json
 
-/vsrc
 
-#wechat QR
-#wechat_QR.jpg
