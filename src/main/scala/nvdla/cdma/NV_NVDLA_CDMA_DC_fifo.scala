@@ -64,7 +64,7 @@
 //     ////////////////////////////////////////////////////////////////////////
 //     val wr_reserving = Wire(Bool())
 //     val wr_req_in = RegInit(false.B)    // registered wr_req
-//     val wr_data_in = Reg(UInt(5.W))     // registered wr_data
+//     val wr_data_in = Reg(UInt(6.W))     // registered wr_data
 //     val wr_busy_in = RegInit(false.B)   // inputs being held this cycle?
 //     io.wr_ready := !wr_busy_in
 //     val wr_busy_next = Wire(Bool())     // fwd: fifo busy next?
@@ -87,16 +87,16 @@
 //     wr_reserving := wr_req_in && !wr_busy_int   // reserving write space?
 
 //     val wr_popping = Wire(Bool())       // fwd: write side sees pop?
-//     val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(3.W))} // write-side count
+//     val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(8.W))} // write-side count
 //     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, wr_count-1.U)
 //     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count+1.U, wr_count)
 //     val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
 
-//     val wr_count_next_no_wr_popping_is_4 = (wr_count_next_no_wr_popping === 4.U)
-//     val wr_count_next_is_4 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_4)
-//     val wr_limit_muxed = Wire(UInt(3.W))    // muxed with simulation/emulation overrides
+//     val wr_count_next_no_wr_popping_is_128 = (wr_count_next_no_wr_popping === 128.U)
+//     val wr_count_next_is_128 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_128)
+//     val wr_limit_muxed = Wire(UInt(8.W))    // muxed with simulation/emulation overrides
 //     val wr_limit_reg = wr_limit_muxed
-//     wr_busy_next := wr_count_next_is_4 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
+//     wr_busy_next := wr_count_next_is_128 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
 //     wr_busy_in_int := wr_req_in && wr_busy_int
 
 //     wr_busy_int := wr_busy_next
@@ -104,16 +104,13 @@
 //         wr_count := wr_count_next
 //     }
 
-
-//     io.wr_empty := RegNext(wr_count_next === 0.U && !io.wr_req, false.B)
-
 //     val wr_pushing = wr_reserving // data pushed same cycle as wr_req_in
 
 //     //
 //     // RAM
 //     //  
 
-//     val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(2.W))}
+//     val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(7.W))}
 //     val wr_adr_next = wr_adr + 1.U
 //     when(wr_pushing){
 //         wr_adr := wr_adr_next

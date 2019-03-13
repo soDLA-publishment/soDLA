@@ -32,11 +32,6 @@ class csb2cmacConfiguration()
     val RT_CSB2CMAC_LATENCY = 3   
 }
 
-
-class csbMasterConfiguration(){
-    val FPGA = true
-}
-
 class ppregCongiguration()
 {
     val rbk_pointer_0 = "h004"

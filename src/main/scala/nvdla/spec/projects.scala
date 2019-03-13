@@ -110,6 +110,25 @@ class project_spec extends nv_large
 
     val NVDLA_CDMA_GRAIN_MAX_BIT = log2Ceil(NVDLA_CBUF_BANK_DEPTH*NVDLA_CBUF_BANK_WIDTH*(NVDLA_CBUF_BANK_NUMBER-1)/(NVDLA_MEMORY_ATOMIC_SIZE))
 
+    val useFPGA = true
+
+    var XSDB_SLV_DIS = true
+    var FPGA = true
+    var SYNTHESIS = true
+    var VLIB_BYPASS_POWER_CG = true
+    var NV_FPGA_SYSTEM = true
+    var NV_FPGA_FIFOGEN = true
+    var NV_FPGA_UNIT = true
+
+    if(!useFPGA){
+        XSDB_SLV_DIS = false
+        FPGA = false
+        SYNTHESIS = false
+        VLIB_BYPASS_POWER_CG = false
+        NV_FPGA_SYSTEM = false
+        NV_FPGA_FIFOGEN = false
+        NV_FPGA_UNIT = false
+    }
 }
  
 

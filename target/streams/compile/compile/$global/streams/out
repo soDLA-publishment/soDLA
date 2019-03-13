@@ -1,19 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:68:27: reassignment to val[0m
-[0m[[0m[31merror[0m] [0m[0m    io.chn_data_in_rsc_lz = chn_in_prdy[0m
-[0m[[0m[31merror[0m] [0m[0m                          ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:69:26: reassignment to val[0m
-[0m[[0m[31merror[0m] [0m[0m    io.chn_alu_in_rsc_lz = chn_alu_prdy[0m
-[0m[[0m[31merror[0m] [0m[0m                         ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:70:28: reassignment to val[0m
-[0m[[0m[31merror[0m] [0m[0m    io.chn_data_out_rsc_lz = chn_out_pvld[0m
-[0m[[0m[31merror[0m] [0m[0m                           ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:71:27: reassignment to val[0m
-[0m[[0m[31merror[0m] [0m[0m    io.chn_data_out_rsc_z = chn_data_out[0m
-[0m[[0m[31merror[0m] [0m[0m                          ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:86:30: not found: type NV_NVDLA_CDMA_CVT_CELL_pipe_p1[0m
-[0m[[0m[31merror[0m] [0m[0m    val pipe_p1 = Module(new NV_NVDLA_CDMA_CVT_CELL_pipe_p1)[0m
-[0m[[0m[31merror[0m] [0m[0m                             ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_CVT_cell.scala:98:30: not found: type NV_NVDLA_CDMA_CVT_CELL_pipe_p2[0m
-[0m[[0m[31merror[0m] [0m[0m    val pipe_p2 = Module(new NV_NVDLA_CDMA_CVT_CELL_pipe_p2)[0m
-[0m[[0m[31merror[0m] [0m[0m                             ^[0m
-[0m[[0m[31merror[0m] [0m[0m6 errors found[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csb_master\NV_NVDLA_CSB_MASTER_csb2falcon_fifo.scala:350:162: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
+[0m[[0m[33mwarn[0m] [0m[0m    wr_clk_wr_mgated_enable := dft_qualifier_wr_enable && (wr_reserving || wr_pushing || wr_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next))[0m
+[0m[[0m[33mwarn[0m] [0m[0m                                                                                                                                                                 ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

@@ -4,10 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_HLS_saturate extends Module {
-    
-    val IN_WIDTH = 49
-    val OUT_WIDTH = 32
+class NV_NVDLA_HLS_saturate(IN_WIDTH:Int, OUT_WIDTH:Int) extends Module {
     
     val io = IO(new Bundle {      
         val data_in = Input(UInt(IN_WIDTH.W))

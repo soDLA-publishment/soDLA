@@ -1,6 +1,8 @@
 package nvdla
 
 import chisel3._
+import chisel3.experimental._
+import chisel3.util._
 
 class cdmaConfiguration extends project_spec{
     val CDMA_CBUF_WR_LATENCY = 3
@@ -28,5 +30,8 @@ class cdmaConfiguration extends project_spec{
 
     val CBUF_WR_BANK_ADDR_BITS  = 9 
     val CDMA_GRAIN_MAX_BIT = NVDLA_CDMA_GRAIN_MAX_BIT
+
+    //redpanda3----------------
+    val ATMMBW = log2Ceil(NVDLA_MEMORY_ATOMIC_SIZE) 
 
 }
