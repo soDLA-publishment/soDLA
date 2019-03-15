@@ -1,0 +1,30 @@
+val pdp_req_pvld = if(conf.NVDLA_PDP_ENABLE){Some(RegInit(false.B))} else None
+val pdp_resp_valid = if(conf.NVDLA_PDP_ENABLE){Some(RegInit(false.B))} else None
+val pdp_resp_pd = if(conf.NVDLA_PDP_ENABLE){Some(Reg(UInt(34.W)))} else None
+val select_pdp_rdma = false.B
+val select_pdp = false.B
+
+
+if(conf.NVDLA_PDP_ENABLE){
+val csb2pdp_req_pvld_out = RegInit(false.B)
+val csb2pdp_req_pd_tmp = Reg(UInt(50.W))
+
+val pdp_req_pvld_w = Mux(core_req_pop_valid & select_pdp, true.B,
+                        Mux(io.csb2pdp_req_prdy.get | ~csb2pdp_req_pvld_out, false.B,
+                        pdp_req_pvld.get))
+val csb2pdp_req_pvld_w = Mux(pdp_req_pvld.get, true.B, 
+                            Mux(io.csb2pdp_req_prdy.get, false.B,
+                            csb2pdp_req_pvld_out))
+val csb2pdp_req_en = pdp_req_pvld.get & (io.csb2pdp_req_prdy.get | ~csb2pdp_req_pvld_out)    
+
+pdp_req_pvld.get := pdp_req_pvld_w
+csb2pdp_req_pvld_out := csb2pdp_req_pvld_w
+when(csb2pdp_req_en){
+    csb2pdp_req_pd_tmp := core_req_pd_d1
+}
+io.csb2pdp_req_pd.get := Cat("b0".asUInt(7.W), csb2pdp_req_pd_tmp(49, 16), "b0".asUInt(6.W), csb2pdp_req_pd_tmp(15, 0))
+pdp_resp_valid.get := io.pdp2csb_resp_valid.get
+when(io.pdp2csb_resp_valid.get){
+    pdp_resp_pd.get := io.pdp2csb_resp_pd.get
+}
+}

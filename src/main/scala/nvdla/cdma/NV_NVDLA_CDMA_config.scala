@@ -32,6 +32,9 @@ class cdmaConfiguration extends project_spec{
     val CDMA_GRAIN_MAX_BIT = NVDLA_CDMA_GRAIN_MAX_BIT
 
     //redpanda3----------------
+    val ATMM = NVDLA_MEMORY_ATOMIC_SIZE
     val ATMMBW = log2Ceil(NVDLA_MEMORY_ATOMIC_SIZE) 
+    val DMAIF = NVDLA_CDMA_DMAIF_BW
+    val ATMC = NVDLA_MAC_ATOMIC_C_SIZE*NVDLA_CDMA_BPE
 
 }

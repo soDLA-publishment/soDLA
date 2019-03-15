@@ -1,7 +1,5 @@
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csb_master\NV_NVDLA_CSB_MASTER_csb2falcon_fifo.1.scala:350:162: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m    wr_clk_wr_mgated_enable := dft_qualifier_wr_enable && (wr_reserving || wr_pushing || wr_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next))[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                                                                                                                 ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csb_master\NV_NVDLA_CSB_MASTER_falcon2csb_fifo.scala:368:162: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m    wr_clk_wr_mgated_enable := dft_qualifier_wr_enable && (wr_reserving || wr_pushing || wr_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next))[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                                                                                                                 ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csb_master\NV_NVDLA_csb_master.scala:642:21: value := is not a member of Option[chisel3.core.Bool][0m
+[0m[[0m[31merror[0m] [0m[0m  Expression does not convert to assignment because receiver is not assignable.[0m
+[0m[[0m[31merror[0m] [0m[0mio.csb2pdp_req_pvld := csb2pdp_req_pvld_out[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
