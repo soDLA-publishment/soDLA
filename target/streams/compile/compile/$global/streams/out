@@ -1,5 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csb_master\NV_NVDLA_csb_master.scala:642:21: value := is not a member of Option[chisel3.core.Bool][0m
-[0m[[0m[31merror[0m] [0m[0m  Expression does not convert to assignment because receiver is not assignable.[0m
-[0m[[0m[31merror[0m] [0m[0mio.csb2pdp_req_pvld := csb2pdp_req_pvld_out[0m
-[0m[[0m[31merror[0m] [0m[0m                    ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_fifo.scala:8:7: NV_NVDLA_CDMA_DC_fifo is already defined as class NV_NVDLA_CDMA_DC_fifo[0m
+[0m[[0m[31merror[0m] [0m[0mclass NV_NVDLA_CDMA_DC_fifo extends Module {[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_fifo.scala:196:8: NV_NVDLA_CDMA_DC_fifoDriver is already defined as object NV_NVDLA_CDMA_DC_fifoDriver[0m
+[0m[[0m[31merror[0m] [0m[0mobject NV_NVDLA_CDMA_DC_fifoDriver extends App {[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

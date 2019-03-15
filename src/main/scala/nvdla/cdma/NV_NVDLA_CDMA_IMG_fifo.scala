@@ -5,17 +5,17 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_CDMA_DC_fifo extends Module {
+class NV_NVDLA_CDMA_IMG_fifo extends Module {
     val io = IO(new Bundle {
         //clk
         val clk = Input(Clock())
 
         val wr_ready = Output(Bool())
         val wr_req = Input(Bool())
-        val wr_data = Input(UInt(6.W))
+        val wr_data = Input(UInt(11.W))
         val rd_ready = Input(Bool())
         val rd_req = Output(Bool())
-        val rd_data = Output(UInt(6.W))
+        val rd_data = Output(UInt(11.W))
 
         val pwrbus_ram_pd = Input(UInt(32.W))
     })
@@ -63,7 +63,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     ////////////////////////////////////////////////////////////////////////
     val wr_reserving = Wire(Bool())
     val wr_req_in = RegInit(false.B)    // registered wr_req
-    val wr_data_in = Reg(UInt(6.W))     // registered wr_data
+    val wr_data_in = Reg(UInt(11.W))     // registered wr_data
     val wr_busy_in = RegInit(false.B)   // inputs being held this cycle?
     io.wr_ready := !wr_busy_in
     val wr_busy_next = Wire(Bool())     // fwd: fifo busy next?
@@ -121,7 +121,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
-    val ram = Module(new nv_ram_rwsp(128, 6))
+    val ram = Module(new nv_ram_rwsp(128, 11))
     ram.io.clk := io.clk
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     ram.io.wa := wr_adr
@@ -193,6 +193,6 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
 
 
     
-object NV_NVDLA_CDMA_DC_fifoDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_DC_fifo())
+object NV_NVDLA_CDMA_IMG_fifoDriver extends App {
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_IMG_fifo())
 }
