@@ -3,6 +3,8 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 import chisel3.util._
+import scala.math._
+
 
 class cdmaConfiguration extends project_spec{
     val CDMA_CBUF_WR_LATENCY = 3
@@ -32,9 +34,10 @@ class cdmaConfiguration extends project_spec{
     val CDMA_GRAIN_MAX_BIT = NVDLA_CDMA_GRAIN_MAX_BIT
 
     //redpanda3----------------
-    val ATMM = NVDLA_MEMORY_ATOMIC_SIZE
+    val ATMM = NVDLA_MEMORY_ATOMIC_SIZE*NVDLA_BPE
     val ATMMBW = log2Ceil(NVDLA_MEMORY_ATOMIC_SIZE) 
     val DMAIF = NVDLA_CDMA_DMAIF_BW
-    val ATMC = NVDLA_MAC_ATOMIC_C_SIZE*NVDLA_CDMA_BPE
-
+    val ATMC = NVDLA_MAC_ATOMIC_C_SIZE
+    val ATMM_NUM = DMAIF/ATMM
+    val BNUM = NVDLA_CDMA_DMAIF_BW/NVDLA_BPE
 }

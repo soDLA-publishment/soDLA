@@ -30,20 +30,10 @@
 //         val cdma2sc_dat_slices = Output(UInt(14.W))
 
 //         //status2dma
-//         val cdma2sc_dat_slices = Output(UInt(14.W))
+//         val status2dma_valid_slices = Output(UInt(14.W))
 //         val status2dma_free_entries = Output(UInt(15.W))
 //         val status2dma_wr_idx = Output(UInt(15.W))
 
-//         // Writable register flop/trigger outputs
-//         val producer = Output(Bool())
-//         val arb_weight = Output(UInt(4.W))
-//         val arb_wmb = Output(UInt(4.W))
-
-//         // Read-only register inputs
-//         val flush_done = Input(Bool())
-//         val consumer = Input(Bool())
-//         val status_0 = Input(UInt(2.W))
-//         val status_1 = Input(UInt(2.W))       
 //     })
 // //     
 // //          ┌─┐       ┌─┐

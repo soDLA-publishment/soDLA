@@ -5,6 +5,61 @@
 // import chisel3.util._
 // import chisel3.iotesters.Driver
 
+// class NV_NVDLA_CDMA_dcIO((implicit conf: cdmaConfiguration)) extends Bundle{
+//     //clk & pwr_ram_bus
+//     val nvdla_core_clk = Input(Clock())
+//     val nvdla_core_ng_clk = Input(Clock())
+//     val pwrbus_ram_pd = Input(UInt(32.W))
+
+//     //mcif
+//     val dc_dat2mcif_rd_req_valid = Output(Bool())
+//     val dc_dat2mcif_rd_req_ready = Input(Bool())
+//     val dc_dat2mcif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//     val mcif2dc_dat_rd_rsp_valid  = Input(Bool())
+//     val mcif2dc_dat_rd_rsp_ready = Output(Bool())
+//     val mcif2dc_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+
+//     //cvif
+//     val dc_dat2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
+//     val dc_dat2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
+//     val dc_dat2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
+//     val cvif2dc_dat_rd_rsp_valid  = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
+//     val cvif2dc_dat_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
+//     val cvif2dc_dat_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))) else None
+
+//     //cvt
+//     val dc2cvt_dat_wr_en = Output(Bool())
+//     val dc2cvt_dat_wr_mask = 
+
+//     //reg2dp
+//     val reg2dp_op_en = Input(Bool())
+//     val reg2dp_conv_mode = Input(Bool())
+//     val reg2dp_data_reuse = Input(Bool())
+//     val reg2dp_skip_data_rls = Input(Bool())
+//     val reg2dp_datain_format = Input(Bool())
+//     val reg2dp_datain_width = Input(UInt(13.W))
+//     val reg2dp_datain_height = Input(UInt(13.W))
+//     val reg2dp_datain_channel = Input(UInt(13.W))
+//     val reg2dp_datain_ram_type = Input(Bool())
+//     val reg2dp_datain_addr_high_0 = Input(UInt(32.W))
+//     val reg2dp_datain_addr_low_0 = Input(UInt((32-conf.ATMBW).W))
+//     val reg2dp_line_stride = Input(UInt((32-conf.ATMBW).W))
+//     val reg2dp_surf_stride = Input(UInt((32-conf.ATMBW).W))
+//     val reg2dp_batch_stride = Input(UInt((32-conf.ATMBW).W))
+//     val reg2dp_line_packed = Input(Bool())
+//     val reg2dp_surf_packed = Input(Bool())
+//     val reg2dp_batches = Input(UInt(5.W))
+//     val reg2dp_entries = Input(UInt(17.W))  //entry number per slice
+//     val reg2dp_grains = Input(UInt(12.W))
+//     val reg2dp_data_bank = Input(UInt(5.W))
+//     val reg2dp_dma_en = Input(Bool())
+//     val dp2reg_dc_rd_stall = Output(UInt(32.W))
+//     val dp2reg_dc_rd_latency = Output(UInt(32.W))
+//     //slcg
+//     val slcg_dc_gate_wg = Output(Bool())
+//     val slcg_dc_gate_img = Output(Bool())
+// }
+
 
 // class NV_NVDLA_CDMA_dc(implicit conf: cdmaConfiguration) extends Module {
 
@@ -14,21 +69,9 @@
 //         val nvdla_core_ng_clk = Input(Clock())
 
 
-//         //reg2dp
-//         val reg2dp_op_en = Input(Bool())
-//         val reg2dp_conv_mode = Input(Bool())
-//         val reg2dp_data_reuse = Input(Bool())
-//         val reg2dp_skip_data_rls = Input(Bool())
-//         val reg2dp_datain_format = Input(Bool())
-//         val reg2dp_datain_width = Input(UInt(13.W))
-//         val reg2dp_datain_height = Input(UInt(13.W))
-//         val reg2dp_datain_channel = Input(UInt(13.W))
-//         val reg2dp_datain_ram_type = Input(Bool())
-//         val reg2dp_datain_addr_high_0 = Input(UInt(32.W))
-//         val reg2dp_datain_addr_low_0 = Input(UInt((31-conf.ATMBW).W))
-//         val reg2dp_line_stride
-//         val reg2dp_surf_stride
-//         val reg2dp_batch_stride
+
+
+
 
 //     })
 // //     

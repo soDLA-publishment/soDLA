@@ -1,7 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_fifo.scala:8:7: NV_NVDLA_CDMA_DC_fifo is already defined as class NV_NVDLA_CDMA_DC_fifo[0m
-[0m[[0m[31merror[0m] [0m[0mclass NV_NVDLA_CDMA_DC_fifo extends Module {[0m
-[0m[[0m[31merror[0m] [0m[0m      ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_fifo.scala:196:8: NV_NVDLA_CDMA_DC_fifoDriver is already defined as object NV_NVDLA_CDMA_DC_fifoDriver[0m
-[0m[[0m[31merror[0m] [0m[0mobject NV_NVDLA_CDMA_DC_fifoDriver extends App {[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_shared_buffer.scala:89:5: img2sbuf_p0_wr_sel is already defined as value img2sbuf_p0_wr_sel[0m
+[0m[[0m[31merror[0m] [0m[0mval img2sbuf_p0_wr_sel = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {i => (img2sbuf_p1_wr_bsel === i.U)&(io.img2sbuf_p1_wr_en)})[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
