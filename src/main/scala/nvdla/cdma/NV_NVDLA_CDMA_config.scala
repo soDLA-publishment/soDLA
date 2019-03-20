@@ -6,7 +6,7 @@ import chisel3.util._
 import scala.math._
 
 
-class cdmaConfiguration extends project_spec{
+class cdmaConfiguration extends cbufConfiguration{
     val CDMA_CBUF_WR_LATENCY = 3
     val NVDLA_HLS_CDMA_CVT_LATENCY = 3
     val CDMA_SBUF_SDATA_BITS = NVDLA_MEMORY_ATOMIC_SIZE*NVDLA_BPE
@@ -37,7 +37,9 @@ class cdmaConfiguration extends project_spec{
     val ATMM = NVDLA_MEMORY_ATOMIC_SIZE*NVDLA_BPE
     val ATMMBW = log2Ceil(NVDLA_MEMORY_ATOMIC_SIZE) 
     val DMAIF = NVDLA_CDMA_DMAIF_BW
-    val ATMC = NVDLA_MAC_ATOMIC_C_SIZE
+    val ATMC = NVDLA_MAC_ATOMIC_C_SIZE*NVDLA_BPE
     val ATMM_NUM = DMAIF/ATMM
     val BNUM = NVDLA_CDMA_DMAIF_BW/NVDLA_BPE
+    val MN_BW = NVDLA_CDMA_DMAIF_BW / NVDLA_BPE * 16
+    val SS = log2Ceil(ATMC/ATMM)
 }

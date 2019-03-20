@@ -1,18 +1,10 @@
-val dc2sbuf_p0_rd_sel = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {i => (dc2sbuf_p0_rd_bsel === i.U)&(io.dc2sbuf_p0_rd_en)})
-val dc2sbuf_p1_rd_sel = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {i => (dc2sbuf_p1_rd_bsel === i.U)&(io.dc2sbuf_p1_rd_en)})
-val img2sbuf_p0_rd_sel = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {i => (img2sbuf_p0_rd_bsel === i.U)&(io.img2sbuf_p0_rd_en)})
-val img2sbuf_p0_rd_sel = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {i => (img2sbuf_p1_rd_bsel === i.U)&(io.img2sbuf_p1_rd_en)})
-
-val sbuf_we = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {i => dc2sbuf_p0_rd_sel(i)|dc2sbuf_p1_rd_sel(i)|img2sbuf_p0_rd_sel(i)|img2sbuf_p0_rd_sel(i) })
-val sbuf_wa = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {
-                    i => (Fill(b1, dc2sbuf_p0_rd_sel(i))&dc2sbuf_p0_rd_addr(b0-1, 0))|
-                         (Fill(b1, dc2sbuf_p1_rd_sel(i))&dc2sbuf_p1_rd_addr(b0-1, 0))|
-                         (Fill(b1, img2sbuf_p0_rd_sel(i))&img2sbuf_p0_rd_addr(b0-1, 0))|
-                         (Fill(b1, img2sbuf_p0_rd_sel(i))&img2sbuf_p1_rd_addr(b0-1, 0)) 
-             })
-val sbuf_wdat = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {
-                    i => (Fill(conf.CDMA_SBUF_SDATA_BITS, dc2sbuf_p0_rd_sel(i))&dc2sbuf_p0_rd_data)|
-                         (Fill(conf.CDMA_SBUF_SDATA_BITS, dc2sbuf_p1_rd_sel(i))&dc2sbuf_p1_rd_data)|
-                         (Fill(conf.CDMA_SBUF_SDATA_BITS, img2sbuf_p0_rd_sel(i))&img2sbuf_p0_rd_data)|
-                         (Fill(conf.CDMA_SBUF_SDATA_BITS, img2sbuf_p0_rd_sel(i))&img2sbuf_p1_rd_data) 
-             })
+    val data_planar1_p0_flag_nex = Cat(data_planar1_cnt_sub > data_width_mark_1, data_planar1_cnt_sub > data_width_mark_0)
+    val data_planar1_p0_lp_mask = Mux(~data_planar1_p0_cur_flag(0), Fill(conf.ATMM, true.B),
+                                  Mux(~data_planar1_p0_flag_nex(0), ~(Fill(conf.ATMM, true.B) << lp_planar1_mask_sft),
+                                  Fill(conf.ATMM, false.B)))
+    val data_planar1_p0_rp_mask = Mux(~data_planar1_p0_cur_flag(1), Fill(conf.ATMM, false.B),
+                                  Mux(~data_planar1_p0_flag_nex(1), (Fill(conf.ATMM, true.B) << rp_planar1_mask_sft),
+                                  Fill(conf.ATMM, true.B))) 
+    val data_planar1_p0_zero_mask = Mux(~data_planar1_p0_cur_flag(2), Fill(conf.ATMM, false.B),
+                                    (Fill(conf.ATMM, true.B) << zero_planar1_mask_sft))    
+    val data_planar1_p0_pad_mask =  (data_planar1_p0_lp_mask | data_planar1_p0_rp_mask) & ~data_planar1_p0_zero_mask   

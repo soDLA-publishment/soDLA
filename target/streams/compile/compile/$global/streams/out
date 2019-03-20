@@ -1,10 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_ctrl.scala:132:5: not found: value img2status_state_out[0m
-[0m[[0m[31merror[0m] [0m[0m    img2status_state_out = RegInit(false.B)[0m
-[0m[[0m[31merror[0m] [0m[0m    ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_ctrl.scala:144:5: not found: value img2status_state_out[0m
-[0m[[0m[31merror[0m] [0m[0m    img2status_state_out := img2status_state_w[0m
-[0m[[0m[31merror[0m] [0m[0m    ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_ctrl.scala:147:28: not found: value img2status_state_out[0m
-[0m[[0m[31merror[0m] [0m[0m    io.img2status_state := img2status_state_out[0m
-[0m[[0m[31merror[0m] [0m[0m                           ^[0m
-[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
+[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_IMG_pack.scala:51:73: method apply in trait UIntFactory is deprecated (since chisel3, will be removed by end of 2017): use value.U[0m
+[0m[[0m[33mwarn[0m] [0m[0m        val img2cvt_dat_wr_sel = if(conf.DMAIF < conf.ATMC) Some(Output(UInt(log2Ceil(conf.ATMC/conf.DMAIF)))) [0m
+[0m[[0m[33mwarn[0m] [0m[0m                                                                        ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
