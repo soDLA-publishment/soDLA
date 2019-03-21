@@ -1,10 +1,43 @@
-    val data_planar1_p0_flag_nex = Cat(data_planar1_cnt_sub > data_width_mark_1, data_planar1_cnt_sub > data_width_mark_0)
-    val data_planar1_p0_lp_mask = Mux(~data_planar1_p0_cur_flag(0), Fill(conf.ATMM, true.B),
-                                  Mux(~data_planar1_p0_flag_nex(0), ~(Fill(conf.ATMM, true.B) << lp_planar1_mask_sft),
-                                  Fill(conf.ATMM, false.B)))
-    val data_planar1_p0_rp_mask = Mux(~data_planar1_p0_cur_flag(1), Fill(conf.ATMM, false.B),
-                                  Mux(~data_planar1_p0_flag_nex(1), (Fill(conf.ATMM, true.B) << rp_planar1_mask_sft),
-                                  Fill(conf.ATMM, true.B))) 
-    val data_planar1_p0_zero_mask = Mux(~data_planar1_p0_cur_flag(2), Fill(conf.ATMM, false.B),
-                                    (Fill(conf.ATMM, true.B) << zero_planar1_mask_sft))    
-    val data_planar1_p0_pad_mask =  (data_planar1_p0_lp_mask | data_planar1_p0_rp_mask) & ~data_planar1_p0_zero_mask   
+    val req_img_p1_bundle_cnt = RegInit("b0".asUInt(4.W))
+    val is_p1_bundle_end = Wire(Bool())
+    val is_p1_last_burst = Wire(Bool())
+    val req_img_p1_cur_burst = Wire(UInt(4.W))
+
+    val req_img_p1_bundle_cnt_w = Mux(is_first_running | is_p1_last_burst, io.pixel_planar1_bundle_limit_1st,
+                                  Mux(is_p1_bundle_end, io.pixel_planar1_bundle_limit,
+                                  req_img_p1_bundle_cnt - req_img_p1_cur_burst))
+    
+    when(req_img_p1_burst_en){
+        req_img_p1_bundle_cnt := req_img_p1_bundle_cnt_w
+    }
+
+
+    val req_img_p1_burst_cnt = RegInit("b0".asUInt(14.W))
+    val req_img_p1_sec_cnt = RegInit("b0".asUInt(2.W))
+    val is_p1_cur_sec_end = Wire(Bool())
+
+    val req_img_p1_burst_cnt_dec = req_img_p1_burst_cnt -& req_img_p1_bundle_cnt
+    req_img_p1_cur_burst := Mux(req_img_p1_burst_cnt_dec(14), req_img_p1_burst_cnt(3, 0), req_img_p1_bundle_cnt)
+    val req_img_p1_burst_cnt_w = Mux((is_first_running | is_p1_last_burst) & io.pixel_planar1_lp_vld, io.pixel_planar1_lp_burst, 
+                                 Mux((is_first_running | is_p1_last_burst) & ~io.pixel_planar1_lp_vld, io.pixel_planar1_width_burst,
+                                 Mux((req_img_p1_sec_cnt === 0.U)&is_p1_cur_sec_end, io.pixel_planar1_width_burst,
+                                 Mux((req_img_p1_sec_cnt === 1.U)&is_p1_cur_sec_end, io.pixel_planar1_rp_burst,
+                                 req_img_p1_burst_cnt_dec(13, 0)))))
+    val req_img_p1_sec_cnt_w = Mux((is_first_running | is_p1_last_burst) & io.pixel_planar1_lp_vld, 0.U, 
+                               Mux((is_first_running | is_p1_last_burst) & io.pixel_planar1_lp_vld, 1.U, 
+                               req_img_p1_sec_cnt + 1.U))
+    is_p1_cur_sec_end := (req_img_p1_burst_cnt <= req_img_p1_bundle_cnt)
+    val is_p1_1st_burst = ((req_img_p1_burst_cnt === io.req_img_p1_burst_cnt)&(req_img_p1_sec_cnt === 0.U))|
+                          ((req_img_p1_burst_cnt === pixel_planar1_width_burst)&(req_img_p1_sec_cnt === 1.U)&~pixel_planar1_lp_vld)
+    is_p1_last_burst := (is_p1_cur_sec_end & (req_img_p1_sec_cnt === 1.U) & ~io.pixel_planar1_rp_vld)|
+                           (is_p1_cur_sec_end & (req_img_p1_sec_cnt === 2.U))
+    val is_p1_bundle_end = (req_img_p1_cur_burst == req_img_p1_bundle_cnt) | is_p1_last_burst
+    val req_img_p1_burst_size = req_img_p1_cur_burst
+    val is_p1_req_real = (req_img_p1_sec_cnt === 1.U)
+
+    when(req_img_p1_burst_en){
+        req_img_p1_burst_cnt := req_img_p1_burst_cnt_w
+    }
+    when(req_img_p1_sec_en){
+        req_img_p1_sec_cnt := req_img_p1_sec_cnt_w
+    }

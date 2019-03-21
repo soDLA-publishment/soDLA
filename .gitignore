@@ -8,6 +8,8 @@ src/plugins/
 
 test_run_dir/
 
+vsrc/
+
 *.fir
 *.v
 *.json

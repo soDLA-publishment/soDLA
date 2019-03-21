@@ -42,4 +42,5 @@ class cdmaConfiguration extends cbufConfiguration{
     val BNUM = NVDLA_CDMA_DMAIF_BW/NVDLA_BPE
     val MN_BW = NVDLA_CDMA_DMAIF_BW / NVDLA_BPE * 16
     val SS = log2Ceil(ATMC/ATMM)
+
 }
