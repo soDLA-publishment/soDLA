@@ -1,16 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\nocif\NV_NVDLA_DMAIF_rdreq.scala:9:18: not found: value NVDLA_MEM_ADDRESS_WIDTH[0m
-[0m[[0m[31merror[0m] [0m[0m    val DMABW  = NVDLA_MEM_ADDRESS_WIDTH + 15[0m
-[0m[[0m[31merror[0m] [0m[0m                 ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\nocif\NV_NVDLA_DMAIF_rdrsp.scala:9:35: value ATMM_BW is not a member of nvdla.cdmaConfiguration[0m
-[0m[[0m[31merror[0m] [0m[0m    val DMABW = conf.DMAIF + conf.ATMM_BW[0m
-[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\nocif\NV_NVDLA_DMAIF_rdrsp.scala:67:57: value DMABW is not a member of nvdla.cdmaConfiguration[0m
-[0m[[0m[31merror[0m] [0m[0m        val is_pipe1 = Module{new NV_NVDLA_IS_pipe(conf.DMABW)}[0m
-[0m[[0m[31merror[0m] [0m[0m                                                        ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\nocif\NV_NVDLA_DMAIF_rdrsp.scala:86:24: reassignment to val[0m
-[0m[[0m[31merror[0m] [0m[0m        dma_rd_rsp_vld = mcif_rd_rsp_valid_d0[0m
-[0m[[0m[31merror[0m] [0m[0m                       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\nocif\NV_NVDLA_DMAIF_rdrsp.scala:93:53: value DMABW is not a member of nvdla.cdmaConfiguration[0m
-[0m[[0m[31merror[0m] [0m[0m    val is_pipe2 = Module{new NV_NVDLA_IS_pipe(conf.DMABW)}[0m
-[0m[[0m[31merror[0m] [0m[0m                                                    ^[0m
-[0m[[0m[31merror[0m] [0m[0m5 errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\rams\nv_ram_rwsp.scala:41:5: not found: value dout_ram[0m
+[0m[[0m[31merror[0m] [0m[0m    dout_ram := mem(ra_d)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\rams\nv_ram_rwsp.scala:43:19: not found: value dout_ram[0m
+[0m[[0m[31merror[0m] [0m[0m        dout_r := dout_ram[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

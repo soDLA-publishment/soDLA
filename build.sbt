@@ -48,6 +48,8 @@ libraryDependencies ++= (Seq("chisel3","chisel-iotesters").map {
 
 libraryDependencies ++= Seq("org.json4s" %% "json4s-jackson" % "3.6.1")
 
+libraryDependencies += "edu.berkeley.cs" %% "dsptools" % "1.1.6"
+
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),

@@ -15,10 +15,6 @@ class NV_NVDLA_CDMA_IMG_pack(implicit conf: cdmaConfiguration) extends Module {
         val img2sbuf_p0_rd_data = Input(UInt(conf.ATMM.W))
         val img2sbuf_p0_rd_addr = Output(UInt(8.W))
         val img2sbuf_p0_rd_en = Output(Bool())
-
-        val img2sbuf_p1_rd_data = if(conf.ATMM_NUM > 1) Some(Input(UInt(conf.ATMM.W))) else None
-        val img2sbuf_p1_rd_addr = if(conf.ATMM_NUM > 1) Some(Output(UInt(8.W))) else None
-        val img2sbuf_p1_rd_en = if(conf.ATMM_NUM > 1) Some(Output(Bool())) else None
         
         val is_running = Input(Bool())
         val layer_st = Input(Bool())
@@ -133,27 +129,15 @@ val zero_planar1_mask_sft = RegInit("b0".asUInt(conf.ATMMBW.W))
 val data_planar0_add = RegInit("b0".asUInt(6.W))
 val data_planar1_add = RegInit("b0".asUInt(6.W))
 
-val lp_planar0_mask_sft_w = Cat(data_width_mark_0(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar0_sft
-val lp_planar1_mask_sft_w = Cat(data_width_mark_0(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar1_sft
-
-val rp_planar0_mask_sft_w = Cat(data_width_mark_1(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar0_sft
-val rp_planar1_mask_sft_w = Cat(data_width_mark_1(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar1_sft
-
-val zero_planar0_mask_sft_w = Cat(data_width_mark_2(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar0_sft
-val zero_planar1_mask_sft_w = Cat(data_width_mark_2(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar1_sft
-
-val data_planar0_add_w = 1.U << io.pixel_planar0_sft
-val data_planar1_add_w = 1.U << io.pixel_planar1_sft
-
 when(is_first_running){
-    lp_planar0_mask_sft := lp_planar0_mask_sft_w
-    lp_planar1_mask_sft := lp_planar1_mask_sft_w
-    rp_planar0_mask_sft := rp_planar0_mask_sft_w
-    rp_planar1_mask_sft := rp_planar1_mask_sft_w
-    zero_planar0_mask_sft := zero_planar0_mask_sft_w
-    zero_planar1_mask_sft := zero_planar1_mask_sft_w
-    data_planar0_add := data_planar0_add_w
-    data_planar1_add := data_planar1_add_w
+    lp_planar0_mask_sft := Cat(data_width_mark_0(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar0_sft
+    lp_planar1_mask_sft := Cat(data_width_mark_0(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar1_sft
+    rp_planar0_mask_sft := Cat(data_width_mark_1(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar0_sft
+    rp_planar1_mask_sft := Cat(data_width_mark_1(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar1_sft
+    zero_planar0_mask_sft := Cat(data_width_mark_2(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar0_sft
+    zero_planar1_mask_sft := Cat(data_width_mark_2(conf.ATMMBW-1, 0), Fill(conf.ATMMBW, false.B)) >> io.pixel_planar1_sft
+    data_planar0_add := 1.U << io.pixel_planar0_sft
+    data_planar1_add := 1.U << io.pixel_planar1_sft
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -179,46 +163,32 @@ val rd_sub_h_cnt = "b0".asUInt(3.W)
 // img_p0_burst[3:1],means img_p0_burst/2, 2 means atmm_num/per_dmaif
 val rd_loop_cnt = RegInit("b0".asUInt(4.W))
 val rd_loop_en = Wire(Bool())
-val rd_loop_cnt_limit = Wire(UInt(4.W))
-if(conf.ATMM_NUM == 1){
-    rd_loop_cnt_limit := img_p0_burst
-}
-else if(conf.ATMM_NUM == 2){
-    rd_loop_cnt_limit := img_p0_burst(3, 1) +& img_p0_burst(0)
-}
+val rd_loop_cnt_limit = img_p0_burst
+
 val rd_loop_cnt_inc = rd_loop_cnt + 1.U
 val is_last_loop = (rd_loop_cnt_inc >= rd_loop_cnt_limit)
-val rd_loop_cnt_w = Mux(is_first_running | is_last_loop, 0.U, rd_loop_cnt_inc)
+
 when(rd_loop_en){   
-    rd_loop_cnt := rd_loop_cnt_w
+    rd_loop_cnt := Mux(is_first_running | is_last_loop, 0.U, rd_loop_cnt_inc)
 }
 
 //////// planar cnt ////////
 val rd_planar_cnt = RegInit(false.B)
 val rd_planar_en = Wire(Bool())
-
 val is_last_planar = ~io.pixel_planar | rd_planar_cnt
-val rd_planar_cnt_w = Mux(is_first_running | is_last_planar, false.B, ~rd_planar_cnt)
 
 when(rd_planar_en){
-    rd_planar_cnt := rd_planar_cnt_w
+    rd_planar_cnt := Mux(is_first_running | is_last_planar, false.B, ~rd_planar_cnt)
 }
 
 //////// partial burst cnt ////////
 val rd_pburst_cnt = RegInit("b0".asUInt(2.W))
 val rd_pburst_en = Wire(Bool())
-val rd_pburst_limit = Wire(UInt(2.W))
-if(conf.ATMM_NUM == 1){
-    rd_pburst_limit := Mux((rd_planar_cnt & (~is_last_loop | ~img_p1_burst(0))), "b1".asUInt(1.W), "b0".asUInt(2.W))
-}
-else if(conf.ATMM_NUM == 2){
-    rd_pburst_limit := Mux((rd_planar_cnt & (~is_last_loop | ~img_p0_burst(0))), "b1".asUInt(1.W), "b0".asUInt(2.W))
-}
-
+val rd_pburst_limit = Mux((rd_planar_cnt & (~is_last_loop | ~img_p1_burst(0))), "b1".asUInt(1.W), "b0".asUInt(2.W))
 val is_last_pburst = (rd_pburst_cnt === rd_pburst_limit)
-val rd_pburst_cnt_w = Mux(is_first_running | is_last_pburst, "b0".asUInt(2.W), rd_pburst_cnt + 1.U)
+
 when(rd_pburst_en){
-    rd_pburst_cnt := rd_pburst_cnt_w
+    rd_pburst_cnt := Mux(is_first_running | is_last_pburst, "b0".asUInt(2.W), rd_pburst_cnt + 1.U)
 }
 
 //////// control logic ////////
@@ -260,81 +230,38 @@ val rd_planar0_rd_mask = Wire(UInt(conf.ATMM_NUM.W))
 val rd_planar1_rd_mask = Wire(UInt(conf.ATMM_NUM.W))
 val rd_rd_mask = Wire(UInt(conf.ATMM_NUM.W))
 val rd_p0_vld = Wire(Bool())
-val rd_p1_vld = if(conf.ATMM_NUM > 1) Some(Wire(Bool())) else None
 val rd_idx_add = Wire(UInt(3.W))
 
-if(conf.ATMM_NUM == 1){
-    rd_planar0_rd_mask := 1.U
-    rd_planar1_rd_mask := 1.U
-    rd_p0_vld := rd_vld & rd_rd_mask
-    rd_idx_add := 1.U
-}
-if(conf.ATMM_NUM == 2){
-    rd_planar0_rd_mask := Mux(is_last_loop & is_last_pburst & img_p0_burst(0), 1.U, 3.U)
-    rd_planar1_rd_mask := Mux(is_last_loop & is_last_pburst & img_p1_burst(1), 1.U, 3.U)
-    rd_p0_vld := rd_vld & rd_rd_mask(0)
-    rd_p1_vld.get := rd_vld & rd_rd_mask(1)
-    rd_idx_add := Mux(rd_rd_mask(1), 2.U, 1.U)
-}
+rd_planar0_rd_mask := 1.U
+rd_planar1_rd_mask := 1.U
+rd_p0_vld := rd_vld & rd_rd_mask
+rd_idx_add := 1.U
 
 
 val rd_p0_vld_d1 = RegNext(rd_p0_vld, false.B)
-val rd_p1_vld_d1 = if(conf.ATMM_NUM > 1) Some(RegNext(rd_p1_vld.get, false.B)) else None
 
 rd_rd_mask := Mux(rd_planar_cnt, rd_planar1_rd_mask, rd_planar0_rd_mask)
 
 //////// read address ////////
 val rd_p0_planar0_idx = RegInit("b0".asUInt(7.W))
-val rd_p1_planar0_idx = if(conf.ATMM_NUM > 1) Some(RegInit("b0".asUInt(7.W))) else None
-
 val rd_p0_planar1_idx = RegInit("b0".asUInt(7.W))
-val rd_p1_planar1_idx = if(conf.ATMM_NUM > 1) Some(RegInit("b0".asUInt(7.W))) else None
-
 val rd_p0_planar0_ori_idx = RegInit("b0".asUInt(7.W))
-val rd_p1_planar0_ori_idx = if(conf.ATMM_NUM > 1) Some(RegInit("b0".asUInt(7.W))) else None
-
 val rd_p0_planar1_ori_idx = RegInit("b0".asUInt(7.W))
-val rd_p1_planar1_ori_idx = if(conf.ATMM_NUM > 1) Some(RegInit("b0".asUInt(7.W))) else None
-
 val rd_p0_addr = RegInit("b0".asUInt(8.W))
-val rd_p1_addr  = if(conf.ATMM_NUM > 1) Some(RegInit("b0".asUInt(8.W))) else None
-
 val rd_p0_addr_d1 = RegInit("b0".asUInt(8.W))
-val rd_p1_addr_d1  = if(conf.ATMM_NUM > 1) Some(RegInit("b0".asUInt(8.W))) else None
 
 val rd_planar0_en = Wire(Bool())
 val rd_planar1_en = Wire(Bool())
 val rd_planar0_ori_en = Wire(Bool())
 val rd_planar1_ori_en = Wire(Bool())
 
-val rd_p0_planar0_idx_inc = Wire(UInt(7.W))
-val rd_p1_planar0_idx_inc = if(conf.ATMM_NUM > 1) Some(Wire(UInt(7.W))) else None
-
-val rd_p0_planar1_idx_inc = Wire(UInt(7.W))
-val rd_p1_planar1_idx_inc = if(conf.ATMM_NUM > 1) Some(Wire(UInt(7.W))) else None
-
-val rd_p0_planar0_idx_w = Wire(UInt(7.W))
-val rd_p1_planar0_idx_w = if(conf.ATMM_NUM > 1) Some(Wire(UInt(7.W))) else None
-
-val rd_p0_planar1_idx_w = Wire(UInt(7.W))
-val rd_p1_planar1_idx_w = if(conf.ATMM_NUM > 1) Some(Wire(UInt(7.W))) else None
-
-
-rd_p0_planar0_idx_inc := rd_p0_planar0_idx + rd_idx_add
-rd_p0_planar1_idx_inc := rd_p0_planar1_idx + rd_idx_add
-rd_p0_planar0_idx_w := Mux(is_first_running, "b0".asUInt(7.W), rd_p0_planar0_idx_inc)
-rd_p0_planar1_idx_w := Mux(is_first_running, "b0".asUInt(7.W), rd_p0_planar1_idx_inc)
+val rd_p0_planar0_idx_inc = rd_p0_planar0_idx + rd_idx_add
+val rd_p0_planar1_idx_inc = rd_p0_planar1_idx + rd_idx_add
+val rd_p0_planar0_idx_w = Mux(is_first_running, "b0".asUInt(7.W), rd_p0_planar0_idx_inc)
+val rd_p0_planar1_idx_w = Mux(is_first_running, "b0".asUInt(7.W), rd_p0_planar1_idx_inc)
 rd_p0_addr := Mux(~rd_planar_cnt, Cat(false.B, rd_p0_planar0_idx(0), rd_p0_planar0_idx(6, 1)), 
              Cat(true.B, rd_p0_planar1_idx(0), rd_p0_planar1_idx(6, 1)))
 
-if(conf.ATMM_NUM > 1){
-    rd_p1_planar0_idx_inc.get := rd_p1_planar0_idx.get + rd_idx_add
-    rd_p1_planar1_idx_inc.get := rd_p1_planar1_idx.get + rd_idx_add
-    rd_p1_planar0_idx_w.get := Mux(is_first_running, "b0".asUInt(7.W), rd_p1_planar0_idx_inc.get)
-    rd_p1_planar1_idx_w.get := Mux(is_first_running, "b0".asUInt(7.W), rd_p1_planar1_idx_inc.get)
-    rd_p1_addr.get := Mux(~rd_planar_cnt, Cat(false.B, rd_p1_planar0_idx.get(0), rd_p1_planar0_idx.get(6, 1)), 
-                Cat(true.B, rd_p1_planar1_idx.get(0), rd_p1_planar1_idx.get(6, 1)))
-}
 
 when(rd_planar0_en){
     rd_p0_planar0_idx := rd_p0_planar0_idx_w
@@ -352,23 +279,6 @@ when(rd_p0_vld){
     rd_p0_addr_d1 := rd_p0_addr
 }
 
-if(conf.ATMM_NUM > 1){
-    when(rd_planar0_en){
-        rd_p1_planar0_idx.get := rd_p1_planar0_idx_w.get
-    }
-    when(rd_planar1_en){
-        rd_p1_planar1_idx.get := rd_p1_planar1_idx_w.get
-    }
-    when(rd_planar0_ori_en){
-        rd_p1_planar0_ori_idx.get := rd_p1_planar0_idx_w.get
-    }
-    when(rd_planar1_ori_en){
-        rd_p1_planar1_ori_idx.get := rd_p1_planar1_idx_w.get
-    }
-    when(rd_p0_vld){
-        rd_p1_addr_d1.get := rd_p1_addr.get
-    }
-}
 
 rd_planar0_en := is_first_running | (rd_vld & ~rd_planar_cnt)
 rd_planar1_en := is_first_running | (rd_vld & rd_planar_cnt)
@@ -381,42 +291,18 @@ val data_planar0_cur_cnt = RegInit("b0".asUInt(14.W))
 val data_planar1_cur_cnt = RegInit("b0".asUInt(14.W)) 
 
 val data_planar0_p0_cnt_w = data_planar0_cur_cnt + data_planar0_add 
-val data_planar0_p1_cnt_w = if(conf.ATMM_NUM > 1) Some(data_planar0_cur_cnt + data_planar0_add * 2.U) 
-                            else None
-
 val data_planar1_p0_cnt_w = data_planar1_cur_cnt + data_planar1_add 
-val data_planar1_p1_cnt_w = if(conf.ATMM_NUM > 1) Some(data_planar1_cur_cnt + data_planar1_add * 2.U) 
-                            else None
-
 val data_planar0_p0_cur_flag = Cat(data_planar0_p0_cnt_w>data_width_mark_2, data_planar0_p0_cnt_w>data_width_mark_1, data_planar0_p0_cnt_w>data_width_mark_0)
-val data_planar0_p1_cur_flag = if(conf.ATMM_NUM > 1) Some(Cat(data_planar0_p1_cnt_w.get>data_width_mark_2, data_planar0_p1_cnt_w.get>data_width_mark_1, data_planar0_p1_cnt_w.get>data_width_mark_0))
-                                else None
-
 val data_planar1_p0_cur_flag = Cat(data_planar1_p0_cnt_w>data_width_mark_2, data_planar1_p0_cnt_w>data_width_mark_1, data_planar1_p0_cnt_w>data_width_mark_0)
-val data_planar1_p1_cur_flag = if(conf.ATMM_NUM > 1) Some(Cat(data_planar1_p1_cnt_w.get>data_width_mark_2, data_planar1_p1_cnt_w.get>data_width_mark_1, data_planar1_p1_cnt_w.get>data_width_mark_0))
-                                else None
 
-val data_planar0_cur_cnt_w = Wire(UInt(14.W))
-val data_planar1_cur_cnt_w = Wire(UInt(14.W))
 val data_planar0_en = Wire(Bool())
 val data_planar1_en = Wire(Bool())
 
-if(conf.ATMM_NUM == 1){
-    data_planar0_cur_cnt_w := Mux(is_first_running | rd_planar0_line_end, "b0".asUInt(14.W), data_planar0_p0_cnt_w)
-    data_planar1_cur_cnt_w := Mux(is_first_running | rd_planar1_line_end, "b0".asUInt(14.W), data_planar1_p0_cnt_w)
-}
-if(conf.ATMM_NUM == 2){
-    data_planar0_cur_cnt_w := Mux(is_first_running | rd_planar0_line_end, "b0".asUInt(14.W), 
-                              Mux(rd_p1_vld.get, data_planar0_p1_cnt_w.get, data_planar0_p0_cnt_w))
-    data_planar1_cur_cnt_w := Mux(is_first_running | rd_planar1_line_end, "b0".asUInt(14.W), 
-                              Mux(rd_p1_vld.get, data_planar1_p1_cnt_w.get, data_planar1_p0_cnt_w))
-}
-
 when(data_planar0_en){
-    data_planar0_cur_cnt := data_planar0_cur_cnt_w
+    data_planar0_cur_cnt := Mux(is_first_running | rd_planar0_line_end, "b0".asUInt(14.W), data_planar0_p0_cnt_w)
 }
 when(data_planar1_en){
-    data_planar1_cur_cnt := data_planar1_cur_cnt_w
+    data_planar1_cur_cnt := Mux(is_first_running | rd_planar1_line_end, "b0".asUInt(14.W), data_planar1_p0_cnt_w)
 }
 
 
@@ -430,113 +316,34 @@ val rd_p0_pad_mask = Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))
 val rd_p0_zero_mask_d1 = Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))
 val rd_p0_pad_mask_d1 = Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))
 
-val data_planar0_p1_zero_mask = if(conf.ATMM_NUM>1) Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
-val data_planar0_p1_pad_mask = if(conf.ATMM_NUM>1) Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
-val data_planar1_p1_zero_mask = if(conf.ATMM_NUM>1) Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
-val data_planar1_p1_pad_mask = if(conf.ATMM_NUM>1) Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
-val rd_p1_zero_mask = if(conf.ATMM_NUM>1) Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
-val rd_p1_pad_mask = if(conf.ATMM_NUM>1) Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
-val rd_p1_zero_mask_d1 = if(conf.ATMM_NUM>1) Some(Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
-val rd_p1_pad_mask_d1 = if(conf.ATMM_NUM>1) Some(Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) else None
+//planar0
+val data_planar0_cnt_sub = data_planar0_p0_cnt_w - data_planar0_add
+val data_planar0_p0_flag_nex = Cat(data_planar0_cnt_sub > data_width_mark_1, data_planar0_cnt_sub > data_width_mark_0)
+val data_planar0_p0_lp_mask = Mux(~data_planar0_p0_cur_flag(0), Fill(conf.ATMM, true.B),
+                                Mux(~data_planar0_p0_flag_nex(0), ~(Fill(conf.ATMM, true.B) << lp_planar0_mask_sft),
+                                Fill(conf.ATMM, false.B)))
+val data_planar0_p0_rp_mask = Mux(~data_planar0_p0_cur_flag(1), Fill(conf.ATMM, false.B),
+                                Mux(~data_planar0_p0_flag_nex(1), (Fill(conf.ATMM, true.B) << rp_planar0_mask_sft),
+                                Fill(conf.ATMM, true.B))) 
+data_planar0_p0_zero_mask := Mux(~data_planar0_p0_cur_flag(2), Fill(conf.ATMM, false.B),
+                                (Fill(conf.ATMM, true.B) << zero_planar0_mask_sft))    
+data_planar0_p0_pad_mask :=  (data_planar0_p0_lp_mask | data_planar0_p0_rp_mask) & ~data_planar0_p0_zero_mask   
+//planar1
+val data_planar1_cnt_sub = data_planar1_p0_cnt_w - data_planar1_add
+val data_planar1_p0_flag_nex = Cat(data_planar1_cnt_sub > data_width_mark_1, data_planar1_cnt_sub > data_width_mark_0)
+val data_planar1_p0_lp_mask = Mux(~data_planar1_p0_cur_flag(0), Fill(conf.ATMM, true.B),
+                                Mux(~data_planar1_p0_flag_nex(0), ~(Fill(conf.ATMM, true.B) << lp_planar1_mask_sft),
+                                Fill(conf.ATMM, false.B)))
+val data_planar1_p0_rp_mask = Mux(~data_planar1_p0_cur_flag(1), Fill(conf.ATMM, false.B),
+                                Mux(~data_planar1_p0_flag_nex(1), (Fill(conf.ATMM, true.B) << rp_planar1_mask_sft),
+                                Fill(conf.ATMM, true.B))) 
+data_planar1_p0_zero_mask := Mux(~data_planar1_p0_cur_flag(2), Fill(conf.ATMM, false.B),
+                                (Fill(conf.ATMM, true.B) << zero_planar1_mask_sft))    
+data_planar1_p0_pad_mask :=  (data_planar1_p0_lp_mask | data_planar1_p0_rp_mask) & ~data_planar1_p0_zero_mask   
 
-if(conf.ATMM_NUM == 1){
-    //planar0
-    val data_planar0_cnt_sub = data_planar0_p0_cnt_w - data_planar0_add
-    val data_planar0_p0_flag_nex = Cat(data_planar0_cnt_sub > data_width_mark_1, data_planar0_cnt_sub > data_width_mark_0)
-    val data_planar0_p0_lp_mask = Mux(~data_planar0_p0_cur_flag(0), Fill(conf.ATMM, true.B),
-                                  Mux(~data_planar0_p0_flag_nex(0), ~(Fill(conf.ATMM, true.B) << lp_planar0_mask_sft),
-                                  Fill(conf.ATMM, false.B)))
-    val data_planar0_p0_rp_mask = Mux(~data_planar0_p0_cur_flag(1), Fill(conf.ATMM, false.B),
-                                  Mux(~data_planar0_p0_flag_nex(1), (Fill(conf.ATMM, true.B) << rp_planar0_mask_sft),
-                                  Fill(conf.ATMM, true.B))) 
-    data_planar0_p0_zero_mask := Mux(~data_planar0_p0_cur_flag(2), Fill(conf.ATMM, false.B),
-                                    (Fill(conf.ATMM, true.B) << zero_planar0_mask_sft))    
-    data_planar0_p0_pad_mask :=  (data_planar0_p0_lp_mask | data_planar0_p0_rp_mask) & ~data_planar0_p0_zero_mask   
-    //planar1
-    val data_planar1_cnt_sub = data_planar1_p0_cnt_w - data_planar1_add
-    val data_planar1_p0_flag_nex = Cat(data_planar1_cnt_sub > data_width_mark_1, data_planar1_cnt_sub > data_width_mark_0)
-    val data_planar1_p0_lp_mask = Mux(~data_planar1_p0_cur_flag(0), Fill(conf.ATMM, true.B),
-                                  Mux(~data_planar1_p0_flag_nex(0), ~(Fill(conf.ATMM, true.B) << lp_planar1_mask_sft),
-                                  Fill(conf.ATMM, false.B)))
-    val data_planar1_p0_rp_mask = Mux(~data_planar1_p0_cur_flag(1), Fill(conf.ATMM, false.B),
-                                  Mux(~data_planar1_p0_flag_nex(1), (Fill(conf.ATMM, true.B) << rp_planar1_mask_sft),
-                                  Fill(conf.ATMM, true.B))) 
-    data_planar1_p0_zero_mask := Mux(~data_planar1_p0_cur_flag(2), Fill(conf.ATMM, false.B),
-                                    (Fill(conf.ATMM, true.B) << zero_planar1_mask_sft))    
-    data_planar1_p0_pad_mask :=  (data_planar1_p0_lp_mask | data_planar1_p0_rp_mask) & ~data_planar1_p0_zero_mask   
-
-}
-
-if(conf.ATMM_NUM == 2){
-    val data_planar0_p1_flag_w = Mux(is_first_running | rd_planar0_line_end,  "b0".asUInt(3.W), data_planar0_p1_cur_flag.get)
-    val data_planar1_p1_flag_w = Mux(is_first_running | rd_planar0_line_end,  "b0".asUInt(3.W), data_planar1_p1_cur_flag.get)
-    val data_planar0_p1_flag = RegEnable(data_planar0_p1_flag_w, "b0".asUInt(3.W), data_planar0_en)
-    val data_planar1_p1_flag = RegEnable(data_planar1_p1_flag_w, "b0".asUInt(3.W), data_planar1_en)
-    ///////////////////////////////
-    //planar0_p0
-    val data_planar0_p0_lp_mask = Mux(~data_planar0_p0_cur_flag(0), Fill(conf.ATMM, true.B), 
-                                  Mux(~data_planar0_p1_flag(0)&data_planar0_p0_cur_flag(0), ~(Fill(conf.ATMM, true.B)<<lp_planar0_mask_sft),
-                                  Fill(conf.ATMM, false.B)))
-
-    val data_planar0_p0_rp_mask = Mux(~data_planar0_p0_cur_flag(1), Fill(conf.ATMM, false.B), 
-                                  Mux(~data_planar0_p1_flag(1)&data_planar0_p0_cur_flag(1), (Fill(conf.ATMM, true.B)<<rp_planar0_mask_sft),
-                                  Fill(conf.ATMM, true.B)))
-
-    data_planar0_p0_zero_mask := Mux(~data_planar0_p0_cur_flag(2), Fill(conf.ATMM, false.B), Fill(conf.ATMM, true.B)<<zero_planar0_mask_sft)
-    data_planar0_p0_pad_mask := (data_planar0_p0_lp_mask | data_planar0_p0_rp_mask) & ~data_planar0_p0_zero_mask
-    //planar0_p1
-    val data_planar0_p1_lp_mask = Mux(~data_planar0_p1_cur_flag.get(0), Fill(conf.ATMM, true.B), 
-                                  Mux(~data_planar0_p0_cur_flag(0)&data_planar0_p1_cur_flag.get(0), ~(Fill(conf.ATMM, true.B)<<lp_planar0_mask_sft),
-                                  Fill(conf.ATMM, false.B)))
-
-    val data_planar0_p1_rp_mask = Mux(~data_planar0_p1_cur_flag.get(1), Fill(conf.ATMM, false.B), 
-                                  Mux(~data_planar0_p0_cur_flag(1)&data_planar0_p1_cur_flag.get(1), (Fill(conf.ATMM, true.B)<<rp_planar0_mask_sft),
-                                  Fill(conf.ATMM, true.B)))
-
-    data_planar0_p1_zero_mask.get := Mux(~data_planar0_p1_cur_flag.get(2), Fill(conf.ATMM, false.B), 
-                                  Mux(data_planar0_p0_cur_flag(2), Fill(conf.ATMM, true.B),
-                                  Fill(conf.ATMM, true.B)<<zero_planar0_mask_sft))
-    data_planar0_p1_pad_mask.get := (data_planar0_p1_lp_mask | data_planar0_p1_rp_mask) & ~data_planar0_p1_zero_mask.get
-    //planar1_p0
-    val data_planar1_p0_lp_mask = Mux(~data_planar1_p0_cur_flag(0), Fill(conf.ATMM, true.B), 
-                                  Mux(~data_planar1_p1_flag(0), ~(Fill(conf.ATMM, true.B)<<lp_planar1_mask_sft),
-                                  Fill(conf.ATMM, false.B)))
-
-    val data_planar1_p0_rp_mask = Mux(~data_planar0_p0_cur_flag(1), Fill(conf.ATMM, false.B), 
-                                  Mux(~data_planar0_p1_flag(1), (Fill(conf.ATMM, true.B)<<rp_planar1_mask_sft),
-                                  Fill(conf.ATMM, true.B)))
-
-    data_planar1_p0_zero_mask := Mux(~data_planar0_p0_cur_flag(2), Fill(conf.ATMM, false.B), Fill(conf.ATMM, true.B)<<zero_planar1_mask_sft)
-    data_planar1_p0_pad_mask := (data_planar1_p0_lp_mask | data_planar1_p0_rp_mask) & ~data_planar1_p0_zero_mask
-    //planar1_p1
-    val data_planar1_p1_lp_mask = Mux(~data_planar1_p1_cur_flag.get(0), Fill(conf.ATMM, true.B), 
-                                  Mux(~data_planar1_p0_cur_flag(0)& data_planar1_p1_cur_flag.get(0), ~(Fill(conf.ATMM, true.B)<<lp_planar1_mask_sft),
-                                  Fill(conf.ATMM, false.B)))
-
-    val data_planar1_p1_rp_mask = Mux(~data_planar1_p1_cur_flag.get(1), Fill(conf.ATMM, false.B), 
-                                  Mux(~data_planar1_p0_cur_flag(1)& data_planar1_p1_cur_flag.get(1), (Fill(conf.ATMM, true.B)<<rp_planar1_mask_sft),
-                                  Fill(conf.ATMM, true.B)))
-
-    data_planar1_p1_zero_mask.get := Mux(~data_planar1_p1_cur_flag.get(2), Fill(conf.ATMM, false.B), 
-                                  Mux(data_planar1_p0_cur_flag(2), Fill(conf.ATMM, true.B),
-                                  Fill(conf.ATMM, true.B)<< zero_planar1_mask_sft))
-    data_planar1_p1_pad_mask.get := (data_planar1_p1_lp_mask | data_planar1_p1_rp_mask) & ~data_planar1_p1_zero_mask.get
-
-}
-
-rd_p0_pad_mask := Mux(~rd_planar_cnt, data_planar0_p0_pad_mask, data_planar1_p0_pad_mask)
-rd_p0_zero_mask := Mux(~rd_planar_cnt, data_planar0_p0_pad_mask, data_planar1_p0_pad_mask)
 when(rd_vld){
-    rd_p0_pad_mask_d1 := rd_p0_pad_mask
-    rd_p0_zero_mask_d1 := rd_p0_zero_mask
-}
-if(conf.ATMM_NUM>1){
-    rd_p1_pad_mask.get := Mux(~rd_planar_cnt, data_planar0_p1_pad_mask.get, data_planar1_p1_pad_mask.get)
-    rd_p1_zero_mask.get := Mux(~rd_planar_cnt, data_planar0_p1_pad_mask.get, data_planar1_p1_pad_mask.get)
-    when(rd_vld){
-        rd_p1_pad_mask_d1.get := rd_p1_pad_mask.get
-        rd_p1_zero_mask_d1.get := rd_p1_zero_mask.get
-    }
+    rd_p0_pad_mask_d1 := Mux(~rd_planar_cnt, data_planar0_p0_pad_mask, data_planar1_p0_pad_mask)
+    rd_p0_zero_mask_d1 := Mux(~rd_planar_cnt, data_planar0_p0_pad_mask, data_planar1_p0_pad_mask)
 }
 
 data_planar0_en := is_first_running | (rd_vld & ~rd_planar_cnt)
@@ -566,12 +373,6 @@ when(rd_vld){
 io.img2sbuf_p0_rd_en := rd_p0_vld_d1
 io.img2sbuf_p0_rd_addr := rd_p0_addr_d1
 
-if(conf.ATMM_NUM>1){
-    io.img2sbuf_p1_rd_en.get := rd_p1_vld_d1.get
-    io.img2sbuf_p1_rd_addr.get := rd_p1_addr_d1.get
-}
-
-
 
 ////////////////////////////////////////////////////////////////////////
 // pipeline register for shared buffer read latency                   //
@@ -597,16 +398,6 @@ val rd_p0_pad_mask_d1_d = Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W)) +:
                         Seq.fill(conf.CDMA_SBUF_RD_LATENCY)(Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) 
 val rd_p0_zero_mask_d1_d = Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W)) +: 
                         Seq.fill(conf.CDMA_SBUF_RD_LATENCY)(Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))) 
-
-val rd_p1_pad_mask_d1_d = if(conf.ATMM_NUM > 1) 
-                        Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W)) +: 
-                        Seq.fill(conf.CDMA_SBUF_RD_LATENCY)(Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))))
-                        else None
-
-val rd_p1_zero_mask_d1_d = if(conf.ATMM_NUM > 1) 
-                        Some(Wire(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W)) +: 
-                        Seq.fill(conf.CDMA_SBUF_RD_LATENCY)(Reg(UInt(conf.NVDLA_MEMORY_ATOMIC_SIZE.W))))
-                        else None
 rd_vld_d1_d(0) := rd_vld_d1
 rd_planar_d1_d(0) := rd_planar_d1
 rd_sub_h_d1_d(0) := rd_sub_h_d1 
@@ -617,10 +408,7 @@ rd_1st_height_d1_d(0) := rd_1st_height_d1
 rd_layer_end_d1_d(0) := rd_layer_end_d1
 rd_p0_pad_mask_d1_d(0) := rd_p0_pad_mask_d1 
 rd_p0_zero_mask_d1_d(0) := rd_p0_zero_mask_d1 
-if(conf.ATMM_NUM > 1){
-    rd_p1_pad_mask_d1_d.get(0) := rd_p1_pad_mask_d1.get
-    rd_p1_zero_mask_d1_d.get(0) := rd_p1_zero_mask_d1.get 
-}
+
 for(t <- 0 to conf.CDMA_SBUF_RD_LATENCY-1){
     rd_vld_d1_d(t+1) := rd_vld_d1_d(t)
     when(rd_vld_d1_d(t)){
@@ -634,10 +422,6 @@ for(t <- 0 to conf.CDMA_SBUF_RD_LATENCY-1){
         rd_layer_end_d1_d(t+1) := rd_layer_end_d1_d(t)
         rd_p0_pad_mask_d1_d(t+1) := rd_p0_pad_mask_d1_d(t) 
         rd_p0_zero_mask_d1_d(t+1) := rd_p0_zero_mask_d1_d(t) 
-        if(conf.ATMM_NUM > 1){
-            rd_p1_pad_mask_d1_d.get(t+1) := rd_p1_pad_mask_d1_d.get(t) 
-            rd_p1_zero_mask_d1_d.get(t+1) := rd_p1_zero_mask_d1_d.get(t) 
-        }
     }
 }
 val pk_rsp_vld           = rd_vld_d1_d(conf.CDMA_SBUF_RD_LATENCY)
@@ -650,8 +434,6 @@ val pk_rsp_1st_height    = rd_1st_height_d1_d(conf.CDMA_SBUF_RD_LATENCY)
 val pk_rsp_layer_end     = rd_layer_end_d1_d(conf.CDMA_SBUF_RD_LATENCY)
 val pk_rsp_p0_pad_mask   = rd_p0_pad_mask_d1_d(conf.CDMA_SBUF_RD_LATENCY)
 val pk_rsp_p0_zero_mask  = rd_p0_zero_mask_d1_d(conf.CDMA_SBUF_RD_LATENCY)
-val pk_rsp_p1_pad_mask   = if(conf.ATMM_NUM > 1) Some(rd_p1_pad_mask_d1_d.get(conf.CDMA_SBUF_RD_LATENCY)) else None
-val pk_rsp_p1_zero_mask  = if(conf.ATMM_NUM > 1) Some(rd_p1_zero_mask_d1_d.get(conf.CDMA_SBUF_RD_LATENCY)) else None
 
 val pk_rsp_early_end = io.pixel_early_end & pk_rsp_one_line_end;
 val pk_rsp_vld_d1_w = pk_rsp_vld & io.pixel_planar & ~(pk_rsp_early_end)
@@ -678,8 +460,6 @@ when(pk_rsp_vld_d1_w){
 //  connect to sbuf ram input                                         //
 ////////////////////////////////////////////////////////////////////////
 val pk_rsp_p0_data = io.img2sbuf_p0_rd_data
-val pk_rsp_p1_data = if(conf.ATMM_NUM>1) Some(io.img2sbuf_p1_rd_data.get) else None 
-
 ////////////////////////////////////////////////////////////////////////
 // data write logic                                                   //
 ////////////////////////////////////////////////////////////////////////
@@ -742,17 +522,10 @@ val mask_zero = Wire(UInt((conf.NVDLA_CDMA_DMAIF_BW/conf.NVDLA_BPE).W))
 val pk_rsp_planar1_c0_en = Wire(Bool())
 val pk_rsp_planar1_c1_en = Wire(Bool())
 
+rdat := pk_rsp_p0_data
+mask_zero := pk_rsp_p0_zero_mask
+mask_pad := pk_rsp_p0_pad_mask
 
-if(conf.ATMM_NUM == 1){
-    rdat := pk_rsp_p0_data
-    mask_zero := pk_rsp_p0_zero_mask
-    mask_pad := pk_rsp_p0_pad_mask
-}
-else if(conf.ATMM_NUM == 2){
-    rdat := Cat(pk_rsp_p1_data.get, pk_rsp_p0_data)
-    mask_zero := Cat(pk_rsp_p1_zero_mask.get, pk_rsp_p0_zero_mask)
-    mask_pad := Cat(pk_rsp_p1_pad_mask.get, pk_rsp_p0_pad_mask)
-}
 
 val pk_rsp_dat_normal = rdat
 val pk_rsp_dat_mnorm = VecInit((0 to conf.NVDLA_CDMA_DMAIF_BW/conf.NVDLA_BPE-1) 
@@ -926,33 +699,13 @@ if(conf.ATMC>conf.DMAIF){
                 pk_out_hsel := pk_rsp_wr_sub_addr.get(0)
             }
         }
-        else if(conf.ATMM_NUM == 2){
-            when(pk_rsp_wr_vld){
-                pk_out_hsel := pk_rsp_wr_sub_addr.get(1)
-            }
-        }
-        else if(conf.ATMM_NUM == 4){
-            when(pk_rsp_wr_vld){
-                pk_out_hsel := pk_rsp_wr_sub_addr.get(1)
-            }            
-        }
     }
     else if(conf.ATMC/conf.DMAIF == 4){
         if(conf.ATMM_NUM == 1){
             when(pk_rsp_wr_vld){
                 pk_out_hsel := pk_rsp_wr_sub_addr.get(1, 0)
             }
-        }
-        else if(conf.ATMM_NUM == 2){
-            when(pk_rsp_wr_vld){
-                pk_out_hsel := pk_rsp_wr_sub_addr.get(2, 1)
-            }
-        }
-        else if(conf.ATMM_NUM == 4){
-            when(pk_rsp_wr_vld){
-                pk_out_hsel := pk_rsp_wr_sub_addr.get(3, 2)
-            }            
-        }      
+        }    
     }
 }
 val pk_out_addr = RegInit("b0".asUInt(15.W))

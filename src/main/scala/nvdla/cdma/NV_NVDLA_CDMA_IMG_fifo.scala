@@ -138,7 +138,7 @@ class NV_NVDLA_CDMA_IMG_fifo extends Module {
     }
     // next    read address
     when(rd_popping){
-        rd_adr := rd_adr + 1.U
+        rd_adr := rd_adr_next
     }
 
     //
@@ -179,9 +179,10 @@ class NV_NVDLA_CDMA_IMG_fifo extends Module {
     io.rd_data := rd_data_p
     ore := rd_popping
 
-    clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
-                         (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
-                         (rd_pushing || rd_popping || (rd_req_int && io.rd_ready)) || (wr_pushing))
+    clk_mgated_enable := ((wr_reserving || wr_pushing || rd_popping ||
+                         wr_popping || (wr_req_in && !wr_busy_int) ||
+                          (wr_busy_int =/= wr_busy_next)) || (rd_pushing ||
+                           rd_popping || (rd_req_int && io.rd_ready) || wr_pushing))
 
     wr_limit_muxed := "d0".asUInt(8.W)
 

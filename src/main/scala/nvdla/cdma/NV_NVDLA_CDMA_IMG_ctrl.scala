@@ -314,20 +314,12 @@ withClock(io.nvdla_core_clk){
     = (pixel_planar1_total_width_w * byte_per_pixel +& Fill(log2Ceil(conf.DMAIF/8), true.B))(log2Ceil(conf.DMAIF/8)+2, log2Ceil(conf.DMAIF/8))
 
     /////////////////////////////
-    val pixel_early_end_w = Wire(Bool())
-    if(conf.DMAIF/conf.ATMM == 1){
-        pixel_early_end_w := pixel_planar_nxt & 
-        ((pixel_planar1_tail_width_w === 1.U)| 
-        (pixel_planar1_tail_width_w === 4.U)|
-        ((pixel_planar1_tail_width_w === 2.U)|  
-        (Cat(pixel_planar1_total_width_w, 0.U)> (conf.NVDLA_CDMA_DMAIF_BW/8).U)))
-    }
-    else if(conf.DMAIF/conf.ATMM == 2){
-        val pixel_planar1_total_burst_w = pixel_planar1_lp_burst_w(1, 0) + pixel_planar1_rp_burst_w(1, 0) + pixel_planar1_width_burst_w(1, 0)
-        val pixel_tail_1_w = (pixel_planar1_tail_width_w === 1.U) | (pixel_planar1_tail_width_w === 4.U)
-        val pixel_tail_2_w = (pixel_planar1_tail_width_w === 2.U) | (pixel_planar1_tail_width_w === 5.U)
-        pixel_early_end_w := pixel_planar_nxt & (pixel_tail_1_w | (pixel_tail_2_w & ~pixel_planar1_total_burst_w(1)))
-    }
+    val pixel_early_end_w = pixel_planar_nxt & 
+    ((pixel_planar1_tail_width_w === 1.U)| 
+    (pixel_planar1_tail_width_w === 4.U)|
+    ((pixel_planar1_tail_width_w === 2.U)&  
+    (Cat(pixel_planar1_total_width_w, 0.U)> (conf.NVDLA_CDMA_DMAIF_BW/8).U)))
+    
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
     val pixel_planar_out = RegInit(false.B)

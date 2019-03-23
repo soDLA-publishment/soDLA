@@ -54,7 +54,7 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: cmacCo
 
     class macImpl{
 
-    val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(conf.CMAC_TYPE(0, (2*conf.CMAC_BPE).W)))
+    val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(0.asSInt((2*conf.CMAC_BPE).W)))
 
     for(i <- 0 to conf.CMAC_ATOMC-1){
         when(io.wt_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_pvld(i)&io.dat_actv_nz(i)){                       

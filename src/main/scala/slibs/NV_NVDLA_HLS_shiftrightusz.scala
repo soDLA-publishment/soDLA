@@ -40,7 +40,7 @@ class NV_NVDLA_HLS_shiftrightsuz extends Module {
     
     data_shift_l := (Cat(Fill(SHIFT_MAX, false.B), io.data_in) << shift_num_abs)(OUT_WIDTH - 1, 0)
 
-    left_shift_sat := shift_sign & Cat(data_high, data_shift_l(OUT_WIDTH-1)) != Fill(HIGH_WIDTH+1, false.B)
+    left_shift_sat := shift_sign & Cat(data_high, data_shift_l(OUT_WIDTH-1)) =/= Fill(HIGH_WIDTH+1, false.B)
 
     //shift right
     data_shift_r := (Cat(io.data_in, Fill(FRAC_WIDTH, false.B)) >> io.shift_num)(IN_WIDTH + FRAC_WIDTH -1, FRAC_WIDTH)

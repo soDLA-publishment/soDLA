@@ -92,7 +92,7 @@ class NV_NVDLA_BDMA_cq extends Module {
     val wr_count_next_is_20 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_20)
     val wr_limit_muxed = Wire(UInt(5.W))    // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
-    ld2st_wr_busy_next := wr_count_next_is_20 ||(wr_limit_reg != 0.U && (wr_count_next >= wr_limit_reg))
+    ld2st_wr_busy_next := wr_count_next_is_20 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
     wr_busy_in_int := ld2st_wr_pvld_in && ld2st_wr_busy_int
 
     ld2st_wr_busy_int := ld2st_wr_busy_next
@@ -157,7 +157,7 @@ class NV_NVDLA_BDMA_cq extends Module {
     val rd_count_p_next_rd_popping = Mux(rd_pushing, ld2st_rd_count_p, ld2st_rd_count_p-1.U)
     val rd_count_p_next_no_rd_popping = Mux(rd_pushing, ld2st_rd_count_p + 1.U, ld2st_rd_count_p)
     val rd_count_p_next = Mux(rd_popping, rd_count_p_next_rd_popping, rd_count_p_next_no_rd_popping)
-    ld2st_rd_pvld_p := ld2st_rd_count_p != 0.U || rd_pushing
+    ld2st_rd_pvld_p := ld2st_rd_count_p =/= 0.U || rd_pushing
 
     when(rd_pushing || rd_popping){
         ld2st_rd_count_p := rd_count_p_next
@@ -186,7 +186,7 @@ class NV_NVDLA_BDMA_cq extends Module {
 
 
     nvdla_core_clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
-                         (ld2st_wr_pvld_in && !ld2st_wr_busy_int) || (ld2st_wr_busy_int != ld2st_wr_busy_next)) || 
+                         (ld2st_wr_pvld_in && !ld2st_wr_busy_int) || (ld2st_wr_busy_int =/= ld2st_wr_busy_next)) || 
                          (rd_pushing || rd_popping || (ld2st_rd_pvld_int && io.ld2st_rd_prdy)) || (wr_pushing))
 
     wr_limit_muxed := "d0".asUInt(5.W)

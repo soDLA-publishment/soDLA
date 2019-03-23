@@ -12,7 +12,7 @@ class NV_NVDLA_DMAIF_rdreq(implicit conf: cdmaConfiguration) extends Module {
         val nvdla_core_clk = Input(Clock())
         val reg2dp_src_ram_type = Input(Bool())
         
-        val cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(DMABW.W))) else None
+        val cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(DMABW.W))) else None
         val cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
         val cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
 

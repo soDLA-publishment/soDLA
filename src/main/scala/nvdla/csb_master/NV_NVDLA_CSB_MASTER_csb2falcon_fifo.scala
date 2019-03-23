@@ -347,7 +347,7 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfigurat
     io.rd_data := nv_AFIFO_rd_data
 
     // Master Clock Gating (SLCG) Enables
-    wr_clk_wr_mgated_enable := dft_qualifier_wr_enable && (wr_reserving || wr_pushing || wr_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int != wr_busy_next))
+    wr_clk_wr_mgated_enable := dft_qualifier_wr_enable && (wr_reserving || wr_pushing || wr_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next))
     rd_clk_rd_mgated_enable := dft_qualifier_rd_enable && ((rd_pushing ||rd_popping || (rd_req_int && io.rd_ready)))
     
     wr_limit_muxed := "b0".asUInt(2.W)
