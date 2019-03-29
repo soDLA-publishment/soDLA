@@ -1060,6 +1060,10 @@ withClock(io.nvdla_core_clk){
     val dc_rd_stall_clr = RegInit(false.B)
     val dc_rd_stall_cen = RegInit(false.B)
     val dp2reg_dc_rd_stall_dec = false.B
+
+    dc_rd_stall_inc := dma_rd_req_vld & ~dma_rd_req_rdy & io.reg2dp_dma_en
+    dc_rd_stall_clr := io.status2dma_fsm_switch & io.reg2dp_dma_en
+    dc_rd_stall_cen := io.reg2dp_op_en & io.reg2dp_dma_en
     // stl adv logic
     val stl_adv = dc_rd_stall_inc ^ dp2reg_dc_rd_stall_dec
 
@@ -1073,8 +1077,8 @@ withClock(io.nvdla_core_clk){
     val stl_cnt_nxt = Wire(UInt(34.W))
 
     stl_cnt_ext := stl_cnt_cur
-    stl_cnt_inc := stl_cnt_cur + 1.U
-    stl_cnt_dec := stl_cnt_cur - 1.U
+    stl_cnt_inc := stl_cnt_cur +& 1.U
+    stl_cnt_dec := stl_cnt_cur -& 1.U
     stl_cnt_mod := Mux(dc_rd_stall_inc && !dp2reg_dc_rd_stall_dec, stl_cnt_inc, 
                    Mux(!dc_rd_stall_inc && dp2reg_dc_rd_stall_dec, stl_cnt_dec,
                    stl_cnt_ext))
@@ -1116,8 +1120,8 @@ withClock(io.nvdla_core_clk){
     val ltc_1_cnt_nxt = Wire(UInt(11.W))
 
     ltc_1_cnt_ext := ltc_1_cnt_cur
-    ltc_1_cnt_inc := ltc_1_cnt_cur + 1.U
-    ltc_1_cnt_dec := ltc_1_cnt_cur - 1.U
+    ltc_1_cnt_inc := ltc_1_cnt_cur +& 1.U
+    ltc_1_cnt_dec := ltc_1_cnt_cur -& 1.U
     ltc_1_cnt_mod := Mux(ltc_1_inc && !ltc_1_dec, ltc_1_cnt_inc, 
                      Mux((!ltc_1_inc && ltc_1_dec), ltc_1_cnt_dec,
                      ltc_1_cnt_ext))
@@ -1148,8 +1152,8 @@ withClock(io.nvdla_core_clk){
     val ltc_2_cnt_nxt = Wire(UInt(34.W))
 
     ltc_2_cnt_ext := ltc_2_cnt_cur
-    ltc_2_cnt_inc := ltc_2_cnt_cur + 1.U
-    ltc_2_cnt_dec := ltc_2_cnt_cur - 1.U
+    ltc_2_cnt_inc := ltc_2_cnt_cur +& 1.U
+    ltc_2_cnt_dec := ltc_2_cnt_cur -& 1.U
     ltc_2_cnt_mod := Mux(ltc_2_inc && !ltc_2_dec, ltc_2_cnt_inc, 
                      Mux((!ltc_2_inc && ltc_2_dec), ltc_2_cnt_dec,
                      ltc_2_cnt_ext))

@@ -795,8 +795,8 @@ withClock(io.nvdla_core_clk){
 
 
     stl_cnt_ext := stl_cnt_cur
-    stl_cnt_inc := stl_cnt_cur + 1.U
-    stl_cnt_dec := stl_cnt_cur - 1.U
+    stl_cnt_inc := stl_cnt_cur +& 1.U
+    stl_cnt_dec := stl_cnt_cur -& 1.U
     stl_cnt_mod := Mux(img_rd_stall_inc && !dp2reg_img_rd_stall_dec, stl_cnt_inc, 
                    Mux(!img_rd_stall_inc && dp2reg_img_rd_stall_dec, stl_cnt_dec,
                    stl_cnt_ext))
@@ -838,8 +838,8 @@ withClock(io.nvdla_core_clk){
     val ltc_1_cnt_nxt = Wire(UInt(11.W))
 
     ltc_1_cnt_ext := ltc_1_cnt_cur
-    ltc_1_cnt_inc := ltc_1_cnt_cur + 1.U
-    ltc_1_cnt_dec := ltc_1_cnt_cur - 1.U
+    ltc_1_cnt_inc := ltc_1_cnt_cur +& 1.U
+    ltc_1_cnt_dec := ltc_1_cnt_cur -& 1.U
     ltc_1_cnt_mod := Mux(ltc_1_inc && !ltc_1_dec, ltc_1_cnt_inc, 
                      Mux((!ltc_1_inc && ltc_1_dec), ltc_1_cnt_dec,
                      ltc_1_cnt_ext))
@@ -870,8 +870,8 @@ withClock(io.nvdla_core_clk){
     val ltc_2_cnt_nxt = Wire(UInt(34.W))
 
     ltc_2_cnt_ext := ltc_2_cnt_cur
-    ltc_2_cnt_inc := ltc_2_cnt_cur + 1.U
-    ltc_2_cnt_dec := ltc_2_cnt_cur - 1.U
+    ltc_2_cnt_inc := ltc_2_cnt_cur +& 1.U
+    ltc_2_cnt_dec := ltc_2_cnt_cur -& 1.U
     ltc_2_cnt_mod := Mux(ltc_2_inc && !ltc_2_dec, ltc_2_cnt_inc, 
                      Mux((!ltc_2_inc && ltc_2_dec), ltc_2_cnt_dec,
                      ltc_2_cnt_ext))
