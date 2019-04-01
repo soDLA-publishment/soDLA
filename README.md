@@ -20,7 +20,7 @@ My Progress
 | apb2csb | Done | Not yet | Not yet |
 | glb | Done | Not yet | Not yet |
 | csb_master | Done | Not yet | Not yet |
-| cdma| In Progress | Not yet | Not yet |
+| cdma| Done | Not yet | Not yet |
 | cora(self-driving package) | In Progress | Not yet | Not yet |
 
 Generate Verilog Modules
