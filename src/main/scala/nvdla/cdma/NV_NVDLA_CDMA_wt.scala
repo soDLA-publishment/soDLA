@@ -30,7 +30,7 @@ class NV_NVDLA_CDMA_wtIO(implicit conf: cdmaConfiguration) extends Bundle {
     val cvif2cdma_wt_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))) else None
 
     val cdma2buf_wt_wr_en = Output(Bool())
-    val cdma2buf_wt_wr_sel = if(conf.DMAIF<conf.ATMC) Some(Output(UInt(log2Ceil(conf.ATMC/conf.DMAIF).W))) else None
+    val cdma2buf_wt_wr_sel = if(conf.DMAIF<conf.ATMC) Some(Output(UInt((conf.ATMC/conf.DMAIF).W))) else None
     val cdma2buf_wt_wr_addr = Output(UInt(17.W))
     val cdma2buf_wt_wr_data = Output(UInt(conf.DMAIF.W))
     val status2dma_fsm_switch = Input(Bool())

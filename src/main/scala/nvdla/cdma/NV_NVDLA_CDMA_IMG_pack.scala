@@ -68,7 +68,6 @@ class NV_NVDLA_CDMA_IMG_pack(implicit conf: cdmaConfiguration) extends Module {
         val reg2dp_pad_left = Input(UInt(5.W))
         val reg2dp_pad_right = Input(UInt(6.W))
 
-        val pwrbus_ram_pd = Input(UInt(32.W))
     })
 //     
 //          ┌─┐       ┌─┐
@@ -340,6 +339,9 @@ val data_planar1_p0_rp_mask = Mux(~data_planar1_p0_cur_flag(1), Fill(conf.ATMM, 
 data_planar1_p0_zero_mask := Mux(~data_planar1_p0_cur_flag(2), Fill(conf.ATMM, false.B),
                                 (Fill(conf.ATMM, true.B) << zero_planar1_mask_sft))    
 data_planar1_p0_pad_mask :=  (data_planar1_p0_lp_mask | data_planar1_p0_rp_mask) & ~data_planar1_p0_zero_mask   
+
+rd_p0_pad_mask := Mux(~rd_planar_cnt, data_planar0_p0_pad_mask, data_planar1_p0_pad_mask)
+rd_p0_zero_mask := Mux(~rd_planar_cnt, data_planar0_p0_zero_mask, data_planar1_p0_zero_mask)
 
 when(rd_vld){
     rd_p0_pad_mask_d1 := Mux(~rd_planar_cnt, data_planar0_p0_pad_mask, data_planar1_p0_pad_mask)

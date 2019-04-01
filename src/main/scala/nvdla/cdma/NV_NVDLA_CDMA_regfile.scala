@@ -138,7 +138,7 @@ class NV_NVDLA_CDMA_regfile extends Module {
 withClock(io.nvdla_core_clk){
 
     //Instance single register group
-    val dp2reg_consumer = RegInit(false.B)
+    val dp2reg_consumer_out = RegInit(false.B)
     val reg_offset = Wire(UInt(12.W))
     val reg_wr_data = Wire(UInt(32.W))
     val s_reg_wr_en = Wire(Bool())
@@ -153,7 +153,7 @@ withClock(io.nvdla_core_clk){
     u_single_reg.io.reg_wr_en := s_reg_wr_en
     u_single_reg.io.nvdla_core_clk := io.nvdla_core_clk
     u_single_reg.io.flush_done := dp2reg_flush_done
-    u_single_reg.io.consumer := dp2reg_consumer
+    u_single_reg.io.consumer := dp2reg_consumer_out
     u_single_reg.io.status_0 := dp2reg_status_0
     u_single_reg.io.status_1 := dp2reg_status_1 
     val s_reg_rd_data = u_single_reg.io.reg_rd_data
@@ -368,11 +368,13 @@ withClock(io.nvdla_core_clk){
     // GENERATE CONSUMER PIONTER IN GENERAL SINGLE REGISTER GROUP         //
     //                                                                    //
     //////////////////////////////////////////////////////////////////////// 
-    val dp2reg_consumer_w = ~dp2reg_consumer
+    val dp2reg_consumer_out_w = ~dp2reg_consumer_out
 
     when(io.dp2reg_done){
-        dp2reg_consumer := dp2reg_consumer_w
+        dp2reg_consumer_out := dp2reg_consumer_out_w
     }
+
+    io.dp2reg_consumer := dp2reg_consumer_out
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -380,11 +382,11 @@ withClock(io.nvdla_core_clk){
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
     dp2reg_status_0 := Mux(reg2dp_d0_op_en === false.B, "h0".asUInt(2.W), 
-                       Mux(dp2reg_consumer === true.B, "h2".asUInt(2.W), 
+                       Mux(dp2reg_consumer_out === true.B, "h2".asUInt(2.W), 
                        "h1".asUInt(2.W)))
 
     dp2reg_status_1 := Mux(reg2dp_d1_op_en === false.B, "h0".asUInt(2.W), 
-                       Mux(dp2reg_consumer === false.B, "h2".asUInt(2.W), 
+                       Mux(dp2reg_consumer_out === false.B, "h2".asUInt(2.W), 
                        "h1".asUInt(2.W)))
 
     ////////////////////////////////////////////////////////////////////////
@@ -394,16 +396,16 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////////////////////////////
     val reg2dp_op_en_reg = RegInit("b0".asUInt(3.W))
     val reg2dp_d0_op_en_w = Mux(~reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), 
-                            Mux(io.dp2reg_done && dp2reg_consumer === false.B, false.B, reg2dp_d0_op_en))
+                            Mux(io.dp2reg_done && dp2reg_consumer_out === false.B, false.B, reg2dp_d0_op_en))
 
     reg2dp_d0_op_en := reg2dp_d0_op_en_w
 
     val reg2dp_d1_op_en_w =  Mux(~reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), 
-                             Mux(io.dp2reg_done && dp2reg_consumer === true.B, false.B, reg2dp_d1_op_en))
+                             Mux(io.dp2reg_done && dp2reg_consumer_out === true.B, false.B, reg2dp_d1_op_en))
 
     reg2dp_d1_op_en := reg2dp_d1_op_en_w
 
-    val reg2dp_op_en_ori = Mux(dp2reg_consumer, reg2dp_d1_op_en, reg2dp_d0_op_en)
+    val reg2dp_op_en_ori = Mux(dp2reg_consumer_out, reg2dp_d1_op_en, reg2dp_d0_op_en)
     val reg2dp_op_en_reg_w = Mux(io.dp2reg_done,  "b0".asUInt(3.W), Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori))
 
     reg2dp_op_en_reg := reg2dp_op_en_reg_w 
@@ -490,143 +492,143 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////////////////////////////
 
 
-    io.reg2dp_data_bank := Mux(dp2reg_consumer , reg2dp_d1_data_bank , reg2dp_d0_data_bank)
+    io.reg2dp_data_bank := Mux(dp2reg_consumer_out , reg2dp_d1_data_bank , reg2dp_d0_data_bank)
 
-    io.reg2dp_weight_bank := Mux(dp2reg_consumer , reg2dp_d1_weight_bank , reg2dp_d0_weight_bank)
+    io.reg2dp_weight_bank := Mux(dp2reg_consumer_out , reg2dp_d1_weight_bank , reg2dp_d0_weight_bank)
 
-    io.reg2dp_batches := Mux(dp2reg_consumer , reg2dp_d1_batches , reg2dp_d0_batches)
+    io.reg2dp_batches := Mux(dp2reg_consumer_out , reg2dp_d1_batches , reg2dp_d0_batches)
 
-    io.reg2dp_batch_stride := Mux(dp2reg_consumer,  reg2dp_d1_batch_stride , reg2dp_d0_batch_stride)
+    io.reg2dp_batch_stride := Mux(dp2reg_consumer_out,  reg2dp_d1_batch_stride , reg2dp_d0_batch_stride)
 
-    io.reg2dp_conv_x_stride := Mux(dp2reg_consumer,  reg2dp_d1_conv_x_stride , reg2dp_d0_conv_x_stride)
+    io.reg2dp_conv_x_stride := Mux(dp2reg_consumer_out,  reg2dp_d1_conv_x_stride , reg2dp_d0_conv_x_stride)
 
-    io.reg2dp_conv_y_stride := Mux(dp2reg_consumer,  reg2dp_d1_conv_y_stride , reg2dp_d0_conv_y_stride)
+    io.reg2dp_conv_y_stride := Mux(dp2reg_consumer_out,  reg2dp_d1_conv_y_stride , reg2dp_d0_conv_y_stride)
 
-    io.reg2dp_cvt_en := Mux(dp2reg_consumer,  reg2dp_d1_cvt_en , reg2dp_d0_cvt_en)
+    io.reg2dp_cvt_en := Mux(dp2reg_consumer_out,  reg2dp_d1_cvt_en , reg2dp_d0_cvt_en)
 
-    io.reg2dp_cvt_truncate := Mux(dp2reg_consumer,  reg2dp_d1_cvt_truncate , reg2dp_d0_cvt_truncate)
+    io.reg2dp_cvt_truncate := Mux(dp2reg_consumer_out,  reg2dp_d1_cvt_truncate , reg2dp_d0_cvt_truncate)
 
-    io.reg2dp_cvt_offset := Mux(dp2reg_consumer,  reg2dp_d1_cvt_offset , reg2dp_d0_cvt_offset)
+    io.reg2dp_cvt_offset := Mux(dp2reg_consumer_out,  reg2dp_d1_cvt_offset , reg2dp_d0_cvt_offset)
 
-    io.reg2dp_cvt_scale := Mux(dp2reg_consumer,  reg2dp_d1_cvt_scale , reg2dp_d0_cvt_scale)
+    io.reg2dp_cvt_scale := Mux(dp2reg_consumer_out,  reg2dp_d1_cvt_scale , reg2dp_d0_cvt_scale)
 
-    io.reg2dp_cya := Mux(dp2reg_consumer,  reg2dp_d1_cya , reg2dp_d0_cya)
+    io.reg2dp_cya := Mux(dp2reg_consumer_out,  reg2dp_d1_cya , reg2dp_d0_cya)
 
-    io.reg2dp_datain_addr_high_0 := Mux(dp2reg_consumer,  reg2dp_d1_datain_addr_high_0 , reg2dp_d0_datain_addr_high_0)
+    io.reg2dp_datain_addr_high_0 := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_addr_high_0 , reg2dp_d0_datain_addr_high_0)
 
-    io.reg2dp_datain_addr_high_1 := Mux(dp2reg_consumer,  reg2dp_d1_datain_addr_high_1 , reg2dp_d0_datain_addr_high_1)
+    io.reg2dp_datain_addr_high_1 := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_addr_high_1 , reg2dp_d0_datain_addr_high_1)
 
-    io.reg2dp_datain_addr_low_0 := Mux(dp2reg_consumer,  reg2dp_d1_datain_addr_low_0 , reg2dp_d0_datain_addr_low_0)
+    io.reg2dp_datain_addr_low_0 := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_addr_low_0 , reg2dp_d0_datain_addr_low_0)
 
-    io.reg2dp_datain_addr_low_1 := Mux(dp2reg_consumer,  reg2dp_d1_datain_addr_low_1 , reg2dp_d0_datain_addr_low_1)
+    io.reg2dp_datain_addr_low_1 := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_addr_low_1 , reg2dp_d0_datain_addr_low_1)
 
-    io.reg2dp_line_packed := Mux(dp2reg_consumer,  reg2dp_d1_line_packed , reg2dp_d0_line_packed)
+    io.reg2dp_line_packed := Mux(dp2reg_consumer_out,  reg2dp_d1_line_packed , reg2dp_d0_line_packed)
 
-    io.reg2dp_surf_packed := Mux(dp2reg_consumer,  reg2dp_d1_surf_packed , reg2dp_d0_surf_packed)
+    io.reg2dp_surf_packed := Mux(dp2reg_consumer_out,  reg2dp_d1_surf_packed , reg2dp_d0_surf_packed)
 
-    io.reg2dp_datain_ram_type := Mux(dp2reg_consumer,  reg2dp_d1_datain_ram_type , reg2dp_d0_datain_ram_type)
+    io.reg2dp_datain_ram_type := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_ram_type , reg2dp_d0_datain_ram_type)
 
-    io.reg2dp_datain_format := Mux(dp2reg_consumer,  reg2dp_d1_datain_format , reg2dp_d0_datain_format)
+    io.reg2dp_datain_format := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_format , reg2dp_d0_datain_format)
 
-    io.reg2dp_pixel_format := Mux(dp2reg_consumer,  reg2dp_d1_pixel_format , reg2dp_d0_pixel_format)
+    io.reg2dp_pixel_format := Mux(dp2reg_consumer_out,  reg2dp_d1_pixel_format , reg2dp_d0_pixel_format)
 
-    io.reg2dp_pixel_mapping := Mux(dp2reg_consumer,  reg2dp_d1_pixel_mapping , reg2dp_d0_pixel_mapping)
+    io.reg2dp_pixel_mapping := Mux(dp2reg_consumer_out,  reg2dp_d1_pixel_mapping , reg2dp_d0_pixel_mapping)
 
-    io.reg2dp_pixel_sign_override := Mux(dp2reg_consumer,  reg2dp_d1_pixel_sign_override , reg2dp_d0_pixel_sign_override)
+    io.reg2dp_pixel_sign_override := Mux(dp2reg_consumer_out,  reg2dp_d1_pixel_sign_override , reg2dp_d0_pixel_sign_override)
 
-    io.reg2dp_datain_height := Mux(dp2reg_consumer,  reg2dp_d1_datain_height , reg2dp_d0_datain_height)
+    io.reg2dp_datain_height := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_height , reg2dp_d0_datain_height)
 
-    io.reg2dp_datain_width := Mux(dp2reg_consumer,  reg2dp_d1_datain_width , reg2dp_d0_datain_width)
+    io.reg2dp_datain_width := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_width , reg2dp_d0_datain_width)
 
-    io.reg2dp_datain_channel := Mux(dp2reg_consumer,  reg2dp_d1_datain_channel , reg2dp_d0_datain_channel)
+    io.reg2dp_datain_channel := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_channel , reg2dp_d0_datain_channel)
 
-    io.reg2dp_datain_height_ext := Mux(dp2reg_consumer,  reg2dp_d1_datain_height_ext , reg2dp_d0_datain_height_ext)
+    io.reg2dp_datain_height_ext := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_height_ext , reg2dp_d0_datain_height_ext)
 
-    io.reg2dp_datain_width_ext := Mux(dp2reg_consumer,  reg2dp_d1_datain_width_ext , reg2dp_d0_datain_width_ext)
+    io.reg2dp_datain_width_ext := Mux(dp2reg_consumer_out,  reg2dp_d1_datain_width_ext , reg2dp_d0_datain_width_ext)
 
-    io.reg2dp_entries := Mux(dp2reg_consumer,  reg2dp_d1_entries , reg2dp_d0_entries)
+    io.reg2dp_entries := Mux(dp2reg_consumer_out,  reg2dp_d1_entries , reg2dp_d0_entries)
 
-    io.reg2dp_grains := Mux(dp2reg_consumer,  reg2dp_d1_grains , reg2dp_d0_grains)
+    io.reg2dp_grains := Mux(dp2reg_consumer_out,  reg2dp_d1_grains , reg2dp_d0_grains)
 
-    io.reg2dp_line_stride := Mux(dp2reg_consumer,  reg2dp_d1_line_stride , reg2dp_d0_line_stride)
+    io.reg2dp_line_stride := Mux(dp2reg_consumer_out,  reg2dp_d1_line_stride , reg2dp_d0_line_stride)
 
-    io.reg2dp_uv_line_stride := Mux(dp2reg_consumer,  reg2dp_d1_uv_line_stride , reg2dp_d0_uv_line_stride)
+    io.reg2dp_uv_line_stride := Mux(dp2reg_consumer_out,  reg2dp_d1_uv_line_stride , reg2dp_d0_uv_line_stride)
 
-    io.reg2dp_mean_format := Mux(dp2reg_consumer,  reg2dp_d1_mean_format , reg2dp_d0_mean_format)
+    io.reg2dp_mean_format := Mux(dp2reg_consumer_out,  reg2dp_d1_mean_format , reg2dp_d0_mean_format)
 
-    io.reg2dp_mean_gu := Mux(dp2reg_consumer,  reg2dp_d1_mean_gu , reg2dp_d0_mean_gu)
+    io.reg2dp_mean_gu := Mux(dp2reg_consumer_out,  reg2dp_d1_mean_gu , reg2dp_d0_mean_gu)
 
-    io.reg2dp_mean_ry := Mux(dp2reg_consumer,  reg2dp_d1_mean_ry , reg2dp_d0_mean_ry)
+    io.reg2dp_mean_ry := Mux(dp2reg_consumer_out,  reg2dp_d1_mean_ry , reg2dp_d0_mean_ry)
 
-    io.reg2dp_mean_ax := Mux(dp2reg_consumer,  reg2dp_d1_mean_ax , reg2dp_d0_mean_ax)
+    io.reg2dp_mean_ax := Mux(dp2reg_consumer_out,  reg2dp_d1_mean_ax , reg2dp_d0_mean_ax)
 
-    io.reg2dp_mean_bv := Mux(dp2reg_consumer,  reg2dp_d1_mean_bv , reg2dp_d0_mean_bv)
+    io.reg2dp_mean_bv := Mux(dp2reg_consumer_out,  reg2dp_d1_mean_bv , reg2dp_d0_mean_bv)
 
-    io.reg2dp_conv_mode := Mux(dp2reg_consumer,  reg2dp_d1_conv_mode , reg2dp_d0_conv_mode)
+    io.reg2dp_conv_mode := Mux(dp2reg_consumer_out,  reg2dp_d1_conv_mode , reg2dp_d0_conv_mode)
 
-    io.reg2dp_data_reuse := Mux(dp2reg_consumer,  reg2dp_d1_data_reuse , reg2dp_d0_data_reuse)
+    io.reg2dp_data_reuse := Mux(dp2reg_consumer_out,  reg2dp_d1_data_reuse , reg2dp_d0_data_reuse)
 
-    io.reg2dp_in_precision := Mux(dp2reg_consumer,  reg2dp_d1_in_precision , reg2dp_d0_in_precision)
+    io.reg2dp_in_precision := Mux(dp2reg_consumer_out,  reg2dp_d1_in_precision , reg2dp_d0_in_precision)
 
-    io.reg2dp_proc_precision := Mux(dp2reg_consumer,  reg2dp_d1_proc_precision , reg2dp_d0_proc_precision)
+    io.reg2dp_proc_precision := Mux(dp2reg_consumer_out,  reg2dp_d1_proc_precision , reg2dp_d0_proc_precision)
 
-    io.reg2dp_skip_data_rls := Mux(dp2reg_consumer,  reg2dp_d1_skip_data_rls , reg2dp_d0_skip_data_rls)
+    io.reg2dp_skip_data_rls := Mux(dp2reg_consumer_out,  reg2dp_d1_skip_data_rls , reg2dp_d0_skip_data_rls)
 
-    io.reg2dp_skip_weight_rls := Mux(dp2reg_consumer,  reg2dp_d1_skip_weight_rls , reg2dp_d0_skip_weight_rls)
+    io.reg2dp_skip_weight_rls := Mux(dp2reg_consumer_out,  reg2dp_d1_skip_weight_rls , reg2dp_d0_skip_weight_rls)
 
-    io.reg2dp_weight_reuse := Mux(dp2reg_consumer,  reg2dp_d1_weight_reuse , reg2dp_d0_weight_reuse)
+    io.reg2dp_weight_reuse := Mux(dp2reg_consumer_out,  reg2dp_d1_weight_reuse , reg2dp_d0_weight_reuse)
 
-    io.reg2dp_nan_to_zero := Mux(dp2reg_consumer,  reg2dp_d1_nan_to_zero , reg2dp_d0_nan_to_zero)
+    io.reg2dp_nan_to_zero := Mux(dp2reg_consumer_out,  reg2dp_d1_nan_to_zero , reg2dp_d0_nan_to_zero)
 
-    io.reg2dp_dma_en := Mux(dp2reg_consumer,  reg2dp_d1_dma_en , reg2dp_d0_dma_en)
+    io.reg2dp_dma_en := Mux(dp2reg_consumer_out,  reg2dp_d1_dma_en , reg2dp_d0_dma_en)
 
-    io.reg2dp_pixel_x_offset := Mux(dp2reg_consumer,  reg2dp_d1_pixel_x_offset , reg2dp_d0_pixel_x_offset)
+    io.reg2dp_pixel_x_offset := Mux(dp2reg_consumer_out,  reg2dp_d1_pixel_x_offset , reg2dp_d0_pixel_x_offset)
 
-    io.reg2dp_pixel_y_offset := Mux(dp2reg_consumer,  reg2dp_d1_pixel_y_offset , reg2dp_d0_pixel_y_offset)
+    io.reg2dp_pixel_y_offset := Mux(dp2reg_consumer_out,  reg2dp_d1_pixel_y_offset , reg2dp_d0_pixel_y_offset)
 
-    io.reg2dp_rsv_per_line := Mux(dp2reg_consumer,  reg2dp_d1_rsv_per_line , reg2dp_d0_rsv_per_line)
+    io.reg2dp_rsv_per_line := Mux(dp2reg_consumer_out,  reg2dp_d1_rsv_per_line , reg2dp_d0_rsv_per_line)
 
-    io.reg2dp_rsv_per_uv_line := Mux(dp2reg_consumer,  reg2dp_d1_rsv_per_uv_line , reg2dp_d0_rsv_per_uv_line)
+    io.reg2dp_rsv_per_uv_line := Mux(dp2reg_consumer_out,  reg2dp_d1_rsv_per_uv_line , reg2dp_d0_rsv_per_uv_line)
 
-    io.reg2dp_rsv_height := Mux(dp2reg_consumer,  reg2dp_d1_rsv_height , reg2dp_d0_rsv_height)
+    io.reg2dp_rsv_height := Mux(dp2reg_consumer_out,  reg2dp_d1_rsv_height , reg2dp_d0_rsv_height)
 
-    io.reg2dp_rsv_y_index := Mux(dp2reg_consumer,  reg2dp_d1_rsv_y_index , reg2dp_d0_rsv_y_index)
+    io.reg2dp_rsv_y_index := Mux(dp2reg_consumer_out,  reg2dp_d1_rsv_y_index , reg2dp_d0_rsv_y_index)
 
-    io.reg2dp_surf_stride := Mux(dp2reg_consumer,  reg2dp_d1_surf_stride , reg2dp_d0_surf_stride)
+    io.reg2dp_surf_stride := Mux(dp2reg_consumer_out,  reg2dp_d1_surf_stride , reg2dp_d0_surf_stride)
 
-    io.reg2dp_weight_addr_high := Mux(dp2reg_consumer,  reg2dp_d1_weight_addr_high , reg2dp_d0_weight_addr_high)
+    io.reg2dp_weight_addr_high := Mux(dp2reg_consumer_out,  reg2dp_d1_weight_addr_high , reg2dp_d0_weight_addr_high)
 
-    io.reg2dp_weight_addr_low := Mux(dp2reg_consumer,  reg2dp_d1_weight_addr_low , reg2dp_d0_weight_addr_low)
+    io.reg2dp_weight_addr_low := Mux(dp2reg_consumer_out,  reg2dp_d1_weight_addr_low , reg2dp_d0_weight_addr_low)
 
-    io.reg2dp_weight_bytes := Mux(dp2reg_consumer,  reg2dp_d1_weight_bytes , reg2dp_d0_weight_bytes)
+    io.reg2dp_weight_bytes := Mux(dp2reg_consumer_out,  reg2dp_d1_weight_bytes , reg2dp_d0_weight_bytes)
 
-    io.reg2dp_weight_format := Mux(dp2reg_consumer,  reg2dp_d1_weight_format , reg2dp_d0_weight_format)
+    io.reg2dp_weight_format := Mux(dp2reg_consumer_out,  reg2dp_d1_weight_format , reg2dp_d0_weight_format)
 
-    io.reg2dp_weight_ram_type := Mux(dp2reg_consumer,  reg2dp_d1_weight_ram_type , reg2dp_d0_weight_ram_type)
+    io.reg2dp_weight_ram_type := Mux(dp2reg_consumer_out,  reg2dp_d1_weight_ram_type , reg2dp_d0_weight_ram_type)
 
-    io.reg2dp_byte_per_kernel := Mux(dp2reg_consumer,  reg2dp_d1_byte_per_kernel , reg2dp_d0_byte_per_kernel)
+    io.reg2dp_byte_per_kernel := Mux(dp2reg_consumer_out,  reg2dp_d1_byte_per_kernel , reg2dp_d0_byte_per_kernel)
 
-    io.reg2dp_weight_kernel := Mux(dp2reg_consumer,  reg2dp_d1_weight_kernel , reg2dp_d0_weight_kernel)
+    io.reg2dp_weight_kernel := Mux(dp2reg_consumer_out,  reg2dp_d1_weight_kernel , reg2dp_d0_weight_kernel)
 
-    io.reg2dp_wgs_addr_high := Mux(dp2reg_consumer,  reg2dp_d1_wgs_addr_high , reg2dp_d0_wgs_addr_high)
+    io.reg2dp_wgs_addr_high := Mux(dp2reg_consumer_out,  reg2dp_d1_wgs_addr_high , reg2dp_d0_wgs_addr_high)
 
-    io.reg2dp_wgs_addr_low := Mux(dp2reg_consumer,  reg2dp_d1_wgs_addr_low , reg2dp_d0_wgs_addr_low)
+    io.reg2dp_wgs_addr_low := Mux(dp2reg_consumer_out,  reg2dp_d1_wgs_addr_low , reg2dp_d0_wgs_addr_low)
 
-    io.reg2dp_wmb_addr_high := Mux(dp2reg_consumer,  reg2dp_d1_wmb_addr_high , reg2dp_d0_wmb_addr_high)
+    io.reg2dp_wmb_addr_high := Mux(dp2reg_consumer_out,  reg2dp_d1_wmb_addr_high , reg2dp_d0_wmb_addr_high)
 
-    io.reg2dp_wmb_addr_low := Mux(dp2reg_consumer,  reg2dp_d1_wmb_addr_low , reg2dp_d0_wmb_addr_low)
+    io.reg2dp_wmb_addr_low := Mux(dp2reg_consumer_out,  reg2dp_d1_wmb_addr_low , reg2dp_d0_wmb_addr_low)
 
-    io.reg2dp_wmb_bytes := Mux(dp2reg_consumer,  reg2dp_d1_wmb_bytes , reg2dp_d0_wmb_bytes)
+    io.reg2dp_wmb_bytes := Mux(dp2reg_consumer_out,  reg2dp_d1_wmb_bytes , reg2dp_d0_wmb_bytes)
 
-    io.reg2dp_pad_bottom := Mux(dp2reg_consumer,  reg2dp_d1_pad_bottom , reg2dp_d0_pad_bottom)
+    io.reg2dp_pad_bottom := Mux(dp2reg_consumer_out,  reg2dp_d1_pad_bottom , reg2dp_d0_pad_bottom)
 
-    io.reg2dp_pad_left := Mux(dp2reg_consumer,  reg2dp_d1_pad_left , reg2dp_d0_pad_left)
+    io.reg2dp_pad_left := Mux(dp2reg_consumer_out,  reg2dp_d1_pad_left , reg2dp_d0_pad_left)
 
-    io.reg2dp_pad_right := Mux(dp2reg_consumer,  reg2dp_d1_pad_right , reg2dp_d0_pad_right)
+    io.reg2dp_pad_right := Mux(dp2reg_consumer_out,  reg2dp_d1_pad_right , reg2dp_d0_pad_right)
 
-    io.reg2dp_pad_top := Mux(dp2reg_consumer,  reg2dp_d1_pad_top , reg2dp_d0_pad_top)
+    io.reg2dp_pad_top := Mux(dp2reg_consumer_out,  reg2dp_d1_pad_top , reg2dp_d0_pad_top)
 
-    io.reg2dp_pad_value := Mux(dp2reg_consumer,  reg2dp_d1_pad_value , reg2dp_d0_pad_value)
+    io.reg2dp_pad_value := Mux(dp2reg_consumer_out,  reg2dp_d1_pad_value , reg2dp_d0_pad_value)
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
