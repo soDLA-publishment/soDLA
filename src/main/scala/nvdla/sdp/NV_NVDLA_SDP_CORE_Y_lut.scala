@@ -52,6 +52,32 @@
 //     val op_en_loa = Input(Bool())
 //   })
 
+// //==============
+// // Reg Configure
+// //==============
+// // get the width of all regs
+// //=======================================
+
+// //===========================================
+// // LUT Programing
+// //===========================================
+// val lut_addr = io.reg2dp_lut_int_addr(9, 0)
+// val lut_data = io.reg2dp_lut_int_data(15, 0)
+// val lut_table_id = io.reg2dp_lut_int_table_id
+// val lut_access_type = io.reg2dp_lut_int_access_type
+
+// val lut_pd = Cat(lut_access_type,lut_table_id,lut_data,lut_addr)
+// val pro2lut_valid = io.reg2dp_lut_int_data_wr
+// val pro2lut_pd   = lut_pd
+
+// val pro_in_addr = pro2lut_pd(9, 0)
+// val pro_in_data = pro2lut_pd(25, 10)
+// val pro_in_table_id = pro2lut_pd(26)
+// val pro_in_wr = pro2lut_pd(27)
+// val pro_in_wr_en = pro2lut_valid & (pro_in_wr === true.B )
+
+// val pro_in_select_le = pro_in_table_id === false.B
+// val pro_in_select_lo = pro_in_table_id === true.B
 
 
 // val reg_le = Seq.fill(conf.LUT_TABLE_LE_DEPTH)(RegInit("b0".asUInt(16.W))) +: 
@@ -86,6 +112,7 @@
 //         reg_lo(i) := pro_in_data
 //     }
 // }
+
 
 
 

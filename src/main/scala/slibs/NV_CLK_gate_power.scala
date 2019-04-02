@@ -15,14 +15,13 @@ class NV_CLK_gate_power extends Module {
 
     })
 
-withClock(io.clk){
     val p_clkgate = Module(new CKLNQD12())
     p_clkgate.io.TE := false.B
     p_clkgate.io.CP := io.clk
     p_clkgate.io.E := io.clk_en
     io.clk_gated := p_clkgate.io.Q
     
-}}
+}
 
 
 object NV_CLK_gate_powerDriver extends App {

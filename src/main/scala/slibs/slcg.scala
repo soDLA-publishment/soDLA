@@ -23,6 +23,9 @@ class NV_NVDLA_slcg extends Module {
     val nvdla_core_clk_slcg_0_en = enable | io.dla_clk_ovr_on_sync.asUInt.toBool |
                                    (io.tmc2slcg_disable_clock_gating|io.global_clk_ovr_on_sync.asUInt.toBool)
 
-    io.nvdla_core_gated_clk := (io.nvdla_core_clk.asUInt.toBool & nvdla_core_clk_slcg_0_en).asClock()
+    val nvdla_core_clk_slcg_0 = Module(new NV_CLK_gate_power)
+    nvdla_core_clk_slcg_0.io.clk := io.nvdla_core_clk
+    nvdla_core_clk_slcg_0.io.clk_en := nvdla_core_clk_slcg_0_en
+    io.nvdla_core_gated_clk := nvdla_core_clk_slcg_0.io.clk_gated
 }
 

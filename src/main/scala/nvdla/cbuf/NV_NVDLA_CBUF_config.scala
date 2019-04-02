@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 
 
-class cbufConfiguration extends project_spec{
+class cbufConfiguration extends cmacConfiguration{
 
     val CBUF_ENTRY_WIDTH = NVDLA_CBUF_ENTRY_WIDTH
     val CBUF_ENTRY_BYTE = CBUF_ENTRY_WIDTH/8

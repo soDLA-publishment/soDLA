@@ -9,6 +9,7 @@ class NV_NVDLA_cacc(implicit conf: caccConfiguration) extends Module {
     val io = IO(new Bundle {
         // clk
         val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
 
         //csb2cacc
         val csb2cacc_req_pvld = Input(Bool())   /* data valid */
@@ -70,6 +71,8 @@ class NV_NVDLA_cacc(implicit conf: caccConfiguration) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+withReset(!io.nvdla_core_rstn){
+
     val abuf_rd_addr = Wire(UInt(conf.CACC_ABUF_AWIDTH.W))
     val abuf_rd_data = Wire(UInt(conf.CACC_ABUF_WIDTH.W))
     val abuf_rd_en = Wire(Bool())
@@ -306,7 +309,7 @@ class NV_NVDLA_cacc(implicit conf: caccConfiguration) extends Module {
 
     nvdla_cell_gated_clk := u_slcg_cell_0.io.nvdla_core_gated_clk  
 
-}
+}}
 
 
 object NV_NVDLA_caccDriver extends App {

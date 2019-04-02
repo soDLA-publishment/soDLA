@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class caccConfiguration extends project_spec
+class caccConfiguration extends cscConfiguration
 {
     val CACC_PARSUM_WIDTH = 34  //sum result width for one layer operation.
     val CACC_FINAL_WIDTH = 32  //sum result width for one layer operation with saturaton.

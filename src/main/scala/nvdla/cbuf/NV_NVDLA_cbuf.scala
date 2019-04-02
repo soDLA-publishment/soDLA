@@ -6,10 +6,11 @@ import chisel3.util._
 
 class NV_NVDLA_cbuf(useRealClock:Boolean = true)(implicit val conf: cbufConfiguration) extends Module {
  
-  //csb interface  
   val io = IO(new Bundle {
     //clock
     val nvdla_core_clk = Input(Clock())
+    val nvdla_core_rstn = Input(Bool())
+    val pwrbus_ram_pd = Input(UInt(32.W))
 
     //cdma2buf
     //port 0 for data, 1 for weight
@@ -33,6 +34,7 @@ class NV_NVDLA_cbuf(useRealClock:Boolean = true)(implicit val conf: cbufConfigur
     val sc2buf_wt_rd_data = Output(UInt(conf.CBUF_RD_PORT_WIDTH.W))
 
   })
+
 
    val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
 
@@ -492,7 +494,7 @@ class cbufImpl{
 
 }
 
-    val cbuf = withClock(internal_clock){new cbufImpl} 
+    val cbuf = withClockAndReset(internal_clock, !io.nvdla_core_rstn){new cbufImpl} 
 
 }
 

@@ -12,6 +12,7 @@ class NV_NVDLA_csc(implicit val conf: cscConfiguration) extends Module {
         val dla_clk_ovr_on_sync = Input(Clock())
         val global_clk_ovr_on_sync = Input(Clock())
         val tmc2slcg_disable_clock_gating = Input(Bool())
+        val nvdla_core_rstn = Input(Bool())
 
         //cdma
         val sc2cdma_dat_pending_req = Output(Bool())  
@@ -111,6 +112,7 @@ class NV_NVDLA_csc(implicit val conf: cscConfiguration) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+withReset(!io.nvdla_core_rstn){
     val dp2reg_done = Wire(Bool())
     val nvdla_op_gated_clk = Wire(Vec(3, Clock()))
     val reg2dp_atomics = Wire(UInt(21.W))
@@ -405,7 +407,7 @@ class NV_NVDLA_csc(implicit val conf: cscConfiguration) extends Module {
 
  
 
-}
+}}
 
 
 object NV_NVDLA_cscDriver extends App {
