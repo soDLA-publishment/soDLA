@@ -4,9 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class cdpConfiguration(){
-    val pINT8_BW = 8
-}
 
 
 class ramSizeConfiguration()

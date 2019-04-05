@@ -1,10 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:36:5: ')' expected but 'val' found.[0m
-[0m[[0m[31merror[0m] [0m[0m    val reg2dp_lut_le_start = Input(UInt(32.W))[0m
-[0m[[0m[31merror[0m] [0m[0m    ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:388:1: identifier expected but '}' found.[0m
-[0m[[0m[31merror[0m] [0m[0m}}[0m
-[0m[[0m[31merror[0m] [0m[0m^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:388:2: Unmatched closing brace '}' ignored here[0m
-[0m[[0m[31merror[0m] [0m[0m}}[0m
-[0m[[0m[31merror[0m] [0m[0m ^[0m
-[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_dual_reg.scala:7:7: NV_NVDLA_CSC_dual_reg is already defined as class NV_NVDLA_CSC_dual_reg[0m
+[0m[[0m[31merror[0m] [0m[0mclass NV_NVDLA_CSC_dual_reg extends Module{[0m
+[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
