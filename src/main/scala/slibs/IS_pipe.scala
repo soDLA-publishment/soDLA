@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+//input skid
 class NV_NVDLA_IS_pipe(WIDTH:Int) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock())  
@@ -14,7 +14,7 @@ class NV_NVDLA_IS_pipe(WIDTH:Int) extends Module {
         val ri = Input(Bool())
         val di = Input(UInt(WIDTH.W))
         val vi = Input(Bool())
-        val ro = Output(UInt(WIDTH.W))
+        val ro = Output(Bool())
     })
     // -vi  : input valid signal name
     // -di  : input data signal name

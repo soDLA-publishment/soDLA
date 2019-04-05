@@ -1,9 +1,0 @@
-io.sc2mac_wt_a_pvld sc2mac_wt_a_pvld
-io.sc2mac_wt_a_mask  sc2mac_wt_a_mask
-io.sc2mac_wt_a_wta sc2mac_wt_a_wta
-io.sc2mac_wt_a_pd sc2mac_wt_a_pd
-
-io.sc2mac_wt_b_pvld sc2mac_wt_b_pvld
-io.sc2mac_wt_b_mask sc2mac_wt_b_mask
-io.sc2mac_wt_b_wta sc2mac_wt_b_wta
-io.sc2mac_wt_b_pd sc2mac_wt_b_pd

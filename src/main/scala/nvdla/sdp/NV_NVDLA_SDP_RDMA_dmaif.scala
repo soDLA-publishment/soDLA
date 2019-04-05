@@ -43,7 +43,6 @@ class NV_NVDLA_SDP_RDMA_dmaif(implicit conf: cdmaConfiguration) extends Module {
   })
 
 
-withClock(io.nvdla_core_clk){
 //==============
 // DMA Interface
 //==============
@@ -92,7 +91,7 @@ withClock(io.nvdla_core_clk){
         io.sdp2cvif_rd_cdt_lat_fifo_pop.get := RegNext(io.dma_rd_cdt_lat_fifo_pop & (io.dma_rd_rsp_ram_type === false.B), false.B)
     }
 
-}}
+}
 
 
 

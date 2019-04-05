@@ -6,16 +6,11 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// //https://github.com/freechipsproject/chisel3/wiki/Multiple-Clock-Domains
-
-// // 9 digit
-
 
 // class int_sum_block extends Module {
 //     val io = IO(new Bundle {
 //         //nvdla core clock
 //         val nvdla_core_clk = Input(Clock())
-//         val nvdla_core_rstn = Input(Bool())
 
 //         //control signal
 //         val len5 = Input(Bool())
@@ -33,68 +28,68 @@
 //         val int8_sum = Output(UInt(42.W))
 //     })
 
-//     val int16_sum3 = Reg(UInt(35.W))
-//     val int16_sum5 = Reg(UInt(36.W))
-//     val int16_sum7 = Reg(UInt(36.W))
-//     val int16_sum9 = Reg(UInt(37.W))
-//     val int16_sum_0_8 = Reg(UInt(34.W))
-//     val int16_sum_1_7 = Reg(UInt(34.W))
-//     val int16_sum_2_6 = Reg(UInt(34.W))
-//     val int16_sum_3_5 = Reg(UInt(34.W))
-//     //actually wires
+// withClock(io.nvdla_core_clk){
+
+//     val int16_sum3 = RegInit("b0".asUInt(35.W))
+//     val int16_sum5 = RegInit("b0".asUInt(36.W))
+//     val int16_sum7 = RegInit("b0".asUInt(36.W))
+//     val int16_sum9 = RegInit("b0".asUInt(37.W))
+//     val int16_sum_0_8 = RegInit("b0".asUInt(34.W))
+//     val int16_sum_1_7 = RegInit("b0".asUInt(34.W))
+//     val int16_sum_2_6 = RegInit("b0".asUInt(34.W))
+//     val int16_sum_3_5 = RegInit("b0".asUInt(34.W))
 //     val int8_lsb_sum = Wire(UInt(21.W))
 //     val int8_msb_sum = Wire(UInt(21.W))
 
-//     val int8_msb_sum3 = Reg(UInt(19.W))
-//     val int8_msb_sum5 = Reg(UInt(20.W))
-//     val int8_msb_sum7 = Reg(UInt(20.W))
-//     val int8_msb_sum9 = Reg(UInt(21.W))
-//     val int8_msb_sum_0_8 = Reg(UInt(18.W))
-//     val int8_msb_sum_1_7 = Reg(UInt(18.W))
-//     val int8_msb_sum_2_6 = Reg(UInt(18.W))
-//     val int8_msb_sum_3_5 = Reg(UInt(18.W))
-//     val sq4_d = Reg(UInt(33.W))
-//     val sq_pd_int8_msb_4_d = Reg(UInt(17.W))
+//     val int8_msb_sum3 = RegInit("b0".asUInt(19.W))
+//     val int8_msb_sum5 = RegInit("b0".asUInt(20.W))
+//     val int8_msb_sum7 = RegInit("b0".asUInt(20.W))
+//     val int8_msb_sum9 = RegInit("b0".asUInt(21.W))
+
+//     val sq4_d = RegInit("b0".asUInt(33.W))
+//     val sq_pd_int8_msb_4_d = RegInit("b0".asUInt(17.W))
 
 //     val int8_lsb_sum3 = Wire(UInt(19.W))
 //     val int8_lsb_sum5 = Wire(UInt(20.W))
 //     val int8_lsb_sum7 = Wire(UInt(20.W))
 //     val int8_lsb_sum9 = Wire(UInt(21.W))
 
-//     val sq = Wire(Vec(9, UInt(33.W)))
-
-//     for(i <- 0 to 8){
-//         sq(i) := Cat("d0".U(16.W), io.sq_pd_int8_lsb(i))
-//     }
 
 //    //sum process
-//    withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+//     when(io.load_din_d){
+//         int8_msb_sum_3_5 := io.sq_pd_int8_msb(3) +& io.sq_pd_int8_msb(5)
+//     }
+//     when(io.load_din_d & (io.len5|io.len7|io.len9)){
+//         int8_msb_sum_2_6 := io.sq_pd_int8_msb(2) +& io.sq_pd_int8_msb(6)
+//     }
+//     when(io.load_din_d & (io.len7|io.len9)){
+//         int8_msb_sum_1_7 := io.sq_pd_int8_msb(1) + io.sq_pd_int8_msb(7)
+//     }
+//     when(io.load_din_d & (io.len9)){
+//         int8_msb_sum_0_8 := io.sq_pd_int8_msb(0) +& io.sq_pd_int8_msb(8)
+//     }
+
+//     val int16_sum_0_8 = RegInit("b0".asUInt(34.W))
+//     val int16_sum_1_7 = RegInit("b0".asUInt(34.W))
+//     val int16_sum_2_6 = RegInit("b0".asUInt(34.W))
+//     val int16_sum_3_5 = RegInit("b0".asUInt(34.W))
+//     val sq = VecInit((0 to 8) map { i => Cat("b0".asUInt(16.W), sq_pd_int8_lsb(i))})
+//     val sq4_d = RegInit("b0".asUInt(33.W))
+
+//     when(io.load_din_d){
+//         int16_sum_3_5:= sq(3) + sq(5)
+//     }
+//     when(io.load_din_d & (io.len5|io.len7|io.len9)){
+//         int16_sum_2_6 := sq(2) + sq(6)
+//     }
+//     when(io.load_din_d & (io.len7|io.len9)){
+//         int16_sum_1_7 := sq(1) + sq(7)
+//     }
+//     when(io.load_din_d & (io.len9)){
+//         int16_sum_0_8 := sq(0) + sq(8)
+//     }
 //         when(io.load_din_d){
-//             int8_sum_3_5:=io.sq_pd_int8_msb(3) + io.sq_pd_int8_msb(5)
-//         }
-//         when(io.load_din_d & (io.len5|io.len7|io.len9)){
-//             int8_msb_sum_2_6:=io.sq_pd_int8_msb(2) + io.sq_pd_int8_msb(6)
-//         }
-//         when(io.load_din_d & (io.len7|io.len9)){
-//             int8_msb_sum_1_7 := io.sq_pd_int8_msb(1) + io.sq_pd_int8_msb(7)
-//         }
-//         when(io.load_din_d & (io.len9)){
-//             int8_msb_sum_0_8 := io.sq_pd_int8_msb(0) + io.sq_pd_int8_msb(8)
-//         }
-//         when(io.load_din_d){
-//             int16_sum_3_5:= sq(3) + sq(5)
-//         }
-//         when(io.load_din_d & (io.len5|io.len7|io.len9)){
-//             int16_sum_2_6 := sq(2) + sq(6)
-//         }
-//         when(io.load_din_d & (io.len7|io.len9)){
-//             int16_sum_1_7 := sq(1) + sq(7)
-//         }
-//         when(io.load_din_d & (io.len9)){
-//             int16_sum_0_8 := sq(0) + sq(8)
-//         }
-//         when(io.load_din_d){
-//             sq4_d:=Cat("d0".U(16.W), io.sq_pd_int8_lsb(4))
+//             sq4_d:= Cat("d0".U(16.W), io.sq_pd_int8_lsb(4))
 //         }
 //         when(io.load_din_d){
 //             sq_pd_int8_msb_4_d:=io.sq_pd_int8_msb(4)
@@ -153,4 +148,4 @@
 
 //     io.int8_sum := Cat(int8_msb_sum , int8_lsb_sum )  
 
-// }
+// }}

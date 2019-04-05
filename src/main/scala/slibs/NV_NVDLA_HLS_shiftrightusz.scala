@@ -4,12 +4,9 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_HLS_shiftrightsuz extends Module {
-    
-    val IN_WIDTH  = 49
-    val OUT_WIDTH = 32
-    val FRAC_WIDTH = 35  //suppose FRAC_WIDTH > IN_WIDTH > OUT_WIDTH
-    val SHIFT_WIDTH = 6
+class NV_NVDLA_HLS_shiftrightusz(IN_WIDTH:Int, OUT_WIDTH:Int, FRAC_WIDTH:Int, SHIFT_WIDTH:Int) extends Module {
+
+    //suppose FRAC_WIDTH > IN_WIDTH > OUT_WIDTH
     val SHIFT_MAX = Math.pow(2, SHIFT_WIDTH- 1).toInt 
     val HIGH_WIDTH = SHIFT_MAX + IN_WIDTH - OUT_WIDTH    
     
@@ -32,7 +29,7 @@ class NV_NVDLA_HLS_shiftrightsuz extends Module {
 
 
     //shift left
-    shift_sign := io.shift_num(IN_WIDTH-1)
+    shift_sign := io.shift_num(SHIFT_WIDTH-1)
 
     shift_num_abs := ~io.shift_num + 1.U
 
@@ -40,7 +37,7 @@ class NV_NVDLA_HLS_shiftrightsuz extends Module {
     
     data_shift_l := (Cat(Fill(SHIFT_MAX, false.B), io.data_in) << shift_num_abs)(OUT_WIDTH - 1, 0)
 
-    left_shift_sat := shift_sign & Cat(data_high, data_shift_l(OUT_WIDTH-1)) =/= Fill(HIGH_WIDTH+1, false.B)
+    left_shift_sat := shift_sign & (Cat(data_high, data_shift_l) =/= Fill(HIGH_WIDTH+1, false.B))
 
     //shift right
     data_shift_r := (Cat(io.data_in, Fill(FRAC_WIDTH, false.B)) >> io.shift_num)(IN_WIDTH + FRAC_WIDTH -1, FRAC_WIDTH)

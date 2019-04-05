@@ -11,14 +11,18 @@ import hardfloat._
 class RED_CORA_MATRIX_v2v_fp_noshareFMA(implicit val conf: matrixConfiguration) extends Module {
 
     val io = IO(new Bundle {
-        //input
+        //clk
+        val nvdla_core_clk = Input(Clock())
+        
         val roundingMode = Input(UInt(3.W))
         val detectTininess = Input(UInt(1.W))
 
         val stat_actv_data = Input(Vec(conf.KF_STAT, UInt(conf.KF_BPE.W)))
+        val stat_actv_nz = Input(Vec(conf.KF_STAT, Bool()))
         val stat_actv_pvld = Input(Vec(conf.KF_STAT, Bool()))
 
         val tr_actv_data = Input(Vec(conf.KF_STAT, UInt(conf.KF_BPE.W)))
+        val tr_actv_nz = Input(Vec(conf.KF_STAT, Bool()))
         val tr_actv_pvld = Input(Vec(conf.KF_STAT, Bool()))
 
         //output
@@ -50,7 +54,7 @@ class RED_CORA_MATRIX_v2v_fp_noshareFMA(implicit val conf: matrixConfiguration) 
 //             │ ─┤ ─┤       │ ─┤ ─┤            
 //             └──┴──┘       └──┴──┘ 
 
-
+withClock(io.nvdla_core_clk){
     //==========================================================
     // MulAddRecFNPipe CELLs
     //==========================================================
@@ -97,4 +101,4 @@ class RED_CORA_MATRIX_v2v_fp_noshareFMA(implicit val conf: matrixConfiguration) 
     io.stat_out_data := umac(4).io.out
     io.stat_out_pvld := umac(4).io.validout
 
-}
+}}

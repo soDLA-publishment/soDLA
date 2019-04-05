@@ -27,12 +27,22 @@ class NV_NVDLA_SDP_CORE_gate extends Module {
     val nvdla_core_clk_slcg_1_en = io.ecore_slcg_en | io.dla_clk_ovr_on_sync.asUInt.toBool |
                                    (io.tmc2slcg_disable_clock_gating|io.global_clk_ovr_on_sync.asUInt.toBool)
     val nvdla_core_clk_slcg_2_en = io.ncore_slcg_en | io.dla_clk_ovr_on_sync.asUInt.toBool |
-                                   (io.tmc2slcg_disable_clock_gating|io.global_clk_ovr_on_sync.asUInt.toBool)                                      
+                                   (io.tmc2slcg_disable_clock_gating|io.global_clk_ovr_on_sync.asUInt.toBool)                   
 
-    io.nvdla_gated_bcore_clk := (io.nvdla_core_clk.asUInt.toBool & nvdla_core_clk_slcg_0_en).asClock()
-    io.nvdla_gated_ecore_clk := (io.nvdla_core_clk.asUInt.toBool & nvdla_core_clk_slcg_1_en).asClock()
-    io.nvdla_gated_ncore_clk := (io.nvdla_core_clk.asUInt.toBool & nvdla_core_clk_slcg_2_en).asClock()
+    val nvdla_core_clk_slcg_0 = Module(new NV_CLK_gate_power)
+    nvdla_core_clk_slcg_0.io.clk := io.nvdla_core_clk
+    nvdla_core_clk_slcg_0.io.clk_en := nvdla_core_clk_slcg_0_en
+    io.nvdla_gated_bcore_clk := nvdla_core_clk_slcg_0.io.clk_gated 
 
+    val nvdla_core_clk_slcg_1 = Module(new NV_CLK_gate_power)
+    nvdla_core_clk_slcg_1.io.clk := io.nvdla_core_clk
+    nvdla_core_clk_slcg_1.io.clk_en := nvdla_core_clk_slcg_1_en
+    io.nvdla_gated_ecore_clk := nvdla_core_clk_slcg_1.io.clk_gated 
+
+    val nvdla_core_clk_slcg_2 = Module(new NV_CLK_gate_power)
+    nvdla_core_clk_slcg_2.io.clk := io.nvdla_core_clk
+    nvdla_core_clk_slcg_2.io.clk_en := nvdla_core_clk_slcg_2_en
+    io.nvdla_gated_ncore_clk := nvdla_core_clk_slcg_2.io.clk_gated                   
 
 }
 
