@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\csc\NV_NVDLA_CSC_dual_reg.scala:7:7: NV_NVDLA_CSC_dual_reg is already defined as class NV_NVDLA_CSC_dual_reg[0m
-[0m[[0m[31merror[0m] [0m[0mclass NV_NVDLA_CSC_dual_reg extends Module{[0m
-[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\slibs\BC_pipe.scala:74:9: skid_pipe_ready is already defined as value skid_pipe_ready[0m
+[0m[[0m[31merror[0m] [0m[0m    val skid_pipe_ready = Wire(Bool())[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

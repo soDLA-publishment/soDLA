@@ -21,7 +21,7 @@ My Progress
 | glb | Done | Not yet | Not yet |
 | csb_master | Done | Not yet | Not yet |
 | cdma| Done | Not yet | Not yet |
-| cora(self-driving package) | In Progress | Not yet | Not yet |
+| cora(self-driving package) | To be publised in May | Not yet | Not yet |
 
 Generate Verilog Modules
 ----------------
@@ -29,31 +29,8 @@ Generate Verilog Modules
     
 Most verilog sources are not verified yet, but welcome to test on firesim and send me the issues. 
 
-Executing Some Basic Test
-----------------
-
-The following modules are suitable for peekpoke tester.
-
-CMAC_CORE_mac 
-
-    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_mac
     
-CMAC_CORE_rt_in:
-
-    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_rt_in
-    
-CMAC_CORE_rt_out:
-
-    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_rt_out
-    
-CMAC_CORE_active:
-
-    $ test:runMain nvdla.cmacLauncher NV_NVDLA_CMAC_CORE_active
-
-
-
-    
-About the buiding cora package
+cora package
 ----------------
 
 This is a accelerator of self-driving car with following features:
