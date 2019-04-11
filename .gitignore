@@ -8,7 +8,6 @@ src/plugins/
 
 test_run_dir/
 
-src/main/scala/cora/
 
 
 *.fir

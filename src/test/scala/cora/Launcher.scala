@@ -1,26 +1,22 @@
-// See LICENSE.txt for license details.
-package cora
+// // See LICENSE.txt for license details.
+// package cora
 
-import chisel3._
-import chisel3.iotesters.{Driver, TesterOptionsManager}
-import utils.TutorialRunner
+// import chisel3._
+// import chisel3.iotesters.{Driver, TesterOptionsManager}
+// import utils.TutorialRunner
 
-object matrixLauncher {
-  implicit val conf: matrixConfiguration = new matrixConfiguration
-  val matrix = Map(
-    "RED_CORA_MATRIX_v2v_fp_noshareFMA" -> { (manager: TesterOptionsManager) =>
-      Driver.execute(() => new RED_CORA_MATRIX_v2v_fp_noshareFMA, manager) {
-        (c) => new RED_CORA_MATRIX_v2v_fp_noshareFMATests(c)
-      }
-    },
-    "RED_CORA_MATRIX_v2m" -> { (manager: TesterOptionsManager) =>
-      Driver.execute(() => new RED_CORA_MATRIX_v2m, manager) {
-        (c) => new RED_CORA_MATRIX_v2mTests(c)
-      }
-    }        
-  )
+// object matrixLauncher {
+//   implicit val conf: matrixConfiguration = new matrixConfiguration
+//   val matrix = Map(
+//     "CORA_MATRIX_MUL_v2v_for_verify" -> { (manager: TesterOptionsManager) =>
+//       Driver.execute(() => new CORA_MATRIX_MUL_v2v_for_verify, manager) {
+//         (c) => new CORA_MATRIX_MUL_v2v_for_verifyTests(c)
+//       }
+//     },
 
-  def main(args: Array[String]): Unit = {
-    TutorialRunner("matrix", matrix, args)
-  }
-}
+//   )
+
+//   def main(args: Array[String]): Unit = {
+//     TutorialRunner("matrix", matrix, args)
+//   }
+// }

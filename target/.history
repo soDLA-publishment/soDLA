@@ -141,3 +141,14 @@ exut
 exot
 sxit
 exit
+sbt run
+exit
+test:runMain problems.Launcher Counter
+test:runMain matrix.Launcher CORA_MATRIX_MUL_v2v_for_verify
+test:runMain matrixLauncher CORA_MATRIX_MUL_v2v_for_verify
+test:runMain cora.matrixLauncher CORA_MATRIX_MUL_v2v_for_verify
+sbt run
+test:runMain cora.matrixLauncher CORA_MATRIX_MUL_v2v_for_verify
+exit
+test:runMain cora.matrixLauncher CORA_MATRIX_MUL_v2v_for_verify
+exit

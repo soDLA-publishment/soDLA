@@ -9,7 +9,14 @@ import Chisel.ImplicitConversions._
 import chisel3.internal.sourceinfo.SourceInfo
 import chisel3.experimental._
 
-class MulAddRecFNPipe(expWidth: Int = 9, sigWidth: Int = 23) extends Module
+object FPConstants
+{
+  val RM_SZ = 3
+  val FLAGS_SZ = 5
+}
+import FPConstants._
+
+class MulAddRecFNPipe(expWidth: Int = 8, sigWidth: Int = 24) extends Module
 {
     val latency = 2
     require(latency<=2) 
@@ -72,4 +79,53 @@ class MulAddRecFNPipe(expWidth: Int = 9, sigWidth: Int = 23) extends Module
     io.out            := roundRawFNToRecFN.io.out
     io.exceptionFlags := roundRawFNToRecFN.io.exceptionFlags
 }
+
+
+// class IntToFP(val latency: Int)(implicit p: Parameters) extends FPUModule()(p) with ShouldBeRetimed {
+//   val io = new Bundle {
+//     val in = Valid(new IntToFPInput).flip
+//     val out = Valid(new FPResult)
+//   }
+
+//   val in = Pipe(io.in)
+//   val tag = !in.bits.singleIn // TODO typeTag
+
+//   val mux = Wire(new FPResult)
+//   mux.exc := Bits(0)
+//   mux.data := recode(in.bits.in1, !in.bits.singleIn)
+
+//   val intValue = {
+//     val res = Wire(init = in.bits.in1.asSInt)
+//     for (i <- 0 until nIntTypes-1) {
+//       val smallInt = in.bits.in1((minXLen << i) - 1, 0)
+//       when (in.bits.typ.extract(log2Ceil(nIntTypes), 1) === i) {
+//         res := Mux(in.bits.typ(0), smallInt.zext, smallInt.asSInt)
+//       }
+//     }
+//     res.asUInt
+//   }
+
+//   when (in.bits.wflags) { // fcvt
+//     // could be improved for RVD/RVQ with a single variable-position rounding
+//     // unit, rather than N fixed-position ones
+//     val i2fResults = for (t <- floatTypes) yield {
+//       val i2f = Module(new hardfloat.INToRecFN(xLen, t.exp, t.sig))
+//       i2f.io.signedIn := ~in.bits.typ(0)
+//       i2f.io.in := intValue
+//       i2f.io.roundingMode := in.bits.rm
+//       i2f.io.detectTininess := hardfloat.consts.tininess_afterRounding
+//       (sanitizeNaN(i2f.io.out, t), i2f.io.exceptionFlags)
+//     }
+
+//     val (data, exc) = i2fResults.unzip
+//     val dataPadded = data.init.map(d => Cat(data.last >> d.getWidth, d)) :+ data.last
+//     mux.data := dataPadded(tag)
+//     mux.exc := exc(tag)
+//   }
+
+//     io.out <> Pipe(in.valid, mux, latency-1)
+// }
+
+
+
 

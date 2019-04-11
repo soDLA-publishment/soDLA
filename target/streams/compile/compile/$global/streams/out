@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\slibs\BC_pipe.scala:74:9: skid_pipe_ready is already defined as value skid_pipe_ready[0m
-[0m[[0m[31merror[0m] [0m[0m    val skid_pipe_ready = Wire(Bool())[0m
-[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\pred\CORA_PRED_p.scala:159:13: value tr_q_pvld is not a member of chisel3.Bundle{val reg2dp_roundingMode: chisel3.core.UInt; val reg2dp_detectTininess: chisel3.core.Bool; val tr_f_actv_data: chisel3.core.Vec[chisel3.core.Vec[chisel3.core.UInt]]; val tr_f_actv_pvld: chisel3.core.Bool; val tr_p_actv_data: chisel3.core.Vec[chisel3.core.Vec[chisel3.core.UInt]]; val tr_p_actv_pvld: chisel3.core.Bool; val tr_q_actv_data: chisel3.core.Vec[chisel3.core.Vec[chisel3.core.UInt]]; val tr_q_actv_pvld: chisel3.core.Bool; val tr_p_data: chisel3.core.Vec[chisel3.core.Vec[chisel3.core.UInt]]; val tr_p_pvld: chisel3.core.Bool}[0m
+[0m[[0m[31merror[0m] [0m[0m    when(io.tr_q_pvld){[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
