@@ -310,6 +310,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_BDMA_cq$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\Memo$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Memo$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_CMAC_CORE_mac2by2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_CMAC_CORE_mac2by2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_MulAddRecF64_add.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_MulAddRecF64_add.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_glbDriver$.class[0m
@@ -384,6 +386,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_DivSqrtRecF64_sqrt.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\MUX2D4.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\MUX2D4.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_CMAC_CORE_mac2by2Driver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_CMAC_CORE_mac2by2Driver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\CompareRecFN$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\CompareRecFN$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_INToRecFN.class[0m
@@ -762,6 +766,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_CMAC_CORE_macDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_IMG_sgDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CDMA_IMG_sgDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_CMAC_CORE_mac2by2Driver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_CMAC_CORE_mac2by2Driver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CACC_regDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CACC_regDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Parity$$anon$1.class[0m
@@ -822,6 +828,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_IS_pipe$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\p_SSYNC2DO_C_PP.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\p_SSYNC2DO_C_PP.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_CMAC_CORE_mac2by2$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_CMAC_CORE_mac2by2$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_apb2csb$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_apb2csb$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Combinational.class[0m
@@ -1496,6 +1504,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_DivSqrtRecF64_div$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_GLB_ic$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_GLB_ic$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_CMAC_CORE_mac2by2Driver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_CMAC_CORE_mac2by2Driver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Stack.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Stack.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_rt_outDriver$.class[0m

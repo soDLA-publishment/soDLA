@@ -152,3 +152,8 @@ test:runMain cora.matrixLauncher CORA_MATRIX_MUL_v2v_for_verify
 exit
 test:runMain cora.matrixLauncher CORA_MATRIX_MUL_v2v_for_verify
 exit
+sbexit
+sbt run
+exit
+sbt run
+exit
