@@ -51,8 +51,6 @@ class CORA_MATRIX_ADD_m2m(implicit val conf: matrixConfiguration) extends Module
 //             └──┴──┘       └──┴──┘ 
 
 
-    val mat_add_st = io.tr_a_actv_pvld & io.tr_b_actv_pvld
-
     //instance adders
     val u_mat_add = Array.fill(4){Array.fill(4){Module(new MulAddRecFNPipe())}}
      
@@ -62,11 +60,11 @@ class CORA_MATRIX_ADD_m2m(implicit val conf: matrixConfiguration) extends Module
             u_mat_add(i)(j).io.roundingMode := io.reg2dp_roundingMode
             u_mat_add(i)(j).io.op := 0.U
             u_mat_add(i)(j).io.detectTininess := io.reg2dp_detectTininess
-            u_mat_add(i)(j).io.validin := mat_add_st
+            u_mat_add(i)(j).io.validin := io.tr_a_actv_pvld & io.tr_b_actv_pvld
             u_mat_add(i)(j).io.a := "b0_100000000_000000000000000000000000".asUInt(conf.KF_BPE.W) 
             u_mat_add(i)(j).io.b := io.tr_a_actv_data(i)(j)
             u_mat_add(i)(j).io.c := io.tr_b_actv_data(i)(j)
-            io.tr_out_data(i)(j) := u_mat_add(i)(j).io.out
+            io.tr_out_data(i)(j) := Fill(conf.KF_BPE, io.tr_out_pvld) & u_mat_add(i)(j).io.out
             out_valid(i)(j) := u_mat_add(i)(j).io.validout
 
         }

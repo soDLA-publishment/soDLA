@@ -37,7 +37,7 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
 //       │                 │
 //       │       ─┴─       │                            need 5 pipes to finish
 //       │                 │
-//       └───┐         ┌───┘                       pre  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
+//       └───┐         ┌───┘                           |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
 //           │         │                                 0 ------>      
 //           │         │                                 a0------>| s0 ------>|
 //           │         │                                 b0------>|    
@@ -56,14 +56,13 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
     //==========================================================
     //Hardware Reuse
     //clock counter
-    val mac_st_d1 = RegNext(io.stat_actv_pvld & io.tr_actv_pvld & io.mac_st)
-
+    //clock counter
     val clk_cnt = RegInit(0.U)
-    clk_cnt := Mux(mac_st_d1, 0.U,
+    clk_cnt := Mux(io.mac_st, 0.U,
                Mux(io.mac_done, 0.U,
                clk_cnt + 1.U))
     
-    io.mac_done := (clk_cnt === (2*conf.HARDFLOAT_MAC_LATENCY).U)
+    io.mac_done := ( clk_cnt === (2*conf.HARDFLOAT_MAC_LATENCY).U)
     
     //instantiate MulAddRecFNPipe cells
     val first_stage = (clk_cnt >= 0.U) | (clk_cnt <= (conf.HARDFLOAT_MAC_LATENCY - 1).U)
@@ -83,12 +82,12 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
     when(first_stage){
         //set up first stage
         //mac zero
-        umac(0).io.validin := mac_st_d1
+        umac(0).io.validin := io.mac_st & io.stat_actv_pvld & io.tr_actv_pvld
         umac(0).io.a := io.stat_actv_data(0)
         umac(0).io.b := io.tr_actv_data(0) 
         umac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
         //mac one
-        umac(1).io.validin := mac_st_d1
+        umac(1).io.validin := io.mac_st & io.stat_actv_pvld & io.tr_actv_pvld
         umac(1).io.a := io.stat_actv_data(1)
         umac(1).io.b := io.tr_actv_data(1)   
         umac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
@@ -131,9 +130,9 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
     }
 
     io.mac_out_data := Fill(conf.KF_BPE, io.mac_out_pvld) & umac(0).io.out
-    io.mac_out_pvld := ShiftRegister(mac_st_d1, (conf.HARDFLOAT_MAC_LATENCY*2), mac_st_d1) &
+    io.mac_out_pvld := ShiftRegister(io.mac_st & io.stat_actv_pvld & io.tr_actv_pvld, (conf.HARDFLOAT_MAC_LATENCY*2), io.mac_st & io.stat_actv_pvld & io.tr_actv_pvld) &
                        ShiftRegister(dout_pvld_first_stage.reduce(_&_), (conf.HARDFLOAT_MAC_LATENCY), dout_pvld_first_stage.reduce(_&_)) &
-                       umac(0).io.validout  
+                       umac(0).io.validout  & io.mac_done
 
 
 }

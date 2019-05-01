@@ -9,7 +9,8 @@ class matrixConfiguration()
     //retiming
     val HARDFLOAT_MAC_LATENCY = 2  
     val MAC_RETIMING = 0
-    val V2V_MAC_LATENCY = 3 + HARDFLOAT_MAC_LATENCY * 3 
+    val V2V_MAC_LATENCY = HARDFLOAT_MAC_LATENCY * 3 
+    val M2M_MAC_LATENCY = V2V_MAC_LATENCY 
 
     val REC_DT_RETIMING = 3
     val MATRIX_V2V_RETIMING = 6 

@@ -20,6 +20,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CACC_delivery_buffer$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_csb_masterDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_csb_masterDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_MUL_m2m2m$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_MUL_m2m2m$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecF16ToRecF32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF16ToRecF32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\SimpleALU.class[0m
@@ -344,6 +346,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_CORE_rt_inDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_partition_a$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_partition_a$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_ADD_v2vDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_ADD_v2vDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_dcIO.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CDMA_dcIO.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_dma_mux.class[0m
@@ -568,6 +572,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\LFSR16$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\Accumulator.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Accumulator.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_ADD_v2v.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_ADD_v2v.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_RT_csb2cacc.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_RT_csb2cacc.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_I64ToRecF64.class[0m
@@ -954,6 +960,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CDMA_IMG_sg2pack_fifo_flopram_rwsa_128x11.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\FMATest.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\FMATest.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_MUL_m2m2mDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_MUL_m2m2mDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\Max2$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Max2$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\RoundRawFNToRecFN.class[0m
@@ -1204,6 +1212,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_GLB_csb$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\MulAddRecFNToRaw_preMul.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\MulAddRecFNToRaw_preMul.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_MUL_m2m2mDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_MUL_m2m2mDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	solutions\Counter.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\Counter.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_DC_fifo$$anon$1.class[0m
@@ -1228,6 +1238,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\solutions\VecShiftRegister$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecFNToUIN$$anon$1$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecFNToUIN$$anon$1$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_MUL_m2m2m.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_MUL_m2m2m.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_apb2csbDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_apb2csbDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\isSigNaNRawFloat.class[0m
@@ -1400,6 +1412,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_DMAIF_rdrspDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_HLS_shiftrightss$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_HLS_shiftrightss$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_ADD_v2vDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_ADD_v2vDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	examples\Life.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Life.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_rt_outDriver$delayedInit$body.class[0m
@@ -1484,6 +1498,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF32ToI64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecF16ToUI32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF16ToUI32.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_ADD_v2vDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_ADD_v2vDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_DC_fifoDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CDMA_DC_fifoDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_BDMA_cq.class[0m
@@ -1564,6 +1580,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CDMA_shared_bufferDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_MulAddRecF32_mul.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_MulAddRecF32_mul.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_ADD_v2v$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_ADD_v2v$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecF16ToI32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecF16ToI32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecF64ToRecF32.class[0m
@@ -1612,6 +1630,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\examples\Router$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_DivSqrtRecF64_small_div.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_DivSqrtRecF64_small_div.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	cora\CORA_MATRIX_MUL_m2m2mDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\cora\CORA_MATRIX_MUL_m2m2mDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_sgDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_sgDriver$delayedInit$body.class[0m
 [0m[[0m[0minfo[0m] [0m[0mDone packaging.[0m

@@ -16,6 +16,9 @@
 //         val reg2dp_roundingMode = Input(UInt(3.W))
 //         val reg2dp_detectTininess = Input(Bool())
 
+//         val pred_x_st = Input(Bool())
+//         val pred_x_done = Output(Bool())    
+
 //         val stat_x_actv_data = Input(Vec(4, UInt(conf.KF_BPE.W)))
 //         val stat_x_actv_pvld = Input(Bool())
 
@@ -56,14 +59,12 @@
 
 //     //Hardware Reuse
 //     //clock counter
-//     val pre_x_st = io.stat_x_actv_pvld & io.mat_f_actv_pvld & io.stat_u_actv_pvld 
-
-//     val pre_x_done = Wire(Bool())
-
 //     val clk_cnt = RegInit(0.U)
-//     clk_cnt := Mux(pre_x_st, 0.U,
-//                Mux(pre_x_done, 0.U,
+//     clk_cnt := Mux(io.m2m2m_st, 0.U,
+//                Mux(io.m2m2m_done, 0.U,
 //                clk_cnt + 1.U))
+    
+//     io.m2m2m_done := ( clk_cnt === (2*conf.V2V_MAC_LATENCY).U)
     
 //     pre_x_done := ( clk_cnt === (conf.V2V_MAC_LATENCY + conf.HARDFLOAT_MAC_LATENCY).U)
     

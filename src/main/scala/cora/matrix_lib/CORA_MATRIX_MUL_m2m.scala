@@ -69,30 +69,21 @@ class CORA_MATRIX_MUL_m2m(implicit val conf: matrixConfiguration) extends Module
         u_v2m(i).io.stat_actv_pvld := io.tr_a_actv_pvld
         u_v2m(i).io.tr_actv_data := io.tr_b_actv_data
         u_v2m(i).io.tr_actv_pvld := io.tr_b_actv_pvld
+
+        when(io.tr_out_pvld){
+            io.tr_out_data(i) := u_v2m(i).io.stat_out_data
+        }
+        .otherwise{
+            io.tr_out_data(i) := VecInit(Seq.fill(4)("b0".asUInt(conf.KF_BPE.W)))
+        }
     }
 
-    //one pipe to out
-    val tr_out_pvld_out = RegInit(false.B)
-    val m2m_done_out = RegInit(false.B)
-    val tr_out_data_out = Reg(Vec(4, Vec(4, conf.KF_TYPE(conf.KF_BPE.W))))
+    io.tr_out_pvld := u_v2m(0).io.stat_out_pvld &
+                      u_v2m(1).io.stat_out_pvld &
+                      u_v2m(2).io.stat_out_pvld &
+                      u_v2m(3).io.stat_out_pvld
 
-    tr_out_pvld_out := u_v2m(0).io.stat_out_pvld &
-                       u_v2m(1).io.stat_out_pvld &
-                       u_v2m(2).io.stat_out_pvld &
-                       u_v2m(3).io.stat_out_pvld
-
-    m2m_done_out := u_v2m(0).io.v2m_done &
-                    u_v2m(1).io.v2m_done &
-                    u_v2m(2).io.v2m_done &
-                    u_v2m(3).io.v2m_done
-    
-    for (i <- 0 to 3){
-        tr_out_data_out(i) :=  u_v2m(i).io.stat_out_data
-    }
-
-    io.tr_out_pvld := tr_out_pvld_out
-    io.m2m_done := m2m_done_out
-    io.tr_out_data := tr_out_data_out
+    io.m2m_done := u_v2m(0).io.v2m_done
 }
 
 object CORA_MATRIX_MUL_m2mDriver extends App {
