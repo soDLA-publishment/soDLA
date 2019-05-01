@@ -15,6 +15,9 @@ class CORA_MATRIX_MUL_m2m2m(implicit val conf: matrixConfiguration) extends Modu
         val reg2dp_roundingMode = Input(UInt(3.W))
         val reg2dp_detectTininess = Input(Bool())
 
+        val m2m2m_st = Input(Bool())
+        val m2m2m_done = Output(Bool())
+
         val tr_a_actv_data = Input(Vec(4, Vec(4, UInt(conf.KF_BPE.W))))
         val tr_a_actv_pvld = Input(Bool())
 
@@ -56,11 +59,11 @@ class CORA_MATRIX_MUL_m2m2m(implicit val conf: matrixConfiguration) extends Modu
 
     //Hardware Reuse
     //clock counter
-    val m2m2m_st = io.tr_a_actv_pvld & io.tr_b_actv_pvld & io.tr_c_actv_pvld
+    val m2m2m_st_d1 = RegNext(io.tr_a_actv_pvld & io.tr_b_actv_pvld & io.tr_c_actv_pvld & io.m2m2m_st)
     val m2m2m_done = Wire(Bool())
 
     val clk_cnt = RegInit(0.U)
-    clk_cnt := Mux(m2m2m_st, 0.U,
+    clk_cnt := Mux(m2m2m_st_d1, 0.U,
                Mux(m2m2m_done, 0.U,
                clk_cnt + 1.U))
     

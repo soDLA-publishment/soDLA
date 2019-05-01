@@ -6,7 +6,7 @@ import chisel3.util._
 import hardfloat._
 import chisel3.iotesters.Driver
 
-//this module is to get the result of stat multiply transition matrix
+//this module is to get the result of stat multiply transition matrix  //need 8 pipes
 
 class CORA_MATRIX_MUL_v2m(implicit val conf: matrixConfiguration) extends Module {
 
@@ -14,6 +14,9 @@ class CORA_MATRIX_MUL_v2m(implicit val conf: matrixConfiguration) extends Module
         //input
         val reg2dp_roundingMode = Input(UInt(3.W))
         val reg2dp_detectTininess = Input(Bool())
+
+        val v2m_st = Input(Bool())
+        val v2m_done = Output(Bool())
 
         val stat_actv_data = Input(Vec(4, conf.KF_TYPE(conf.KF_BPE.W)))
         val stat_actv_pvld = Input(Bool())
@@ -64,24 +67,39 @@ class CORA_MATRIX_MUL_v2m(implicit val conf: matrixConfiguration) extends Module
 
     val u_v2v = Array.fill(4)(Module(new CORA_CMAC_CORE_mac()))
                   
-    //setup config
+    //setup input
     for (i <- 0 to 3){
-
+        u_v2v(i).io.mac_st := io.v2m_st
         u_v2v(i).io.reg2dp_roundingMode := io.reg2dp_roundingMode
         u_v2v(i).io.reg2dp_detectTininess := io.reg2dp_detectTininess   
         u_v2v(i).io.stat_actv_data := io.stat_actv_data
         u_v2v(i).io.stat_actv_pvld := io.stat_actv_pvld
         u_v2v(i).io.tr_actv_data := transpose_out_data(i)
         u_v2v(i).io.tr_actv_pvld := transpose_out_pvld
-
-        io.stat_out_data(i) := u_v2v(i).io.mac_out_data
     }
 
-    io.stat_out_pvld := u_v2v(0).io.mac_out_pvld &
-                        u_v2v(1).io.mac_out_pvld &
-                        u_v2v(2).io.mac_out_pvld &
-                        u_v2v(3).io.mac_out_pvld
+    //one pipe to out
+    val stat_out_pvld_out = RegInit(false.B)
+    val v2m_done_out = RegInit(false.B)
+    val stat_out_data_out = Reg(Vec(4, conf.KF_TYPE(conf.KF_BPE.W)))
 
+    stat_out_pvld_out := u_v2v(0).io.mac_out_pvld &
+                         u_v2v(1).io.mac_out_pvld &
+                         u_v2v(2).io.mac_out_pvld &
+                         u_v2v(3).io.mac_out_pvld
+
+    v2m_done_out := u_v2v(0).io.mac_done &
+                    u_v2v(1).io.mac_done &
+                    u_v2v(2).io.mac_done &
+                    u_v2v(3).io.mac_done
+    
+    for (i <- 0 to 3){
+        stat_out_data_out(i) :=  u_v2v(i).io.mac_out_data
+    }
+
+    io.stat_out_pvld := stat_out_pvld_out
+    io.v2m_done := v2m_done_out
+    io.stat_out_data := stat_out_data_out
 }
 
 

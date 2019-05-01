@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\pred\CORA_PRED_Q.scala:53:34: not found: value pre_p_valid[0m
-[0m[[0m[31merror[0m] [0m[0m    val pre_p_valid_d1 = RegNext(pre_p_valid, false.B)[0m
-[0m[[0m[31merror[0m] [0m[0m                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix_lib\CORA_MATRIX_MUL_v2m.scala:91:5: not found: value mac_done_out[0m
+[0m[[0m[31merror[0m] [0m[0m    mac_done_out := u_v2v(0).io.mac_done &[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

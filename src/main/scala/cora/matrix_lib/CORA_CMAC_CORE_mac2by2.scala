@@ -13,6 +13,9 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
         val reg2dp_roundingMode = Input(UInt(3.W))
         val reg2dp_detectTininess = Input(Bool())
 
+        val mac_st = Input(Bool())
+        val mac_done = Output(Bool())
+
         //tr and stat
         val stat_actv_data = Input(Vec(2, UInt(conf.KF_BPE.W)))
         val stat_actv_pvld = Input(Bool())
@@ -32,17 +35,17 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
 //       │       ───       │
 //       │  ─┬┘       └┬─  │
 //       │                 │
-//       │       ─┴─       │                            need 4 pipes to finish
+//       │       ─┴─       │                            need 5 pipes to finish
 //       │                 │
-//       └───┐         ┌───┘                            0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
-//           │         │                                0 ------>      
-//           │         │                                a0------>| s0 ------>|
-//           │         │                                b0------>|    
+//       └───┐         ┌───┘                       pre  |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
+//           │         │                                 0 ------>      
+//           │         │                                 a0------>| s0 ------>|
+//           │         │                                 b0------>|    
 //           │         └──────────────┐                            
 //           │                        │                                      | s12
-//                                                     0 ------->|                      
-//           │                        ├─┐              a1 ------>| s1 ------>|      
-//           │                        ┌─┘              b1 ------>|
+//                                                      0 ------->|                      
+//           │                        ├─┐               a1 ------>| s1 ------>|      
+//           │                        ┌─┘               b1 ------>|
 //           │                        │                            
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘                           
 //             │ ─┤ ─┤       │ ─┤ ─┤            
@@ -53,15 +56,14 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
     //==========================================================
     //Hardware Reuse
     //clock counter
-    val mac_st = io.stat_actv_pvld & io.tr_actv_pvld
-    val mac_done = Wire(Bool())
+    val mac_st_d1 = RegNext(io.stat_actv_pvld & io.tr_actv_pvld & io.mac_st)
 
     val clk_cnt = RegInit(0.U)
-    clk_cnt := Mux(mac_st, 0.U,
-               Mux(mac_done, 0.U,
+    clk_cnt := Mux(mac_st_d1, 0.U,
+               Mux(io.mac_done, 0.U,
                clk_cnt + 1.U))
     
-    mac_done := (clk_cnt === (2*conf.HARDFLOAT_MAC_LATENCY).U)
+    io.mac_done := (clk_cnt === (2*conf.HARDFLOAT_MAC_LATENCY).U)
     
     //instantiate MulAddRecFNPipe cells
     val first_stage = (clk_cnt >= 0.U) | (clk_cnt <= (conf.HARDFLOAT_MAC_LATENCY - 1).U)
@@ -81,12 +83,12 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
     when(first_stage){
         //set up first stage
         //mac zero
-        umac(0).io.validin := mac_st
+        umac(0).io.validin := mac_st_d1
         umac(0).io.a := io.stat_actv_data(0)
         umac(0).io.b := io.tr_actv_data(0) 
         umac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
         //mac one
-        umac(1).io.validin := mac_st
+        umac(1).io.validin := mac_st_d1
         umac(1).io.a := io.stat_actv_data(1)
         umac(1).io.b := io.tr_actv_data(1)   
         umac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
@@ -129,7 +131,7 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
     }
 
     io.mac_out_data := Fill(conf.KF_BPE, io.mac_out_pvld) & umac(0).io.out
-    io.mac_out_pvld := ShiftRegister(mac_st, (conf.HARDFLOAT_MAC_LATENCY*2), mac_st) &
+    io.mac_out_pvld := ShiftRegister(mac_st_d1, (conf.HARDFLOAT_MAC_LATENCY*2), mac_st_d1) &
                        ShiftRegister(dout_pvld_first_stage.reduce(_&_), (conf.HARDFLOAT_MAC_LATENCY), dout_pvld_first_stage.reduce(_&_)) &
                        umac(0).io.validout  
 
