@@ -18,14 +18,14 @@ class CORA_MATRIX_MUL_v2m(implicit val conf: matrixConfiguration) extends Module
         val v2m_st = Input(Bool())
         val v2m_done = Output(Bool())
 
-        val stat_actv_data = Input(Vec(4, conf.KF_TYPE(conf.KF_BPE.W)))
+        val stat_actv_data = Input(Vec(4, UInt(conf.KF_BPE.W)))
         val stat_actv_pvld = Input(Bool())
 
-        val tr_actv_data = Input(Vec(4, Vec(4, conf.KF_TYPE(conf.KF_BPE.W))))
+        val tr_actv_data = Input(Vec(4, Vec(4, UInt(conf.KF_BPE.W))))
         val tr_actv_pvld = Input(Bool())
 
         //output
-        val stat_out_data = Output(Vec(4, conf.KF_TYPE(conf.KF_BPE.W)))
+        val stat_out_data = Output(Vec(4, UInt(conf.KF_BPE.W)))
         val stat_out_pvld = Output(Bool())
        
     })

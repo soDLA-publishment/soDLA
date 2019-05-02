@@ -6,7 +6,7 @@ import chisel3.util._
 import hardfloat._
 import chisel3.iotesters.Driver
 
-//A*B*C  1+9+9 19 cycles
+//A*B*C  6*2 cycles
 
 class CORA_MATRIX_MUL_m2m2m(implicit val conf: matrixConfiguration) extends Module {
 
