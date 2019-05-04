@@ -130,8 +130,8 @@ class CORA_CMAC_CORE_mac2by2(implicit conf: matrixConfiguration) extends Module 
     }
 
     io.mac_out_data := Fill(conf.KF_BPE, io.mac_out_pvld) & umac(0).io.out
-    io.mac_out_pvld := ShiftRegister(io.mac_st & io.stat_actv_pvld & io.tr_actv_pvld, (conf.HARDFLOAT_MAC_LATENCY*2), io.mac_st & io.stat_actv_pvld & io.tr_actv_pvld) &
-                       ShiftRegister(dout_pvld_first_stage.reduce(_&_), (conf.HARDFLOAT_MAC_LATENCY), dout_pvld_first_stage.reduce(_&_)) &
+    io.mac_out_pvld := ShiftRegister(io.mac_st & io.stat_actv_pvld & io.tr_actv_pvld, (conf.HARDFLOAT_MAC_LATENCY*2)) &
+                       ShiftRegister(dout_pvld_first_stage.reduce(_&_), (conf.HARDFLOAT_MAC_LATENCY)) &
                        umac(0).io.validout  & io.mac_done
 
 

@@ -149,8 +149,8 @@ class CORA_PRED_x(implicit val conf: matrixConfiguration) extends Module {
     .otherwise{
         io.stat_x_data := VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))
     }
-    io.stat_x_pvld := ShiftRegister(din_pvld_first_stage, (conf.V2V_MAC_LATENCY + conf.HARDFLOAT_MAC_LATENCY), din_pvld_first_stage) &
-                      ShiftRegister(dout_pvld_first_stage, conf.HARDFLOAT_MAC_LATENCY, dout_pvld_first_stage) &
+    io.stat_x_pvld := ShiftRegister(din_pvld_first_stage, (conf.V2V_MAC_LATENCY + conf.HARDFLOAT_MAC_LATENCY)) &
+                      ShiftRegister(dout_pvld_first_stage, conf.HARDFLOAT_MAC_LATENCY) &
                       u_vadd.io.stat_out_pvld & io.pred_x_done
 
 }

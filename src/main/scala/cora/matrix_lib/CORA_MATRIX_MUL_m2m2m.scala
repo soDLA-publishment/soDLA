@@ -118,8 +118,8 @@ class CORA_MATRIX_MUL_m2m2m(implicit val conf: matrixConfiguration) extends Modu
     .otherwise{
         io.tr_out_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
     }
-    io.tr_out_pvld := ShiftRegister(io.m2m2m_st & io.tr_a_actv_pvld & io.tr_b_actv_pvld, 2*conf.V2V_MAC_LATENCY, io.m2m2m_st & io.tr_a_actv_pvld & io.tr_b_actv_pvld) &
-                      ShiftRegister(dout_pvld_first_stage, conf.V2V_MAC_LATENCY, dout_pvld_first_stage) &
+    io.tr_out_pvld := ShiftRegister(io.m2m2m_st & io.tr_a_actv_pvld & io.tr_b_actv_pvld, 2*conf.V2V_MAC_LATENCY) &
+                      ShiftRegister(dout_pvld_first_stage, conf.V2V_MAC_LATENCY) &
                       um2m.io.tr_out_pvld & io.m2m2m_done
 
 }

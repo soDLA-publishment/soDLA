@@ -184,15 +184,16 @@
 //         u_mac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
 
 //         u_mac(1).io.validin := dout_pvld_first_stage
-//         u_mac(1).io.a := "b0".asUInt(conf.KF_BPE.W)  
-//         u_mac(1).io.b := "b0".asUInt(conf.KF_BPE.W)     
+//         u_mac(1).io.a := ShiftRegister(io.dt_actv_data, conf.HARDFLOAT_MAC_LATENCY)
+//         u_mac(1).io.b := dt2_first_stage 
 //         u_mac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
 
 //     }
 //     .elsewhen((clk_cnt >= (2*conf.HARDFLOAT_MAC_LATENCY).U) & (clk_cnt <= (3*conf.HARDFLOAT_MAC_LATENCY-1).U)){
 //         //result from first stage
-//         dout_pvld_first_stage := u_mac(0).io.validout
-//         dt2_first_stage := u_mac(0).io.out
+//         dout_pvld_second_stage := u_mac(0).io.validout
+//         dt4_second_stage := u_mac(0).io.out
+//         dt3_second_stage := u_mac(1).io.out
 
 //         //m2m2m 
 //         u_m2m2m.io.st := dout_pvld_first_stage
@@ -213,15 +214,165 @@
 //         u_madd.io.tr_b_actv_pvld := false.B
 
 //         //multiply 
-//         u_mac(0).io.validin := dout_pvld_first_stage
-//         u_mac(0).io.a := dt2_first_stage
-//         u_mac(0).io.b := dt2_first_stage
+//         u_mac(0).io.validin := dout_pvld_second_stage
+//         u_mac(0).io.a := dt4_second_stage
+//         u_mac(0).io.b := "b0_001000000_000000000000000000000000".asUInt(conf.KF_BPE.W) //divide by 4
 //         u_mac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
 
-//         u_mac(1).io.validin := dout_pvld_first_stage
-//         u_mac(1).io.a := "b0".asUInt(conf.KF_BPE.W)  
-//         u_mac(1).io.b := "b0".asUInt(conf.KF_BPE.W)     
+//         u_mac(1).io.validin := dout_pvld_second_stage
+//         u_mac(1).io.a := dt3_second_stage
+//         u_mac(1).io.b := "b0_010000000_000000000000000000000000".asUInt(conf.KF_BPE.W) //divide by 2
 //         u_mac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
+
+//     }
+//     .elsewhen((clk_cnt >= (3*conf.HARDFLOAT_MAC_LATENCY).U) & (clk_cnt <= (4*conf.HARDFLOAT_MAC_LATENCY-1).U)){
+//         //result from first stage
+//         dout_pvld_third_stage := u_mac(0).io.validout
+//         dt4_4_fourth_stage := u_mac(0).io.out
+//         dt3_2_fourth_stage := u_mac(1).io.out
+
+//         //m2m2m 
+//         u_m2m2m.io.st := dout_pvld_third_stage
+//         u_m2m2m.io.tr_a_actv_data := io.tr_f_actv_data
+//         u_m2m2m.io.tr_a_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_b_actv_data := io.tr_p_actv_data
+//         u_m2m2m.io.tr_b_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_c_actv_data := tr_f_transpose_out_data
+//         u_m2m2m.io.tr_c_actv_pvld := din_pvld_first_stage
+
+//         //m2m add
+//         u_madd.io.tr_a_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_a_actv_pvld := false.B
+
+//         u_madd.io.tr_b_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_b_actv_pvld := false.B
+
+//         //multiply 
+//         u_mac(0).io.validin := dout_pvld_third_stage
+//         u_mac(0).io.a := dt4_4_third_stage
+//         u_mac(0).io.b := io.reg2dp_noise_ax2
+//         u_mac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
+
+//         u_mac(1).io.validin := dout_pvld_third_stage
+//         u_mac(1).io.a := dt3_2_third_stage
+//         u_mac(1).io.b := io.reg2dp_noise_ax2
+//         u_mac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
+
+//     }
+//     .elsewhen((clk_cnt >= (4*conf.HARDFLOAT_MAC_LATENCY).U) & (clk_cnt <= (5*conf.HARDFLOAT_MAC_LATENCY-1).U)){
+//         //result from first stage
+//         dout_pvld_fourth_stage := u_mac(0).io.validout
+//         dt4_4_ax_fourth_stage := u_mac(0).io.out
+//         dt3_2_ax_fourth_stage := u_mac(1).io.out
+
+//         //m2m2m 
+//         u_m2m2m.io.st := dout_pvld_fourth_stage
+//         u_m2m2m.io.tr_a_actv_data := io.tr_f_actv_data
+//         u_m2m2m.io.tr_a_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_b_actv_data := io.tr_p_actv_data
+//         u_m2m2m.io.tr_b_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_c_actv_data := tr_f_transpose_out_data
+//         u_m2m2m.io.tr_c_actv_pvld := din_pvld_first_stage
+
+//         //m2m add
+//         u_madd.io.tr_a_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_a_actv_pvld := false.B
+
+//         u_madd.io.tr_b_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_b_actv_pvld := false.B
+
+//         //multiply 
+//         u_mac(0).io.validin := dout_pvld_fourth_stage
+//         u_mac(0).io.a := dt4_4_fourth_stage
+//         u_mac(0).io.b := io.reg2dp_noise_ay2
+//         u_mac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
+
+//         u_mac(1).io.validin := dout_pvld_fourth_stage
+//         u_mac(1).io.a := dt3_2_fourth_stage
+//         u_mac(1).io.b := io.reg2dp_noise_ay2
+//         u_mac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
+
+//     }
+//     .elsewhen((clk_cnt >= (5*conf.HARDFLOAT_MAC_LATENCY).U) & (clk_cnt <= (6*conf.HARDFLOAT_MAC_LATENCY-1).U)){
+//         //result from first stage
+//         dout_pvld_fifth_stage := u_mac(0).io.validout
+//         dt4_4_ay_fifth_stage := u_mac(0).io.out
+//         dt3_2_ay_fifth_stage := u_mac(1).io.out
+
+//         //m2m2m 
+//         u_m2m2m.io.st := dout_pvld_fifth_stage
+//         u_m2m2m.io.tr_a_actv_data := io.tr_f_actv_data
+//         u_m2m2m.io.tr_a_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_b_actv_data := io.tr_p_actv_data
+//         u_m2m2m.io.tr_b_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_c_actv_data := tr_f_transpose_out_data
+//         u_m2m2m.io.tr_c_actv_pvld := din_pvld_first_stage
+
+//         //m2m add
+//         u_madd.io.tr_a_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_a_actv_pvld := false.B
+
+//         u_madd.io.tr_b_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_b_actv_pvld := false.B
+
+//         //multiply 
+//         u_mac(0).io.validin := dout_pvld_fifth_stage
+//         u_mac(0).io.a := dt4_4_fourth_stage
+//         u_mac(0).io.b := io.reg2dp_noise_ay2
+//         u_mac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
+
+//         u_mac(1).io.validin := dout_pvld_fifth_stage
+//         u_mac(1).io.a := dt3_2_fourth_stage
+//         u_mac(1).io.b := io.reg2dp_noise_ay2
+//         u_mac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
+
+//     }
+//     .elsewhen((clk_cnt >= (6*conf.HARDFLOAT_MAC_LATENCY).U) & (clk_cnt <= (7*conf.HARDFLOAT_MAC_LATENCY-1).U)){
+//         //result from first stage
+//         dout_pvld_fifth_stage := u_mac(0).io.validout
+//         q_sixth_stage := VecInit(
+//                          VecInit(dt4_4_ax_fourth_stage, "b0".asUInt(conf.KF_BPE.W), dt3_2_ax_fourth_stage, "b0".asUInt(conf.KF_BPE.W)),
+//                          VecInit("b0".asUInt(conf.KF_BPE.W), "b0".asUInt(conf.KF_BPE.W), dt3_2_ax_fourth_stage, "b0".asUInt(conf.KF_BPE.W)),
+//                          VecInit(dt4_4_ax_fourth_stage, "b0".asUInt(conf.KF_BPE.W), dt3_2_ax_fourth_stage, "b0".asUInt(conf.KF_BPE.W)),
+//                          VecInit(dt4_4_ax_fourth_stage, "b0".asUInt(conf.KF_BPE.W), dt3_2_ax_fourth_stage, "b0".asUInt(conf.KF_BPE.W)),
+//                          )
+
+
+//         //m2m2m 
+//         u_m2m2m.io.st := dout_pvld_fifth_stage
+//         u_m2m2m.io.tr_a_actv_data := io.tr_f_actv_data
+//         u_m2m2m.io.tr_a_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_b_actv_data := io.tr_p_actv_data
+//         u_m2m2m.io.tr_b_actv_pvld := din_pvld_first_stage
+
+//         u_m2m2m.io.tr_c_actv_data := tr_f_transpose_out_data
+//         u_m2m2m.io.tr_c_actv_pvld := din_pvld_first_stage
+
+//         //m2m add
+//         u_madd.io.tr_a_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_a_actv_pvld := false.B
+
+//         u_madd.io.tr_b_actv_data := VecInit(Seq.fill(4)(VecInit(Seq.fill(4)("b0".asUInt((conf.KF_BPE).W)))))
+//         u_madd.io.tr_b_actv_pvld := false.B
+
+//         //multiply 
+//         u_mac(0).io.validin := dout_pvld_fifth_stage
+//         u_mac(0).io.a := "b0".asUInt(conf.KF_BPE.W)  
+//         u_mac(0).io.b := "b0".asUInt(conf.KF_BPE.W)  
+//         u_mac(0).io.c := "b0".asUInt(conf.KF_BPE.W)
+
+//         u_mac(1).io.validin := dout_pvld_fifth_stage
+//         u_mac(1).io.a := "b0".asUInt(conf.KF_BPE.W)  
+//         u_mac(1).io.b := "b0".asUInt(conf.KF_BPE.W)  
+//         u_mac(1).io.c := "b0".asUInt(conf.KF_BPE.W)  
+
 
 //     }
 //     .otherwise{

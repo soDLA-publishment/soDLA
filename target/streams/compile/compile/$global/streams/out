@@ -1,7 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\pred\CORA_PRED_x.scala:67:8: value pre_x_done is not a member of chisel3.Bundle{val reg2dp_roundingMode: chisel3.core.UInt; val reg2dp_detectTininess: chisel3.core.Bool; val pred_x_st: chisel3.core.Bool; val pred_x_done: chisel3.core.Bool; val stat_x_actv_data: chisel3.core.Vec[chisel3.core.UInt]; val stat_x_actv_pvld: chisel3.core.Bool; val mat_f_actv_data: chisel3.core.Vec[chisel3.core.Vec[chisel3.core.UInt]]; val mat_f_actv_pvld: chisel3.core.Bool; val stat_u_actv_data: chisel3.core.Vec[chisel3.core.UInt]; val stat_u_actv_pvld: chisel3.core.Bool; val stat_x_data: chisel3.core.Vec[chisel3.core.UInt]; val stat_x_pvld: chisel3.core.Bool}[0m
-[0m[[0m[31merror[0m] [0m[0m    io.pre_x_done := ( clk_cnt === (conf.V2V_MAC_LATENCY + conf.HARDFLOAT_MAC_LATENCY).U)[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\pred\CORA_PRED_x.scala:73:35: value pre_x_st is not a member of chisel3.Bundle{val reg2dp_roundingMode: chisel3.core.UInt; val reg2dp_detectTininess: chisel3.core.Bool; val pred_x_st: chisel3.core.Bool; val pred_x_done: chisel3.core.Bool; val stat_x_actv_data: chisel3.core.Vec[chisel3.core.UInt]; val stat_x_actv_pvld: chisel3.core.Bool; val mat_f_actv_data: chisel3.core.Vec[chisel3.core.Vec[chisel3.core.UInt]]; val mat_f_actv_pvld: chisel3.core.Bool; val stat_u_actv_data: chisel3.core.Vec[chisel3.core.UInt]; val stat_u_actv_pvld: chisel3.core.Bool; val stat_x_data: chisel3.core.Vec[chisel3.core.UInt]; val stat_x_pvld: chisel3.core.Bool}[0m
-[0m[[0m[31merror[0m] [0m[0m    val din_pvld_first_stage = io.pre_x_st & io.stat_x_actv_pvld & io.mat_f_actv_pvld & io.stat_u_actv_pvld[0m
-[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\pred\CORA_PRED_p.scala:187:83: illegal character '\uff09'[0m
+[0m[[0m[31merror[0m] [0m[0m        u_mac(1).io.a := ShiftRegister(io.dt_actv_data, conf.HARDFLOAT_MAC_LATENCY）[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
