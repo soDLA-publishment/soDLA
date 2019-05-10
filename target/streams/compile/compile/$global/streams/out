@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\pred\CORA_PRED_p.scala:187:83: illegal character '\uff09'[0m
-[0m[[0m[31merror[0m] [0m[0m        u_mac(1).io.a := ShiftRegister(io.dt_actv_data, conf.HARDFLOAT_MAC_LATENCY）[0m
-[0m[[0m[31merror[0m] [0m[0m                                                                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_unpack.scala:85:8: NV_NVDLA_SDP_CORE_packDriver is already defined as object NV_NVDLA_SDP_CORE_packDriver[0m
+[0m[[0m[31merror[0m] [0m[0mobject NV_NVDLA_SDP_CORE_packDriver extends App {[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
