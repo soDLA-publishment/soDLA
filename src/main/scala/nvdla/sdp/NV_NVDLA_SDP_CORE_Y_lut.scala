@@ -353,15 +353,124 @@
 // val out_y0 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_wr_pd_0(16*i+15, 16*i)})
 // val out_y1 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_wr_pd_1(16*i+15, 16*i)})
 
+// val dat_fifo_rd_prdy = Wire(Boo())
+// val lut_out_prdy = Wire(Bool())
 // val u_dat = Module(new NV_NVDLA_SDP_CORE_Y_LUT_dat)
 // u_dat.io.nvdla_core_clk := io.nvdla_core_clk
 // u_dat.io.dat_fifo_wr_pvld := io.dat_fifo_wr_pvld
 // u_dat.io.dat_fifo_wr_pd := dat_fifo_wr_pd(32*conf.NVDLA_SDP_EW_THROUGHPUT-1, 0)
-// u_dat.io.
-// u_dat.io.
-// u_dat.io.
-// u_dat.io.
-// u_dat.io.
+// u_dat.io.dat_fifo_rd_prdy := dat_fifo_rd_prdy
+// val dat_fifo_rd_pvld = u_dat.io.dat_fifo_rd_pvld
+// val dat_fifo_rd_pd = u_dat.io.dat_fifo_rd_pd
+// u_dat.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+
+// // dat fifo rd
+// val dat_fifo_rd_prdy = lut_out_prdy;
+
+// //============
+// // cmd fifo wr:
+
+// val cmd_fifo_wr_pd_0 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_fraction(i)}).asUInt
+// val cmd_fifo_wr_pd_1 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_x(i)}).asUInt
+// val cmd_fifo_wr_pd_2 = lut_in_oflow.asUInt
+// val cmd_fifo_wr_pd_3 = lut_in_uflow.asUInt
+// val cmd_fifo_wr_pd_4 = lut_in_sel.asUInt
+// val cmd_fifo_wr_pd = Cat(cmd_fifo_wr_pd_4, cmd_fifo_wr_pd_3, cmd_fifo_wr_pd_2, cmd_fifo_wr_pd_1, cmd_fifo_wr_pd_0)
+
+// val out_fraction = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(35.W)))
+// val out_x = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W)))
+// val out_oflow = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Bool()))
+// val out_uflow = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Bool()))
+// val out_sel = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Bool()))
+
+// for(i <- 0 to conf.NVDLA_SDP_EW_THROUGHPUT-1){
+//     out_fraction(i) := cmd_fifo_rd_pd(35*i+34, 35*i)
+//     out_x(i) := cmd_fifo_rd_pd(32*i+31+conf.NVDLA_SDP_EW_THROUGHPUT*35, 32*i+conf.NVDLA_SDP_EW_THROUGHPUT*35)
+//     out_oflow(i) := cmd_fifo_rd_pd(i+conf.NVDLA_SDP_EW_THROUGHPUT*(35+32))
+//     out_uflow(i) := cmd_fifo_rd_pd(i+conf.NVDLA_SDP_EW_THROUGHPUT*(35+32+1))
+//     out_sel(i) := cmd_fifo_rd_pd(i+conf.NVDLA_SDP_EW_THROUGHPUT*(35+32+2))
+// }
+
+// val cmd_fifo_wr_prdy = Wire(Bool())
+// val cmd_fifo_rd_prdy = Wire(Bool())
+// val cmd_fifo_wr_pvld = lut_in_pvld
+// lut_in_prdy := cmd_fifo_wr_prdy
+
+// // cmd fifo inst:
+
+// val u_cmd = Module{new NV_NVDLA_SDP_CORE_Y_LUT_cmd(70*conf.NVDLA_SDP_EW_THROUGHPUT)}
+// u_cmd.io.nvdla_core_clk := io.nvdla_core_clk
+// cmd_fifo_wr_prdy := u_cmd.io.cmd_fifo_wr_prdy
+// u_cmd.io.cmd_fifo_wr_pvld := cmd_fifo_wr_pvld
+// u_cmd.io.cmd_fifo_wr_pd := cmd_fifo_wr_pd
+// u_cmd.io.cmd_fifo_rd_prdy := cmd_fifo_rd_prdy
+// val cmd_fifo_rd_pvld = u_cmd.io.cmd_fifo_rd_pvld
+// cmd_fifo_rd_pd := u_cmd.io.cmd_fifo_rd_pd
+// u_cmd.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+
+// // cmd fifo rd:
+
+// cmd_fifo_rd_prdy := lut_out_prdy & dat_fifo_rd_pvld;
+
+// //=======================================
+// // output mux when oflow/uflow
+
+// val out_flow =  VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_uflow(i)|out_oflow(i)})
+
+// val out_scale = Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(16.W))
+// val out_shift = Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(5.W))
+// val out_offset = Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W))
+// val out_bias = Vec(NVDLA_SDP_EW_THROUGHPUT, UInt(32.W))
+
+// for (i <- 0 to NVDLA_SDP_EW_THROUGHPUT-1){
+//     when(out_uflow(i)){
+//         when(!out_sel(i)){
+//             out_scale(i) := io.reg2dp_lut_le_slope_uflow_scale
+//             out_shift(i) := io.reg2dp_lut_le_slope_uflow_shift
+//             out_offset(i) := io.reg2dp_lut_le_start
+//             when(!io.reg2dp_lut_le_function){
+//                 out_bias(i) := Mux(io.reg2dp_lut_le_index_offset(7), 0.U, 1.U << io.reg2dp_lut_le_index_offset)
+//             }
+//             .otherwise{
+//                 out_bias(i) := 0.U
+//             }
+//         }
+//         .otherwise{
+//             out_scale(i) := io.reg2dp_lut_lo_slope_uflow_scale
+//             out_shift(i) := io.reg2dp_lut_lo_slope_uflow_shift
+//             out_offset(i) := io.reg2dp_lut_lo_start
+//             out_bias(i) := 0.U
+//         }
+//     }
+//     .elsewhen(out_oflow(i)){
+//         when(!out_sel){
+//             out_scale(i) := io.reg2dp_lut_le_slope_oflow_scale
+//             out_shift(i) := io.reg2dp_lut_le_slope_oflow_shift
+//             out_offset(i) := io.reg2dp_lut_le_end
+//             out_bias(i) := 0.U
+//         }
+//         .otherwise{
+//             out_scale(i) := io.reg2dp_lut_lo_slope_oflow_scale
+//             out_shift(i) := io.reg2dp_lut_lo_slope_oflow_shift
+//             out_offset(i) := io.reg2dp_lut_lo_end
+//             out_bias(i) := 0.U           
+//         }
+//     }
+//     .otherwise{
+//         out_scale(i) := 0.U
+//         out_shift(i) := 0.U
+//         out_offset(i) := 0.U
+//         out_bias(i) := 0.U            
+//     }
+// }
+
+// //=======================================
+// // output pipe
+
+
+
+
+
 
 
 
