@@ -5,7 +5,7 @@
 // import chisel3.experimental._
 
 
-// class NV_NVDLA_SDP_CORE_Y_lut extends Module {
+// class NV_NVDLA_SDP_CORE_Y_lut(implicit val conf: sdpConfiguration) extends Module {
 //     val io = IO(new Bundle {
 //     //general clock
 //     val nvdla_core_clk = Input(Clock())
@@ -32,13 +32,13 @@
 //     val reg2dp_lut_le_slope_oflow_scale = Input(UInt(16.W))
 //     val reg2dp_lut_le_slope_oflow_shift = Input(UInt(5.W))
 //     val reg2dp_lut_le_slope_uflow_scale = Input(UInt(16.W))
-//     val reg2dp_lut_le_slope_uflow_shift = Input((UInt(5.W))
+//     val reg2dp_lut_le_slope_uflow_shift = Input(UInt(5.W))
 //     val reg2dp_lut_le_start = Input(UInt(32.W))
 //     val reg2dp_lut_lo_end = Input(UInt(32.W))
 //     val reg2dp_lut_lo_slope_oflow_scale = Input(UInt(16.W))
 //     val reg2dp_lut_lo_slope_oflow_shift = Input(UInt(5.W))
 //     val reg2dp_lut_lo_slope_uflow_scale = Input(UInt(16.W))
-//     val reg2dp_lut_lo_slope_uflow_shift = Input((UInt(5.W))
+//     val reg2dp_lut_lo_slope_uflow_shift = Input(UInt(5.W))
 //     val reg2dp_lut_lo_start = Input(UInt(32.W))
 //     val reg2dp_perf_lut_en = Input(Bool())
 //     val reg2dp_proc_precision = Input(UInt(2.W))
@@ -54,6 +54,7 @@
 //     val op_en_load = Input(Bool())
 //   })
 
+// withClock(io.nvdla_core_clk){
 // //==============
 // // Reg Configure
 // //==============
@@ -82,10 +83,10 @@
 // val pro_in_select_lo = pro_in_table_id === true.B
 
 
-// val reg_le = Seq.fill(conf.LUT_TABLE_LE_DEPTH)(RegInit("b0".asUInt(16.W))) +: 
-//              Seq.fill(conf.LUT_TABLE_L0_DEPTH - conf.LUT_TABLE_LE_DEPTH)(Wire(UInt(16.W)))
+// val reg_le = Seq.fill(conf.LUT_TABLE_LE_DEPTH)(RegInit("b0".asUInt(16.W))) +:
+//              Seq.fill(conf.LUT_TABLE_LO_DEPTH - conf.LUT_TABLE_LE_DEPTH)(WireInit("b0".asUInt(16.W)))
              
-// val reg_lo = Seq.fill(conf.LUT_TABLE_LO_EPTH)(RegInit("b0".asUInt(16.W)))
+// val reg_lo = Seq.fill(conf.LUT_TABLE_LO_DEPTH)(RegInit("b0".asUInt(16.W)))
 // //===========================================
 // // READ LUT
 // val le_lut_data = MuxLookup(pro_in_addr, "b0".asUInt(16.W),
@@ -105,9 +106,6 @@
 //     }
 // }
 
-// for(i <- conf.LUT_TABLE_LE_DEPTH to conf.LUT_TABLE_L0_DEPTH -1){
-//     reg_le(i) := "b0".asUInt(16.W)
-// }
 
 // val lo_wr_en = Wire(Vec(conf.LUT_TABLE_LO_DEPTH, Bool()))
 // for(i <- 0 to conf.LUT_TABLE_LO_DEPTH -1){
@@ -119,12 +117,12 @@
 
 
 // val lut_in_prdy = Wire(Bool())
-// val pipe_p1 = Module(new NV_NVDLA_IS_pipe(EW_IDX_OUT_DW))
+// val pipe_p1 = Module(new NV_NVDLA_IS_pipe(conf.EW_IDX_OUT_DW))
 // pipe_p1.io.clk := io.nvdla_core_clk
 // pipe_p1.io.ri := lut_in_prdy
 // pipe_p1.io.vi := io.idx2lut_pvld
 // pipe_p1.io.di := io.idx2lut_pd
-// io.idx2lut_prdy = pipe_p1.io.ro
+// io.idx2lut_prdy := pipe_p1.io.ro
 // val lut_in_pvld = pipe_p1.io.vo
 // val lut_in_pd = pipe_p1.io.dout
 
@@ -138,19 +136,18 @@
 
 // val lut_in_fraction = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(35*i+34, 35*i)}) 
 // val lut_in_x = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(32*i+31+bx, 32*i+bx)})
-// val lut_in_oflow = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+bof)})
-// val lut_in_uflow = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+buf)})
-// val lut_in_sel = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+bsl)})
+// val lut_in_oflow = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+bof).asUInt})
+// val lut_in_uflow = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+buf).asUInt})
+// val lut_in_sel = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+bsl).asUInt})
 // val lut_in_addr = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(9*i+8+ba, 9*i+ba)})
-// val lut_in_le_hit = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+beh)})
-// val lut_in_lo_hit = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+boh)})
+// val lut_in_le_hit = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+beh).asUInt})
+// val lut_in_lo_hit = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => lut_in_pd(i+boh).asUInt})
 
 // //=======================================
 // // PERF STATISTIC
 // // OFLOW
 // //=======================================
-// val lut_oflow_sum_tmp = lut_in_oflow.reduce(_+_)
-// val lut_oflow_sum = lut_oflow_sum_tmp.asUInt(5.W)
+// val lut_oflow_sum = lut_in_oflow.reduce(_+&_)
 // val lut_oflow_cnt = Wire(UInt(32.W))
 
 // val perf_lut_oflow_add = Mux(lut_oflow_cnt.andR, "b0".asUInt(5.W), lut_oflow_sum)
@@ -169,7 +166,7 @@
 // perf_lut_oflow_cnt_ext := perf_lut_oflow_cnt_cur
 // perf_lut_oflow_cnt_mod := perf_lut_oflow_cnt_cur +& perf_lut_oflow_add -& perf_lut_oflow_sub
 // perf_lut_oflow_cnt_new := Mux(perf_lut_oflow_adv, perf_lut_oflow_cnt_mod, perf_lut_oflow_cnt_ext)
-// perf_lut_oflow_cnt_nxt := Mux(op_en_load, "b0".asUInt(34.W), perf_lut_oflow_cnt_new)
+// perf_lut_oflow_cnt_nxt := Mux(io.op_en_load, "b0".asUInt(34.W), perf_lut_oflow_cnt_new)
 
 // when(io.reg2dp_perf_lut_en){
 //     perf_lut_oflow_cnt_cur := perf_lut_oflow_cnt_nxt(31, 0)
@@ -181,8 +178,7 @@
 // // PERF STATISTIC
 // // UFLOW
 // //=======================================
-// val lut_uflow_sum_tmp = lut_in_uflow.reduce(_+_)
-// val lut_uflow_sum = lut_uflow_sum_tmp.asUInt(5.W)
+// val lut_uflow_sum = lut_in_uflow.reduce(_+&_)
 // val lut_uflow_cnt = Wire(UInt(32.W))
 
 // val perf_lut_uflow_add = Mux(lut_uflow_cnt.andR, "b0".asUInt(5.W), lut_uflow_sum)
@@ -201,7 +197,7 @@
 // perf_lut_uflow_cnt_ext := perf_lut_uflow_cnt_cur
 // perf_lut_uflow_cnt_mod := perf_lut_uflow_cnt_cur +& perf_lut_uflow_add -& perf_lut_uflow_sub
 // perf_lut_uflow_cnt_new := Mux(perf_lut_uflow_adv, perf_lut_uflow_cnt_mod, perf_lut_uflow_cnt_ext)
-// perf_lut_uflow_cnt_nxt := Mux(op_en_load, "b0".asUInt(34.W), perf_lut_uflow_cnt_new)
+// perf_lut_uflow_cnt_nxt := Mux(io.op_en_load, "b0".asUInt(34.W), perf_lut_uflow_cnt_new)
 
 // when(io.reg2dp_perf_lut_en){
 //     perf_lut_uflow_cnt_cur := perf_lut_uflow_cnt_nxt(31, 0)
@@ -214,8 +210,7 @@
 // // HYBRID
 // //=======================================
 // val lut_in_hybrid = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => Cat(!(lut_in_oflow(i)|lut_in_uflow(i)))})
-// val lut_hybrid_sum_tmp = lut_in_hybrid.reduce(_+_)
-// val lut_hybrid_sum = lut_hybrid_sum_tmp.asUInt(5.W)
+// val lut_hybrid_sum = lut_in_hybrid.reduce(_+&_)
 // val lut_hybrid_cnt = Wire(UInt(32.W))
 
 // val perf_lut_hybrid_add = Mux(lut_hybrid_cnt.andR, "b0".asUInt(5.W), lut_hybrid_sum)
@@ -234,7 +229,7 @@
 // perf_lut_hybrid_cnt_ext := perf_lut_hybrid_cnt_cur
 // perf_lut_hybrid_cnt_mod := perf_lut_hybrid_cnt_cur +& perf_lut_hybrid_add -& perf_lut_hybrid_sub
 // perf_lut_hybrid_cnt_new := Mux(perf_lut_hybrid_adv, perf_lut_hybrid_cnt_mod, perf_lut_hybrid_cnt_ext)
-// perf_lut_hybrid_cnt_nxt := Mux(op_en_load, "b0".asUInt(34.W), perf_lut_hybrid_cnt_new)
+// perf_lut_hybrid_cnt_nxt := Mux(io.op_en_load, "b0".asUInt(34.W), perf_lut_hybrid_cnt_new)
 
 // when(io.reg2dp_perf_lut_en){
 //     perf_lut_hybrid_cnt_cur := perf_lut_hybrid_cnt_nxt(31, 0)
@@ -246,8 +241,7 @@
 // // PERF STATISTIC
 // // LE_HIT
 // //=======================================
-// val lut_le_hit_sum_tmp = lut_in_le_hit.reduce(_+_)
-// val lut_le_hit_sum = lut_le_hit_sum_tmp.asUInt(5.W)
+// val lut_le_hit_sum = lut_in_le_hit.reduce(_+&_)
 // val lut_le_hit_cnt = Wire(UInt(32.W))
 
 // val perf_lut_le_hit_add = Mux(lut_le_hit_cnt.andR, "b0".asUInt(5.W), lut_le_hit_sum)
@@ -266,7 +260,7 @@
 // perf_lut_le_hit_cnt_ext := perf_lut_le_hit_cnt_cur
 // perf_lut_le_hit_cnt_mod := perf_lut_le_hit_cnt_cur +& perf_lut_le_hit_add -& perf_lut_le_hit_sub
 // perf_lut_le_hit_cnt_new := Mux(perf_lut_le_hit_adv, perf_lut_le_hit_cnt_mod, perf_lut_le_hit_cnt_ext)
-// perf_lut_le_hit_cnt_nxt := Mux(op_en_load, "b0".asUInt(34.W), perf_lut_le_hit_cnt_new)
+// perf_lut_le_hit_cnt_nxt := Mux(io.op_en_load, "b0".asUInt(34.W), perf_lut_le_hit_cnt_new)
 
 // when(io.reg2dp_perf_lut_en){
 //     perf_lut_le_hit_cnt_cur := perf_lut_le_hit_cnt_nxt(31, 0)
@@ -278,8 +272,7 @@
 // // PERF STATISTIC
 // // LO_HIT
 // //=======================================
-// val lut_lo_hit_sum_tmp = lut_in_lo_hit.reduce(_+_)
-// val lut_lo_hit_sum = lut_lo_hit_sum_tmp.asUInt(5.W)
+// val lut_lo_hit_sum = lut_in_lo_hit.reduce(_+&_)
 // val lut_lo_hit_cnt = Wire(UInt(32.W))
 
 // val perf_lut_lo_hit_add = Mux(lut_lo_hit_cnt.andR, "b0".asUInt(5.W), lut_lo_hit_sum)
@@ -298,7 +291,7 @@
 // perf_lut_lo_hit_cnt_ext := perf_lut_lo_hit_cnt_cur
 // perf_lut_lo_hit_cnt_mod := perf_lut_lo_hit_cnt_cur +& perf_lut_lo_hit_add -& perf_lut_lo_hit_sub
 // perf_lut_lo_hit_cnt_new := Mux(perf_lut_lo_hit_adv, perf_lut_lo_hit_cnt_mod, perf_lut_lo_hit_cnt_ext)
-// perf_lut_lo_hit_cnt_nxt := Mux(op_en_load, "b0".asUInt(34.W), perf_lut_lo_hit_cnt_new)
+// perf_lut_lo_hit_cnt_nxt := Mux(io.op_en_load, "b0".asUInt(34.W), perf_lut_lo_hit_cnt_new)
 
 // when(io.reg2dp_perf_lut_en){
 //     perf_lut_lo_hit_cnt_cur := perf_lut_lo_hit_cnt_nxt(31, 0)
@@ -322,16 +315,16 @@
 // val dat_in_y1 = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Wire(UInt(16.W))))
 
 // for(j <- 0 to conf.NVDLA_SDP_EW_THROUGHPUT-1){
-//     le_data0(j) := MuxLookup(lut_in_addr0, "b0".asUInt(16.W),
+//     le_data0(j) := MuxLookup(lut_in_addr_0(j), "b0".asUInt(16.W),
 //                    (0 to conf.LUT_TABLE_MAX_DEPTH-1) map { i => i.U -> reg_le(i) })
 
-//     le_data1(j) := MuxLookup(lut_in_addr1, "b0".asUInt(16.W),
+//     le_data1(j) := MuxLookup(lut_in_addr_1(j), "b0".asUInt(16.W),
 //                    (0 to conf.LUT_TABLE_MAX_DEPTH-1) map { i => i.U -> reg_le(i) })
 
-//     lo_data0(j) := MuxLookup(lut_in_addr0, "b0".asUInt(16.W),
+//     lo_data0(j) := MuxLookup(lut_in_addr_0(j), "b0".asUInt(16.W),
 //                    (0 to conf.LUT_TABLE_MAX_DEPTH-1) map { i => i.U -> reg_lo(i) })
 
-//     lo_data1(j) := MuxLookup(lut_in_addr1, "b0".asUInt(16.W),
+//     lo_data1(j) := MuxLookup(lut_in_addr_1(j), "b0".asUInt(16.W),
 //                    (0 to conf.LUT_TABLE_MAX_DEPTH-1) map { i => i.U -> reg_lo(i) })   
 
 //     dat_in_y0(j) := Mux(lut_in_sel(j) === false.B, le_data0(j), lo_data0(j))
@@ -342,7 +335,7 @@
 // // dat fifo wr
 // //=======================================
 // val rd_lut_en = lut_in_pvld & lut_in_prdy
-// io.dat_fifo_wr_pvld := rd_lut_en
+// val dat_fifo_wr_pvld = rd_lut_en
 
 // // PKT_PACK_WIRE( sdp_y_lut_dat ,  dat_in_ ,  dat_fifo_wr_pd )
 
@@ -353,11 +346,11 @@
 // val out_y0 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_wr_pd_0(16*i+15, 16*i)})
 // val out_y1 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_wr_pd_1(16*i+15, 16*i)})
 
-// val dat_fifo_rd_prdy = Wire(Boo())
+// val dat_fifo_rd_prdy = Wire(Bool())
 // val lut_out_prdy = Wire(Bool())
-// val u_dat = Module(new NV_NVDLA_SDP_CORE_Y_LUT_dat)
+// val u_dat = Module(new NV_NVDLA_SDP_CORE_Y_LUT_dat(128))
 // u_dat.io.nvdla_core_clk := io.nvdla_core_clk
-// u_dat.io.dat_fifo_wr_pvld := io.dat_fifo_wr_pvld
+// u_dat.io.dat_fifo_wr_pvld := dat_fifo_wr_pvld
 // u_dat.io.dat_fifo_wr_pd := dat_fifo_wr_pd(32*conf.NVDLA_SDP_EW_THROUGHPUT-1, 0)
 // u_dat.io.dat_fifo_rd_prdy := dat_fifo_rd_prdy
 // val dat_fifo_rd_pvld = u_dat.io.dat_fifo_rd_pvld
@@ -365,7 +358,7 @@
 // u_dat.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
 // // dat fifo rd
-// val dat_fifo_rd_prdy = lut_out_prdy;
+// dat_fifo_rd_prdy := lut_out_prdy;
 
 // //============
 // // cmd fifo wr:
@@ -383,6 +376,7 @@
 // val out_uflow = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Bool()))
 // val out_sel = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Bool()))
 
+// val cmd_fifo_rd_pd = Wire(UInt((70*conf.NVDLA_SDP_EW_THROUGHPUT).W))
 // for(i <- 0 to conf.NVDLA_SDP_EW_THROUGHPUT-1){
 //     out_fraction(i) := cmd_fifo_rd_pd(35*i+34, 35*i)
 //     out_x(i) := cmd_fifo_rd_pd(32*i+31+conf.NVDLA_SDP_EW_THROUGHPUT*35, 32*i+conf.NVDLA_SDP_EW_THROUGHPUT*35)
@@ -420,9 +414,9 @@
 // val out_scale = Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(16.W))
 // val out_shift = Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(5.W))
 // val out_offset = Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W))
-// val out_bias = Vec(NVDLA_SDP_EW_THROUGHPUT, UInt(32.W))
+// val out_bias = Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W))
 
-// for (i <- 0 to NVDLA_SDP_EW_THROUGHPUT-1){
+// for (i <- 0 to conf.NVDLA_SDP_EW_THROUGHPUT-1){
 //     when(out_uflow(i)){
 //         when(!out_sel(i)){
 //             out_scale(i) := io.reg2dp_lut_le_slope_uflow_scale
@@ -443,7 +437,7 @@
 //         }
 //     }
 //     .elsewhen(out_oflow(i)){
-//         when(!out_sel){
+//         when(!out_sel(i)){
 //             out_scale(i) := io.reg2dp_lut_le_slope_oflow_scale
 //             out_shift(i) := io.reg2dp_lut_le_slope_oflow_shift
 //             out_offset(i) := io.reg2dp_lut_le_end
@@ -467,31 +461,29 @@
 // //=======================================
 // // output pipe
 
+// val lut_out_pvld = dat_fifo_rd_pvld
 
+// val lut_out_pd_0 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_x(i)}).asUInt
+// val lut_out_pd_1 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_fraction(i)}).asUInt
+// val lut_out_pd_2 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_y0(i)}).asUInt
+// val lut_out_pd_3 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_y1(i)}).asUInt
+// val lut_out_pd_4 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_scale(i)}).asUInt
+// val lut_out_pd_5 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_shift(i)}).asUInt
+// val lut_out_pd_6 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_offset(i)}).asUInt
+// val lut_out_pd_7 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_bias(i)}).asUInt
+// val lut_out_pd_8 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_flow(i)}).asUInt
 
+// val lut_out_pd = Cat(lut_out_pd_8, lut_out_pd_7, lut_out_pd_6, lut_out_pd_5, lut_out_pd_4,
+//                      lut_out_pd_3, lut_out_pd_2, lut_out_pd_1, lut_out_pd_0)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// val pipe_p2 = Module(new NV_NVDLA_SDP_CORE_Y_lut_pipe_p2)
+// pipe_p2.io.nvdla_core_clk := io.nvdla_core_clk
+// pipe_p2.io.lut_out_pvld := lut_out_pvld
+// lut_out_prdy := pipe_p2.io.lut_out_prdy
+// pipe_p2.io.lut_out_pd := lut_out_pd
+// io.lut2inp_pvld := pipe_p2.io.lut2inp_pvld
+// pipe_p2.io.lut2inp_prdy := io.lut2inp_prdy
+// io.lut2inp_pd := pipe_p2.io.lut2inp_pd
 
 // }}
 
@@ -552,8 +544,7 @@
 //     ////////////////////////////////////////////////////////////////////////
 //     // WRITE SIDE                                                        //
 //     ////////////////////////////////////////////////////////////////////////
-//     val wr_reserving = Wire(Bool())
-//     wr_reserving := dat_fifo_wr_pvld
+//     val wr_reserving = io.dat_fifo_wr_pvld
 
 //     val wr_popping = Wire(Bool())      // fwd: write side sees pop?
 //     val dat_fifo_wr_count = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(2.W))} // write-side count
@@ -588,11 +579,11 @@
 //     val ram = Module(new NV_NVDLA_SDP_CORE_Y_LUT_dat_flopram_rwsa(2, 32))
 //     ram.io.clk := nvdla_core_clk_mgated
 //     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-//     ram.io.di := dat_fifo_wr_pd
+//     ram.io.di := io.dat_fifo_wr_pd
 //     ram.io.we := ram_we
 //     ram.io.wa := dat_fifo_wr_adr
 //     ram.io.ra := Mux(dat_fifo_wr_count === 0.U, "d2".asUInt(2.W), dat_fifo_rd_adr)
-//     rd_pd_p := ram.io.dout
+//     dat_fifo_rd_pd_p := ram.io.dout
 
 //     val rd_adr_next_popping = dat_fifo_rd_adr + 1.U
 //     when(rd_popping){
@@ -627,7 +618,7 @@
 //     val dat_fifo_rd_pd_out = withClock(nvdla_core_clk_mgated){Reg(UInt(width.W))}    // output data register
 //     val rd_req_next = (dat_fifo_rd_pvld_p || (dat_fifo_rd_pvld_int && !io.dat_fifo_rd_prdy))
 
-//     rd_pvld_int := rd_req_next
+//     dat_fifo_rd_pvld_int := rd_req_next
 //     when(rd_popping){
 //         dat_fifo_rd_pd_out := dat_fifo_rd_pd_p
 //     }
@@ -688,8 +679,8 @@
 //     //
 //     val nvdla_core_clk_mgated_enable = Wire(Bool())
 //     val nvdla_core_clk_mgate = Module(new NV_CLK_gate_power)
-//     nvdla_core_clk_mgate.io.clk := io.clk
-//     nvdla_core_clk_mgate.io.clk_en := clk_mgated_enable
+//     nvdla_core_clk_mgate.io.clk := io.nvdla_core_clk
+//     nvdla_core_clk_mgate.io.clk_en := nvdla_core_clk_mgated_enable
 //     val nvdla_core_clk_mgated = nvdla_core_clk_mgate.io.clk_gated
 
 //     ////////////////////////////////////////////////////////////////////////
@@ -729,17 +720,16 @@
 //     val rd_popping = Wire(Bool())  // read side doing pop this cycle?
 //     val cmd_fifo_rd_adr = withClock(nvdla_core_clk_mgated){RegInit(false.B)}   // current read address
 //     val ram_we = wr_pushing && (cmd_fifo_wr_count > 0.U || !rd_popping);   // note: write occurs next cycle
-//     val cmd_fifo_rd_pd_p = Wire(UInt(width.W))   // read data out of ram
 
 //     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
 //     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
 //     val ram = Module(new NV_NVDLA_SDP_CORE_Y_LUT_cmd_flopram_rwsa(2, width))
-//     ram.io.clk := io.clk
+//     ram.io.clk := nvdla_core_clk_mgated
 //     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 //     ram.io.di := io.cmd_fifo_wr_pd
 //     ram.io.we := ram_we
-//     ram.io.wa := io.cmd_fifo_wr_adr
+//     ram.io.wa := cmd_fifo_wr_adr
 //     ram.io.ra := Mux(cmd_fifo_wr_count =/= 0.U, "d2".asUInt(2.W), cmd_fifo_rd_adr)
 //     val cmd_fifo_rd_pd_p = ram.io.dout
     
@@ -782,7 +772,7 @@
 //     }
 
 //     io.cmd_fifo_rd_pd := cmd_fifo_rd_pd_out
-//     clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
+//     nvdla_core_clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
 //                          (io.cmd_fifo_wr_pvld && !cmd_fifo_wr_busy_int) || 
 //                          (cmd_fifo_wr_busy_int =/= cmd_fifo_wr_busy_next)) || 
 //                          (rd_pushing || rd_popping || (cmd_fifo_rd_pvld_int && io.cmd_fifo_rd_prdy)) || 
@@ -807,7 +797,7 @@
 
 //   })  
 // withClock(io.clk){
-//     val ram_ff = Seq.fill(depth)(withClock(io.clk_mgated){Reg(UInt(width.W))}) :+ Wire(UInt(width.W))
+//     val ram_ff = Seq.fill(depth){Reg(UInt(width.W))} :+ Wire(UInt(width.W))
 //     when(io.we){
 //         for(i <- 0 to depth-1){
 //             when(io.wa === i.U){
@@ -834,7 +824,7 @@
 
 //   })  
 // withClock(io.clk){
-//     val ram_ff = Seq.fill(depth)(withClock(io.clk_mgated){Reg(UInt(width.W))}) :+ Wire(UInt(width.W))
+//     val ram_ff = Seq.fill(depth){Reg(UInt(width.W))} :+ Wire(UInt(width.W))
 //     when(io.we){
 //         for(i <- 0 to depth-1){
 //             when(io.wa === i.U){
@@ -847,7 +837,7 @@
 //         (0 to depth) map { i => i.U -> ram_ff(i)} )
 // }}
 
-// class NV_NVDLA_SDP_CORE_Y_lut_pipe_p1 extends Module{
+// class NV_NVDLA_SDP_CORE_Y_lut_pipe_p1(implicit val conf: sdpConfiguration) extends Module{
 //   val io = IO(new Bundle{
 //         val nvdla_core_clk = Input(Clock())
 
@@ -872,7 +862,7 @@
   
 // }
 
-// class NV_NVDLA_SDP_CORE_Y_lut_pipe_p2 extends Module{
+// class NV_NVDLA_SDP_CORE_Y_lut_pipe_p2(implicit val conf: sdpConfiguration) extends Module{
 //   val io = IO(new Bundle{
 //         val nvdla_core_clk = Input(Clock())
 
@@ -899,7 +889,10 @@
 
 
 
-
+// object NV_NVDLA_SDP_CORE_Y_lutDriver extends App {
+//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_Y_lut)
+// }
 
 
 
