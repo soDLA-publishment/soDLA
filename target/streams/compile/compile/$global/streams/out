@@ -1,33 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:92:19: inferred type arguments [chisel3.core.UInt,Object] do not conform to method apply's type parameter bounds [S <: chisel3.UInt,T <: chisel3.Data][0m
-[0m[[0m[31merror[0m] [0m[0mval le_lut_data = MuxLookup(pro_in_addr, "b0".asUInt(16.W),[0m
-[0m[[0m[31merror[0m] [0m[0m                  ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:92:29: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : chisel3.core.UInt[0m
-[0m[[0m[31merror[0m] [0m[0m required: S[0m
-[0m[[0m[31merror[0m] [0m[0mval le_lut_data = MuxLookup(pro_in_addr, "b0".asUInt(16.W),[0m
-[0m[[0m[31merror[0m] [0m[0m                            ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:92:53: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : chisel3.core.UInt[0m
-[0m[[0m[31merror[0m] [0m[0m required: T[0m
-[0m[[0m[31merror[0m] [0m[0mval le_lut_data = MuxLookup(pro_in_addr, "b0".asUInt(16.W),[0m
-[0m[[0m[31merror[0m] [0m[0m                                                    ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:93:52: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : scala.collection.immutable.IndexedSeq[(chisel3.core.UInt, Object)][0m
-[0m[[0m[31merror[0m] [0m[0m required: Seq[(S, T)][0m
-[0m[[0m[31merror[0m] [0m[0m                  (0 to conf.LUT_TABLE_LE_DEPTH-1) map { i => i.U -> reg_le(i) })[0m
-[0m[[0m[31merror[0m] [0m[0m                                                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:105:19: value := is not a member of Object[0m
-[0m[[0m[31merror[0m] [0m[0m  Expression does not convert to assignment because receiver is not assignable.[0m
-[0m[[0m[31merror[0m] [0m[0m        reg_le(i) := pro_in_data[0m
-[0m[[0m[31merror[0m] [0m[0m                  ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:319:54: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : scala.collection.immutable.IndexedSeq[(chisel3.core.UInt, Object)][0m
-[0m[[0m[31merror[0m] [0m[0m required: Seq[(?, chisel3.core.Data)][0m
-[0m[[0m[31merror[0m] [0m[0m                   (0 to conf.LUT_TABLE_MAX_DEPTH-1) map { i => i.U -> reg_le(i) })[0m
-[0m[[0m[31merror[0m] [0m[0m                                                     ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:322:54: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : scala.collection.immutable.IndexedSeq[(chisel3.core.UInt, Object)][0m
-[0m[[0m[31merror[0m] [0m[0m required: Seq[(?, chisel3.core.Data)][0m
-[0m[[0m[31merror[0m] [0m[0m                   (0 to conf.LUT_TABLE_MAX_DEPTH-1) map { i => i.U -> reg_le(i) })[0m
-[0m[[0m[31merror[0m] [0m[0m                                                     ^[0m
-[0m[[0m[31merror[0m] [0m[0m7 errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_Y_lut.scala:415:1: ')' expected but 'val' found.[0m
+[0m[[0m[31merror[0m] [0m[0mval out_bias = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W)))[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
