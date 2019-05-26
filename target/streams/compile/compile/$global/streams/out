@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_mul.scala:82:30: not found: type NV_NVDLA_SDP_HLS_X_INT_MUL_pipe_p1[0m
-[0m[[0m[31merror[0m] [0m[0m    val pipe_p1 = Module{new NV_NVDLA_SDP_HLS_X_INT_MUL_pipe_p1}[0m
-[0m[[0m[31merror[0m] [0m[0m                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\pdp\NV_NVDLA_PDP_RDMA_REG_dual.scala:253:1: ')' expected but '}' found.[0m
+[0m[[0m[31merror[0m] [0m[0m}}[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

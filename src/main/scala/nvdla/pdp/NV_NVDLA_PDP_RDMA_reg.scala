@@ -4,43 +4,40 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-
-
 // //Implementation overview of ping-pong register file.
 
-// class NV_NVDLA_PDP_RDMA_reg(implicit val conf: cmacConfiguration) extends Module {
+// class NV_NVDLA_PDP_RDMA_reg extends Module {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val nvdla_core_clk = Input(Clock())      
 
-//         //csb2cmac
-//         val csb2cmac_a_req_pd = Input(UInt(63.W))
-//         val csb2cmac_a_req_pvld = Input(Bool())
-//         val csb2cmac_a_req_prdy = Output(Bool())
-        
-//         val cmac_a2csb_resp_pd = Output(UInt(34.W))
-//         val cmac_a2csb_resp_valid = Output(Bool())
-
-//         //reg2dp
-//         val dp2reg_done = Input(Bool())
+//         //csb2pdp
+//         val csb2pdp_rdma_req_pd = Input(UInt(63.W))
+//         val csb2pdp_rdma_req_pvld = Input(Bool())
 //         val csb2pdp_rdma_req_prdy = Output(Bool())
+        
 //         val pdp_rdma2csb_resp_pd = Output(UInt(34.W))
 //         val pdp_rdma2csb_resp_valid = Output(Bool())
+
+//         //reg2dp
+//         val dp2reg_d0_perf_read_stall = Input(UInt(32.W))
+//         val dp2reg_d1_perf_read_stall = Input(UInt(32.W))
+//         val dp2reg_done = Input(Bool())
 //         val reg2dp_cube_in_channel = Output(UInt(13.W))
 //         val reg2dp_cube_in_height = Output(UInt(13.W))
 //         val reg2dp_cube_in_width = Output(UInt(13.W))
 //         val reg2dp_cya = Output(UInt(32.W))
 //         val reg2dp_dma_en = Output(Bool())
 //         val reg2dp_flying_mode = Output(Bool())
-//         val reg2dp_input_data = Output(Bool())
-//         val reg2dp_kernel_stride_width = Output(Bool())
-//         val reg2dp_kernel_width = Output(Bool())
+//         val reg2dp_input_data = Output(UInt(2.W))
+//         val reg2dp_kernel_stride_width = Output(UInt(4.W))
+//         val reg2dp_kernel_width = Output(UInt(4.W))
 //         val reg2dp_op_en = Output(Bool())
-//         val reg2dp_pad_width = Output(Bool())
-//         val reg2dp_partial_width_in_first = Output(Bool())
-//         val reg2dp_partial_width_in_last = Output(Bool())
-//         val reg2dp_partial_width_in_mid = Output(Bool())
-//         val reg2dp_split_num = Output(Bool())
+//         val reg2dp_pad_width = Output(UInt(4.W))
+//         val reg2dp_partial_width_in_first = Output(UInt(10.W))
+//         val reg2dp_partial_width_in_last = Output(UInt(10.W))
+//         val reg2dp_partial_width_in_mid = Output(UInt(10.W))
+//         val reg2dp_split_num = Output(UInt(8.W))
 //         val reg2dp_src_base_addr_high = Output(UInt(32.W))
 //         val reg2dp_src_base_addr_low = Output(UInt(32.W))
 //         val reg2dp_src_line_stride = Output(UInt(32.W))
@@ -60,7 +57,7 @@
 // //       │       ─┴─       │                    reg   <= DP(data processor)
 // //       │                 │                    ||
 // //       └───┐         ┌───┘              |-------------|
-// //           │         │                  |     CMAC    |
+// //           │         │                  |     PDP     |
 // //           │         │                  |-------------|
 // //           │         │
 // //           │         └──────────────┐
@@ -76,13 +73,13 @@
 
 //     //Instance single register group
 //     val dp2reg_consumer = RegInit(false.B)
-//     val reg_offset = Wire(UInt(12.W))
-//     val reg_wr_data = Wire(UInt(32.W))
+//     val s_reg_offset = Wire(UInt(12.W))
+//     val s_reg_wr_data = Wire(UInt(32.W))
 //     val s_reg_wr_en = Wire(Bool())
-//     val dp2reg_status_0 = Wire(Bool())
-//     val dp2reg_status_1 = Wire(Bool())
+//     val dp2reg_status_0 = Wire(UInt(2.W))
+//     val dp2reg_status_1 = Wire(UInt(2.W))
 
-//     val u_single_reg = Module(new NV_NVDLA_CMAC_REG_single)
+//     val u_single_reg = Module(new NV_NVDLA_PDP_RDMA_REG_single)
 
 //     u_single_reg.io.reg_offset := reg_offset
 //     u_single_reg.io.reg_wr_data := reg_wr_data 
