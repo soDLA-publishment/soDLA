@@ -4,31 +4,40 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
-
 //Implementation overview of ping-pong register file.
 
-class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CDP_RDMA_reg extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())      
 
-        //csb2cmac
-        val csb2cmac_a_req_pd = Input(UInt(63.W))
-        val csb2cmac_a_req_pvld = Input(Bool())
-        val csb2cmac_a_req_prdy = Output(Bool())
+        //csb2cdp
+        val csb2cdp_rdma_req_pd = Input(UInt(63.W))
+        val csb2cdp_rdma_req_pvld = Input(Bool())
+        val csb2cdp_rdma_req_prdy = Output(Bool())
         
-        val cmac_a2csb_resp_pd = Output(UInt(34.W))
-        val cmac_a2csb_resp_valid = Output(Bool())
+        val cdp_rdma2csb_resp_pd = Output(UInt(34.W))
+        val cdp_rdma2csb_resp_valid = Output(Bool())
 
         //reg2dp
+        val dp2reg_d0_perf_read_stall = Input(UInt(32.W))
+        val dp2reg_d1_perf_read_stall = Input(UInt(32.W))
         val dp2reg_done = Input(Bool())
-        val reg2dp_conv_mode = Output(Bool())
+        val reg2dp_channel = Output(UInt(13.W))
+        val reg2dp_cya = Output(UInt(32.W))
+        val reg2dp_dma_en = Output(Bool())
+        val reg2dp_height = Output(UInt(13.W))
+        val reg2dp_input_data = Output(UInt(2.W))
         val reg2dp_op_en = Output(Bool())
-        val reg2dp_proc_precision = Output(UInt(2.W))
+        val reg2dp_src_base_addr_high = Output(UInt(32.W))
+        val reg2dp_src_base_addr_low = Output(UInt(32.W))
+        val reg2dp_src_line_stride = Output(UInt(32.W))
+        val reg2dp_src_ram_type = Output(Bool())
+        val reg2dp_src_surface_stride = Output(UInt(32.W))
+        val reg2dp_width = Output(UInt(13.W))
 
         //slave cg op
-        val slcg_op_en = Output(UInt(conf.CMAC_SLCG_NUM.W))
+        val slcg_op_en = Output(UInt(1.W))
     })
 //                             
 //          ┌─┐       ┌─┐
@@ -40,7 +49,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: cmacConfiguration) extends Module {
 //       │       ─┴─       │                    reg   <= DP(data processor)
 //       │                 │                    ||
 //       └───┐         ┌───┘              |-------------|
-//           │         │                  |     CMAC    |
+//           │         │                  |     CDP     |
 //           │         │                  |-------------|
 //           │         │
 //           │         └──────────────┐
@@ -56,16 +65,16 @@ withClock(io.nvdla_core_clk){
 
     //Instance single register group
     val dp2reg_consumer = RegInit(false.B)
-    val reg_offset = Wire(UInt(12.W))
+    val reg_offset= Wire(UInt(12.W))
     val reg_wr_data = Wire(UInt(32.W))
     val s_reg_wr_en = Wire(Bool())
-    val dp2reg_status_0 = Wire(Bool())
-    val dp2reg_status_1 = Wire(Bool())
+    val dp2reg_status_0 = Wire(UInt(2.W))
+    val dp2reg_status_1 = Wire(UInt(2.W))
 
-    val u_single_reg = Module(new NV_NVDLA_CMAC_REG_single)
+    val u_single_reg = Module(new NV_NVDLA_CDP_RDMA_REG_single)
 
     u_single_reg.io.reg_offset := reg_offset
-    u_single_reg.io.reg_wr_data := reg_wr_data 
+    u_single_reg.io.reg_wr_data := reg_wr_data
     u_single_reg.io.reg_wr_en := s_reg_wr_en
     u_single_reg.io.nvdla_core_clk := io.nvdla_core_clk
     u_single_reg.io.consumer := dp2reg_consumer
@@ -78,36 +87,56 @@ withClock(io.nvdla_core_clk){
     val d0_reg_wr_en = Wire(Bool())
     val reg2dp_d0_op_en = RegInit(false.B)
 
-    val u_dual_reg_d0 = Module(new NV_NVDLA_CMAC_REG_dual)
+    val u_dual_reg_d0 = Module(new NV_NVDLA_CDP_RDMA_REG_dual)
     u_dual_reg_d0.io.reg_offset := reg_offset
     u_dual_reg_d0.io.reg_wr_data := reg_wr_data
     u_dual_reg_d0.io.reg_wr_en := d0_reg_wr_en
     u_dual_reg_d0.io.nvdla_core_clk := io.nvdla_core_clk
     u_dual_reg_d0.io.op_en := reg2dp_d0_op_en
+    u_dual_reg_d0.io.perf_read_stall := io.dp2reg_d0_perf_read_stall
     val d0_reg_rd_data = u_dual_reg_d0.io.reg_rd_data
-    val reg2dp_d0_conv_mode = u_dual_reg_d0.io.conv_mode 
-    val reg2dp_d0_proc_precision = u_dual_reg_d0.io.proc_precision
+    val reg2dp_d0_cya = u_dual_reg_d0.io.cya
+    val reg2dp_d0_channel = u_dual_reg_d0.io.channel
+    val reg2dp_d0_height = u_dual_reg_d0.io.height
+    val reg2dp_d0_width = u_dual_reg_d0.io.cdp_width
+    val reg2dp_d0_input_data = u_dual_reg_d0.io.input_data
     val reg2dp_d0_op_en_trigger = u_dual_reg_d0.io.op_en_trigger
+    val reg2dp_d0_dma_en = u_dual_reg_d0.io.dma_en
+    val reg2dp_d0_src_base_addr_high = u_dual_reg_d0.io.src_base_addr_high
+    val reg2dp_d0_src_base_addr_low = u_dual_reg_d0.io.src_base_addr_low
+    val reg2dp_d0_src_ram_type = u_dual_reg_d0.io.src_ram_type 
+    val reg2dp_d0_src_line_stride = u_dual_reg_d0.io.src_line_stride
+    val reg2dp_d0_src_surface_stride = u_dual_reg_d0.io.src_surface_stride
 
     val d1_reg_wr_en = Wire(Bool())
     val reg2dp_d1_op_en = RegInit(false.B)
 
-    val u_dual_reg_d1 = Module(new NV_NVDLA_CMAC_REG_dual)
+    val u_dual_reg_d1 = Module(new NV_NVDLA_CDP_RDMA_REG_dual)
     u_dual_reg_d1.io.reg_offset := reg_offset
     u_dual_reg_d1.io.reg_wr_data := reg_wr_data
     u_dual_reg_d1.io.reg_wr_en := d1_reg_wr_en
     u_dual_reg_d1.io.nvdla_core_clk := io.nvdla_core_clk
     u_dual_reg_d1.io.op_en := reg2dp_d1_op_en
+    u_dual_reg_d1.io.perf_read_stall := io.dp2reg_d1_perf_read_stall
     val d1_reg_rd_data = u_dual_reg_d1.io.reg_rd_data
-    val reg2dp_d1_conv_mode = u_dual_reg_d1.io.conv_mode 
-    val reg2dp_d1_proc_precision = u_dual_reg_d1.io.proc_precision
+    val reg2dp_d1_cya = u_dual_reg_d1.io.cya
+    val reg2dp_d1_channel = u_dual_reg_d1.io.channel
+    val reg2dp_d1_height = u_dual_reg_d1.io.height
+    val reg2dp_d1_width = u_dual_reg_d1.io.cdp_width
+    val reg2dp_d1_input_data = u_dual_reg_d1.io.input_data
     val reg2dp_d1_op_en_trigger = u_dual_reg_d1.io.op_en_trigger
+    val reg2dp_d1_dma_en = u_dual_reg_d1.io.dma_en
+    val reg2dp_d1_src_base_addr_high = u_dual_reg_d1.io.src_base_addr_high
+    val reg2dp_d1_src_base_addr_low = u_dual_reg_d1.io.src_base_addr_low
+    val reg2dp_d1_src_ram_type = u_dual_reg_d1.io.src_ram_type 
+    val reg2dp_d1_src_line_stride = u_dual_reg_d1.io.src_line_stride
+    val reg2dp_d1_src_surface_stride = u_dual_reg_d1.io.src_surface_stride
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
     // GENERATE CONSUMER PIONTER IN GENERAL SINGLE REGISTER GROUP         //
     //                                                                    //
-    //////////////////////////////////////////////////////////////////////// 
+    ////////////////////////////////////////////////////////////////////////
     val dp2reg_consumer_w = ~dp2reg_consumer
 
     when(io.dp2reg_done){
@@ -149,7 +178,7 @@ withClock(io.nvdla_core_clk){
     reg2dp_op_en_reg := reg2dp_op_en_reg_w 
     io.reg2dp_op_en := reg2dp_op_en_reg(2)
 
-    io.slcg_op_en := ShiftRegister(Fill(11, reg2dp_op_en_ori), 3)
+    io.slcg_op_en := ShiftRegister(Fill(1, reg2dp_op_en_ori), 3)
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
     // GENERATE ACCESS LOGIC TO EACH REGISTER GROUP                       //
@@ -166,8 +195,8 @@ withClock(io.nvdla_core_clk){
     d1_reg_wr_en := reg_wr_en & select_d1 & !reg2dp_d1_op_en
 
     val reg_rd_data = (Fill(32, select_s) & s_reg_rd_data)|
-                        (Fill(32, select_d0) & d0_reg_rd_data)|
-                        (Fill(32, select_d1)& d1_reg_rd_data)
+                      (Fill(32, select_d0) & d0_reg_rd_data)|
+                      (Fill(32, select_d1)& d1_reg_rd_data)
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -177,9 +206,9 @@ withClock(io.nvdla_core_clk){
     val req_pvld = RegInit(false.B)
     val req_pd = RegInit("b0".asUInt(63.W))
 
-    req_pvld := io.csb2cmac_a_req_pvld
-    when(io.csb2cmac_a_req_pvld){
-        req_pd := io.csb2cmac_a_req_pd
+    req_pvld := io.csb2cdp_rdma_req_pvld
+    when(io.csb2cdp_rdma_req_pvld){
+        req_pd := io.csb2cdp_rdma_req_pd
     }
 
     // PKT_UNPACK_WIRE( csb2xx_16m_be_lvl ,  req_ ,  req_pd ) 
@@ -191,7 +220,7 @@ withClock(io.nvdla_core_clk){
     val req_wrbe = req_pd(60, 57)
     val req_level = req_pd(62, 61)
 
-    io.csb2cmac_a_req_prdy := true.B
+    io.csb2cdp_rdma_req_prdy := true.B
 
     //Address in CSB master is word aligned while address in regfile is byte aligned.
     reg_offset := Cat(req_addr, "b0".asUInt(2.W))
@@ -209,19 +238,19 @@ withClock(io.nvdla_core_clk){
     val csb_wresp_error = false.B
     val csb_wresp_pd_w = Cat(true.B, csb_wresp_error, csb_wresp_rdat)
 
-    val cmac_a2csb_resp_pd_out = RegInit("b0".asUInt(34.W))
-    val cmac_a2csb_resp_valid_out = RegInit(false.B)
+    val cdp_rdma2csb_resp_pd_out = RegInit("b0".asUInt(34.W))
+    val cdp_rdma2csb_resp_valid_out = RegInit(false.B)
 
     when(reg_rd_en){
-        cmac_a2csb_resp_pd_out := csb_rresp_pd_w
+        cdp_rdma2csb_resp_pd_out := csb_rresp_pd_w
     }
     .elsewhen(reg_wr_en & req_nposted){
-        cmac_a2csb_resp_pd_out := csb_wresp_pd_w
+        cdp_rdma2csb_resp_pd_out := csb_wresp_pd_w
     }
-    cmac_a2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
+    cdp_rdma2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
 
-    io.cmac_a2csb_resp_pd := cmac_a2csb_resp_pd_out
-    io.cmac_a2csb_resp_valid := cmac_a2csb_resp_valid_out
+    io.cdp_rdma2csb_resp_pd := cdp_rdma2csb_resp_pd_out
+    io.cdp_rdma2csb_resp_valid := cdp_rdma2csb_resp_valid_out
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -229,7 +258,27 @@ withClock(io.nvdla_core_clk){
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
 
-    io.reg2dp_conv_mode := Mux(dp2reg_consumer, reg2dp_d1_conv_mode, reg2dp_d0_conv_mode)
-    io.reg2dp_proc_precision := Mux(dp2reg_consumer, reg2dp_d1_proc_precision, reg2dp_d0_proc_precision)
+    io.reg2dp_cya := Mux(dp2reg_consumer, reg2dp_d1_cya, reg2dp_d0_cya)
+    io.reg2dp_channel := Mux(dp2reg_consumer, reg2dp_d1_channel, reg2dp_d0_channel)
+    io.reg2dp_height := Mux(dp2reg_consumer, reg2dp_d1_height, reg2dp_d0_height)
+    io.reg2dp_width := Mux(dp2reg_consumer, reg2dp_d1_width, reg2dp_d0_width)
+    io.reg2dp_input_data := Mux(dp2reg_consumer, reg2dp_d1_input_data, reg2dp_d0_input_data)
+    io.reg2dp_dma_en := Mux(dp2reg_consumer, reg2dp_d1_dma_en, reg2dp_d0_dma_en)
+    io.reg2dp_src_base_addr_high := Mux(dp2reg_consumer, reg2dp_d1_src_base_addr_high, reg2dp_d0_src_base_addr_high)
+    io.reg2dp_src_base_addr_low := Mux(dp2reg_consumer, reg2dp_d1_src_base_addr_low, reg2dp_d0_src_base_addr_low)
+    io.reg2dp_src_ram_type := Mux(dp2reg_consumer, reg2dp_d1_src_ram_type, reg2dp_d0_src_ram_type)
+    io.reg2dp_src_line_stride := Mux(dp2reg_consumer, reg2dp_d1_src_line_stride, reg2dp_d0_src_line_stride)
+    io.reg2dp_src_surface_stride := Mux(dp2reg_consumer, reg2dp_d1_src_surface_stride, reg2dp_d0_src_surface_stride)
 
+    ////////////////////////////////////////////////////////////////////////
+    //                                                                    //
+    // PASTE ADDIFITON LOGIC HERE FROM EXTRA FILE                         //
+    //                                                                    //
+    ////////////////////////////////////////////////////////////////////////
+    //No extra logic
 }}
+
+
+object NV_NVDLA_CDP_RDMA_regDriver extends App {
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_RDMA_reg())
+}
