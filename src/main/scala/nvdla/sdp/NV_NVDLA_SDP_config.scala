@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class sdpConfiguration extends project_spec
+class sdpConfiguration extends cdmaConfiguration
 {
     val AM_AW = NVDLA_MEMORY_ATOMIC_LOG2       //atomic m address width
     val AM_AW2 = NVDLA_MEMORY_ATOMIC_LOG2-1

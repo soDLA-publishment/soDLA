@@ -19,7 +19,7 @@ class NV_NVDLA_SDP_CORE_unpack extends Module {
 
         val out_pvld = Output(Bool())
         val out_prdy = Input(Bool())
-        val out_data = Input(UInt(OW.W))
+        val out_data = Output(UInt(OW.W))
 
     })
     //     
