@@ -1,4 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_WDMA_unpack.scala:85:20: not found: value pack_total[0m
-[0m[[0m[31merror[0m] [0m[0m    io.out_data := pack_total[0m
-[0m[[0m[31merror[0m] [0m[0m                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_WDMA_DAT_in.scala:178:68: in_dat_rdy is already defined as value in_dat_rdy[0m
+[0m[[0m[31merror[0m] [0m[0m    val in_dat_rdy = dfifo0_wr_rdy & dfifo1_wr_rdy & dfifo2_wr_rdy & dfifo3_wr_rdy;[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_WDMA_DAT_in.scala:179:131: in_dat_accept is already defined as value in_dat_accept[0m
+[0m[[0m[31merror[0m] [0m[0m    val in_dat_accept = (dfifo0_wr_pvld & dfifo0_wr_prdy) | (dfifo1_wr_pvld & dfifo1_wr_prdy) | (dfifo2_wr_pvld & dfifo2_wr_prdy) | (dfifo3_wr_pvld & dfifo3_wr_prdy);[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                                                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
