@@ -1,69 +1,100 @@
+package nvdla
 
-// package nvdla
+import chisel3._
+import chisel3.experimental._
+import chisel3.util._
+import chisel3.iotesters.Driver
 
-// import chisel3._
-// import chisel3.util._
-// import chisel3.experimental._
+class NV_NVDLA_SDP_RDMA_unpack(implicit val conf: sdpConfiguration) extends Module {
+   val RATIO = 4*conf.AM_DW/conf.NVDLA_MEMIF_WIDTH
+   val io = IO(new Bundle {
+        //in clock
+        val nvdla_core_clk = Input(Clock())
+
+        val cfg_dp_8 = Input(Bool())
+
+        val inp_end = Input(Bool())
+        val inp_pvld = Input(Bool())
+        val inp_prdy = Output(Bool())
+        val inp_data = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
+
+        val out_pvld = Output(Bool())
+        val out_prdy = Input(Bool())
+        val out_data = Output(UInt((4*conf.AM_DW+4).W))
+
+    })
+    //     
+    //          ┌─┐       ┌─┐
+    //       ┌──┘ ┴───────┘ ┴──┐
+    //       │                 │
+    //       │       ───       │          
+    //       │  ─┬┘       └┬─  │
+    //       │                 │
+    //       │       ─┴─       │
+    //       │                 │
+    //       └───┐         ┌───┘
+    //           │         │
+    //           │         │
+    //           │         │
+    //           │         └──────────────┐
+    //           │                        │
+    //           │                        ├─┐
+    //           │                        ┌─┘    
+    //           │                        │
+    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+    //             │ ─┤ ─┤       │ ─┤ ─┤         
+    //             └──┴──┘       └──┴──┘ 
+withClock(io.nvdla_core_clk){
+
+    val pack_pvld = RegInit(false.B)
+
+    val pack_prdy = io.out_prdy
+    io.out_pvld := pack_pvld
+    io.inp_prdy := (!pack_pvld) | pack_prdy
+
+    val is_pack_last = Wire(Bool())
+    when(io.inp_prdy){
+        pack_pvld := io.inp_pvld & is_pack_last
+    }
+    val inp_acc = io.inp_pvld & io.inp_prdy
+
+    val data_mask = Cat(Fill(4-conf.NVDLA_DMA_MASK_BIT, false.B), io.inp_data)
+    val data_size = data_mask(0) + data_mask(1) + data_mask(2) + data_mask(3)
+    val pack_cnt = RegInit("b0".asUInt(2.W))
+    val pack_cnt_nxt = pack_cnt + data_size
+    when(inp_acc){
+        when(is_pack_last){
+            pack_cnt := 0.U
+        }
+        .otherwise{
+            pack_cnt := pack_cnt_nxt
+        }
+    }
+    is_pack_last := (pack_cnt_nxt === 4.U) | io.inp_end;
+
+    val pack_mask = RegInit("b0".asUInt(4.W))
+    when(inp_acc & is_pack_last){
+        pack_mask := Mux(pack_cnt_nxt === 4.U, "hf".asUInt(4.W),
+                     Mux(pack_cnt_nxt === 3.U, "h7".asUInt(4.W),
+                     Mux(pack_cnt_nxt === 2.U, "h3".asUInt(4.W),
+                     pack_cnt_nxt)))
+    }
+
+    val pack_seq = Reg(Vec(RATIO, UInt(conf.AM_DW.W)))
+        
+    when(inp_acc){
+        for(i <- 0 to RATIO-1){
+            pack_seq(i) := io.inp_data(4/RATIO*conf.AM_DW-1, 0)
+        }
+    }
+
+    val pack_total = pack_seq.asUInt
+    io.out_data := Cat(pack_mask, pack_total)
+
+}}
 
 
-// class (implicit conf: sdpConfiguration) extends Module {
-//     val io = IO(new Bundle {
-//     //general clock
-
-//   })
-
-
-// withClock(io.nvdla_core_clk){
-// //==============
-// // DMA Interface
-// //==============
-//     // rd Channel: Request
-//     val nv_NVDLA_PDP_RDMA_rdreq = Module{new NV_NVDLA_DMAIF_rdreq}
-
-//     nv_NVDLA_PDP_RDMA_rdreq.io.nvdla_core_clk := io.nvdla_core_clk
-//     nv_NVDLA_PDP_RDMA_rdreq.io.reg2dp_src_ram_type := io.dma_rd_req_ram_type
-
-//     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         nv_NVDLA_PDP_RDMA_rdreq.io.cvif_rd_req_ready.get := io.sdp2cvif_rd_req_ready.get
-//         io.sdp2cvif_rd_req_pd.get := nv_NVDLA_PDP_RDMA_rdreq.io.cvif_rd_req_pd.get
-//         io.sdp2cvif_rd_req_valid.get := nv_NVDLA_PDP_RDMA_rdreq.io.cvif_rd_req_valid.get
-//     }
-
-//     io.sdp2mcif_rd_req_pd:= nv_NVDLA_PDP_RDMA_rdreq.io.mcif_rd_req_pd
-//     io.sdp2mcif_rd_req_valid := nv_NVDLA_PDP_RDMA_rdreq.io.mcif_rd_req_valid
-//     nv_NVDLA_PDP_RDMA_rdreq.io.mcif_rd_req_ready := io.sdp2mcif_rd_req_ready
-
-//     nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_pd := io.dma_rd_req_pd
-//     nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_vld := io.dma_rd_req_vld
-//     io.dma_rd_req_rdy := nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_rdy
-
-
-//     // rd Channel: Response
-//     val nv_NVDLA_PDP_RDMA_rdrsp = Module{new NV_NVDLA_DMAIF_rdrsp}
-
-//     nv_NVDLA_PDP_RDMA_rdrsp.io.nvdla_core_clk := io.nvdla_core_clk
-
-//     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_pd.get := io.cvif2sdp_rd_rsp_pd.get
-//         nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_valid.get := io.cvif2sdp_rd_rsp_valid.get
-//         io.cvif2sdp_rd_rsp_ready.get := nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_ready.get
-//     }
-
-//     nv_NVDLA_PDP_RDMA_rdrsp.io.mcif_rd_rsp_pd := io.mcif2sdp_rd_rsp_pd
-//     nv_NVDLA_PDP_RDMA_rdrsp.io.mcif_rd_rsp_valid := io.mcif2sdp_rd_rsp_valid
-//     io.mcif2cdma_wt_rd_rsp_ready := nv_NVDLA_PDP_RDMA_rdrsp.io.mcif2sdp_rd_rsp_ready
-
-//     io.dma_rd_rsp_pd := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd
-//     io.dma_rd_rsp_vld := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pvld
-//     nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_prdy := io.dma_rd_rsp_rdy
-
-//     io.sdp2mcif_rd_cdt_lat_fifo_pop := RegNext(io.dma_rd_cdt_lat_fifo_pop & (io.dma_rd_rsp_ram_type === true.B), false.B)
-//     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         io.sdp2cvif_rd_cdt_lat_fifo_pop.get := RegNext(io.dma_rd_cdt_lat_fifo_pop & (io.dma_rd_rsp_ram_type === false.B), false.B)
-//     }
-
-// }}
-
-
-
-
+object NV_NVDLA_SDP_RDMA_unpackDriver extends App {
+  implicit val conf: sdpConfiguration = new sdpConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_unpack())
+}

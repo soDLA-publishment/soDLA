@@ -187,8 +187,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
         u_slcg_op(i).io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
         u_slcg_op(i).io.nvdla_core_clk := io.nvdla_core_clk
 
-        u_slcg_op(i).io.slcg_en_src_0 := io.slcg_op_en(i)
-        u_slcg_op(i).io.slcg_en_src_1 := true.B
+        u_slcg_op(i).io.slcg_en := io.slcg_op_en(i)
         u_slcg_op(i).io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
         nvdla_op_gated_clk(i) := u_slcg_op(i).io.nvdla_core_gated_clk                                                                                               

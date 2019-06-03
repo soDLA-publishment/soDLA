@@ -63,7 +63,7 @@
 //         int8_msb_sum_2_6 := io.sq_pd_int8_msb(2) +& io.sq_pd_int8_msb(6)
 //     }
 //     when(io.load_din_d & (io.len7|io.len9)){
-//         int8_msb_sum_1_7 := io.sq_pd_int8_msb(1) + io.sq_pd_int8_msb(7)
+//         int8_msb_sum_1_7 := io.sq_pd_int8_msb(1) +& io.sq_pd_int8_msb(7)
 //     }
 //     when(io.load_din_d & (io.len9)){
 //         int8_msb_sum_0_8 := io.sq_pd_int8_msb(0) +& io.sq_pd_int8_msb(8)
@@ -77,23 +77,22 @@
 //     val sq4_d = RegInit("b0".asUInt(33.W))
 
 //     when(io.load_din_d){
-//         int16_sum_3_5:= sq(3) + sq(5)
+//         int16_sum_3_5:= sq(3) +& sq(5)
 //     }
 //     when(io.load_din_d & (io.len5|io.len7|io.len9)){
-//         int16_sum_2_6 := sq(2) + sq(6)
+//         int16_sum_2_6 := sq(2) +& sq(6)
 //     }
 //     when(io.load_din_d & (io.len7|io.len9)){
-//         int16_sum_1_7 := sq(1) + sq(7)
+//         int16_sum_1_7 := sq(1) +& sq(7)
 //     }
 //     when(io.load_din_d & (io.len9)){
-//         int16_sum_0_8 := sq(0) + sq(8)
+//         int16_sum_0_8 := sq(0) +& sq(8)
 //     }
-//         when(io.load_din_d){
+//     when(io.load_din_d){
 //             sq4_d:= Cat("d0".U(16.W), io.sq_pd_int8_lsb(4))
-//         }
-//         when(io.load_din_d){
-//             sq_pd_int8_msb_4_d:=io.sq_pd_int8_msb(4)
-//         }
+//     }
+//     when(io.load_din_d){
+//         sq_pd_int8_msb_4_d:=io.sq_pd_int8_msb(4)
 //     }
    
 //     int8_lsb_sum3 := int16_sum3(18,0)

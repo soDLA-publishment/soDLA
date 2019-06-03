@@ -61,14 +61,14 @@
 //         val src_base_addr_high = Output(UInt(32.W))
 //         val src_base_addr_low = Output(UInt(32.W))
 //         val src_line_stride = Output(UInt(32.W))
-//         val src_surface_strid = Output(UInt(32.W))
+//         val src_surface_stride = Output(UInt(32.W))
 
 //         // Read-only register input
-//         val inf_input_num = Input(Bool())
-//         val nan_input_num = Input(Bool())
-//         val nan_output_num = Input(Bool())
+//         val inf_input_num = Input(UInt(32.W))
+//         val nan_input_num = Input(UInt(32.W))
+//         val nan_output_num = Input(UInt(32.W))
 //         val op_en = Input(Bool())
-//         val perf_write_stal = Input(Bool())
+//         val perf_write_stall = Input(UInt(32.W))
 //     })
 // //     
 // //          ┌─┐       ┌─┐
@@ -94,9 +94,44 @@
 //     withClock(io.nvdla_core_clk){
 
 //     // Address decode
-
-//     val nvdla_cmac_a_d_misc_cfg_0_wren = (io.reg_offset === "hc".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_cmac_a_d_op_enable_0_wren = (io.reg_offset === "h8".asUInt(32.W))&io.reg_wr_en
+//     val nvdla_pdp_d_cya_0_wren = (io.reg_offset === "9c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_data_cube_in_channel_0_wren = (io.reg_offset == (32'hd014  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_data_cube_in_height_0_wren = (io.reg_offset == (32'hd010  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_data_cube_in_width_0_wren = (io.reg_offset == (32'hd00c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_data_cube_out_channel_0_wren = (io.reg_offset == (32'hd020  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_data_cube_out_height_0_wren = (io.reg_offset == (32'hd01c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_data_cube_out_width_0_wren = (io.reg_offset == (32'hd018  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_data_format_0_wren = (io.reg_offset == (32'hd084  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_dst_base_addr_high_0_wren = (io.reg_offset == (32'hd074  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_dst_base_addr_low_0_wren = (io.reg_offset == (32'hd070  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_dst_line_stride_0_wren = (io.reg_offset == (32'hd078  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_dst_ram_cfg_0_wren = (io.reg_offset == (32'hd080  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_dst_surface_stride_0_wren = (io.reg_offset == (32'hd07c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_inf_input_num_0_wren = (io.reg_offset == (32'hd088  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_nan_flush_to_zero_0_wren = (io.reg_offset == (32'hd028  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_nan_input_num_0_wren = (io.reg_offset == (32'hd08c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_nan_output_num_0_wren = (io.reg_offset == (32'hd090  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_operation_mode_cfg_0_wren = (io.reg_offset == (32'hd024  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_op_enable_0_wren = (io.reg_offset == (32'hd008  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_partial_width_in_0_wren = (io.reg_offset == (32'hd02c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_partial_width_out_0_wren = (io.reg_offset == (32'hd030  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_perf_enable_0_wren = (io.reg_offset == (32'hd094  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_perf_write_stall_0_wren = (io.reg_offset == (32'hd098  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_kernel_cfg_0_wren = (io.reg_offset == (32'hd034  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_cfg_0_wren = (io.reg_offset == (32'hd040  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_value_1_cfg_0_wren = (io.reg_offset == (32'hd044  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_value_2_cfg_0_wren = (io.reg_offset == (32'hd048  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_value_3_cfg_0_wren = (io.reg_offset == (32'hd04c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_value_4_cfg_0_wren = (io.reg_offset == (32'hd050  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_value_5_cfg_0_wren = (io.reg_offset == (32'hd054  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_value_6_cfg_0_wren = (io.reg_offset == (32'hd058  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_pooling_padding_value_7_cfg_0_wren = (io.reg_offset == (32'hd05c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_recip_kernel_height_0_wren = (io.reg_offset == (32'hd03c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_recip_kernel_width_0_wren = (io.reg_offset == (32'hd038  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_src_base_addr_high_0_wren = (io.reg_offset == (32'hd064  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_src_base_addr_low_0_wren = (io.reg_offset == (32'hd060  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_src_line_stride_0_wren = (io.reg_offset == (32'hd068  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+//     val nvdla_pdp_d_src_surface_stride_0_wren = (io.reg_offset == (32'hd06c  & 32'h00000fff)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
     
 //     val nvdla_cmac_a_d_misc_cfg_0_out = Cat("b0".asUInt(18.W), io.proc_precision, "b0".asUInt(11.W), io.conv_mode)
 //     val nvdla_cmac_a_d_op_enable_0_out =  Cat("b0".asUInt(31.W), io.op_en)
