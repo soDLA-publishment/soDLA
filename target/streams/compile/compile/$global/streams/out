@@ -1,13 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cacc\NV_NVDLA_cacc.scala:293:25: value slcg_en_src_0 is not a member of chisel3.Bundle{val dla_clk_ovr_on_sync: chisel3.core.Clock; val global_clk_ovr_on_sync: chisel3.core.Clock; val nvdla_core_clk: chisel3.core.Clock; val slcg_en: chisel3.core.Bool; val tmc2slcg_disable_clock_gating: chisel3.core.Bool; val nvdla_core_gated_clk: chisel3.core.Clock}[0m
-[0m[[0m[31merror[0m] [0m[0m        u_slcg_op(i).io.slcg_en_src_0 := slcg_op_en(i)[0m
-[0m[[0m[31merror[0m] [0m[0m                        ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cacc\NV_NVDLA_cacc.scala:294:25: value slcg_en_src_1 is not a member of chisel3.Bundle{val dla_clk_ovr_on_sync: chisel3.core.Clock; val global_clk_ovr_on_sync: chisel3.core.Clock; val nvdla_core_clk: chisel3.core.Clock; val slcg_en: chisel3.core.Bool; val tmc2slcg_disable_clock_gating: chisel3.core.Bool; val nvdla_core_gated_clk: chisel3.core.Clock}[0m
-[0m[[0m[31merror[0m] [0m[0m        u_slcg_op(i).io.slcg_en_src_1 := true.B[0m
-[0m[[0m[31merror[0m] [0m[0m                        ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cacc\NV_NVDLA_cacc.scala:306:22: value slcg_en_src_0 is not a member of chisel3.Bundle{val dla_clk_ovr_on_sync: chisel3.core.Clock; val global_clk_ovr_on_sync: chisel3.core.Clock; val nvdla_core_clk: chisel3.core.Clock; val slcg_en: chisel3.core.Bool; val tmc2slcg_disable_clock_gating: chisel3.core.Bool; val nvdla_core_gated_clk: chisel3.core.Clock}[0m
-[0m[[0m[31merror[0m] [0m[0m    u_slcg_cell_0.io.slcg_en_src_0 := slcg_op_en(3)[0m
-[0m[[0m[31merror[0m] [0m[0m                     ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cacc\NV_NVDLA_cacc.scala:307:22: value slcg_en_src_1 is not a member of chisel3.Bundle{val dla_clk_ovr_on_sync: chisel3.core.Clock; val global_clk_ovr_on_sync: chisel3.core.Clock; val nvdla_core_clk: chisel3.core.Clock; val slcg_en: chisel3.core.Bool; val tmc2slcg_disable_clock_gating: chisel3.core.Bool; val nvdla_core_gated_clk: chisel3.core.Clock}[0m
-[0m[[0m[31merror[0m] [0m[0m    u_slcg_cell_0.io.slcg_en_src_1 := slcg_cell_en[0m
-[0m[[0m[31merror[0m] [0m[0m                     ^[0m
-[0m[[0m[31merror[0m] [0m[0mfour errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\pdp\NV_NVDLA_PDP_REG_dual.scala:507:1: ')' expected but '}' found.[0m
+[0m[[0m[31merror[0m] [0m[0m}}[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

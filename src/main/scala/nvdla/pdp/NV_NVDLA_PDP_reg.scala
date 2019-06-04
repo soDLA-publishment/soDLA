@@ -8,31 +8,27 @@
 
 // //Implementation overview of ping-pong register file.
 
-// class NV_NVDLA_PDP_reg(implicit val conf: cmacConfiguration) extends Module {
+// class NV_NVDLA_PDP_reg extends Module {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val nvdla_core_clk = Input(Clock())      
 
-//         //csb2cmac
-//         val csb2cmac_a_req_pd = Input(UInt(63.W))
-//         val csb2cmac_a_req_pvld = Input(Bool())
-//         val csb2cmac_a_req_prdy = Output(Bool())
+//         //csb2pdp
+//         val csb2pdp_req_pd = Input(UInt(63.W))
+//         val csb2pdp_req_pvld; = Input(Bool())
+//         val csb2pdp_req_prdy = Output(Bool())
         
-//         val cmac_a2csb_resp_pd = Output(UInt(34.W))
-//         val cmac_a2csb_resp_valid = Output(Bool())
+//         val pdp2csb_resp_pd = Output(UInt(34.W))
+//         val pdp2csb_resp_valid = Output(Bool())
 
 //         //reg2dp
-//         val csb2pdp_req_pd = Input(UInt(63.W))
-//         val csb2pdp_req_pvld = Input(Bool())
 //         val dp2reg_d0_perf_write_stall = Input(UInt(32.W))
 //         val dp2reg_d1_perf_write_stall = Input(UInt(32.W))
 //         val dp2reg_done = Input(Bool())
 //         val dp2reg_inf_input_num = Input(UInt(32.W))
 //         val dp2reg_nan_input_num = Input(UInt(32.W))
 //         val dp2reg_nan_output_num = Input(UInt(32.W))
-//         val csb2pdp_req_prdy = Output(Bool())
-//         val pdp2csb_resp_pd = Output(UInt(34.W))
-//         val pdp2csb_resp_valid = Output(Bool())
+
 //         val reg2dp_cube_in_channel = Output(UInt(13.W))
 //         val reg2dp_cube_in_height = Output(UInt(13.W))
 //         val reg2dp_cube_in_width = Output(UInt(13.W))
@@ -94,7 +90,7 @@
 // //       │       ─┴─       │                    reg   <= DP(data processor)
 // //       │                 │                    ||
 // //       └───┐         ┌───┘              |-------------|
-// //           │         │                  |     CMAC    |
+// //           │         │                  |     PDP     |
 // //           │         │                  |-------------|
 // //           │         │
 // //           │         └──────────────┐
@@ -113,10 +109,10 @@
 //     val reg_offset = Wire(UInt(12.W))
 //     val reg_wr_data = Wire(UInt(32.W))
 //     val s_reg_wr_en = Wire(Bool())
-//     val dp2reg_status_0 = Wire(Bool())
-//     val dp2reg_status_1 = Wire(Bool())
+//     val dp2reg_status_0 = Wire(UInt(2.W))
+//     val dp2reg_status_1 = Wire(UInt(2.W))
 
-//     val u_single_reg = Module(new NV_NVDLA_CMAC_REG_single)
+//     val u_single_reg = Module(new NV_NVDLA_PDP_REG_single)
 
 //     u_single_reg.io.reg_offset := reg_offset
 //     u_single_reg.io.reg_wr_data := reg_wr_data 
@@ -130,32 +126,98 @@
 
 //     //Instance two duplicated register groups
 //     val d0_reg_wr_en = Wire(Bool())
+//     val dp2reg_d0_inf_input_num = RegInit("b0".asUInt(32.W))
+//     val dp2reg_d0_nan_input_num = RegInit("b0".asUInt(32.W))
+//     val dp2reg_d0_nan_output_num = RegInit("b0".asUInt(32.W))
 //     val reg2dp_d0_op_en = RegInit(false.B)
 
-//     val u_dual_reg_d0 = Module(new NV_NVDLA_CMAC_REG_dual)
+//     val u_dual_reg_d0 = Module(new NV_NVDLA_PDP_REG_dual)
 //     u_dual_reg_d0.io.reg_offset := reg_offset
 //     u_dual_reg_d0.io.reg_wr_data := reg_wr_data
 //     u_dual_reg_d0.io.reg_wr_en := d0_reg_wr_en
 //     u_dual_reg_d0.io.nvdla_core_clk := io.nvdla_core_clk
 //     u_dual_reg_d0.io.op_en := reg2dp_d0_op_en
+//     u_dual_reg_d0.io.perf_read_stall := io.dp2reg_d0_perf_read_stall
 //     val d0_reg_rd_data = u_dual_reg_d0.io.reg_rd_data
-//     val reg2dp_d0_conv_mode = u_dual_reg_d0.io.conv_mode 
-//     val reg2dp_d0_proc_precision = u_dual_reg_d0.io.proc_precision
+//     val reg2dp_d0_cya = u_dual_reg_d0.io.cya
+//     val reg2dp_d0_cube_in_channel = u_dual_reg_d0.io.cube_in_channel
+//     val reg2dp_d0_cube_in_height = u_dual_reg_d0.io.cube_in_height
+//     val reg2dp_d0_cube_in_width = u_dual_reg_d0.io.cube_in_width
+//     val reg2dp_d0_cube_out_channel = u_dual_reg_d0.io.cube_out_channel
+//     val reg2dp_d0_cube_out_height = u_dual_reg_d0.io.cube_out_height
+//     val reg2dp_d0_cube_out_width = u_dual_reg_d0.io.cube_out_width
+//     val reg2dp_d0_input_data = u_dual_reg_d0.io.input_data
+//     val reg2dp_d0_dst_base_addr_high = u_dual_reg_d0.io.dst_base_addr_high
+//     val reg2dp_d0_dst_base_addr_low = u_dual_reg_d0.io.dst_base_addr_low
+//     val reg2dp_d0_dst_line_stride = u_dual_reg_d0.io.dst_line_stride
+//     val reg2dp_d0_dst_ram_type = u_dual_reg_d0.io.dst_ram_type
+//     val reg2dp_d0_dst_surface_stride = u_dual_reg_d0.io.dst_surface_stride
+//     val reg2dp_d0_nan_to_zero = u_dual_reg_d0.io.nan_to_zero
+//     val reg2dp_d0_flying_mode = u_dual_reg_d0.io.flying_mode
+//     val reg2dp_d0_pooling_method = u_dual_reg_d0.io.pooling_method
+//     val reg2dp_d0_split_num = u_dual_reg_d0.io.split_num
 //     val reg2dp_d0_op_en_trigger = u_dual_reg_d0.io.op_en_trigger
+//     val reg2dp_d0_partial_width_in_first = u_dual_reg_d0.io.partial_width_in_first
+//     val reg2dp_d0_partial_width_in_last = u_dual_reg_d0.io.partial_width_in_last
+//     val reg2dp_d0_partial_width_in_mid = u_dual_reg_d0.io.partial_width_in_mid
+//     val reg2dp_d0_partial_width_out_first = u_dual_reg_d0.io.partial_width_out_first
+//     val reg2dp_d0_partial_width_out_last = u_dual_reg_d0.io.partial_width_out_last
+//     val reg2dp_d0_partial_width_out_mid = u_dual_reg_d0.io.partial_width_out_mid
+//     val reg2dp_d0_dma_en = u_dual_reg_d0.io.dma_en
+//     val reg2dp_d0_kernel_height = u_dual_reg_d0.io.kernel_height
+//     val reg2dp_d0_kernel_stride_height = u_dual_reg_d0.io.kernel_stride_height
+//     val reg2dp_d0_kernel_stride_width = u_dual_reg_d0.io.kernel_stride_width
+//     val reg2dp_d0_kernel_width = u_dual_reg_d0.io.kernel_width
+//     val reg2dp_d0_pad_bottom = u_dual_reg_d0.io.pad_bottom
+//     val reg2dp_d0_pad_left = u_dual_reg_d0.io.pad_left
+//     val reg2dp_d0_pad_right = u_dual_reg_d0.io.pad_right
+//     val reg2dp_d0_pad_top = u_dual_reg_d0.io.pad_top
+//     val reg2dp_d0_pad_value_1x = u_dual_reg_d0.io.pad_value_1x
+//     val reg2dp_d0_pad_value_2x = u_dual_reg_d0.io.pad_value_2x
+//     val reg2dp_d0_pad_value_3x = u_dual_reg_d0.io.pad_value_3x
+//     val reg2dp_d0_pad_value_4x = u_dual_reg_d0.io.pad_value_4x
+//     val reg2dp_d0_pad_value_5x = u_dual_reg_d0.io.pad_value_5x
+//     val reg2dp_d0_pad_value_6x  = u_dual_reg_d0.io.pad_value_6x
+//     val reg2dp_d0_pad_value_7x = u_dual_reg_d0.io.pad_value_7x
+//     val reg2dp_d0_recip_kernel_height = u_dual_reg_d0.io.recip_kernel_height
+//     val reg2dp_d0_recip_kernel_width = u_dual_reg_d0.io.recip_kernel_width
+//     val reg2dp_d0_src_base_addr_high = u_dual_reg_d0.io.src_base_addr_high
+//     val reg2dp_d0_src_base_addr_low = u_dual_reg_d0.io.src_base_addr_low
+//     val reg2dp_d0_src_line_stride = u_dual_reg_d0.io.src_line_stride 
+//     val reg2dp_d0_src_surface_stride = u_dual_reg_d0.io.src_surface_stride 
+                        
 
 //     val d1_reg_wr_en = Wire(Bool())
 //     val reg2dp_d1_op_en = RegInit(false.B)
 
-//     val u_dual_reg_d1 = Module(new NV_NVDLA_CMAC_REG_dual)
+//     val u_dual_reg_d1 = Module(new NV_NVDLA_PDP_RDMA_REG_dual)
 //     u_dual_reg_d1.io.reg_offset := reg_offset
 //     u_dual_reg_d1.io.reg_wr_data := reg_wr_data
 //     u_dual_reg_d1.io.reg_wr_en := d1_reg_wr_en
 //     u_dual_reg_d1.io.nvdla_core_clk := io.nvdla_core_clk
 //     u_dual_reg_d1.io.op_en := reg2dp_d1_op_en
+//     u_dual_reg_d1.io.perf_read_stall := io.dp2reg_d1_perf_read_stall
 //     val d1_reg_rd_data = u_dual_reg_d1.io.reg_rd_data
-//     val reg2dp_d1_conv_mode = u_dual_reg_d1.io.conv_mode 
-//     val reg2dp_d1_proc_precision = u_dual_reg_d1.io.proc_precision
+//     val reg2dp_d1_cya = u_dual_reg_d1.io.cya
+//     val reg2dp_d1_cube_in_channel = u_dual_reg_d1.io.cube_in_channel
+//     val reg2dp_d1_cube_in_height = u_dual_reg_d1.io.cube_in_height
+//     val reg2dp_d1_cube_in_width = u_dual_reg_d1.io.cube_in_width
+//     val reg2dp_d1_input_data = u_dual_reg_d1.io.input_data
+//     val reg2dp_d1_flying_mode = u_dual_reg_d1.io.flying_mode
+//     val reg2dp_d1_split_num = u_dual_reg_d1.io.split_num
 //     val reg2dp_d1_op_en_trigger = u_dual_reg_d1.io.op_en_trigger
+//     val reg2dp_d1_partial_width_in_first = u_dual_reg_d1.io.partial_width_in_first
+//     val reg2dp_d1_partial_width_in_last = u_dual_reg_d1.io.partial_width_in_last
+//     val reg2dp_d1_partial_width_in_mid = u_dual_reg_d1.io.partial_width_in_mid
+//     val reg2dp_d1_dma_en = u_dual_reg_d1.io.dma_en 
+//     val reg2dp_d1_kernel_stride_width = u_dual_reg_d1.io.kernel_stride_width
+//     val reg2dp_d1_kernel_width = u_dual_reg_d1.io.kernel_width
+//     val reg2dp_d1_pad_width = u_dual_reg_d1.io.pad_width
+//     val reg2dp_d1_src_base_addr_high = u_dual_reg_d1.io.src_base_addr_high
+//     val reg2dp_d1_src_base_addr_low = u_dual_reg_d1.io.src_base_addr_low
+//     val reg2dp_d1_src_line_stride = u_dual_reg_d1.io.src_line_stride
+//     val reg2dp_d1_src_ram_type = u_dual_reg_d1.io.src_ram_type
+//     val reg2dp_d1_src_surface_stride = u_dual_reg_d1.io.src_surface_stride
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //                                                                    //
@@ -231,9 +293,9 @@
 //     val req_pvld = RegInit(false.B)
 //     val req_pd = RegInit("b0".asUInt(63.W))
 
-//     req_pvld := io.csb2cmac_a_req_pvld
-//     when(io.csb2cmac_a_req_pvld){
-//         req_pd := io.csb2cmac_a_req_pd
+//     req_pvld := io.csb2pdp_rdma_req_pvld
+//     when(io.csb2pdp_rdma_req_pvld){
+//         req_pd := io.csb2pdp_rdma_req_pd
 //     }
 
 //     // PKT_UNPACK_WIRE( csb2xx_16m_be_lvl ,  req_ ,  req_pd ) 
@@ -245,7 +307,7 @@
 //     val req_wrbe = req_pd(60, 57)
 //     val req_level = req_pd(62, 61)
 
-//     io.csb2cmac_a_req_prdy := true.B
+//     io.csb2pdp_rdma_req_prdy := true.B
 
 //     //Address in CSB master is word aligned while address in regfile is byte aligned.
 //     reg_offset := Cat(req_addr, "b0".asUInt(2.W))
@@ -263,19 +325,19 @@
 //     val csb_wresp_error = false.B
 //     val csb_wresp_pd_w = Cat(true.B, csb_wresp_error, csb_wresp_rdat)
 
-//     val cmac_a2csb_resp_pd_out = RegInit("b0".asUInt(34.W))
-//     val cmac_a2csb_resp_valid_out = RegInit(false.B)
+//     val pdp_rdma2csb_resp_pd_out = RegInit("b0".asUInt(34.W))
+//     val pdp_rdma2csb_resp_valid_out = RegInit(false.B)
 
 //     when(reg_rd_en){
-//         cmac_a2csb_resp_pd_out := csb_rresp_pd_w
+//         pdp_rdma2csb_resp_pd_out := csb_rresp_pd_w
 //     }
 //     .elsewhen(reg_wr_en & req_nposted){
-//         cmac_a2csb_resp_pd_out := csb_wresp_pd_w
+//         pdp_rdma2csb_resp_pd_out := csb_wresp_pd_w
 //     }
-//     cmac_a2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
+//     pdp_rdma2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
 
-//     io.cmac_a2csb_resp_pd := cmac_a2csb_resp_pd_out
-//     io.cmac_a2csb_resp_valid := cmac_a2csb_resp_valid_out
+//     io.pdp_rdma2csb_resp_pd := pdp_rdma2csb_resp_pd_out
+//     io.pdp_rdma2csb_resp_valid := pdp_rdma2csb_resp_valid_out
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //                                                                    //
@@ -283,8 +345,25 @@
 //     //                                                                    //
 //     ////////////////////////////////////////////////////////////////////////
 
-//     io.reg2dp_conv_mode := Mux(dp2reg_consumer, reg2dp_d1_conv_mode, reg2dp_d0_conv_mode)
-//     io.reg2dp_proc_precision := Mux(dp2reg_consumer, reg2dp_d1_proc_precision, reg2dp_d0_proc_precision)
+//     io.reg2dp_cya := Mux(dp2reg_consumer, reg2dp_d1_cya, reg2dp_d0_cya)
+//     io.reg2dp_cube_in_channel := Mux(dp2reg_consumer, reg2dp_d1_cube_in_channel, reg2dp_d0_cube_in_channel)
+//     io.reg2dp_cube_in_height := Mux(dp2reg_consumer, reg2dp_d1_cube_in_height, reg2dp_d0_cube_in_height)
+//     io.reg2dp_cube_in_width := Mux(dp2reg_consumer, reg2dp_d1_cube_in_width, reg2dp_d0_cube_in_width)
+//     io.reg2dp_input_data := Mux(dp2reg_consumer, reg2dp_d1_input_data, reg2dp_d0_input_data)
+//     io.reg2dp_flying_mode := Mux(dp2reg_consumer, reg2dp_d1_flying_mode, reg2dp_d0_flying_mode)
+//     io.reg2dp_split_num := Mux(dp2reg_consumer, reg2dp_d1_split_num, reg2dp_d0_split_num)
+//     io.reg2dp_partial_width_in_first := Mux(dp2reg_consumer, reg2dp_d1_partial_width_in_first, reg2dp_d0_partial_width_in_first)
+//     io.reg2dp_partial_width_in_last := Mux(dp2reg_consumer, reg2dp_d1_partial_width_in_last, reg2dp_d0_partial_width_in_last)
+//     io.reg2dp_partial_width_in_mid := Mux(dp2reg_consumer, reg2dp_d1_partial_width_in_mid, reg2dp_d0_partial_width_in_mid)
+//     io.reg2dp_dma_en := Mux(dp2reg_consumer, reg2dp_d1_dma_en, reg2dp_d0_dma_en)
+//     io.reg2dp_kernel_stride_width := Mux(dp2reg_consumer, reg2dp_d1_kernel_stride_width, reg2dp_d0_kernel_stride_width)
+//     io.reg2dp_kernel_width := Mux(dp2reg_consumer, reg2dp_d1_kernel_width, reg2dp_d0_kernel_width)
+//     io.reg2dp_pad_width := Mux(dp2reg_consumer, reg2dp_d1_pad_width, reg2dp_d0_pad_width)
+//     io.reg2dp_src_base_addr_high := Mux(dp2reg_consumer, reg2dp_d1_src_base_addr_high, reg2dp_d0_src_base_addr_high)
+//     io.reg2dp_src_base_addr_low := Mux(dp2reg_consumer, reg2dp_d1_src_base_addr_low, reg2dp_d0_src_base_addr_low)
+//     io.reg2dp_src_line_stride := Mux(dp2reg_consumer, reg2dp_d1_src_line_stride, reg2dp_d0_src_line_stride)
+//     io.reg2dp_src_ram_type := Mux(dp2reg_consumer, reg2dp_d1_src_ram_type, reg2dp_d0_src_ram_type)
+//     io.reg2dp_src_surface_stride := Mux(dp2reg_consumer, reg2dp_d1_src_surface_stride, reg2dp_d0_src_surface_stride)
 
 
 
