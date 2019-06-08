@@ -3,22 +3,22 @@
 // import chisel3._
 // import chisel3.experimental._
 
-// class NV_NVDLA_fifo(depth: Int, width: Int, reg_wr_data: Boolean) extends RawModule {
+// class NV_NVDLA_SDP_fifo(depth: Int, width: Int, reg_wr_data: Boolean, reg_rd_data: Boolean) extends RawModule {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val clk = Input(Clock())
-//         val reset_ = Input(Bool())
 
-//         //control signal
+//         //wr pipeline 
 //         val wr_ready = Output(Bool())
-//         val wr_req = Input(Bool())   
-//         val rd_ready = Input(Bool())
-//         val rd_req = Output(Bool())   
-
-//         //data signal
-
+//         val wr_req = Input(Bool())  
 //         val wr_data = Input(UInt(width.W))
-//         val rd_data = Output(UInt(width.W))
+
+//         //rd pipeline
+//         val rd_ready = Input(Bool())
+//         val rd_req = Output(Bool()) 
+//         val rd_data = Output(UInt(width.W)) 
+
+//         //
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     })
@@ -43,9 +43,7 @@
 // //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 // //             │ ─┤ ─┤       │ ─┤ ─┤         
 // //             └──┴──┘       └──┴──┘ 
-
-//     withClockAndReset(io.clk, !io.reset_){
-    
+// withClock(io.clk){    
 //     // Master Clock Gating (SLCG)
 //     //
 //     // We gate the clock(s) when idle or stalled.
@@ -60,8 +58,8 @@
 
 //     val clk_mgated_enable = Wire(Bool())  // assigned by code at end of this module
 //     val clk_mgated = Wire(Clock())  // used only in synchronous fifos
-
 //     val clk_mgate = Module(new NV_CLK_gate_power)
+
 //     clk_mgate.io.clk := io.clk
 //     clk_mgate.io.reset_ := io.reset_
 //     clk_mgate.io.clk_en := clk_mgated_enable 
@@ -71,12 +69,11 @@
 //     // WRITE SIDE
 //     //  
 //     val wr_reserving = Wire(Bool()) 
-//     val wr_req_in = RegInit(false.B)    // registered wr_req
-//     if(reg_wr_data){                    // registered wr_data
-//         var wr_data_in = Reg(UInt(width.W))
-//     }
-//     val wr_busy_in = RegInit(false.B)   // inputs being held this cycle? 
+//     val wr_req_in = if(reg_wr_data) Some(RegInit(false.B)) else None    // registered wr_req                     
+//     var wr_data_in = if(reg_wr_data) Some(Reg(UInt(width.W))) else None // registered wr_data
+//     val wr_busy_in = RegInit(false.B)    // inputs being held this cycle?  or  copy for internal use
 //     io.wr_ready := !wr_busy_in
+
 //     val wr_busy_next = Wire(Bool())     // fwd: fifo busy next?
 
 //     // factor for better timing with distant wr_req signal
@@ -95,9 +92,6 @@
 //     }}}
 
 
-
-//     withClockAndReset(clk_mgated, !io.reset_){
-//     val wr_busy_int = Reg(false.B)		        	// copy for internal use
 //     wr_reserving := wr_req_in & !wr_busy_int    // reserving write space?
 
 //     if(reg_wr_data){

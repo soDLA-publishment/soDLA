@@ -62,7 +62,7 @@ withClock(io.nvdla_core_clk){
        when(sdp2pdp_c_end){
            sdp2pdp_c_cnt := "b0".asUInt(5.W)
        }
-       .elsewhen{
+       .otherwise{
            sdp2pdp_c_cnt := sdp2pdp_c_cnt + 1.U
        }
     }
@@ -76,7 +76,7 @@ withClock(io.nvdla_core_clk){
         when(sdp2pdp_line_end){
             sdp2pdp_width_cnt := "b0".asUInt(13.W)
         }
-        .elsewhen{
+        .otherwise{
             sdp2pdp_width_cnt := sdp2pdp_width_cnt + 1.U
         }
     }
@@ -90,7 +90,7 @@ withClock(io.nvdla_core_clk){
         when(sdp2pdp_surf_end){
             sdp2pdp_height_cnt := 0.U
         }
-        .elsewhen{
+        .otherwise{
             sdp2pdp_height_cnt := sdp2pdp_height_cnt + 1.U
         }
     }
@@ -104,7 +104,7 @@ withClock(io.nvdla_core_clk){
         when(sdp2pdp_cube_end){
             sdp2pdp_surf_cnt := 0.U
         }
-        .elsewhen{
+        .otherwise{
             sdp2pdp_surf_cnt := sdp2pdp_surf_cnt + 1.U
         }
     }
@@ -136,13 +136,24 @@ withClock(io.nvdla_core_clk){
 
     ///////////////////////////
     val sdp2pdp_en = (onfly_en & (~waiting_for_op_en));
+    val pipe0_i = Cat(io.sdp2pdp_pd, sdp2pdp_en)
+    val pipe0 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_PDP_ONFLY_INPUT_BW + 2)}
+    val is_pipe0 = Module{new NV_NVDLA_IS_pipe(DMABW)}
+    is_pipe0.io.clk := io.nvdla_core_clk
+    is_pipe0.io.ri := dma_rd_rsp_rdy
+    is_pipe0.io.vi := dma_rd_rsp_vld
+    is_pipe0.io.di := dma_rd_rsp_pd
+    io.mcif_rd_rsp_ready := is_pipe0.io.ro
+    val mcif_rd_rsp_valid_d0 = is_pipe0.io.vo
+    val mcif_rd_rsp_pd_d0 = is_pipe0.io.dout
+
 
 
 
 }}
 
 
-object NV_NVDLA_PDP_nanDriver extends App {
+object NV_NVDLA_PDP_CORE_preprocDriver extends App {
   implicit val conf: pdpConfiguration = new pdpConfiguration
-  chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_nan())
+  chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_CORE_preproc())
 }

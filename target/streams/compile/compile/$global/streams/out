@@ -1,4 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\pdp\NV_NVDLA_PDP_WDMA_cmd.scala:85:38: forward reference extends over definition of value is_split_end[0m
-[0m[[0m[31merror[0m] [0m[0m    val is_split_end = is_surf_end & is_last_surf;[0m
-[0m[[0m[31merror[0m] [0m[0m                                     ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_MRDMA_EG_cmd.scala:55:1: Missing closing brace `}' assumed here[0m
+[0m[[0m[31merror[0m] [0m[0mwithClock(io.nvdla_core_clk){[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_MRDMA_EG_cmd.scala:154:1: Missing closing brace `}' assumed here[0m
+[0m[[0m[31merror[0m] [0m[0mwithClock(io.nvdla_core_clk){[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
