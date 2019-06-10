@@ -376,43 +376,25 @@ withClock(io.nvdla_core_clk){
         pixel_planar0_sft_out := pixel_planar0_sft_nxt
         when(planar1_vld_w.toBool){
             pixel_planar1_sft_out := pixel_planar1_sft_nxt
+            pixel_planar1_lp_burst_out := pixel_planar1_lp_burst_w
+            pixel_planar1_lp_vld_out := pixel_planar1_lp_vld_w
+            pixel_planar1_width_burst_out := pixel_planar1_width_burst_w
+            pixel_planar1_rp_burst_out := pixel_planar1_rp_burst_w
+            pixel_planar1_rp_vld_out := pixel_planar1_rp_vld_w
+            pixel_early_end_out := pixel_early_end_w
+            pixel_planar1_byte_sft_out := pixel_planar1_byte_sft_w
+            pixel_planar1_bundle_limit_out := pixel_planar1_bundle_limit_w
+            pixel_planar1_bundle_limit_1st_out := pixel_planar1_bundle_limit_1st_w
         }
         pixel_planar0_lp_burst_out := pixel_planar0_lp_burst_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_lp_burst_out := pixel_planar1_lp_burst_w
-        }
         pixel_planar0_lp_vld_out := pixel_planar0_lp_vld_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_lp_vld_out := pixel_planar1_lp_vld_w
-        }
         pixel_planar0_width_burst_out := pixel_planar0_width_burst_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_width_burst_out := pixel_planar1_width_burst_w
-        }
         pixel_planar0_rp_burst_out := pixel_planar0_rp_burst_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_rp_burst_out := pixel_planar1_rp_burst_w
-        }
         pixel_planar0_rp_vld_out := pixel_planar0_rp_vld_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_rp_vld_out := pixel_planar1_rp_vld_w
-        }
-        when(planar1_vld_w.toBool){
-            pixel_early_end_out := pixel_early_end_w
-        }
         pixel_planar0_byte_sft_out := pixel_planar0_byte_sft_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_byte_sft_out := pixel_planar1_byte_sft_w
-        }
         pixel_bank_out := io.reg2dp_data_bank +& 1.U
         pixel_planar0_bundle_limit_out := pixel_planar0_bundle_limit_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_bundle_limit_out := pixel_planar1_bundle_limit_w
-        }
-        pixel_planar0_bundle_limit_1st_out := pixel_planar0_bundle_limit_1st_w
-        when(planar1_vld_w.toBool){
-            pixel_planar1_bundle_limit_1st_out := pixel_planar1_bundle_limit_1st_w
-        }     
+        pixel_planar0_bundle_limit_1st_out := pixel_planar0_bundle_limit_1st_w 
     }
 
     io.pixel_planar := pixel_planar_out

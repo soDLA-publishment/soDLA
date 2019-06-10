@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class cdpConfiguration extends project_spec
+class cdpConfiguration extends pdpConfiguration
 {
     val NVDLA_CDP_BWPE = NVDLA_BPE
     val NVDLA_CDP_ICVTO_BWPE = NVDLA_CDP_BWPE+1

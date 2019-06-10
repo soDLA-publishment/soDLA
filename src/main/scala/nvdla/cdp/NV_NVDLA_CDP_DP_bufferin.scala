@@ -5,21 +5,26 @@
 // import chisel3.util._
 
 // class NV_NVDLA_CDP_DP_bufferin(implicit val conf: cdpConfiguration) extends Module {
+//     val cvt2buf_data_bw = conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE
+//     val cvt2buf_info_bw = 15
+//     val cvt2buf_dp_bw = cvt2buf_data_bw + cvt2buf_info_bw
+
 //     val io = IO(new Bundle {
 //         //clock
 //         val nvdla_core_clk = Input(Clock())
 
-//         //input:(atomk_half, cmac_result)
-//         val out_data = Input(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W)))
-//         val out_mask = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-//         val out_pd = Input(UInt(9.W))
-//         val out_pvld = Input(Bool())
+//         //cdp_rdma2dp
+//         val cdp_rdma2dp_valid = Input(Bool())
+//         val cdp_rdma2dp_ready = Output(Bool())
+//         val cdp_rdma2dp_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+17).W))
 
-//         //output:(atomk_half, cmac_result)  
-//         val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W)))
-//         val mac2accu_mask = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-//         val mac2accu_pd = Output(UInt(9.W))
-//         val mac2accu_pvld = Output(Bool())
+//         //normalz_buf
+//         val normalz_buf_data_pvld = Output(Bool())
+//         val normalz_buf_data_prdy = Input(Bool())
+//         val normalz_buf_data = Output(UInt(((conf.NVDLA_CDP_THROUGHPUT+8)*conf.NVDLA_CDP_ICVTO_BWPE+17).W))
 
 //         val dp2reg_done = Output(Bool())
 //     })
+
+//     /////////////////////////////////////////////////////////////
+

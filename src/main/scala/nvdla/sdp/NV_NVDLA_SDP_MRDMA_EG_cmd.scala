@@ -107,12 +107,31 @@ withClock(io.nvdla_core_clk){
     cmd_rdy := spt_fifo_prdy & dma_fifo_prdy
 
     val u_sfifo = Module{new NV_NVDLA_SDP_MRDMA_EG_CMD_sfifo}
+
     u_sfifo.io.nvdla_core_clk := io.nvdla_core_clk 
+    u_sfifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+
+    u_sfifo.io.spt_fifo_pvld := spt_fifo_pvld
+    spt_fifo_prdy := u_sfifo.io.spt_fifo_prdy
+    u_sfifo.io.spt_fifo_pd := spt_fifo_pd
+
+    io.cmd2dat_spt_pvld := u_sfifo.io.cmd2dat_spt_pvld
+    u_sfifo.io.cmd2dat_spt_prdy := io.cmd2dat_spt_prdy
+    io.cmd2dat_spt_pd := u_sfifo.io.cmd2dat_spt_pd
     
+    val u_dfifo = Module{new NV_NVDLA_SDP_MRDMA_EG_CMD_dfifo}
 
+    u_dfifo.io.nvdla_core_clk := io.nvdla_core_clk 
+    u_dfifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
+    u_dfifo.io.dma_fifo_pvld := dma_fifo_pvld
+    dma_fifo_prdy := u_dfifo.io.dma_fifo_prdy
+    u_dfifo.io.dma_fifo_pd := dma_fifo_pd
 
-
+    io.cmd2dat_dma_pvld := u_dfifo.io.cmd2dat_dma_pvld
+    u_dfifo.io.cmd2dat_dma_prdy := io.cmd2dat_dma_prdy
+    io.cmd2dat_dma_pd := u_dfifo.io.cmd2dat_dma_pd
+    
 
 
 }}
@@ -188,11 +207,11 @@ withClock(io.nvdla_core_clk){
     val wr_count_next_is_4 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_4)
     val wr_limit_muxed = Wire(UInt(3.W))    // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
-    spt_fifo_busy_next := wr_count_next_is_4 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
+    val spt_fifo_busy_next = wr_count_next_is_4 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
 
     spt_fifo_busy_int := spt_fifo_busy_next
     when(wr_reserving ^ wr_popping){
-        wr_count := wr_count_next
+        spt_fifo_count := wr_count_next
     }
 
     val wr_pushing = wr_reserving // data pushed same cycle as wr_req_in
@@ -201,36 +220,32 @@ withClock(io.nvdla_core_clk){
     // RAM
     //  
 
-    val wr_adr = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(2.W))}
-    val wr_adr_next = wr_adr + 1.U
+    val spt_fifo_adr = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(2.W))}
+    val spt_fifo_adr_next = spt_fifo_adr + 1.U
     when(wr_pushing){
-        wr_adr := wr_adr_next
+        spt_fifo_adr := spt_fifo_adr_next
     }
     val rd_popping = Wire(Bool())
 
-    val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(7.W))}   // read address this cycle
-    val ram_we = wr_pushing && (wr_count > 0.U || !rd_popping)      // note: write occurs next cycle
-    val ram_iwe = !wr_busy_in && io.wr_req
-    val rd_data_p = Wire(UInt(11.W))// read data out of ram
+    val cmd2dat_spt_adr = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(2.W))}   // read address this cycle
+    val ram_we = wr_pushing && (spt_fifo_count > 0.U || !rd_popping)      // note: write occurs next cycle
     
 
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
-    val ram = Module(new NV_NVDLA_CDMA_IMG_sg2pack_fifo_flopram_rwsa_128x11())
-    ram.io.clk := io.clk
-    ram.io.clk_mgated := clk_mgated
+    val ram = Module(new NV_NVDLA_SDP_MRDMA_EG_CMD_sfifo_flopram_rwsa_4x13())
+    ram.io.clk := nvdla_core_clk_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-    ram.io.di := io.wr_data
-    ram.io.iwe := ram_iwe
+    ram.io.di := io.spt_fifo_pd
     ram.io.we := ram_we
-    ram.io.wa := wr_adr
-    ram.io.ra := Mux(wr_count === 0.U, 128.U, Cat(false.B, rd_adr))
-    rd_data_p := ram.io.dout
+    ram.io.wa := spt_fifo_adr
+    ram.io.ra := Mux(spt_fifo_count === 0.U, 4.U, Cat(false.B, cmd2dat_spt_adr))
+    io.cmd2dat_spt_pd := ram.io.dout
     
 
-    val rd_adr_next_popping = rd_adr + 1.U
+    val rd_adr_next_popping = cmd2dat_spt_adr + 1.U
     when(rd_popping){
-        rd_adr := rd_adr_next_popping
+        cmd2dat_spt_adr := rd_adr_next_popping
     }
 
     //
@@ -242,36 +257,229 @@ withClock(io.nvdla_core_clk){
     //
     // READ SIDE
     //
-    val rd_req_p = Wire(Bool())  // data out of fifo is valid
-    val rd_req_int = withClock(clk_mgated){RegInit(false.B)} // internal copy of rd_req
-    io.rd_req := rd_req_int
-    rd_popping := rd_req_p && !(rd_req_int && !io.rd_ready)
+    rd_popping := io.cmd2dat_spt_pvld && io.cmd2dat_spt_prdy
 
-    val rd_count_p = withClock(clk_mgated){RegInit("b0".asUInt(8.W))} //read-side fifo count
-    val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p - 1.U)
-    val rd_count_p_next_no_rd_popping = Mux(rd_pushing, rd_count_p + 1.U, rd_count_p)
-    val rd_count_p_next = Mux(rd_popping, rd_count_p_next_rd_popping, rd_count_p_next_no_rd_popping)
-    rd_req_p := rd_count_p =/= 0.U || rd_pushing;
+    val cmd2dat_spt_count = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(3.W))} //read-side fifo count
+    val rd_count_next_rd_popping = Mux(rd_pushing, cmd2dat_spt_count, cmd2dat_spt_count - 1.U)
+    val rd_count_next_no_rd_popping = Mux(rd_pushing, cmd2dat_spt_count + 1.U, cmd2dat_spt_count)
+    val rd_count_next = Mux(rd_popping, rd_count_next_rd_popping, rd_count_next_no_rd_popping)
+    io.cmd2dat_spt_pvld := cmd2dat_spt_count =/= 0.U || rd_pushing;
     when(rd_pushing || rd_popping){
-        rd_count_p := rd_count_p_next
+        cmd2dat_spt_count := rd_count_next
     }
 
-    val rd_data_out = withClock(clk_mgated){RegInit("b0".asUInt(11.W))} // output data register
-    val rd_req_next = (rd_req_p || (rd_req_int && !io.rd_ready))
+    nvdla_core_clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
+                                    (io.spt_fifo_pvld && !spt_fifo_busy_int) || (spt_fifo_busy_int =/= spt_fifo_busy_next)) || 
+                                    (rd_pushing || rd_popping || (io.cmd2dat_spt_pvld && io.cmd2dat_spt_prdy)) || (wr_pushing))
 
-    rd_req_int := rd_req_next
+    wr_limit_muxed := "d0".asUInt(3.W)
+
+}}
+
+// 
+// Flop-Based RAM 
+//
+
+class NV_NVDLA_SDP_MRDMA_EG_CMD_sfifo_flopram_rwsa_4x13 extends Module{
+  val io = IO(new Bundle{
+        val clk = Input(Clock())    // write clock
+
+        val di = Input(UInt(13.W))
+        val we = Input(Bool())
+        val wa = Input(UInt(2.W))
+        val ra = Input(UInt(3.W))
+        val dout = Output(UInt(13.W))
+
+        val pwrbus_ram_pd = Input(UInt(32.W))
+
+  })  
+withClock(io.clk){
+    val ram_ff = Seq.fill(4)(Reg(UInt(13.W))) :+ Wire(UInt(13.W))
+    when(io.we){
+        for(i <- 0 to 3){
+            when(io.wa === i.U){
+                ram_ff(i) := io.di
+            }
+        } 
+    }   
+    ram_ff(4) := io.di
+    io.dout := MuxLookup(io.ra, "b0".asUInt(13.W), 
+        (0 to 4) map { i => i.U -> ram_ff(i)} )
+}}
+
+
+class NV_NVDLA_SDP_MRDMA_EG_CMD_dfifo extends Module {
+   val io = IO(new Bundle {
+        val nvdla_core_clk = Input(Clock())
+
+        val dma_fifo_prdy = Output(Bool())
+        val dma_fifo_pvld = Input(Bool())
+        val dma_fifo_pd = Input(UInt(15.W))
+        val cmd2dat_dma_prdy = Input(Bool())
+        val cmd2dat_dma_pvld = Output(Bool())
+        val cmd2dat_dma_pd = Output(UInt(15.W))
+
+        val pwrbus_ram_pd = Input(UInt(32.W))
+    })
+    //     
+    //          ┌─┐       ┌─┐
+    //       ┌──┘ ┴───────┘ ┴──┐
+    //       │                 │
+    //       │       ───       │          
+    //       │  ─┬┘       └┬─  │
+    //       │                 │
+    //       │       ─┴─       │
+    //       │                 │
+    //       └───┐         ┌───┘
+    //           │         │
+    //           │         │
+    //           │         │
+    //           │         └──────────────┐
+    //           │                        │
+    //           │                        ├─┐
+    //           │                        ┌─┘    
+    //           │                        │
+    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+    //             │ ─┤ ─┤       │ ─┤ ─┤         
+    //             └──┴──┘       └──┴──┘ 
+withClock(io.nvdla_core_clk){
+
+    // Master Clock Gating (SLCG)
+    //
+    // We gate the clock(s) when idle or stalled.
+    // This allows us to turn off numerous miscellaneous flops
+    // that don't get gated during synthesis for one reason or another.
+    //
+    // We gate write side and read side separately. 
+    // If the fifo is synchronous, we also gate the ram separately, but if
+    // -master_clk_gated_unified or -status_reg/-status_logic_reg is specified, 
+    // then we use one clk gate for write, ram, and read.
+    //
+    val nvdla_core_clk_mgated_enable = Wire(Bool())
+    val nvdla_core_clk_mgate = Module(new NV_CLK_gate_power)
+    nvdla_core_clk_mgate.io.clk := io.nvdla_core_clk
+    nvdla_core_clk_mgate.io.clk_en := nvdla_core_clk_mgated_enable
+    val nvdla_core_clk_mgated = nvdla_core_clk_mgate.io.clk_gated
+
+    ////////////////////////////////////////////////////////////////////////
+    // WRITE SIDE                                                        //
+    ////////////////////////////////////////////////////////////////////////
+    val wr_reserving = Wire(Bool())
+    val dma_fifo_busy_int = withClock(nvdla_core_clk_mgated){RegInit(false.B)}  // copy for internal use
+    io.dma_fifo_prdy := !dma_fifo_busy_int
+    wr_reserving := io.dma_fifo_pvld && !dma_fifo_busy_int   // reserving write space?
+
+    val wr_popping = Wire(Bool())// fwd: write side sees pop?
+    val dma_fifo_count = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(3.W))} // write-side count
+    val wr_count_next_wr_popping = Mux(wr_reserving, dma_fifo_count, dma_fifo_count-1.U)
+    val wr_count_next_no_wr_popping = Mux(wr_reserving, dma_fifo_count+1.U, dma_fifo_count)
+    val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
+
+    val wr_count_next_no_wr_popping_is_4 = (wr_count_next_no_wr_popping === 4.U)
+    val wr_count_next_is_4 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_4)
+    val wr_limit_muxed = Wire(UInt(3.W))    // muxed with simulation/emulation overrides
+    val wr_limit_reg = wr_limit_muxed
+    val dma_fifo_busy_next = wr_count_next_is_4 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
+
+    dma_fifo_busy_int := dma_fifo_busy_next
+    when(wr_reserving ^ wr_popping){
+        dma_fifo_count := wr_count_next
+    }
+
+    val wr_pushing = wr_reserving // data pushed same cycle as wr_req_in
+
+    //
+    // RAM
+    //  
+
+    val dma_fifo_adr = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(2.W))}
+    val dma_fifo_adr_next = dma_fifo_adr + 1.U
+    when(wr_pushing){
+        dma_fifo_adr := dma_fifo_adr_next
+    }
+    val rd_popping = Wire(Bool())
+
+    val cmd2dat_dma_adr = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(2.W))}   // read address this cycle
+    val ram_we = wr_pushing && (dma_fifo_count > 0.U || !rd_popping)      // note: write occurs next cycle
+    
+
+    // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
+    // Fifogen handles this by ignoring the data on the ram data out for that cycle.
+    val ram = Module(new NV_NVDLA_SDP_MRDMA_EG_CMD_dfifo_flopram_rwsa_4x15())
+    ram.io.clk := nvdla_core_clk_mgated
+    ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+    ram.io.di := io.dma_fifo_pd
+    ram.io.we := ram_we
+    ram.io.wa := dma_fifo_adr
+    ram.io.ra := Mux(dma_fifo_count === 0.U, 4.U, Cat(false.B, cmd2dat_dma_adr))
+    io.cmd2dat_dma_pd := ram.io.dout
+    
+
+    val rd_adr_next_popping = cmd2dat_dma_adr + 1.U
     when(rd_popping){
-        rd_data_out := rd_data_p
+        cmd2dat_dma_adr := rd_adr_next_popping
     }
 
-    io.rd_data := rd_data_out
+    //
+    // SYNCHRONOUS BOUNDARY
+    //
+    wr_popping := rd_popping    // let it be seen immediately
+    val rd_pushing = wr_pushing // let it be seen immediately
 
-    clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
-                         (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
-                         (rd_pushing || rd_popping || (rd_req_int && io.rd_ready)) || (wr_pushing))
+    //
+    // READ SIDE
+    //
+    rd_popping := io.cmd2dat_dma_pvld && io.cmd2dat_dma_prdy
 
-    wr_limit_muxed := "d0".asUInt(8.W)
+    val cmd2dat_dma_count = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(3.W))} //read-side fifo count
+    val rd_count_next_rd_popping = Mux(rd_pushing, cmd2dat_dma_count, cmd2dat_dma_count - 1.U)
+    val rd_count_next_no_rd_popping = Mux(rd_pushing, cmd2dat_dma_count + 1.U, cmd2dat_dma_count)
+    val rd_count_next = Mux(rd_popping, rd_count_next_rd_popping, rd_count_next_no_rd_popping)
+    io.cmd2dat_dma_pvld := cmd2dat_dma_count =/= 0.U || rd_pushing;
+    when(rd_pushing || rd_popping){
+        cmd2dat_dma_count := rd_count_next
+    }
+
+    nvdla_core_clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
+                                    (io.dma_fifo_pvld && !dma_fifo_busy_int) || (dma_fifo_busy_int =/= dma_fifo_busy_next)) || 
+                                    (rd_pushing || rd_popping || (io.cmd2dat_dma_pvld && io.cmd2dat_dma_prdy)) || (wr_pushing))
+
+    wr_limit_muxed := "d0".asUInt(3.W)
+
+}}
+
+// 
+// Flop-Based RAM 
+//
+
+class NV_NVDLA_SDP_MRDMA_EG_CMD_dfifo_flopram_rwsa_4x15 extends Module{
+  val io = IO(new Bundle{
+        val clk = Input(Clock())    // write clock
+
+        val di = Input(UInt(15.W))
+        val we = Input(Bool())
+        val wa = Input(UInt(2.W))
+        val ra = Input(UInt(3.W))
+        val dout = Output(UInt(15.W))
+
+        val pwrbus_ram_pd = Input(UInt(32.W))
+
+  })  
+withClock(io.clk){
+    val ram_ff = Seq.fill(4)(Reg(UInt(15.W))) :+ Wire(UInt(15.W))
+    when(io.we){
+        for(i <- 0 to 3){
+            when(io.wa === i.U){
+                ram_ff(i) := io.di
+            }
+        } 
+    }   
+    ram_ff(4) := io.di
+    io.dout := MuxLookup(io.ra, "b0".asUInt(15.W), 
+        (0 to 4) map { i => i.U -> ram_ff(i)} )
+}}
 
 
-
+object NV_NVDLA_SDP_MRDMA_EG_cmdDriver extends App {
+  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_MRDMA_EG_cmd)
 }

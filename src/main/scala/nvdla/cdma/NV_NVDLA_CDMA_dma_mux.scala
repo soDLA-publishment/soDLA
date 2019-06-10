@@ -164,7 +164,7 @@ withClock(io.nvdla_core_clk){
     //Wire
     val skid_rsp_mc_in_pvld = Wire(Bool())
     val skid_rsp_mc_in_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    val skid_rsp_mc_in_prdy = Wire(Bool())
+    val skid_rsp_mc_in_prdy = WireBool())
     val pipe_skid_rsp_mc_in_prdy = Wire(Bool())
     val rsp_mc_out_pvld = Wire(Bool())
     val rsp_mc_out_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))

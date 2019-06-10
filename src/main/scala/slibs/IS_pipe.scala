@@ -48,7 +48,8 @@ class NV_NVDLA_IS_pipe(WIDTH:Int) extends Module {
     //     |___________________|      
     //       |               |        
     //       v               ^        
-    //    do,vo               ri       
+    //    do,vo               ri   
+  
  withClock(io.clk){       
     //pipe skid buffer
     //reg
