@@ -1,7 +1,4 @@
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_MRDMA_EG_cmd.scala:273:100: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                    (io.spt_fifo_pvld && !spt_fifo_busy_int) || (spt_fifo_busy_int != spt_fifo_busy_next)) || [0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                                                   ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_MRDMA_EG_cmd.scala:447:100: method != in class UInt is deprecated (since chisel3): Use '=/=', which avoids potential precedence problems[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                    (io.dma_fifo_pvld && !dma_fifo_busy_int) || (dma_fifo_busy_int != dma_fifo_busy_next)) || [0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                                                   ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\cdma\NV_NVDLA_CDMA_dma_mux.scala:167:41: ';' expected but ')' found.[0m
+[0m[[0m[31merror[0m] [0m[0m    val skid_rsp_mc_in_prdy = WireBool())[0m
+[0m[[0m[31merror[0m] [0m[0m                                        ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
