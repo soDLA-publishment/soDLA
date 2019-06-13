@@ -24,4 +24,6 @@ class pdpConfiguration extends sdpConfiguration
     val PDPBW = NVDLA_PDP_THROUGHPUT*NVDLA_PDP_BWPE
     val PDP_NUM = ATMM/PDPBW
 
+    val NVDLA_HLS_ADD17_LATENCY = 4
+
 }

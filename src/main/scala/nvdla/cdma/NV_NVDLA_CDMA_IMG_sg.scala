@@ -93,7 +93,7 @@ class NV_NVDLA_CDMA_IMG_sg(implicit conf: cdmaConfiguration) extends Module {
         val dp2reg_img_rd_latency = Output(UInt(32.W))
 
     })
-//     .
+//     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐
 //       │                 │
