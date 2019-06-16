@@ -157,3 +157,5 @@ sbt run
 exit
 sbt run
 exit
+sbt run
+exit

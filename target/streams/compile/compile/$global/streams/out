@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\pdp\NV_NVDLA_PDP_CORE_unit1d.scala:146:17: forward reference extends over definition of value add_out_vld[0m
-[0m[[0m[31merror[0m] [0m[0mpipe_out_rdy := add_out_rdy[0m
-[0m[[0m[31merror[0m] [0m[0m                ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_cvt.scala:75:9: sub_out_prdy is already defined as value sub_out_prdy[0m
+[0m[[0m[31merror[0m] [0m[0m    val sub_out_prdy = pipe_p2.io.ro[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
