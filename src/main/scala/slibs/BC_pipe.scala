@@ -56,7 +56,7 @@ class NV_NVDLA_BC_pipe(WIDTH:Int) extends Module {
     val skid_pipe_valid = Wire(Bool())
     val skid_pipe_data = Wire(UInt(WIDTH.W))
 
-    skid_catch := io.vo && skid_ready_flop && !skid_pipe_ready
+    skid_catch := io.vi && skid_ready_flop && !skid_pipe_ready
     skid_ready := Mux(skid_valid, skid_pipe_ready, !skid_catch)
     skid_valid := Mux(skid_valid, !skid_pipe_ready, skid_catch)
 

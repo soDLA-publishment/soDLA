@@ -1,4 +1,10 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_cvt.scala:108:8: NV_NVDLA_SDP_HLS_Y_int_cvtDriver is already defined as object NV_NVDLA_SDP_HLS_Y_int_cvtDriver[0m
-[0m[[0m[31merror[0m] [0m[0mobject NV_NVDLA_SDP_HLS_Y_int_cvtDriver extends App {[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_alu.scala:84:9: alu_op_ext is already defined as value alu_op_ext[0m
+[0m[[0m[31merror[0m] [0m[0m    val alu_op_ext = Cat(alu_op_reg(31), alu_op_reg)[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_alu.scala:84:26: not found: value alu_op_reg[0m
+[0m[[0m[31merror[0m] [0m[0m    val alu_op_ext = Cat(alu_op_reg(31), alu_op_reg)[0m
+[0m[[0m[31merror[0m] [0m[0m                         ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_alu.scala:84:42: not found: value alu_op_reg[0m
+[0m[[0m[31merror[0m] [0m[0m    val alu_op_ext = Cat(alu_op_reg(31), alu_op_reg)[0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
