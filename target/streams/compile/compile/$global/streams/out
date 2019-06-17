@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_cvt.scala:75:9: sub_out_prdy is already defined as value sub_out_prdy[0m
-[0m[[0m[31merror[0m] [0m[0m    val sub_out_prdy = pipe_p2.io.ro[0m
-[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_cvt.scala:108:8: NV_NVDLA_SDP_HLS_Y_int_cvtDriver is already defined as object NV_NVDLA_SDP_HLS_Y_int_cvtDriver[0m
+[0m[[0m[31merror[0m] [0m[0mobject NV_NVDLA_SDP_HLS_Y_int_cvtDriver extends App {[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

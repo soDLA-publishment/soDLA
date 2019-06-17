@@ -4,11 +4,8 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_HLS_shiftrightss extends Module {
+class NV_NVDLA_HLS_shiftrightss(IN_WIDTH:Int = 49, OUT_WIDTH:Int = 32, SHIFT_WIDTH:Int = 6) extends Module {
     
-    val IN_WIDTH  = 49
-    val OUT_WIDTH = 32
-    val SHIFT_WIDTH = 6
     val SHIFT_MAX = Math.pow(2, SHIFT_WIDTH- 1).toInt 
     val HIGH_WIDTH = SHIFT_MAX + IN_WIDTH - OUT_WIDTH    
     
