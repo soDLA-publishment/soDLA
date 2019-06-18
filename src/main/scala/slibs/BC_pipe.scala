@@ -9,14 +9,13 @@ class NV_NVDLA_BC_pipe(WIDTH:Int) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock()) 
 
-        val di = Input(UInt(WIDTH.W)) 
         val vi = Input(Bool())
-        val ri = Input(Bool())
-
-        val dout = Output(UInt(WIDTH.W))
-        val vo = Output(Bool()) 
         val ro = Output(Bool())
-
+        val di = Input(UInt(WIDTH.W)) 
+            
+        val vo = Output(Bool()) 
+        val ri = Input(Bool())
+        val dout = Output(UInt(WIDTH.W))
     })
     // -vi  : input valid signal name
     // -di  : input data signal name
