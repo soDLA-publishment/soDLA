@@ -1,7 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\slibs\NV_DW_lsd.scala:27:36: ambiguous reference to overloaded definition,[0m
-[0m[[0m[31merror[0m] [0m[0mboth method - in class Int of type (x: Char)Int[0m
-[0m[[0m[31merror[0m] [0m[0mand  method - in class Int of type (x: Byte)Int[0m
-[0m[[0m[31merror[0m] [0m[0mmatch expected type ?[0m
-[0m[[0m[31merror[0m] [0m[0m                temp_enc = a_width - [0m
-[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_lut_line.scala:52:20: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    io.idx_in_prdy = pipe_p1.io.ro[0m
+[0m[[0m[31merror[0m] [0m[0m                   ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

@@ -121,69 +121,6 @@
 // }}
 
 
-// class NV_NVDLA_SDP_HLS_Y_INT_MUL_pipe_p1 extends Module {
-//    val io = IO(new Bundle {
-
-//         val nvdla_core_clk = Input(Clock())
-
-//         val mul_sync_pvld = Input(Bool())
-//         val mul_sync_prdy = Output(Bool())
-//         val mul_data_in = Input(UInt(32.W))
-//         val mul_prelu_dout = Input(UInt(64.W))
-        
-//         val mul_prelu_pvld = Output(Bool())
-//         val mul_prelu_prdy = Input(Bool())
-//         val mul_data_reg = Output(UInt(32.W))
-//         val mul_prelu_out = Output(UInt(64.W))
-//     })
-
-//   val bc_pipe_0 = Module(new NV_NVDLA_BC_pipe(32))
-//   bc_pipe_0.io.clk := io.nvdla_core_clk
-//   bc_pipe_0.io.vi := io.mul_sync_pvld
-//   io.mul_sync_prdy := bc_pipe_0.io.ro
-//   bc_pipe_0.io.di := io.mul_data_in
-//   io.mul_prelu_pvld := bc_pipe_0.io.vo
-//   bc_pipe_0.io.ri := io.mul_prelu_prdy
-//   io.mul_data_reg := bc_pipe_0.io.dout
-
-//   val bc_pipe_1 = Module(new NV_NVDLA_BC_pipe(64))
-//   bc_pipe_1.io.clk := io.nvdla_core_clk
-//   bc_pipe_1.io.vi := io.mul_sync_pvld
-//   io.mul_sync_prdy := bc_pipe_1.io.ro
-//   bc_pipe_1.io.di := io.mul_prelu_dout
-//   io.mul_prelu_pvld := bc_pipe_1.io.vo
-//   bc_pipe_1.io.ri := io.mul_prelu_prdy
-//   io.mul_prelu_out := bc_pipe_1.io.dout
-
-// }
-
-// class NV_NVDLA_SDP_HLS_Y_INT_MUL_pipe_p2 extends Module {
-//    val io = IO(new Bundle {
-
-//         val nvdla_core_clk = Input(Clock())
-
-//         val mul_prelu_pvld = Input(Bool())
-//         val mul_prelu_prdy = Output(Bool())
-//         val mul_dout = Input(UInt(32.W))
-        
-//         val mul_final_pvld = Output(Bool())
-//         val mul_final_prdy = Input(Bool())
-//         val mul_data_final = Output(UInt(32.W))
-//     })
-
-//   val bc_pipe = Module(new NV_NVDLA_BC_pipe(32))
-
-//   bc_pipe.io.clk := io.nvdla_core_clk
-
-//   bc_pipe.io.vi := io.mul_prelu_pvld
-//   io.mul_prelu_prdy := bc_pipe.io.ro
-//   bc_pipe.io.di := io.mul_dout
-
-//   io.mul_final_pvld := bc_pipe.io.vo
-//   bc_pipe.io.ri := io.mul_final_prdy
-//   io.mul_data_final := bc_pipe.io.dout
-
-// }
 
 // object NV_NVDLA_SDP_HLS_Y_int_mulDriver extends App {
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_mul)
