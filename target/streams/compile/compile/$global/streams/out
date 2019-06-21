@@ -1,4 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_lut_line.scala:52:20: reassignment to val[0m
-[0m[[0m[31merror[0m] [0m[0m    io.idx_in_prdy = pipe_p1.io.ro[0m
-[0m[[0m[31merror[0m] [0m[0m                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_C_int.scala:129:9: tru_out_prdy is already defined as value tru_out_prdy[0m
+[0m[[0m[31merror[0m] [0m[0m    val tru_out_prdy = Mux(io.cfg_mode_eql, true.B, final_out_prdy)[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_C_int.scala:138:9: tru_out_prdy is already defined as value tru_out_prdy[0m
+[0m[[0m[31merror[0m] [0m[0m    val tru_out_prdy = Wire(Bool())[0m
+[0m[[0m[31merror[0m] [0m[0m        ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

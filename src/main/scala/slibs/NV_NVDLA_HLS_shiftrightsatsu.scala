@@ -4,11 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_HLS_shiftrightsatsu extends Module {
-    
-    val IN_WIDTH  = 49
-    val OUT_WIDTH = 32
-    val SHIFT_WIDTH = 6
+class NV_NVDLA_HLS_shiftrightsatsu(IN_WIDTH:Int = 49, OUT_WIDTH:Int = 32, SHIFT_WIDTH:Int = 6) extends Module {
     
     val io = IO(new Bundle {      
         val data_in = Input(UInt(IN_WIDTH.W))
