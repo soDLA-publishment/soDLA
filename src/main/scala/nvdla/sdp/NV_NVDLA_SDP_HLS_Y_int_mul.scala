@@ -16,11 +16,11 @@ class NV_NVDLA_SDP_HLS_Y_int_mul extends Module {
 
         val chn_in_pvld = Input(Bool())
         val chn_in_prdy = Output(Bool())
-
         val chn_mul_in = Input(UInt(32.W))
-        val chn_mul_op = Input(UInt(32.W))
+
         val chn_mul_op_pvld = Input(Bool())
         val chn_mul_op_prdy = Output(Bool())
+        val chn_mul_op = Input(UInt(32.W))
 
         val mul_out_pvld = Output(Bool())
         val mul_out_prdy = Input(Bool())

@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_SDP_HLS_Y_cvt_top extends Module {
+// class NV_NVDLA_SDP_HLS_Y_cvt_top(implicit conf: sdpConfiguration) extends Module {
 //    val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
@@ -15,11 +15,11 @@
 
 //         val cvt_in_pvld = Input(Bool())
 //         val cvt_in_prdy = Output(Bool())
-//         val cvt_data_in = Input(UInt(16.W))
+//         val cvt_data_in = Input(UInt(conf.EW_OP_DW.W))
 
 //         val cvt_out_pvld = Output(Bool())
 //         val cvt_out_prdy = Input(Bool())
-//         val cvt_data_out = Output(UInt(32.W))
+//         val cvt_data_out = Output(UInt(conf.EW_OC_DW.W))
         
 //     })
 //     //     

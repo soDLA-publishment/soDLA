@@ -18,7 +18,7 @@
 //         val reg2dp_op_en = Input(Bool())
 //         val reg2dp_output_dst = Input(Bool())
 //         val reg2dp_perf_dma_en = Input(Bool())
-//         val dp2reg_wdma_stall = Input(Bool())
+//         val dp2reg_wdma_stall = Output(UInt(32.W))
 //     })
 
 // withClock(io.nvdla_core_clk){
