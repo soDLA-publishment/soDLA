@@ -7,8 +7,7 @@
 // class NV_NVDLA_SDP_CORE_y(implicit val conf: sdpConfiguration) extends Module {
 //    val io = IO(new Bundle {
 
-//         val nvdla_core_clk = Input(Bool())
-//         val nvdla_core_rstn = Input(Bool())
+//         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(Bool())
 //         //alu_in
 //         val ew_alu_in_vld = Input(Bool())
@@ -124,7 +123,7 @@
 //     val cfg_ew_mul_cvt_truncate = RegInit("b0".asUInt(6.W))
 //     val cfg_ew_truncate = RegInit("b0".asUInt(10.W))
 //     val cfg_ew_mul_prelu = RegInit(false.B)
-//     val cfg_ew_lut_bypass = if(conf.NVDLA_SDP_LUT_ENABLE) Some(RegInit(false.B)) else None
+//     val cfg_ew_lut_bypass = if(conf.NVDLA_SDP_LUT_ENABLE) RegInit(false.B) else RegInit(true.B)
 //     val cfg_lut_le_start = if(conf.NVDLA_SDP_LUT_ENABLE) Some(RegInit("b0".asUInt(32.W))) else None
 //     val cfg_lut_le_end = if(conf.NVDLA_SDP_LUT_ENABLE) Some(RegInit("b0".asUInt(32.W))) else None
 //     val cfg_lut_lo_start = if(conf.NVDLA_SDP_LUT_ENABLE) Some(RegInit("b0".asUInt(32.W))) else None
@@ -144,7 +143,6 @@
 //     val cfg_lut_lo_slope_oflow_shift = if(conf.NVDLA_SDP_LUT_ENABLE) Some(RegInit("b0".asUInt(5.W))) else None
 //     val cfg_lut_lo_slope_uflow_scale = if(conf.NVDLA_SDP_LUT_ENABLE) Some(RegInit("b0".asUInt(16.W))) else None
 //     val cfg_lut_lo_slope_uflow_shift = if(conf.NVDLA_SDP_LUT_ENABLE) Some(RegInit("b0".asUInt(5.W))) else None
-//     val cfg_ew_lut_bypass = if(conf.NVDLA_SDP_LUT_ENABLE) None else Some(RegInit(true.B))
 
 //     when(io.op_en_load){
 //         cfg_proc_precision := io.reg2dp_proc_precision
@@ -168,7 +166,7 @@
 //         cfg_ew_mul_prelu := io.reg2dp_ew_mul_prelu  
 
 //         if(conf.NVDLA_SDP_LUT_ENABLE){   
-//             cfg_ew_lut_bypass.get := io.reg2dp_ew_lut_bypass     
+//             cfg_ew_lut_bypass := io.reg2dp_ew_lut_bypass     
 //             cfg_lut_le_start.get := io.reg2dp_lut_le_start.get          
 //             cfg_lut_le_end.get := io.reg2dp_lut_le_end.get 
 //             cfg_lut_lo_start.get := io.reg2dp_lut_lo_start.get
@@ -192,7 +190,7 @@
 //             cfg_lut_lo_slope_uflow_shift.get := io.reg2dp_lut_lo_slope_uflow_shift.get
 //         }  
 //         else{
-//             cfg_ew_lut_bypass.get := true.B
+//             cfg_ew_lut_bypass := true.B
 //         }  
 //     }
 //     //===========================================
@@ -228,11 +226,141 @@
 //     val mul_cvt_out_pd = u_mul_cvt.io.cvt_data_out
 //     val mul_cvt_out_pvld = u_mul_cvt.io.cvt_out_pvld
 
+//     val core_out_prdy = Wire(Bool())
 //     val u_core = Module(new NV_NVDLA_SDP_HLS_Y_int_core)
+//     u_core.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_core.io.cfg_alu_algo := cfg_ew_alu_algo
+//     u_core.io.cfg_alu_bypass := cfg_ew_alu_bypass
+//     u_core.io.cfg_alu_op := cfg_ew_alu_operand
+//     u_core.io.cfg_alu_src := cfg_ew_alu_src
+//     u_core.io.cfg_mul_bypass := cfg_ew_mul_bypass
+//     u_core.io.cfg_mul_op := cfg_ew_mul_operand
+//     u_core.io.cfg_mul_prelu := cfg_ew_mul_prelu
+//     u_core.io.cfg_mul_src := cfg_ew_mul_src
+//     u_core.io.cfg_mul_truncate := cfg_ew_truncate
+//     u_core.io.chn_alu_op := alu_cvt_out_pd
+//     u_core.io.chn_alu_op_pvld := alu_cvt_out_pvld
+//     u_core.io.chn_data_in := io.ew_data_in_pd
+//     u_core.io.chn_in_pvld := io.ew_data_in_pvld
+//     io.ew_data_in_prdy := u_core.io.chn_in_prdy
+//     u_core.io.chn_mul_op := mul_cvt_out_pd
+//     u_core.io.chn_mul_op_pvld := mul_cvt_out_pvld
+//     alu_cvt_out_prdy := u_core.io.chn_alu_op_prdy
+//     mul_cvt_out_prdy := u_core.io.chn_mul_op_prdy
+//     val core_out_pd = u_core.io.chn_data_out
+//     val core_out_pvld = u_core.io.chn_out_pvld
+//     u_core.io.chn_out_prdy := core_out_prdy
 
+//     val idx2lut_pvld = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val idx2lut_prdy = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val idx2lut_pd = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(UInt(conf.EW_IDX_OUT_DW.W))) else None
 
+//     val idx_in_pvld = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val idx_in_prdy = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val idx_in_pd = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Fill(conf.EW_CORE_OUT_DW, idx_in_pvld.get)&core_out_pd) else None
 
+//     val inp_out_pvld = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val inp_out_prdy = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val inp_out_pd = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(UInt(conf.EW_INP_OUT_DW.W))) else None
+    
+//     val lut2inp_pvld = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val lut2inp_prdy = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
+//     val lut2inp_pd = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(UInt(conf.EW_LUT_OUT_DW.W))) else None
+
+//     if(conf.NVDLA_SDP_LUT_ENABLE){
+//         core_out_prdy := Mux(cfg_ew_lut_bypass, io.ew_data_out_prdy, idx_in_prdy.get) 
+//     }
+//     else{
+//         core_out_prdy := io.ew_data_out_prdy
+//     }
+
+//     val u_idx = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_idx_top)) else None
+//     val u_lut = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_Y_lut)) else None
+//     val u_inp = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_inp_top)) else None
+
+//     if(conf.NVDLA_SDP_LUT_ENABLE){
+//         //u_idx
+//         u_idx.get.io.nvdla_core_clk := io.nvdla_core_clk
+//         u_idx.get.io.cfg_lut_hybrid_priority := cfg_lut_hybrid_priority.get
+//         u_idx.get.io.cfg_lut_le_function := cfg_lut_le_function.get
+//         u_idx.get.io.cfg_lut_le_index_offset := cfg_lut_le_index_offset.get
+//         u_idx.get.io.cfg_lut_le_index_select := cfg_lut_le_index_select.get
+//         u_idx.get.io.cfg_lut_le_start := cfg_lut_le_start.get
+//         u_idx.get.io.cfg_lut_lo_index_select := cfg_lut_lo_index_select.get
+//         u_idx.get.io.cfg_lut_lo_start := cfg_lut_lo_start.get
+//         u_idx.get.io.cfg_lut_oflow_priority := cfg_lut_oflow_priority.get
+//         u_idx.get.io.cfg_lut_uflow_priority := cfg_lut_uflow_priority.get
+//         u_idx.get.io.chn_lut_in_pd := idx_in_pd.get
+//         u_idx.get.io.chn_lut_in_pvld := idx_in_pvld.get
+//         u_idx.get.io.chn_lut_out_prdy := idx2lut_prdy.get
+//         idx_in_prdy.get := u_idx.get.io.chn_lut_in_prdy 
+//         idx2lut_pd.get := u_idx.get.io.chn_lut_out_pd
+//         idx2lut_pvld.get := u_idx.get.io.chn_lut_out_pvld
+
+//         //u_lut
+//         u_lut.get.io.nvdla_core_clk := io.nvdla_core_clk
+//         lut2inp_pvld.get := u_lut.get.io.lut2inp_pvld
+//         u_lut.get.io.lut2inp_prdy := lut2inp_prdy.get
+//         lut2inp_pd.get := u_lut.get.io.lut2inp_pd
+//         u_lut.get.io.idx2lut_pvld := idx2lut_pvld.get
+//         idx2lut_prdy.get := u_lut.get.io.idx2lut_prdy
+//         u_lut.get.io.idx2lut_pd := idx2lut_pd.get
+//         u_lut.get.io.reg2dp_lut_int_access_type := io.reg2dp_lut_int_access_type.get
+//         u_lut.get.io.reg2dp_lut_int_addr := io.reg2dp_lut_int_addr.get
+//         u_lut.get.io.reg2dp_lut_int_data := io.reg2dp_lut_int_data.get
+//         u_lut.get.io.reg2dp_lut_int_data_wr := io.reg2dp_lut_int_data_wr.get
+//         u_lut.get.io.reg2dp_lut_int_table_id := io.reg2dp_lut_int_table_id.get
+//         u_lut.get.io.reg2dp_lut_le_end := io.reg2dp_lut_le_end.get
+//         u_lut.get.io.reg2dp_lut_le_function := io.reg2dp_lut_le_function.get
+//         u_lut.get.io.reg2dp_lut_le_index_offset := io.reg2dp_lut_le_index_offset.get
+//         u_lut.get.io.reg2dp_lut_le_slope_oflow_scale := cfg_lut_le_slope_oflow_scale.get
+//         u_lut.get.io.reg2dp_lut_le_slope_oflow_shift := cfg_lut_le_slope_oflow_shift.get
+//         u_lut.get.io.reg2dp_lut_le_slope_uflow_scale := cfg_lut_le_slope_uflow_scale.get
+//         u_lut.get.io.reg2dp_lut_le_slope_uflow_shift := cfg_lut_le_slope_uflow_shift.get
+//         u_lut.get.io.reg2dp_lut_le_start := cfg_lut_le_start.get
+//         u_lut.get.io.reg2dp_lut_lo_end := cfg_lut_lo_end.get
+//         u_lut.get.io.reg2dp_lut_lo_slope_oflow_scale := cfg_lut_lo_slope_oflow_scale.get
+//         u_lut.get.io.reg2dp_lut_lo_slope_oflow_shift := cfg_lut_lo_slope_oflow_shift.get
+//         u_lut.get.io.reg2dp_lut_lo_slope_uflow_scale := cfg_lut_lo_slope_uflow_scale.get
+//         u_lut.get.io.reg2dp_lut_lo_slope_uflow_shift := cfg_lut_lo_slope_uflow_shift.get
+//         u_lut.get.io.reg2dp_lut_lo_start := cfg_lut_lo_start.get
+//         u_lut.get.io.reg2dp_perf_lut_en := io.reg2dp_perf_lut_en
+//         u_lut.get.io.reg2dp_proc_precision := io.reg2dp_proc_precision
+//         io.dp2reg_lut_hybrid.get := u_lut.get.io.dp2reg_lut_hybrid
+//         io.dp2reg_lut_int_data.get := u_lut.get.io.dp2reg_lut_int_data
+//         io.dp2reg_lut_le_hit.get := u_lut.get.io.dp2reg_lut_le_hit
+//         io.dp2reg_lut_lo_hit.get := u_lut.get.io.dp2reg_lut_lo_hit
+//         io.dp2reg_lut_oflow.get := u_lut.get.io.dp2reg_lut_oflow
+//         io.dp2reg_lut_uflow.get := u_lut.get.io.dp2reg_lut_uflow
+//         u_lut.get.io.dp2reg_lut_hybrid := io.pwrbus_ram_pd
+//         u_lut.get.io.op_en_load := io.op_en_load
+
+//         //u_inp
+//         u_inp.get.io.nvdla_core_clk := io.nvdla_core_clk
+//         u_inp.get.io.chn_inp_in_pvld := lut2inp_pvld.get
+//         lut2inp_prdy.get := u_inp.get.io.chn_inp_in_prdy
+//         u_inp.get.io.chn_inp_in_pd := lut2inp_pd.get
+//         inp_out_pvld.get := u_inp.get.io.chn_inp_out_pvld
+//         u_inp.get.io.chn_inp_out_prdy := inp_out_prdy.get
+//         inp_out_pd.get := u_inp.get.io.chn_inp_out_pd
+
+//         io.ew_data_out_pvld := Mux(cfg_ew_lut_bypass, core_out_pvld, inp_out_pvld.get)
+//         io.ew_data_out_pd := Mux(cfg_ew_lut_bypass, core_out_pd, inp_out_pd.get)
+//         inp_out_prdy.get := Mux(cfg_ew_lut_bypass, false.B, io.ew_data_out_prdy)
+        
+//     }
+//     else{
+//         io.ew_data_out_pvld := core_out_pvld
+//         io.ew_data_out_pd := core_out_pd
+//     }
 
 
 // }}
+
+
+// object NV_NVDLA_SDP_CORE_yDriver extends App {
+//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_y)
+// }
+
 

@@ -1,31 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix_lib\CORA_MATRIX_ADD_m2m.scala:6:8: not found: object hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0mimport hardfloat._[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix_lib\CORA_MATRIX_ADD_v2v.scala:6:8: not found: object hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0mimport hardfloat._[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix_lib\CORA_MATRIX_MUL_m2m.scala:6:8: not found: object hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0mimport hardfloat._[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix_lib\CORA_MATRIX_MUL_v2m.scala:6:8: not found: object hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0mimport hardfloat._[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix_lib\CORA_MATRIX_MUL_m2m2m.scala:6:8: not found: object hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0mimport hardfloat._[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\matrix_lib\CORA_MATRIX_transpose.scala:6:8: not found: object hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0mimport hardfloat._[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\cora\pred\CORA_PRED_x.scala:6:8: not found: object hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0mimport hardfloat._[0m
-[0m[[0m[31merror[0m] [0m[0m       ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\rocket\fpu.scala:40:20: not found: value hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0m        Module(new hardfloat.MulAddRecFNToRaw_preMul(expWidth, sigWidth))[0m
-[0m[[0m[31merror[0m] [0m[0m                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\rocket\fpu.scala:42:20: not found: value hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0m        Module(new hardfloat.MulAddRecFNToRaw_postMul(expWidth, sigWidth))[0m
-[0m[[0m[31merror[0m] [0m[0m                   ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\rocket\fpu.scala:68:40: not found: value hardfloat[0m
-[0m[[0m[31merror[0m] [0m[0m    val roundRawFNToRecFN = Module(new hardfloat.RoundRawFNToRecFN(expWidth, sigWidth, 0))[0m
-[0m[[0m[31merror[0m] [0m[0m                                       ^[0m
-[0m[[0m[31merror[0m] [0m[0m10 errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_y.scala:277:63: not found: type NV_NVDLA_SDP_HLS_Y_idx_top[0m
+[0m[[0m[31merror[0m] [0m[0m    val u_idx = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_idx_top)) else None[0m
+[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_y.scala:279:63: not found: type NV_NVDLA_SDP_HLS_Y_inp_top[0m
+[0m[[0m[31merror[0m] [0m[0m    val u_inp = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_inp_top)) else None[0m
+[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
