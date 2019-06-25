@@ -1,7 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_y.scala:277:63: not found: type NV_NVDLA_SDP_HLS_Y_idx_top[0m
-[0m[[0m[31merror[0m] [0m[0m    val u_idx = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_idx_top)) else None[0m
-[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_y.scala:279:63: not found: type NV_NVDLA_SDP_HLS_Y_inp_top[0m
-[0m[[0m[31merror[0m] [0m[0m    val u_inp = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_inp_top)) else None[0m
-[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_int_idx.scala:150:5: not found: value lut_in_prdy[0m
+[0m[[0m[31merror[0m] [0m[0m    lut_in_prdy := Mux(io.cfg_lut_le_function === 0.U, le_expn_in_prdy, le_line_in_prdy) & lo_line_in_prdy & lut_x_in_prdy[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
