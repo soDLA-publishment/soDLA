@@ -54,7 +54,7 @@ withClock(io.nvdla_core_clk){
 
     val cfg_mode_batch = io.reg2dp_batch_number =/= 0.U
     val cfg_mode_winograd = io.reg2dp_winograd === 1.U
-    val cfg_mode_1x1_pack = (io.reg2dp_width === 0.U) & (io.reg2dp_height =/= 0.U)
+    val cfg_mode_1x1_pack = (io.reg2dp_width === 0.U) & (io.reg2dp_height === 0.U)
 
     val cfg_di_8 = io.reg2dp_proc_precision === 0.U
     val cfg_do_8 = io.reg2dp_out_precision === 0.U

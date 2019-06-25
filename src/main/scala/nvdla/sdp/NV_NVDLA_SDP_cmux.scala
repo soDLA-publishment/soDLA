@@ -39,7 +39,7 @@ withClock(io.nvdla_core_clk){
     val cfg_nan_to_zero = RegInit(false.B)
 
     cfg_flying_mode_on := io.reg2dp_flying_mode === 1.U
-    cfg_proc_precision := io.reg2dp_flying_mode === 2.U
+    cfg_proc_precision := io.reg2dp_proc_precision === 2.U
     cfg_nan_to_zero := io.reg2dp_nan_to_zero === 1.U
 
     val cfg_nan_to_zero_en = cfg_nan_to_zero & cfg_proc_precision
