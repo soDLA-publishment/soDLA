@@ -11,7 +11,7 @@
 
 //         val op_load = Input(Bool())
 //         val dma_rd_req_rdy = Input(Bool())
-// modify yourself
+//         val dma_rd_req_pd = Output(UInt(79.W))
 //         val dma_rd_req_vld = Output(Bool())
 //         val ig2cq_prdy = Input(Bool())
 //         val ig2cq_pd = Output(UInt(16.W))
