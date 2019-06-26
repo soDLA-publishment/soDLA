@@ -1,7 +1,10 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_y.scala:277:63: not found: type NV_NVDLA_SDP_HLS_Y_idx_top[0m
-[0m[[0m[31merror[0m] [0m[0m    val u_idx = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_idx_top)) else None[0m
-[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_CORE_y.scala:279:63: not found: type NV_NVDLA_SDP_HLS_Y_inp_top[0m
-[0m[[0m[31merror[0m] [0m[0m    val u_inp = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_Y_inp_top)) else None[0m
-[0m[[0m[31merror[0m] [0m[0m                                                              ^[0m
-[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/chenkangqi/Documents/GitHub/soDLA/src/main/scala/nvdla/sdp/NV_NVDLA_SDP_RDMA_ig.scala:156:61: identifier expected but integer literal found.[0m
+[0m[[0m[31merror[0m] [0m[0m                            (Cat(0.U(2.W), reg2dp_height(12:2))), [0m
+[0m[[0m[31merror[0m] [0m[0m                                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/chenkangqi/Documents/GitHub/soDLA/src/main/scala/nvdla/sdp/NV_NVDLA_SDP_RDMA_ig.scala:485:1: ')' expected but '}' found.[0m
+[0m[[0m[31merror[0m] [0m[0m}}[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/chenkangqi/Documents/GitHub/soDLA/src/main/scala/nvdla/sdp/NV_NVDLA_SDP_brdma.scala:145:1: '=' expected but ';' found.[0m
+[0m[[0m[31merror[0m] [0m[0m    u_eg.io.pwrbus_ram_pd := io.pwrbus_ram_pd[0m
+[0m[[0m[31merror[0m] [0m[0m^[0m
+[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
