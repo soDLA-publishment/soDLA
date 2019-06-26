@@ -110,7 +110,7 @@ val io = IO(new Bundle {
     u_ig.io.reg2dp_rdma_data_mode := io.reg2dp_brdma_data_mode
     u_ig.io.reg2dp_rdma_data_size := io.reg2dp_brdma_data_size
     u_ig.io.reg2dp_rdma_data_use := io.reg2dp_brdma_data_use
-    u_ig.io.reg2dp_rdma_ram_type := io.reg2dp_brdma_ram_type
+//    u_ig.io.reg2dp_rdma_ram_type := io.reg2dp_brdma_ram_type
     u_ig.io.reg2dp_base_addr_high := io.reg2dp_bs_base_addr_high
     u_ig.io.reg2dp_base_addr_low := io.reg2dp_bs_base_addr_low
     u_ig.io.reg2dp_line_stride := io.reg2dp_bs_line_stride
@@ -167,7 +167,7 @@ val io = IO(new Bundle {
     u_eg.io.reg2dp_rdma_data_mode := io.reg2dp_brdma_data_mode
     u_eg.io.reg2dp_rdma_data_size := io.reg2dp_brdma_data_size
     u_eg.io.reg2dp_rdma_data_use := io.reg2dp_brdma_data_use
-    u_eg.io.reg2dp_rdma_ram_type := io.reg2dp_brdma_ram_type
+//    u_eg.io.reg2dp_rdma_ram_type := io.reg2dp_brdma_ram_type
 
     val lat_wr_pvld = Wire(Bool())
     val u_lat_fifo = Module(new NV_NVDLA_SDP_BRDMA_lat_fifo(conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
