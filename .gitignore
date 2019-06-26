@@ -1,6 +1,6 @@
 # These are generated when I initialize the sbt
 target/
-target/streams
+target/streams/
 
 #perl
 src/plugins/
