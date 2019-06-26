@@ -15,6 +15,8 @@
 //         val cfg_lut_le_start = Input(UInt(32.W))
 //         val cfg_lut_lo_index_select = Input(UInt(8.W))
 //         val cfg_lut_lo_start = Input(UInt(32.W))
+//         val cfg_lut_oflow_priority = Input(Bool())
+//         val cfg_lut_uflow_priority = Input(Bool())
 
 //         val chn_lut_in_pvld = Input(Bool())
 //         val chn_lut_in_prdy = Output(Bool())
@@ -47,11 +49,10 @@
 //     //             │ ─┤ ─┤       │ ─┤ ─┤         
 //     //             └──┴──┘       └──┴──┘ 
 // withClock(io.nvdla_core_clk){
-//     val cvt_data_in_wire = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) 
-//                             map { i => io.cvt_data_in(16*i+15, 16*i)})
-//     val cvt_data_out_wire = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W)))
-//     val cvt_in_prdy_wire = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Bool()))
-//     val cvt_out_pvld_wire = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, Bool()))
+//     val chn_lut_in_prdy_wire = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) 
+//                                map { i => io.cvt_data_in(16*i+15, 16*i)})
+//     val chn_lut_out_pvld_wire = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W)))
+
 
 //     io.cvt_data_out := cvt_data_out_wire.asUInt
 
