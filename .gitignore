@@ -1,5 +1,5 @@
 # These are generated when I initialize the sbt
-target/
+target/steams
 
 #perl
 src/plugins/
