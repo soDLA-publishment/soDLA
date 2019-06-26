@@ -7,7 +7,7 @@
 		revision="3.2-SNAPSHOT"
 		conf="plugin"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190625190447"/>
+		date="20190626095619"/>
 	<dependencies>
 	</dependencies>
 </ivy-report>

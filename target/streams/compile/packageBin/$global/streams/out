@@ -422,6 +422,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_apb2csbDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_RT_cacc2glb$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_RT_cacc2glb$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_SDP_HLS_Y_idx_top.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_SDP_HLS_Y_idx_top.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\DivSqrtRecF64_mulAddZ31.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\DivSqrtRecF64_mulAddZ31.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_SDP_WDMA_unpackDriver.class[0m
@@ -432,6 +434,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_csb_masterDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_rt_out$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CMAC_CORE_rt_out$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_SDP_HLS_Y_idx_topDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_SDP_HLS_Y_idx_topDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_regfileDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_regfileDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CSC_dlDriver.class[0m
@@ -924,6 +928,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CSC_pra_cell.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CACC_CALC_int8$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CACC_CALC_int8$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_SDP_HLS_Y_idx_top$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_SDP_HLS_Y_idx_top$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_RecFNToUIN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_RecFNToUIN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_IMG_ctrl$$anon$1.class[0m
@@ -1176,6 +1182,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_SDP_RDMA_dmaif.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\ValExec_MulAddRecF64_mul.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_MulAddRecF64_mul.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_SDP_HLS_Y_idx_topDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_SDP_HLS_Y_idx_topDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CACC_delivery_buffer.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_CACC_delivery_buffer.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CMAC_CORE_active$activeImpl.class[0m
@@ -1456,6 +1464,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\ValExec_MulAddRecFN_add$$anon$4$$anon$5.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat\rawFloatFromRecFN.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\hardfloat\rawFloatFromRecFN.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_SDP_HLS_Y_idx_topDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_SDP_HLS_Y_idx_topDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_cfgrom$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  C:\Users\yuda\Desktop\soDLA\target\scala-2.12\classes\nvdla\NV_NVDLA_cfgrom$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla\NV_NVDLA_CDMA_dma_muxDriver.class[0m
