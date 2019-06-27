@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_Y_idx_top.scala:99:28: not found: value chn_lut_out_pvld[0m
-[0m[[0m[31merror[0m] [0m[0m    io.chn_lut_out_pvld := chn_lut_out_pvld(0)[0m
-[0m[[0m[31merror[0m] [0m[0m                           ^[0m
+[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_X_int_relu.scala:46:53: no arguments allowed for nullary constructor NV_NVDLA_SDP_HLS_relu: ()nvdla.NV_NVDLA_SDP_HLS_relu[0m
+[0m[[0m[31merror[0m] [0m[0m    val u_x_relu = Module(new NV_NVDLA_SDP_HLS_relu(32))[0m
+[0m[[0m[31merror[0m] [0m[0m                                                    ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
