@@ -73,3 +73,7 @@ class NV_NVDLA_SDP_RDMA_REG_single extends Module {
 
 }}
 
+object NV_NVDLA_SDP_RDMA_REG_singleDriver extends App {
+  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_REG_single())
+}
+

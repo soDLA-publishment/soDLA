@@ -177,7 +177,7 @@
 //     Seq(      
 //     "h48".asUInt(32.W)  -> nvdla_sdp_rdma_d_bn_base_addr_high_0_out,
 //     "h44".asUInt(32.W)  -> nvdla_sdp_rdma_d_bn_base_addr_low_0_out,
-//     "h54".asUInt(32.W)  -> nvdla_sdp_rdma_d_bn_batch_stride_0_out
+//     "h54".asUInt(32.W)  -> nvdla_sdp_rdma_d_bn_batch_stride_0_out,
 //     "h4c".asUInt(32.W)  -> nvdla_sdp_rdma_d_bn_line_stride_0_out,
 //     "h50".asUInt(32.W)  -> nvdla_sdp_rdma_d_bn_surface_stride_0_out,
 //     "h28".asUInt(32.W)  -> nvdla_sdp_rdma_d_brdma_cfg_0_out,
@@ -506,15 +506,24 @@
 //     // Not generating flops for read-only field NVDLA_SDP_RDMA_D_STATUS_NAN_INPUT_NUM_0::status_nan_input_num
 
 
-//     io.atomics := atomics_out
-//     io.data_bank := data_bank_out
-//     io.weight_bank := weight_bank_out
-//     io.batches := batches_out
-//     io.conv_x_stride_ext := conv_x_stride_ext_out
-//     io.conv_y_stride_ext := conv_y_stride_ext_out
-//     io.cya := cya_out
-//     io.datain_format := datain_format_out
-//     io.datain_height_ext := datain_height_ext_out
+//     io.bn_base_addr_high := bn_base_addr_high_out
+
+//     io.bn_base_addr_low := bn_base_addr_low_out
+
+//     io.bn_batch_stride := bn_batch_stride_out
+
+//     io.bn_line_stride := bn_line_stride_out
+
+//     io.bn_surface_stride := bn_surface_stride_out
+
+//     io.brdma_data_mode := brdma_data_mode_out
+
+//     io.brdma_data_size := brdma_data_size_out
+
+//     io.brdma_data_use := brdma_data_use_out
+
+//     io.brdma_disable := brdma_disable_out
+
 //     io.datain_width_ext := datain_width_ext_out
 //     io.datain_channel_ext := datain_channel_ext_out
 //     io.dataout_height := dataout_height_out
@@ -545,3 +554,7 @@
 //     io.pad_value := pad_value_out                                                                   
 
 // }}
+
+// object NV_NVDLA_SDP_RDMA_REG_dualDriver extends App {
+//   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_REG_dual())
+// }
