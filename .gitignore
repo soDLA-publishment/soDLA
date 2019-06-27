@@ -3,6 +3,7 @@ target/
 target/streams/
 project/
 
+
 #perl
 src/plugins/
 
@@ -17,3 +18,5 @@ test_run_dir/
 *.json
 
 
+# These are decided not to be public. 
+src/main/scala/cora
