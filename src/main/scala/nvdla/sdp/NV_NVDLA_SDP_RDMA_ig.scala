@@ -407,7 +407,7 @@ class NV_NVDLA_SDP_RDMA_ig extends Module {
 
 // PKT_PACK_WIRE( sdp_brdma_ig2eg ,  ig2eg_ ,  ig2cq_pd )
 
-    val ig2cq_pd = Cat(ig2eg_cube_end, ig2eg_size)
+    io.ig2cq_pd := Cat(ig2eg_cube_end, ig2eg_size)
     val dma_rd_req_rdy_d = Wire(Bool())
     io.ig2cq_pvld := cmd_process & dma_rd_req_rdy_d
 
@@ -454,6 +454,39 @@ class NV_NVDLA_SDP_RDMA_ig extends Module {
     io.dma_rd_req_vld := int_rd_req_valid_d1
     int_rd_req_ready_d1 := io.dma_rd_req_rdy
     io.dma_rd_req_pd := int_rd_req_pd_d1
+
+//==============
+// PERF STATISTIC
+
+    val brdma_stall_cnt_inc = dma_rd_req_vld_d & !dma_rd_req_rdy_d
+    val brdma_stall_cnt_clr = io.op_load
+    val brdma_stall_cnt_cen = io.reg2dp_op_en & io.reg2dp_perf_dma_en
+
+    val dp2reg_brdma_stall_dec = Wire(false.B)
+
+    val stl_adv = brdma_stall_cnt_inc ^ dp2reg_brdma_stall_dec
+
+    val stl_cnt_cur = RegInit(0.U(32.W))
+    val stl_cnt_ext = Cat(false.B, false.B, stl_cnt_cur)
+    val stl_cnt_inc = stl_cnt_cur + true.B
+    val stl_cnt_dec = stl_cnt_cur - true.B
+    val stl_cnt_mod = Mux(
+                        (brdma_stall_cnt_inc && !dp2reg_brdma_stall_dec), 
+                        stl_cnt_inc, 
+                        Mux(
+                            (!brdma_stall_cnt_inc && dp2reg_brdma_stall_dec), 
+                            stl_cnt_dec, 
+                            stl_cnt_ext
+                            )
+                        )
+    val stl_cnt_new = Mux(stl_adv, stl_cnt_mod, stl_cnt_ext)
+    val stl_cnt_nxt = Mux(brdma_stall_cnt_clr, 0.U(34.W), stl_cnt_new)
+
+    when(brdma_stall_cnt_cen){
+        stl_cnt_cur := stl_cnt_nxt(31,0)
+    }
+
+    io.dp2reg_rdma_stall := stl_cnt_cur
 
 
 
