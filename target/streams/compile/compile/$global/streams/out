@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\yuda\Desktop\soDLA\src\main\scala\nvdla\sdp\NV_NVDLA_SDP_HLS_X_int_relu.scala:46:53: no arguments allowed for nullary constructor NV_NVDLA_SDP_HLS_relu: ()nvdla.NV_NVDLA_SDP_HLS_relu[0m
-[0m[[0m[31merror[0m] [0m[0m    val u_x_relu = Module(new NV_NVDLA_SDP_HLS_relu(32))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/chenkangqi/Documents/GitHub/soDLA/src/main/scala/nvdla/sdp/NV_NVDLA_SDP_RDMA_ig.scala:410:17: reassignment to val[0m
+[0m[[0m[31merror[0m] [0m[0m    io.ig2cq_pd = Cat(ig2eg_cube_end, ig2eg_size)[0m
+[0m[[0m[31merror[0m] [0m[0m                ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
