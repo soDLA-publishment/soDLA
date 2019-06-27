@@ -478,6 +478,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_HLS_Y_int_coreDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/PGAOPV_INVD2PO4.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/PGAOPV_INVD2PO4.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_SDP_MRDMA_gate.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_MRDMA_gate.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_SDP_MRDMA_EG_CMD_dfifo_flopram_rwsa_4x15.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_MRDMA_EG_CMD_dfifo_flopram_rwsa_4x15.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_CACC_delivery_ctrl.class[0m
@@ -554,6 +556,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/hardfloat/ValExec_CompareRecFN_le.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat/DivSqrtRecF64.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/hardfloat/DivSqrtRecF64.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_SDP_MRDMA_gateDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_MRDMA_gateDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_CDMA_IMG_sgDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_CDMA_IMG_sgDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_CDMA_wtDriver.class[0m
@@ -1022,6 +1026,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/solutions/Mux4$$anon$2.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat/ValExec_RecF64ToI32.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/hardfloat/ValExec_RecF64ToI32.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_SDP_MRDMA_gate$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_MRDMA_gate$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_apb2csb$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_apb2csb$$anon$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_CACC_assembly_buffer.class[0m
@@ -1136,6 +1142,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_HLS_Y_int_idxDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_SDP_HLS_C_int.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_HLS_C_int.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_SDP_MRDMA_gateDriver.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_MRDMA_gateDriver.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	cora/FPConstants$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/cora/FPConstants$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_CDMA_WT_sp_arb.class[0m
@@ -1980,6 +1988,8 @@
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/nv_ram_rwsp.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_CACC_regDriver$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_CACC_regDriver$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_SDP_MRDMA_gateDriver$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_SDP_MRDMA_gateDriver$delayedInit$body.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	nvdla/NV_NVDLA_CSC_WL_dec.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /Users/chenkangqi/Documents/GitHub/soDLA/target/scala-2.12/classes/nvdla/NV_NVDLA_CSC_WL_dec.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	hardfloat/ValExec_DivSqrtRecFN_small_sqrt$$anon$5$$anon$7.class[0m

@@ -52,4 +52,3 @@ object NV_NVDLA_SDP_CORE_gateDriver extends App {
   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_gate())
 }
 
-

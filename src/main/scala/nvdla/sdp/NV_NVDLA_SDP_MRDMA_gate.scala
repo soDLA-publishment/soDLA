@@ -1,46 +1,59 @@
-// package nvdla
+package nvdla
 
-// import chisel3._
-// import chisel3.experimental._
-// import chisel3.util._
+import chisel3._
+import chisel3.experimental._
+import chisel3.util._
 
-// class NV_NVDLA_SDP_HLS_lut_expn extends Module {
-//    val io = IO(new Bundle {
-//         val nvdla_core_clk = Input(Clock())
+class NV_NVDLA_SDP_MRDMA_gate extends Module {
+   val io = IO(new Bundle {
+        val nvdla_core_clk = Input(Clock())
+        val dla_clk_ovr_on_sync = Input(Clock())
+        val global_clk_ovr_on_sync = Input(Clock())
+        
+        val mrdma_disable = Input(Bool())
+        val mrdma_slcg_op_en = Input(Bool())
+        val tmc2slcg_disable_clock_gating = Input(Bool())
 
-//         val cfg_lut_offset = Input(UInt(8.W))
-//         val cfg_lut_start = Input(UInt(32.W))
-//         val idx_data_in = Input(UInt(32.W))
-//         val idx_in_pvld = Input(Bool())
-//         val idx_out_prdy = Input(Bool())
+        val nvdla_gated_clk = Output(Clock())
+    })
+    //     
+    //          ┌─┐       ┌─┐
+    //       ┌──┘ ┴───────┘ ┴──┐
+    //       │                 │
+    //       │       ───       │          
+    //       │  ─┬┘       └┬─  │
+    //       │                 │
+    //       │       ─┴─       │
+    //       │                 │
+    //       └───┐         ┌───┘
+    //           │         │
+    //           │         │
+    //           │         │
+    //           │         └──────────────┐
+    //           │                        │
+    //           │                        ├─┐
+    //           │                        ┌─┘    
+    //           │                        │
+    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+    //             │ ─┤ ─┤       │ ─┤ ─┤         
+    //             └──┴──┘       └──┴──┘ 
+withClock(io.nvdla_core_clk){
+    val mrdma_enable = RegInit(false.B)
+    mrdma_enable := !io.mrdma_disable
 
-//         val idx_in_prdy = Output(Bool())
-//         val idx_out_pvld = Output(Bool())
-//         val lut_frac_out = Output(UInt(35.W))
-//         val lut_index_out = Output(UInt(9.W))
-//         val lut_oflow_out = Output(Bool())
-//         val lut_uflow_out = Output(Bool())
-//     })
-//     //     
-//     //          ┌─┐       ┌─┐
-//     //       ┌──┘ ┴───────┘ ┴──┐
-//     //       │                 │
-//     //       │       ───       │          
-//     //       │  ─┬┘       └┬─  │
-//     //       │                 │
-//     //       │       ─┴─       │
-//     //       │                 │
-//     //       └───┐         ┌───┘
-//     //           │         │
-//     //           │         │
-//     //           │         │
-//     //           │         └──────────────┐
-//     //           │                        │
-//     //           │                        ├─┐
-//     //           │                        ┌─┘    
-//     //           │                        │
-//     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-//     //             │ ─┤ ─┤       │ ─┤ ─┤         
-//     //             └──┴──┘       └──┴──┘ 
-// withClock(io.nvdla_core_clk)
-// }
+    val cfg_clk_en = io.mrdma_slcg_op_en & mrdma_enable
+
+    val nvdla_core_clk_slcg_0_en = 
+                cfg_clk_en | io.dla_clk_ovr_on_sync.asUInt.toBool | 
+                (io.tmc2slcg_disable_clock_gating|io.global_clk_ovr_on_sync.asUInt.toBool)
+    
+    val nvdla_core_clk_slcg_0 = Module(new NV_CLK_gate_power)
+    nvdla_core_clk_slcg_0.io.clk := io.nvdla_core_clk
+    nvdla_core_clk_slcg_0.io.clk_en := nvdla_core_clk_slcg_0_en
+    io.nvdla_gated_clk := nvdla_core_clk_slcg_0.io.clk_gated     
+}
+}
+
+object NV_NVDLA_SDP_MRDMA_gateDriver extends App {
+  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_MRDMA_gate())
+}
