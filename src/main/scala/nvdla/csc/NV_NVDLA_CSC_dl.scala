@@ -5,74 +5,98 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+//6/28/2019 redpanda3 update
+//prevent java heap space
+class NV_NVDLA_CSC_dlIO(implicit conf: cscConfiguration) extends Bundle{
 
+    val nvdla_core_clk = Input(Clock())
+    val nvdla_core_ng_clk = Input(Clock())
+
+    val sg2dl_pvld = Input(Bool()) /* data valid */
+    val sg2dl_pd = Input(UInt(31.W))
+    val sc_state = Input(UInt(2.W))
+    val sg2dl_reuse_rls = Input(Bool())
+
+    val sc2cdma_dat_pending_req = Input(Bool())
+
+    val cdma2sc_dat_updt = Input(Bool())    /* data valid */
+    val cdma2sc_dat_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val cdma2sc_dat_slices = Input(UInt(14.W))
+
+    val sc2cdma_dat_updt = Output(Bool())    /* data valid */
+    val sc2cdma_dat_entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val sc2cdma_dat_slices = Output(UInt(14.W))
+
+    val sc2buf_dat_rd_en = Output(Bool())    /* data valid */
+    val sc2buf_dat_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
+
+    val sc2buf_dat_rd_valid = Input(Bool())      /* data valid */
+    val sc2buf_dat_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
+    val sc2buf_dat_rd_shift = Output(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
+    val sc2buf_dat_rd_next1_en = Output(Bool())
+    val sc2buf_dat_rd_next1_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
+
+    val sc2mac_dat_a_pvld = Output(Bool())              /* data valid */
+    val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
+    val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val sc2mac_dat_a_pd = Output(UInt(9.W))
+
+    val sc2mac_dat_b_pvld = Output(Bool())              /* data valid */
+    val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
+    val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val sc2mac_dat_b_pd = Output(UInt(9.W))
+
+    val reg2dp_op_en = Input(Bool())
+    val reg2dp_conv_mode = Input(Bool())
+    val reg2dp_batches = Input(UInt(5.W))
+    val reg2dp_proc_precision = Input(UInt(2.W))
+    val reg2dp_datain_format = Input(Bool()) 
+    val reg2dp_skip_data_rls = Input(Bool())
+    val reg2dp_datain_channel_ext = Input(UInt(13.W))
+    val reg2dp_datain_height_ext = Input(UInt(13.W))
+    val reg2dp_datain_width_ext = Input(UInt(13.W))
+    val reg2dp_y_extension = Input(UInt(2.W))
+    val reg2dp_weight_channel_ext = Input(UInt(13.W))
+    val reg2dp_entries = Input(UInt(14.W))
+    val reg2dp_dataout_width = Input(UInt(13.W))
+    val reg2dp_rls_slices = Input(UInt(12.W))
+    val reg2dp_conv_x_stride_ext = Input(UInt(3.W))
+    val reg2dp_conv_y_stride_ext = Input(UInt(3.W))
+    val reg2dp_x_dilation_ext = Input(UInt(5.W))
+    val reg2dp_y_dilation_ext = Input(UInt(5.W))
+    val reg2dp_pad_left = Input(UInt(5.W))
+    val reg2dp_pad_top = Input(UInt(5.W))
+    val reg2dp_pad_value = Input(UInt(16.W))
+    val reg2dp_data_bank = Input(UInt(5.W))
+    val reg2dp_pra_truncate = Input(UInt(2.W))
+
+    val slcg_wg_en = Output(Bool())
+
+}
 
 class NV_NVDLA_CSC_dl(implicit val conf: cscConfiguration) extends Module {
-    val io = IO(new Bundle {
-
-        val nvdla_core_clk = Input(Clock())
-        val nvdla_core_ng_clk = Input(Clock())
-
-        val sg2dl_pvld = Input(Bool()) /* data valid */
-        val sg2dl_pd = Input(UInt(31.W))
-        val sc_state = Input(UInt(2.W))
-        val sg2dl_reuse_rls = Input(Bool())
-
-        val sc2cdma_dat_pending_req = Input(Bool())
-
-        val cdma2sc_dat_updt = Input(Bool())    /* data valid */
-        val cdma2sc_dat_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-        val cdma2sc_dat_slices = Input(UInt(14.W))
-
-        val sc2cdma_dat_updt = Output(Bool())    /* data valid */
-        val sc2cdma_dat_entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-        val sc2cdma_dat_slices = Output(UInt(14.W))
-
-        val sc2buf_dat_rd_en = Output(Bool())    /* data valid */
-        val sc2buf_dat_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-
-        val sc2buf_dat_rd_valid = Input(Bool())      /* data valid */
-        val sc2buf_dat_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
-        val sc2buf_dat_rd_shift = Output(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
-        val sc2buf_dat_rd_next1_en = Output(Bool())
-        val sc2buf_dat_rd_next1_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-
-        val sc2mac_dat_a_pvld = Output(Bool())              /* data valid */
-        val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
-        val sc2mac_dat_a_pd = Output(UInt(9.W))
-
-        val sc2mac_dat_b_pvld = Output(Bool())              /* data valid */
-        val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
-        val sc2mac_dat_b_pd = Output(UInt(9.W))
-
-        val reg2dp_op_en = Input(Bool())
-        val reg2dp_conv_mode = Input(Bool())
-        val reg2dp_batches = Input(UInt(5.W))
-        val reg2dp_proc_precision = Input(UInt(2.W))
-        val reg2dp_datain_format = Input(Bool()) 
-        val reg2dp_skip_data_rls = Input(Bool())
-        val reg2dp_datain_channel_ext = Input(UInt(13.W))
-        val reg2dp_datain_height_ext = Input(UInt(13.W))
-        val reg2dp_datain_width_ext = Input(UInt(13.W))
-        val reg2dp_y_extension = Input(UInt(2.W))
-        val reg2dp_weight_channel_ext = Input(UInt(13.W))
-        val reg2dp_entries = Input(UInt(14.W))
-        val reg2dp_dataout_width = Input(UInt(13.W))
-        val reg2dp_rls_slices = Input(UInt(12.W))
-        val reg2dp_conv_x_stride_ext = Input(UInt(3.W))
-        val reg2dp_conv_y_stride_ext = Input(UInt(3.W))
-        val reg2dp_x_dilation_ext = Input(UInt(5.W))
-        val reg2dp_y_dilation_ext = Input(UInt(5.W))
-        val reg2dp_pad_left = Input(UInt(5.W))
-        val reg2dp_pad_top = Input(UInt(5.W))
-        val reg2dp_pad_value = Input(UInt(16.W))
-        val reg2dp_data_bank = Input(UInt(5.W))
-        val reg2dp_pra_truncate = Input(UInt(2.W))
-
-        val slcg_wg_en = Output(Bool())
-    })
+    val io = IO(new NV_NVDLA_CSC_dlIO)
+    //     
+    //          ┌─┐       ┌─┐
+    //       ┌──┘ ┴───────┘ ┴──┐
+    //       │                 │
+    //       │       ───       │          
+    //       │  ─┬┘       └┬─  │
+    //       │                 │
+    //       │       ─┴─       │
+    //       │                 │
+    //       └───┐         ┌───┘
+    //           │         │
+    //           │         │
+    //           │         │
+    //           │         └──────────────┐
+    //           │                        │
+    //           │                        ├─┐
+    //           │                        ┌─┘    
+    //           │                        │
+    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+    //             │ ─┤ ─┤       │ ─┤ ─┤         
+    //             └──┴──┘       └──┴──┘  
 withClock(io.nvdla_core_clk){
 
 //////////////////////////////////////////////////////////////

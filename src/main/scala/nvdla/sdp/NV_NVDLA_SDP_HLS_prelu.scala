@@ -4,10 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_SDP_HLS_prelu extends Module {
-   val IN_WIDTH = 32
-   val OP_WIDTH  = 32
-   val OUT_WIDTH = 64
+class NV_NVDLA_SDP_HLS_prelu(IN_WIDTH:Int=32, OUT_WIDTH:Int=64, OP_WIDTH:Int=32) extends Module {
    val io = IO(new Bundle {
         val cfg_prelu_en = Input(Bool())
         val data_in = Input(UInt(IN_WIDTH.W))

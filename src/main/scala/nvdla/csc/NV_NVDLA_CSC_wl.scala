@@ -3,59 +3,63 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 import chisel3.util._
- import chisel3.iotesters.Driver
+
+//6/28/2019 redpanda3 update
+//prevent java heap space
+class NV_NVDLA_CSC_wlIO(implicit conf: cscConfiguration) extends Bundle{
+
+    //clock
+    val nvdla_core_clk = Input(Clock())    
+    val nvdla_core_ng_clk = Input(Clock())    
+
+    val sg2wl_pvld = Input(Bool())  /* data valid */
+    val sg2wl_pd = Input(UInt(18.W))
+
+    val sc_state = Input(UInt(2.W))
+    val sg2wl_reuse_rls = Input(Bool())
+    val sc2cdma_wt_pending_req = Input(Bool())
+
+    val cdma2sc_wt_updt = Input(Bool())  /* data valid */
+    val cdma2sc_wt_kernels = Input(UInt(14.W))
+    val cdma2sc_wt_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val cdma2sc_wmb_entries = Input(UInt(9.W))
+
+    val sc2cdma_wt_updt = Output(Bool())     /* data valid */
+    val sc2cdma_wt_kernels = Output(UInt(14.W))
+    val sc2cdma_wt_entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val sc2cdma_wmb_entries = Output(UInt(9.W))
+    
+    val sc2buf_wt_rd_en = Output(Bool()) 
+    val sc2buf_wt_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
+
+    val sc2buf_wt_rd_valid = Input(Bool()) 
+    val sc2buf_wt_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
+
+    val sc2mac_wt_a_pvld = Output(Bool())      /* data valid */
+    val sc2mac_wt_b_pvld = Output(Bool())      /* data valid */
+    val sc2mac_wt_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
+    val sc2mac_wt_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
+    val sc2mac_wt_a_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
+    val sc2mac_wt_b_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
+    val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))     
+
+    val reg2dp_op_en = Input(Bool())
+    val reg2dp_in_precision = Input(UInt(2.W))
+    val reg2dp_proc_precision = Input(UInt(2.W))
+    val reg2dp_y_extension = Input(UInt(2.W))
+    val reg2dp_weight_reuse = Input(Bool())
+    val reg2dp_skip_weight_rls = Input(Bool())
+    val reg2dp_weight_format = Input(Bool())
+    val reg2dp_weight_bytes = Input(UInt(32.W))
+    val reg2dp_wmb_bytes = Input(UInt(28.W))
+    val reg2dp_data_bank = Input(UInt(5.W))
+    val reg2dp_weight_bank = Input(UInt(5.W)) 
+
+}
 
 class NV_NVDLA_CSC_wl(implicit val conf: cscConfiguration) extends Module {
-    val io = IO(new Bundle {
-        //clock
-        val nvdla_core_clk = Input(Clock())    
-        val nvdla_core_ng_clk = Input(Clock())    
-
-        val sg2wl_pvld = Input(Bool())  /* data valid */
-        val sg2wl_pd = Input(UInt(18.W))
-
-        val sc_state = Input(UInt(2.W))
-        val sg2wl_reuse_rls = Input(Bool())
-        val sc2cdma_wt_pending_req = Input(Bool())
-
-        val cdma2sc_wt_updt = Input(Bool())  /* data valid */
-        val cdma2sc_wt_kernels = Input(UInt(14.W))
-        val cdma2sc_wt_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-        val cdma2sc_wmb_entries = Input(UInt(9.W))
-
-        val sc2cdma_wt_updt = Output(Bool())     /* data valid */
-        val sc2cdma_wt_kernels = Output(UInt(14.W))
-        val sc2cdma_wt_entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-        val sc2cdma_wmb_entries = Output(UInt(9.W))
-        
-        val sc2buf_wt_rd_en = Output(Bool()) 
-        val sc2buf_wt_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-
-        val sc2buf_wt_rd_valid = Input(Bool()) 
-        val sc2buf_wt_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
-    
-        val sc2mac_wt_a_pvld = Output(Bool())      /* data valid */
-        val sc2mac_wt_b_pvld = Output(Bool())      /* data valid */
-        val sc2mac_wt_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_wt_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_wt_a_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
-        val sc2mac_wt_b_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
-        val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
-        val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))     
-
-        val reg2dp_op_en = Input(Bool())
-        val reg2dp_in_precision = Input(UInt(2.W))
-        val reg2dp_proc_precision = Input(UInt(2.W))
-        val reg2dp_y_extension = Input(UInt(2.W))
-        val reg2dp_weight_reuse = Input(Bool())
-        val reg2dp_skip_weight_rls = Input(Bool())
-        val reg2dp_weight_format = Input(Bool())
-        val reg2dp_weight_bytes = Input(UInt(32.W))
-        val reg2dp_wmb_bytes = Input(UInt(28.W))
-        val reg2dp_data_bank = Input(UInt(5.W))
-        val reg2dp_weight_bank = Input(UInt(5.W)) 
-
-    })
+    val io = IO(new NV_NVDLA_CSC_wlIO)
     //     
     //          ┌─┐       ┌─┐
     //       ┌──┘ ┴───────┘ ┴──┐
