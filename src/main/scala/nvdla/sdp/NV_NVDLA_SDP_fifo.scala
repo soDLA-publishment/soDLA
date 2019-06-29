@@ -14,12 +14,12 @@ class NV_NVDLA_SDP_fifo(depth: Int, width: Int) extends Module {
         //general clock
         val clk = Input(Clock())
 
-        //wr pipeline 
+        //wr pipeline / ig2cq -- write(wr) 
         val wr_rdy = Output(Bool())
         val wr_vld = Input(Bool())  
         val wr_data = Input(UInt(width.W))
 
-        //rd pipeline
+        //rd pipeline / cq2eg -- read(rd)
         val rd_rdy = Input(Bool())
         val rd_vld = Output(Bool()) 
         val rd_data = Output(UInt(width.W)) 

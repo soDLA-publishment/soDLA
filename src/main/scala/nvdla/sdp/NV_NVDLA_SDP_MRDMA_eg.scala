@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_SDP_MRDMA_eg extends Module {
+// class NV_NVDLA_SDP_MRDMA_eg(implicit val conf: sdpConfiguration) extends Module {
 //    val io = IO(new Bundle {
 //         //clk
 //         val nvdla_core_clk = Input(Clock())
@@ -12,7 +12,7 @@
 //         val op_load = Input(Bool())
 //         val eg_done = Output(Bool())
 
-//         //cq2eg 
+//         //cq2eg -- read
 //         val cq2eg_pvld = Input(Bool())
 //         val cq2eg_prdy = Output(Bool())
 //         val cq2eg_pd = Input(UInt(14.W))
@@ -61,6 +61,7 @@
 //     //             │ ─┤ ─┤       │ ─┤ ─┤         
 //     //             └──┴──┘       └──┴──┘ 
 // withClock(io.nvdla_core_clk)
+//     {
 
 //     val cmd2dat_spt_pvld = Wire(Bool())
 //     val cmd2dat_spt_prdy = Wire(Bool())
@@ -88,38 +89,70 @@
 //     u_cmd.io.reg2dp_height := io.reg2dp_height
 //     u_cmd.io.reg2dp_width := io.reg2dp_width
 
+//     val pfifo0_rd_prdy = Wire(Bool())
+//     val pfifo1_rd_prdy = Wire(Bool())
+//     val pfifo2_rd_prdy = Wire(Bool())
+//     val pfifo3_rd_prdy = Wire(Bool())
+    
 //     val u_din = Module(new NV_NVDLA_SDP_MRDMA_EG_din)
-//     u_din
-//     input          nvdla_core_clk;
-// input          nvdla_core_rstn;
-// input   [31:0] pwrbus_ram_pd;
-// input          reg2dp_src_ram_type;
-// output         dma_rd_rsp_ram_type;
-// input  [NVDLA_DMA_RD_RSP-1:0] dma_rd_rsp_pd;
-// input          dma_rd_rsp_vld;
-// output         dma_rd_rsp_rdy;
-// output         dma_rd_cdt_lat_fifo_pop;
-// input   [12:0] cmd2dat_spt_pd;
-// input          cmd2dat_spt_pvld;
-// output         cmd2dat_spt_prdy;
-// input          pfifo0_rd_prdy;
-// input          pfifo1_rd_prdy;
-// input          pfifo2_rd_prdy;
-// input          pfifo3_rd_prdy;
-// output [AM_DW-1:0] pfifo0_rd_pd;
-// output         pfifo0_rd_pvld;
-// output [AM_DW-1:0] pfifo1_rd_pd;
-// output         pfifo1_rd_pvld;
-// output [AM_DW-1:0] pfifo2_rd_pd;
-// output         pfifo2_rd_pvld;
-// output [AM_DW-1:0] pfifo3_rd_pd;
-// output         pfifo3_rd_pvld;
+//     u_din.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_din.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+//     u_din.io.reg2dp_src_ram_type := io.reg2dp_src_ram_type
+//     io.dma_rd_rsp_ram_type := u_din.io.dma_rd_rsp_ram_type
+//     u_din.io.dma_rd_rsp_pd := io.dma_rd_rsp_pd
+//     u_din.io.dma_rd_rsp_vld := io.dma_rd_rsp_vld
+//     io.dma_rd_rsp_rdy := u_din.io.dma_rd_rsp_rdy
+//     io.dma_rd_cdt_lat_fifo_pop := u_din.io.dma_rd_cdt_lat_fifo_pop
+//     u_din.io.cmd2dat_spt_pd := cmd2dat_spt_pd
+//     u_din.io.cmd2dat_spt_pvld := cmd2dat_spt_pvld
+//     cmd2dat_spt_prdy := u_din.io.cmd2dat_spt_prdy
+//     u_din.io.pfifo0_rd_prdy := pfifo0_rd_prdy
+//     u_din.io.pfifo1_rd_prdy := pfifo1_rd_prdy
+//     u_din.io.pfifo2_rd_prdy := pfifo2_rd_prdy
+//     u_din.io.pfifo3_rd_prdy := pfifo3_rd_prdy
+//     val pfifo0_rd_pd = u_din.io.pfifo0_rd_pd
+//     val pfifo1_rd_pd = u_din.io.pfifo1_rd_pd
+//     val pfifo2_rd_pd = u_din.io.pfifo2_rd_pd
+//     val pfifo3_rd_pd = u_din.io.pfifo3_rd_pd
+//     val pfifo0_rd_pvld = u_din.io.pfifo0_rd_pvld
+//     val pfifo1_rd_pvld = u_din.io.pfifo1_rd_pvld
+//     val pfifo2_rd_pvld = u_din.io.pfifo2_rd_pvld
+//     val pfifo3_rd_pvld = u_din.io.pfifo3_rd_pvld
 
+//     val u_dout = Module(new NV_NVDLA_SDP_MRDMA_EG_dout)
 
-
-
-
-
-
+//     u_dout.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_dout.io.op_load := io.op_load
+//     io.eg_done := u_dout.io.eg_done
+//     u_dout.io.reg2dp_height := io.reg2dp_height
+//     u_dout.io.reg2dp_in_precision := io.reg2dp_in_precision
+//     u_dout.io.reg2dp_proc_precision := io.reg2dp_proc_precision
+//     u_dout.io.reg2dp_perf_nan_inf_count_en := io.reg2dp_perf_nan_inf_count_en
+//     io.dp2reg_status_inf_input_num := u_dout.io.dp2reg_status_inf_input_num
+//     io.dp2reg_status_nan_input_num := u_dout.io.dp2reg_status_nan_input_num
+//     io.sdp_mrdma2cmux_valid := u_dout.io.sdp_mrdma2cmux_valid
+//     u_dout.io.sdp_mrdma2cmux_ready := io.sdp_mrdma2cmux_ready
+//     io.sdp_mrdma2cmux_pd := u_dout.io.sdp_mrdma2cmux_pd
+//     u_dout.io.cmd2dat_dma_pvld := cmd2dat_dma_pvld
+//     cmd2dat_dma_prdy := u_dout.io.cmd2dat_dma_prdy
+//     u_dout.io.cmd2dat_dma_pd := cmd2dat_dma_pd
+//     u_dout.io.pfifo0_rd_pvld := pfifo0_rd_pvld
+//     u_dout.io.pfifo1_rd_pvld := pfifo1_rd_pvld
+//     u_dout.io.pfifo2_rd_pvld := pfifo2_rd_pvld
+//     u_dout.io.pfifo3_rd_pvld := pfifo3_rd_pvld
+//     pfifo0_rd_prdy := u_dout.io.pfifo0_rd_prdy
+//     pfifo1_rd_prdy := u_dout.io.pfifo1_rd_prdy
+//     pfifo2_rd_prdy := u_dout.io.pfifo2_rd_prdy
+//     pfifo3_rd_prdy := u_dout.io.pfifo3_rd_prdy
+//     u_dout.io.pfifo0_rd_pd := pfifo0_rd_pd
+//     u_dout.io.pfifo1_rd_pd := pfifo1_rd_pd
+//     u_dout.io.pfifo2_rd_pd := pfifo2_rd_pd
+//     u_dout.io.pfifo3_rd_pd := pfifo3_rd_pd
 
 // }}
+
+
+// object NV_NVDLA_SDP_MRDMA_EGDriver extends App {
+//     implicit val conf: sdpConfiguration = new sdpConfiguration
+//     chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_MRDMA_EG())
+// }
