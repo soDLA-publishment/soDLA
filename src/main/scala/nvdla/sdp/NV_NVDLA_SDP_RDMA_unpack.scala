@@ -11,7 +11,7 @@ class NV_NVDLA_SDP_RDMA_unpack(implicit val conf: sdpConfiguration) extends Modu
         //in clock
         val nvdla_core_clk = Input(Clock())
 
-        val cfg_dp_8 = Input(Bool())
+        // val cfg_dp_8 = Input(Bool())
 
         val inp_end = Input(Bool())
         val inp_pvld = Input(Bool())
