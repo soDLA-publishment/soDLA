@@ -183,8 +183,8 @@ withClock(io.nvdla_core_clk){
     io.sdp_mrdma2cmux_pd := pipe_p1.io.dout
 
     val sdp_mrdma2cmux_layer_end = io.sdp_mrdma2cmux_pd(conf.DP_DIN_DW+1)
-    val eg_done = RegInit(0.U(1.W))
-    eg_done := sdp_mrdma2cmux_layer_end & io.sdp_mrdma2cmux_valid & io.sdp_mrdma2cmux_ready
+    io.eg_done = RegInit(false.B)
+    io.eg_done := sdp_mrdma2cmux_layer_end & io.sdp_mrdma2cmux_valid & io.sdp_mrdma2cmux_ready
 
 }
 }
