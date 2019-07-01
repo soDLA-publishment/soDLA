@@ -41,9 +41,9 @@
 //     val reg2dp_brdma_data_use = Input(UInt(2.W))  
 //     val reg2dp_brdma_ram_type = Input(Bool())  
 //     val reg2dp_bs_base_addr_high = Input(UInt(32.W))  
-//     val reg2dp_bs_base_addr_low = Input(UInt(conf.AM_DW.W))  
-//     val reg2dp_bs_line_stride = Input(UInt(conf.AM_DW.W))   
-//     val reg2dp_bs_surface_stride = Input(UInt(conf.AM_DW.W))  
+//     val reg2dp_bs_base_addr_low = Input(UInt((32-conf.AM_DW).W))  
+//     val reg2dp_bs_line_stride = Input(UInt((32-conf.AM_DW).W))   
+//     val reg2dp_bs_surface_stride = Input(UInt((32-conf.AM_DW).W))
 //     val reg2dp_batch_number = Input(UInt(5.W))  
 //     val reg2dp_channel = Input(UInt(13.W))  
 //     val reg2dp_height = Input(UInt(13.W))  
@@ -64,7 +64,28 @@
 //     val brdma_disable = Input(Bool())
 
 // })
-
+//     //     
+//     //          ┌─┐       ┌─┐
+//     //       ┌──┘ ┴───────┘ ┴──┐
+//     //       │                 │
+//     //       │       ───       │          
+//     //       │  ─┬┘       └┬─  │
+//     //       │                 │
+//     //       │       ─┴─       │
+//     //       │                 │
+//     //       └───┐         ┌───┘
+//     //           │         │
+//     //           │         │
+//     //           │         │
+//     //           │         └──────────────┐
+//     //           │                        │
+//     //           │                        ├─┐
+//     //           │                        ┌─┘    
+//     //           │                        │
+//     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//     //             │ ─┤ ─┤       │ ─┤ ─┤         
+//     //             └──┴──┘       └──┴──┘ 
+// withClock(io.nvdla_core_clk){
 //     // Layer Switch
 //     val layer_process = RegInit(false.B)
 //     val eg_done = Wire(Bool())

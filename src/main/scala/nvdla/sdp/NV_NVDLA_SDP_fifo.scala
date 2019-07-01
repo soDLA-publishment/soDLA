@@ -64,7 +64,6 @@ withClock(io.clk){
 
     val clk_mgated_enable = Wire(Bool())  // assigned by code at end of this module
     val clk_mgate = Module(new NV_CLK_gate_power)
-
     clk_mgate.io.clk := io.clk
     clk_mgate.io.clk_en := clk_mgated_enable 
     val clk_mgated = clk_mgate.io.clk_gated
@@ -84,12 +83,12 @@ withClock(io.clk){
     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count + 1.U, wr_count)
     val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
 
-    val wr_count_next_no_wr_popping_is_max = ( wr_count_next_no_wr_popping === depth.U)
-    val wr_count_next_is_max = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_max)
+    val wr_count_next_no_wr_popping_is_full = ( wr_count_next_no_wr_popping === depth.U)
+    val wr_count_next_is_full = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_full)
 
     val wr_limit_muxed = Wire(UInt((log2Ceil(depth)+1).W))  // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
-    val wr_busy_next = wr_count_next_is_max || (wr_limit_reg =/= 0.U &&  wr_count_next>= wr_limit_reg)
+    val wr_busy_next = wr_count_next_is_full || (wr_limit_reg =/= 0.U &&  wr_count_next>= wr_limit_reg)
     
     wr_busy_int := wr_busy_next
     when (wr_reserving ^ wr_popping) {
