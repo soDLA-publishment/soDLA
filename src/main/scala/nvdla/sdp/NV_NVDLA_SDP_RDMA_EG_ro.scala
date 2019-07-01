@@ -596,3 +596,5 @@ object NV_NVDLA_SDP_RDMA_EG_roDriver extends App {
     implicit val conf: sdpConfiguration = new sdpConfiguration
     chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_EG_ro())
 }
+
+/////
