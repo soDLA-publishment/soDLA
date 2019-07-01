@@ -97,7 +97,7 @@ withClock(io.nvdla_core_clk){
     val rod2_rd_prdy = Wire(Bool())
     val rod3_rd_prdy = Wire(Bool())
 
-    val u_rod0 = Module(new NV_NVDLA_IS_pipe(conf.AM_DW))  
+    val u_rod0 = Module(new NV_NVDLA_IS_pipe(conf.AM_DW))  //is pipe
     u_rod0.io.clk    := io.nvdla_core_clk
     rod0_wr_prdy     := u_rod0.io.ro
     u_rod0.io.vi     := rod0_wr_pvld
