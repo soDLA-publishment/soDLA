@@ -153,7 +153,7 @@ withClock(io.nvdla_core_clk){
 
     val dat_pd = Cat(dat_layer_end, dat_batch_end, dat_data)
 
-    val pipe_p1 = Module{new NV_NVDLA_BC_pipe(conf.DP_DIN_DW+2)}
+    val pipe_p1 = Module{new NV_NVDLA_IS_pipe(conf.DP_DIN_DW+2)}
     pipe_p1.io.clk := io.nvdla_core_clk
     pipe_p1.io.vi := dat_vld
     dat_rdy := pipe_p1.io.ro

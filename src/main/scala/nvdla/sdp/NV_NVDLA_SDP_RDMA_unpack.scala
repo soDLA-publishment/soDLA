@@ -14,6 +14,7 @@ class NV_NVDLA_SDP_RDMA_unpack(implicit val conf: sdpConfiguration) extends Modu
         // val cfg_dp_8 = Input(Bool())
 
         val inp_end = Input(Bool())
+        
         val inp_pvld = Input(Bool())
         val inp_prdy = Output(Bool())
         val inp_data = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
