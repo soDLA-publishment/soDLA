@@ -232,7 +232,8 @@ withClock(io.nvdla_core_clk){
 // Count the Equal Bit in EQ Mode
 //=================================================
 
-    val dfifo_unequal = Reg(Vec(4, Bool()))
+    val dfifo_unequal = RegInit(VecInit(Seq.fill(4)(false.B)))
+
     for(i <- 0 to 3){
         when(io.op_load){
             dfifo_unequal(i) := false.B
@@ -242,10 +243,8 @@ withClock(io.nvdla_core_clk){
             }
         }
     }
-
-    val dp2reg_status_unequal_reg = RegInit(false.B)
-    dp2reg_status_unequal_reg := dfifo_unequal.asUInt.orR 
-    io.dp2reg_status_unequal := dp2reg_status_unequal_reg
+ 
+    io.dp2reg_status_unequal := dfifo_unequal.asUInt.orR 
 
 //===========================
 // op_done
