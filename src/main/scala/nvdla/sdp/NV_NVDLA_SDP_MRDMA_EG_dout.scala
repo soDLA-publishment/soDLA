@@ -143,12 +143,7 @@ withClock(io.nvdla_core_clk){
     //=====PERF COUNT END=============
     val pfifo_data_r = MuxCase(
         0.U,
-        Array(
-            (pfifo_sel(0) === true.B) -> Mux(cfg_di_16, pfifo_data_16(0), pfifo_data_8(0)),
-            (pfifo_sel(1) === true.B) -> Mux(cfg_di_16, pfifo_data_16(1), pfifo_data_8(1)),
-            (pfifo_sel(2) === true.B) -> Mux(cfg_di_16, pfifo_data_16(2), pfifo_data_8(2)),
-            (pfifo_sel(3) === true.B) -> Mux(cfg_di_16, pfifo_data_16(3), pfifo_data_8(3))
-        )
+        (0 to 3) map { i => (pfifo_sel(i) === true.B) -> Mux(cfg_di_16, pfifo_data_16(i), pfifo_data_8(i))}
     )
     val dat_data = pfifo_data_r
 

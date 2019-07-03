@@ -62,7 +62,7 @@
 //     val dma_rd_rsp_ram_type = io.reg2dp_src_ram_type
 //     val dma_rd_cdt_lat_fifo_pop = lat_ecc_rd_pvld & lat_ecc_rd_prdy
 
-//     val u_lat_fifo = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_MRDMA_LATENCY_FIFO_DEPTH.toInt, conf.NVDLA_DMA_RD_RSP))
+//     val u_lat_fifo = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_MRDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
 //     u_lat_fifo.io.clk := io.nvdla_core_clk
 //     io.dma_rd_rsp_rdy := u_lat_fifo.io.wr_rdy
 //     u_lat_fifo.io.wr_vld := io.dma_rd_rsp_vld
@@ -205,18 +205,6 @@
 //     io.pfifo3_rd_pd := u_pfifo3.io.rd_data
 
 // }}
-
-// class NV_NVDLA_SDP_MRDMA_EG_pfifo(implicit val conf: sdpConfiguration) extends Module {
-//     val io = IO(new Bundle {
-//         val nvdla_core_clk = Input(Clock())
-//         val pfifo_wr_prdy = Output(Bool())
-//         val pfifo_wr_pvld = Input(Bool())
-//         val pfifo_wr_pd = Input(UInt(conf.AM_DW.W))
-//         val pfifo_rd_prdy = Input(Bool())
-//         val pfifo_rd_pvld = Output(Bool())
-//         val pfifo_rd_pd = Output(UInt(conf.AM_DW.W))
-//         })     
-// }
 
 
 // object NV_NVDLA_SDP_MRDMA_EG_dinDriver extends App {
