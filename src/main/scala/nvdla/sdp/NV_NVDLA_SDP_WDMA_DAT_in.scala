@@ -21,25 +21,10 @@ class NV_NVDLA_SDP_WDMA_DAT_in(implicit val conf: sdpConfiguration) extends Modu
         val sdp_dp2wdma_ready = Output(Bool())
         val sdp_dp2wdma_pd = Input(UInt(conf.AM_DW.W))
 
-        //out dfifo0
-        val dfifo0_rd_pvld = Output(Bool())
-        val dfifo0_rd_prdy = Input(Bool())
-        val dfifo0_rd_pd = Output(UInt(conf.AM_DW.W))
-
-        //out dfifo1
-        val dfifo1_rd_pvld = Output(Bool())
-        val dfifo1_rd_prdy = Input(Bool())
-        val dfifo1_rd_pd = Output(UInt(conf.AM_DW.W))
-
-        //out dfifo2
-        val dfifo2_rd_pvld = Output(Bool())
-        val dfifo2_rd_prdy = Input(Bool())
-        val dfifo2_rd_pd = Output(UInt(conf.AM_DW.W))
-
-        //out dfifo3
-        val dfifo3_rd_pvld = Output(Bool())
-        val dfifo3_rd_prdy = Input(Bool())
-        val dfifo3_rd_pd = Output(UInt(conf.AM_DW.W))
+        //out dfifo
+        val dfifo_rd_pvld = Output(Vec(4, Bool()))
+        val dfifo_rd_prdy = Input(Vec(4, Bool()))
+        val dfifo_rd_pd = Output(Vec(4, UInt(conf.AM_DW.W)))
 
         val reg2dp_batch_number = Input(UInt(5.W))
         val reg2dp_height = Input(UInt(13.W))
@@ -106,77 +91,42 @@ withClock(io.nvdla_core_clk){
         spt_size := cmd2dat_spt_size
     }
 
-    val dfifo0_wr_en = beat_count(1, 0) === 0.U
-    val dfifo1_wr_en = beat_count(1, 0) === 1.U
-    val dfifo2_wr_en = beat_count(1, 0) === 2.U
-    val dfifo3_wr_en = beat_count(1, 0) === 3.U
+    val dfifo_wr_en = Reg(Vec(4, Bool()))
+    for(i <- 0 to 3){
+        dfifo_wr_en(i) := (beat_count(1, 0) === i.U)
+    }
 
-    val dfifo0_wr_prdy = Wire(Bool())
-    val dfifo0_wr_pvld = io.sdp_dp2wdma_valid & dfifo0_wr_en
-    val dfifo0_wr_rdy = Mux(dfifo0_wr_en, dfifo0_wr_prdy, true.B)
-    val dfifo0_wr_pd = dp2wdma_data
+    val dfifo_wr_prdy = Wire(Vec(4, Bool()))
 
-    val dfifo1_wr_prdy = Wire(Bool())
-    val dfifo1_wr_pvld = io.sdp_dp2wdma_valid & dfifo1_wr_en
-    val dfifo1_wr_rdy = Mux(dfifo1_wr_en, dfifo1_wr_prdy, true.B)
-    val dfifo1_wr_pd = dp2wdma_data
+    val dfifo_wr_pvld = Wire(Vec(4, Bool())) 
+    for(i <- 0 to 3){
+        dfifo_wr_pvld(i) := io.sdp_dp2wdma_valid & dfifo_wr_en(i)
+    }
 
-    val dfifo2_wr_prdy = Wire(Bool())
-    val dfifo2_wr_pvld = io.sdp_dp2wdma_valid & dfifo2_wr_en
-    val dfifo2_wr_rdy = Mux(dfifo2_wr_en, dfifo2_wr_prdy, true.B)
-    val dfifo2_wr_pd = dp2wdma_data
+    val dfifo_wr_rdy = Wire(Vec(4, Bool()))
+    for(i <- 0 to 3){
+        dfifo_wr_rdy(i) := Mux(dfifo_wr_en(i), dfifo_wr_prdy(i), true.B)
+    }
 
-    val dfifo3_wr_prdy = Wire(Bool())
-    val dfifo3_wr_pvld = io.sdp_dp2wdma_valid & dfifo3_wr_en
-    val dfifo3_wr_rdy = Mux(dfifo3_wr_en, dfifo3_wr_prdy, true.B)
-    val dfifo3_wr_pd = dp2wdma_data
+    val dfifo_wr_pd = Wire(Vec(4, UInt(conf.AM_DW.W)))
+    for(i <- 0 to 3){
+        dfifo_wr_pd(i) := dp2wdma_data
+    }
 
-    val u_dfifo0 = Module{new NV_NVDLA_SDP_WDMA_DAT_IN_dfifo}
+    val u_dfifo = Array.fill(4){Module(new NV_NVDLA_SDP_WDMA_DAT_IN_dfifo)}
+    for(i <- 0 to 3){
+        u_dfifo(i).io.nvdla_core_clk := io.nvdla_core_clk
+        u_dfifo(i).io.dfifo_wr_pvld := dfifo_wr_pvld(i)
+        dfifo_wr_prdy(i) := u_dfifo(i).io.dfifo_wr_prdy
+        u_dfifo(i).io.dfifo_wr_pd := dfifo_wr_pd(i)
+        io.dfifo_rd_pvld(i) := u_dfifo(i).io.dfifo_rd_pvld
+        u_dfifo(i).io.dfifo_rd_prdy := io.dfifo_rd_prdy(i)
+        io.dfifo_rd_pd(i) := u_dfifo(i).io.dfifo_rd_pd
+    }
 
-    u_dfifo0.io.nvdla_core_clk := io.nvdla_core_clk
-
-    u_dfifo0.io.dfifo_wr_pvld := dfifo0_wr_pvld
-    dfifo0_wr_prdy := u_dfifo0.io.dfifo_wr_prdy
-    u_dfifo0.io.dfifo_wr_pd := dfifo0_wr_pd
-    io.dfifo0_rd_pvld := u_dfifo0.io.dfifo_rd_pvld
-    u_dfifo0.io.dfifo_rd_prdy := io.dfifo0_rd_prdy
-    io.dfifo0_rd_pd := u_dfifo0.io.dfifo_rd_pd
-
-    val u_dfifo1 = Module{new NV_NVDLA_SDP_WDMA_DAT_IN_dfifo}
-
-    u_dfifo1.io.nvdla_core_clk := io.nvdla_core_clk
-
-    u_dfifo1.io.dfifo_wr_pvld := dfifo1_wr_pvld
-    dfifo1_wr_prdy := u_dfifo1.io.dfifo_wr_prdy
-    u_dfifo1.io.dfifo_wr_pd := dfifo1_wr_pd
-    io.dfifo1_rd_pvld := u_dfifo1.io.dfifo_rd_pvld
-    u_dfifo1.io.dfifo_rd_prdy := io.dfifo1_rd_prdy
-    io.dfifo1_rd_pd := u_dfifo1.io.dfifo_rd_pd
-
-    val u_dfifo2 = Module{new NV_NVDLA_SDP_WDMA_DAT_IN_dfifo}
-
-    u_dfifo2.io.nvdla_core_clk := io.nvdla_core_clk
-
-    u_dfifo2.io.dfifo_wr_pvld := dfifo2_wr_pvld
-    dfifo2_wr_prdy := u_dfifo2.io.dfifo_wr_prdy
-    u_dfifo2.io.dfifo_wr_pd := dfifo2_wr_pd
-    io.dfifo2_rd_pvld := u_dfifo2.io.dfifo_rd_pvld
-    u_dfifo2.io.dfifo_rd_prdy := io.dfifo2_rd_prdy
-    io.dfifo2_rd_pd := u_dfifo2.io.dfifo_rd_pd
-
-    val u_dfifo3 = Module{new NV_NVDLA_SDP_WDMA_DAT_IN_dfifo}
-
-    u_dfifo3.io.nvdla_core_clk := io.nvdla_core_clk
-
-    u_dfifo3.io.dfifo_wr_pvld := dfifo3_wr_pvld
-    dfifo3_wr_prdy := u_dfifo3.io.dfifo_wr_prdy
-    u_dfifo3.io.dfifo_wr_pd := dfifo3_wr_pd
-    io.dfifo3_rd_pvld := u_dfifo3.io.dfifo_rd_pvld
-    u_dfifo3.io.dfifo_rd_prdy := io.dfifo3_rd_prdy
-    io.dfifo3_rd_pd := u_dfifo3.io.dfifo_rd_pd
-
-    in_dat_rdy := dfifo0_wr_rdy & dfifo1_wr_rdy & dfifo2_wr_rdy & dfifo3_wr_rdy;
-    in_dat_accept := (dfifo0_wr_pvld & dfifo0_wr_prdy) | (dfifo1_wr_pvld & dfifo1_wr_prdy) | (dfifo2_wr_pvld & dfifo2_wr_prdy) | (dfifo3_wr_pvld & dfifo3_wr_prdy);
+    in_dat_rdy := dfifo_wr_rdy.asUInt.andR
+    
+    in_dat_accept := (dfifo_wr_pvld(0) & dfifo_wr_prdy(0)) | (dfifo_wr_pvld(1) & dfifo_wr_prdy(1)) | (dfifo_wr_pvld(2) & dfifo_wr_prdy(2)) | (dfifo_wr_pvld(3) & dfifo_wr_prdy(3));
 
             
 }}
