@@ -228,8 +228,8 @@
 //         }
 
 
-
-//         val alu_rod0_pd = Mux(
+        // val alu_rod_pd = Wire(Vec(4, UInt(conf.AM_DW.W)))
+//         alu_rod_pd(0) = Mux(
 //                             cfg_mode_2bytex2,
 //                             mode_2bytex2_alu_rod0_pd,
 //                             Mux(
@@ -238,7 +238,7 @@
 //                                 unpack_out_pd((conf.AM_DW*0+conf.AM_DW-1), conf.AM_DW*0)
 //                                 )
 //                             )
-//         val alu_rod1_pd = Mux(
+//         alu_rod_pd(1) = Mux(
 //                             cfg_mode_2bytex2,
 //                             mode_2bytex2_alu_rod1_pd,
 //                             Mux(
@@ -247,10 +247,11 @@
 //                                 unpack_out_pd((conf.AM_DW*1+conf.AM_DW-1), conf.AM_DW*1)
 //                                 )
 //                             )
-//         val alu_rod2_pd = unpack_out_pd((conf.AM_DW*2+conf.AM_DW-1), conf.AM_DW*2)                     
-//         val alu_rod3_pd = unpack_out_pd((conf.AM_DW*3+conf.AM_DW-1), conf.AM_DW*3)                                                            
+//         alu_rod_pd(2) = unpack_out_pd((conf.AM_DW*2+conf.AM_DW-1), conf.AM_DW*2)                     
+//         alu_rod_pd(3) = unpack_out_pd((conf.AM_DW*3+conf.AM_DW-1), conf.AM_DW*3)                                                            
 
-//         val mul_rod0_pd = Mux(
+        // val mul_rod_pd = Wire(Vec(4, UInt(conf.AM_DW.W)))
+//         mul_rod_pd(0) = Mux(
 //                             cfg_mode_2bytex2,
 //                             mode_2bytex2_mul_rod0_pd,
 //                             Mux(
@@ -259,7 +260,7 @@
 //                                 unpack_out_pd((conf.AM_DW*0+conf.AM_DW-1), conf.AM_DW*0)
 //                                 )
 //                             )
-//         val mul_rod1_pd = Mux(
+//         mul_rod_pd(1) = Mux(
 //                             cfg_mode_2bytex2,
 //                             mode_2bytex2_mul_rod1_pd,
 //                             Mux(
@@ -268,8 +269,8 @@
 //                                 unpack_out_pd((conf.AM_DW*1+conf.AM_DW-1), conf.AM_DW*1)
 //                                 )
 //                             )
-//         val mul_rod2_pd = unpack_out_pd((conf.AM_DW*2+conf.AM_DW-1), conf.AM_DW*2)                     
-//         val mul_rod3_pd = unpack_out_pd((conf.AM_DW*3+conf.AM_DW-1), conf.AM_DW*3)                                                            
+//         mul_rod_pd(2) = unpack_out_pd((conf.AM_DW*2+conf.AM_DW-1), conf.AM_DW*2)                     
+//         mul_rod_pd(3) = unpack_out_pd((conf.AM_DW*3+conf.AM_DW-1), conf.AM_DW*3)                                                            
 
 //         val alu_rod_mask = Mux(
 //                         cfg_mode_both, 
@@ -303,10 +304,7 @@
 //         io.sdp_rdma2dp_alu_valid    := u_alu.io.sdp_rdma2dp_valid
 //         u_alu.io.sdp_rdma2dp_ready  := io.sdp_rdma2dp_alu_ready
 //         io.sdp_rdma2dp_alu_pd       := u_alu.io.sdp_rdma2dp_pd
-//         u_alu.io.rod0_wr_pd         := alu_rod0_pd
-//         u_alu.io.rod1_wr_pd         := alu_rod1_pd
-//         u_alu.io.rod2_wr_pd         := alu_rod2_pd
-//         u_alu.io.rod3_wr_pd         := alu_rod3_pd
+//         u_alu.io.rod_wr_pd         := alu_rod_pd
 //         u_alu.io.rod_wr_mask        := alu_rod_mask
 //         u_alu.io.rod_wr_vld         := alu_rod_vld
 //         alu_rod_rdy                 := u_alu.io.rod_wr_rdy
@@ -330,10 +328,7 @@
 //         io.sdp_rdma2dp_mul_valid    := u_mul.io.sdp_rdma2dp_valid
 //         u_mul.io.sdp_rdma2dp_ready  := io.sdp_rdma2dp_mul_ready
 //         io.sdp_rdma2dp_mul_pd       := u_mul.io.sdp_rdma2dp_pd
-//         u_mul.io.rod0_wr_pd         := mul_rod0_pd
-//         u_mul.io.rod1_wr_pd         := mul_rod1_pd
-//         u_mul.io.rod2_wr_pd         := mul_rod2_pd
-//         u_mul.io.rod3_wr_pd         := mul_rod3_pd
+//         u_mul.io.rod_wr_pd         := mul_rod_pd
 //         u_mul.io.rod_wr_mask        := mul_rod_mask
 //         u_mul.io.rod_wr_vld         := mul_rod_vld
 //         mul_rod_rdy                 := u_mul.io.rod_wr_rdy

@@ -14,10 +14,7 @@ class NV_NVDLA_SDP_RDMA_EG_ro(implicit val conf: sdpConfiguration) extends Modul
         val sdp_rdma2dp_ready = Input(Bool())
         val sdp_rdma2dp_pd = Output(UInt((conf.AM_DW2 + 1).W))
 
-        val rod0_wr_pd = Input(UInt(conf.AM_DW.W))
-        val rod1_wr_pd = Input(UInt(conf.AM_DW.W))
-        val rod2_wr_pd = Input(UInt(conf.AM_DW.W))
-        val rod3_wr_pd = Input(UInt(conf.AM_DW.W))
+        val rod_wr_pd = Input(Vec(4,UInt(conf.AM_DW.W)))
 
         val rod_wr_mask = Input(UInt(4.W))
         val rod_wr_vld = Input(Bool())
@@ -66,73 +63,47 @@ withClock(io.nvdla_core_clk){
 // DATA FIFO: WRITE SIDE
 //=======================================================
 
-    val rod0_wr_prdy = Wire(Bool())
-    val rod1_wr_prdy = Wire(Bool())
-    val rod2_wr_prdy = Wire(Bool())
-    val rod3_wr_prdy = Wire(Bool())
+    val rod_wr_prdy = Wire(Vec(4, Bool()))
+    val rod_wr_mask_prdy = Wire(Vec(4, Bool()))
+    for(i <- 0 to 3){
+        rod_wr_mask_prdy(i) := io.rod_wr_mask(i) & !rod_wr_prdy(i)
+    }
 
-    io.rod_wr_rdy := !( io.rod_wr_mask(0) & !rod0_wr_prdy |
-                        io.rod_wr_mask(1) & !rod1_wr_prdy | 
-                        io.rod_wr_mask(2) & !rod2_wr_prdy | 
-                        io.rod_wr_mask(3) & !rod3_wr_prdy )
-    val rod0_wr_pvld = io.rod_wr_vld & io.rod_wr_mask(0) & 
-                        !(  io.rod_wr_mask(1) & !rod1_wr_prdy | 
-                            io.rod_wr_mask(2) & !rod2_wr_prdy | 
-                            io.rod_wr_mask(3) & !rod3_wr_prdy )
-    val rod1_wr_pvld = io.rod_wr_vld & io.rod_wr_mask(1) & 
-                        !(  io.rod_wr_mask(0) & !rod1_wr_prdy | 
-                            io.rod_wr_mask(2) & !rod2_wr_prdy | 
-                            io.rod_wr_mask(3) & !rod3_wr_prdy )
-    val rod2_wr_pvld = io.rod_wr_vld & io.rod_wr_mask(2) & 
-                        !(  io.rod_wr_mask(0) & !rod1_wr_prdy | 
-                            io.rod_wr_mask(1) & !rod2_wr_prdy | 
-                            io.rod_wr_mask(3) & !rod3_wr_prdy ) 
-    val rod3_wr_pvld = io.rod_wr_vld & io.rod_wr_mask(3) & 
-                        !(  io.rod_wr_mask(0) & !rod1_wr_prdy | 
-                            io.rod_wr_mask(1) & !rod2_wr_prdy | 
-                            io.rod_wr_mask(2) & !rod3_wr_prdy )  
+    io.rod_wr_rdy := !( rod_wr_mask_prdy.asUInt.orR )
+                        
+    val rod_wr_pvld = Wire(Vec(4, Bool()))
+    rod_wr_pvld(0) := io.rod_wr_vld & io.rod_wr_mask(0) & 
+                        !(  io.rod_wr_mask(1) & !rod_wr_prdy(1) | 
+                            io.rod_wr_mask(2) & !rod_wr_prdy(2) | 
+                            io.rod_wr_mask(3) & !rod_wr_prdy(3) )
+    rod_wr_pvld(1) := io.rod_wr_vld & io.rod_wr_mask(1) & 
+                        !(  io.rod_wr_mask(0) & !rod_wr_prdy(0) | 
+                            io.rod_wr_mask(2) & !rod_wr_prdy(2) | 
+                            io.rod_wr_mask(3) & !rod_wr_prdy(3) )
+    rod_wr_pvld(2) := io.rod_wr_vld & io.rod_wr_mask(2) & 
+                        !(  io.rod_wr_mask(0) & !rod_wr_prdy(0) | 
+                            io.rod_wr_mask(1) & !rod_wr_prdy(1) | 
+                            io.rod_wr_mask(3) & !rod_wr_prdy(3) ) 
+    rod_wr_pvld(3) := io.rod_wr_vld & io.rod_wr_mask(3) & 
+                        !(  io.rod_wr_mask(0) & !rod_wr_prdy(0) | 
+                            io.rod_wr_mask(2) & !rod_wr_prdy(2) | 
+                            io.rod_wr_mask(2) & !rod_wr_prdy(3) )  
     
-    val rod0_rd_prdy = Wire(Bool())
-    val rod1_rd_prdy = Wire(Bool())
-    val rod2_rd_prdy = Wire(Bool())
-    val rod3_rd_prdy = Wire(Bool())
 
-    val u_rod0 = Module(new NV_NVDLA_IS_pipe(conf.AM_DW))  //is pipe
-    u_rod0.io.clk    := io.nvdla_core_clk
-    rod0_wr_prdy     := u_rod0.io.ro
-    u_rod0.io.vi     := rod0_wr_pvld
-    u_rod0.io.di     := io.rod0_wr_pd
-    u_rod0.io.ri     := rod0_rd_prdy
-    val rod0_rd_pvld  = u_rod0.io.vo
-    val rod0_rd_pd    = u_rod0.io.dout
-    //No pwrbus_ram_pd
-
-    val u_rod1 = Module(new NV_NVDLA_IS_pipe(conf.AM_DW))  
-    u_rod1.io.clk    := io.nvdla_core_clk
-    rod1_wr_prdy     := u_rod1.io.ro
-    u_rod1.io.vi     := rod1_wr_pvld
-    u_rod1.io.di     := io.rod1_wr_pd
-    u_rod1.io.ri     := rod1_rd_prdy
-    val rod1_rd_pvld  = u_rod1.io.vo
-    val rod1_rd_pd    = u_rod1.io.dout
-
-    val u_rod2 = Module(new NV_NVDLA_IS_pipe(conf.AM_DW))  
-    u_rod2.io.clk    := io.nvdla_core_clk
-    rod2_wr_prdy     := u_rod2.io.ro
-    u_rod2.io.vi     := rod2_wr_pvld
-    u_rod2.io.di     := io.rod2_wr_pd
-    u_rod2.io.ri     := rod2_rd_prdy
-    val rod2_rd_pvld  = u_rod2.io.vo
-    val rod2_rd_pd    = u_rod2.io.dout
-
-    val u_rod3 = Module(new NV_NVDLA_IS_pipe(conf.AM_DW))  
-    u_rod3.io.clk    := io.nvdla_core_clk
-    rod3_wr_prdy     := u_rod3.io.ro
-    u_rod3.io.vi     := rod3_wr_pvld
-    u_rod3.io.di     := io.rod3_wr_pd
-    u_rod3.io.ri     := rod3_rd_prdy
-    val rod3_rd_pvld  = u_rod3.io.vo
-    val rod3_rd_pd    = u_rod3.io.dout
+    val rod_rd_prdy = Wire(Vec(4,Bool()))
+    val rod_rd_pvld = Wire(Vec(4,Bool()))
+    val rod_rd_pd = Wire(Vec(4,UInt(conf.AM_DW.W)))
+    
+    val u_rod = Array.fill(4){Module(new NV_NVDLA_IS_pipe(conf.AM_DW))}
+    for(i <- 0 to 3){
+        u_rod(i).io.clk    := io.nvdla_core_clk
+        rod_wr_prdy(i)  := u_rod(i).io.ro
+        u_rod(i).io.vi  := rod_wr_pvld(i)
+        u_rod(i).io.di  := io.rod_wr_pd(i)
+        u_rod(i).io.ri  := rod_rd_prdy(i)
+        rod_rd_pvld(i)  := u_rod(i).io.vo
+        rod_rd_pd(i)    := u_rod(i).io.dout
+    }
 
 
 //=======================================================
@@ -148,15 +119,16 @@ withClock(io.nvdla_core_clk){
         rodx_rd_en := is_last_h & is_last_w
     }  
     val out_rdy = Wire(Bool())
+
     val rod0_sel = Wire(Bool())
     val rod1_sel = Wire(Bool())
     val rod2_sel = Wire(Bool())
     val rod3_sel = Wire(Bool())
 
-    rod0_rd_prdy := out_rdy & rodx_rd_en & rod0_sel & !(rod1_sel & !rod1_rd_pvld)
-    rod1_rd_prdy := out_rdy & rodx_rd_en & rod1_sel & !(rod0_sel & !rod0_rd_pvld)
-    rod2_rd_prdy := out_rdy & rodx_rd_en & rod2_sel & !(rod3_sel & !rod3_rd_pvld)
-    rod3_rd_prdy := out_rdy & rodx_rd_en & rod3_sel & !(rod2_sel & !rod2_rd_pvld)
+    rod_rd_prdy(0) := out_rdy & rodx_rd_en & rod0_sel & !(rod1_sel & !rod_rd_pvld(1))
+    rod_rd_prdy(1) := out_rdy & rodx_rd_en & rod1_sel & !(rod0_sel & !rod_rd_pvld(0))
+    rod_rd_prdy(2) := out_rdy & rodx_rd_en & rod2_sel & !(rod3_sel & !rod_rd_pvld(3))
+    rod_rd_prdy(3) := out_rdy & rodx_rd_en & rod3_sel & !(rod2_sel & !rod_rd_pvld(2))
 
 //==============
 // CMD FIFO
@@ -280,25 +252,15 @@ withClock(io.nvdla_core_clk){
 
 ////dp int8 one byte per element or int16 two bytes per elment/////////// 
 
-    val out_data_1bpe = Reg(UInt(conf.AM_DW.W))
-    out_data_1bpe := MuxCase(
-        Fill(conf.AM_DW, false.B),
-        Array(
-            (rod_sel === 0.U) -> rod0_rd_pd,
-            (rod_sel === 1.U) -> rod1_rd_pd,
-            (rod_sel === 2.U) -> rod2_rd_pd,
-            (rod_sel === 3.U) -> rod3_rd_pd
-        ))
+    val out_data_1bpe = MuxCase(
+        0.U,
+        (0 to 3) map {i => (rod_sel === i.U) -> rod_rd_pd(i)}
+        )
 
-    val out_vld_1bpe = Reg(Bool())
-    out_vld_1bpe := MuxCase(
+    val out_vld_1bpe = MuxCase(
         false.B,
-        Array(
-            (rod_sel === 0.U) -> rod0_rd_pvld,
-            (rod_sel === 1.U) -> rod1_rd_pvld,
-            (rod_sel === 2.U) -> rod2_rd_pvld,
-            (rod_sel === 3.U) -> rod3_rd_pvld
-        ))
+        (0 to 3) map {i => (rod_sel === i.U) -> rod_rd_pvld(i)}
+        )
 
 
 ////dp int8 two byte per element/////////// 
@@ -307,16 +269,16 @@ withClock(io.nvdla_core_clk){
     out_data_2bpe := MuxCase(
         Fill(conf.AM_DW2, false.B),
         Array(
-            (rod_sel === 0.U) -> Cat(rod1_rd_pd, rod0_rd_pd),
-            (rod_sel === 2.U) -> Cat(rod3_rd_pd, rod2_rd_pd)
+            (rod_sel === 0.U) -> Cat(rod_rd_pd(1), rod_rd_pd(0)),
+            (rod_sel === 2.U) -> Cat(rod_rd_pd(3), rod_rd_pd(2))
         ))
 
     val out_vld_2bpe = Reg(Bool())
     out_vld_2bpe := MuxCase(
         false.B,
         Array(
-            (rod_sel === 0.U) -> (rod0_rd_pvld & rod1_rd_pvld),
-            (rod_sel === 2.U) -> (rod2_rd_pvld & rod3_rd_pvld)
+            (rod_sel === 0.U) -> (rod_rd_pvld(0) & rod_rd_pvld(1)),
+            (rod_sel === 2.U) -> (rod_rd_pvld(2) & rod_rd_pvld(3))
         ))
 
 ////mux out data ////
@@ -527,35 +489,23 @@ class NV_NVDLA_SDP_RDMA_EG_RO_cfifo_flopram_rwsa_4x2 extends Module{
         // io.dout := Mux((ra === 4.U), io.d1, dout_p)
         // //`else
 
-        val ram_ff0 = Reg(UInt(2.W))
-        val ram_ff1 = Reg(UInt(2.W))
-        val ram_ff2 = Reg(UInt(2.W))
-        val ram_ff3 = Reg(UInt(2.W))
+
+        val ram_ff = Reg(Vec(4, UInt(2.W)))
 
         when(io.we){
-        when(io.wa === 0.U){
-            ram_ff0 := io.di
-        }
-        when(io.wa === 1.U){
-            ram_ff1 := io.di
-        }
-        when(io.wa === 2.U){
-            ram_ff2 := io.di
-        }
-        when(io.wa === 3.U){
-            ram_ff3 := io.di
-        }}.otherwise{
-            ram_ff0 := io.di
+            for(i <- 0 to 3){
+                when(io.wa === i.U){
+                    ram_ff(i) := io.di
+                }
+            }
+        }.otherwise{
+            ram_ff(0) := io.di
         }
 
         io.dout := MuxCase(
-            0.U(2.W),
-            Array(
-            (io.ra === 0.U) -> ram_ff0,
-            (io.ra === 1.U) -> ram_ff1,
-            (io.ra === 2.U) -> ram_ff2,
-            (io.ra === 3.U) -> ram_ff3
-        ))
+            0.U,
+            (0 to 3) map {i => (io.ra === i.U) -> ram_ff(i)}
+            )
     }    
 }
 
