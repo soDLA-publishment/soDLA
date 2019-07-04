@@ -144,10 +144,8 @@ withClock(io.nvdla_core_clk){
                                 beat_count(1,0) === 3.U)
                                 )
     val dat_rdy = Wire(Bool())
-    val dfifo_rd_en_npvld = Wire(Vec(4, Bool()))
-    for(i <- 0 to 3){
-        dfifo_rd_en_npvld(i) := dfifo_rd_en(i) & ! io.dfifo_rd_pvld(i)
-    }
+    
+    val dfifo_rd_en_npvld = VecInit((0 to 3) map {i => dfifo_rd_en(i) & ! io.dfifo_rd_pvld(i)})
 
     io.dfifo_rd_prdy(0) := dat_rdy & dfifo_rd_en(0) &
                         !(dfifo_rd_en_npvld(1) | dfifo_rd_en_npvld(2) | dfifo_rd_en_npvld(3))
