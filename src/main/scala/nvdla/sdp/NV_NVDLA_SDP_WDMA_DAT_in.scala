@@ -90,21 +90,15 @@ withClock(io.nvdla_core_clk){
         spt_size := cmd2dat_spt_size
     }
 
-    val dfifo_wr_en = VecInit((0 to 3) map { i => beat_count(1,0) === i.U})
+    val dfifo_wr_en = VecInit((0 to 3) 
+                       map { i => beat_count(1, 0) === i.U})
     val dfifo_wr_prdy = Wire(Vec(4, Bool()))
-    val dfifo_wr_pvld = VecInit((0 to 3) map {i => io.sdp_dp2wdma_valid & dfifo_wr_en(i)})
-    val dfifo_wr_rdy = VecInit((0 to 3) map {i => Mux(dfifo_wr_en(i), dfifo_wr_prdy(i), true.B)})
-    val dfifo_wr_pd = VecInit((0 to 3) map {i => dp2wdma_data})
-    val u_dfifo = Array.fill(4){Module(new NV_NVDLA_SDP_WDMA_DAT_IN_dfifo)}
-    for(i <- 0 to 3){
-        u_dfifo(i).io.nvdla_core_clk := io.nvdla_core_clk
-        u_dfifo(i).io.dfifo_wr_pvld := dfifo_wr_pvld(i)
-        dfifo_wr_prdy(i) := u_dfifo(i).io.dfifo_wr_prdy
-        u_dfifo(i).io.dfifo_wr_pd := dfifo_wr_pd(i)
-        io.dfifo_rd_pvld(i) := u_dfifo(i).io.dfifo_rd_pvld
-        u_dfifo(i).io.dfifo_rd_prdy := io.dfifo_rd_prdy(i)
-        io.dfifo_rd_pd(i) := u_dfifo(i).io.dfifo_rd_pd
-    }
+    val dfifo_wr_pvld = VecInit((0 to 3) 
+                        map { i => io.sdp_dp2wdma_valid & dfifo_wr_en(i)})
+    val dfifo_wr_rdy = VecInit((0 to 3) 
+                       map { i => Mux(dfifo_wr_en(i), dfifo_wr_prdy(i), true.B)})
+    val dfifo_wr_pd = VecInit((0 to 3) 
+                       map { i => dp2wdma_data})
 
     in_dat_rdy := dfifo_wr_rdy.asUInt.andR
     in_dat_accept := VecInit((0 to 3) 

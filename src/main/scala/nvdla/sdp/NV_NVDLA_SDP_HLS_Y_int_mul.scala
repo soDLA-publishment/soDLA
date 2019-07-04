@@ -52,9 +52,8 @@ withClock(io.nvdla_core_clk){
 
     val chn_in_srdy = Wire(Bool())
     val mul_sync_prdy = Wire(Bool())
-
     val y_mul_sync2data = Module{new NV_NVDLA_SDP_HLS_sync2data(32, 32)}
-    y_mul_sync2data.io.chn1_en := !io.cfg_mul_bypass & !io.cfg_mul_src
+    y_mul_sync2data.io.chn1_en := !io.cfg_mul_bypass & io.cfg_mul_src
     y_mul_sync2data.io.chn2_en := !io.cfg_mul_bypass
     y_mul_sync2data.io.chn1_in_pvld := io.chn_mul_op_pvld
     io.chn_mul_op_prdy := y_mul_sync2data.io.chn1_in_prdy
@@ -75,20 +74,19 @@ withClock(io.nvdla_core_clk){
     x_mul_prelu.io.data_in := mul_data_in
     x_mul_prelu.io.op_in := mul_op_in
     val mul_prelu_dout = x_mul_prelu.io.data_out
-
-    val mul_final_prdy = Wire(Bool())
+    
     val mul_prelu_prdy = Wire(Bool())
-
-    val pipe_p1 = Module{new NV_NVDLA_SDP_HLS_Y_INT_MUL_pipe_p1}
-    pipe_p1.io.nvdla_core_clk := io.nvdla_core_clk
-    pipe_p1.io.mul_data_in := mul_data_in
-    pipe_p1.io.mul_prelu_dout := mul_prelu_dout
-    pipe_p1.io.mul_prelu_prdy := mul_prelu_prdy
-    pipe_p1.io.mul_sync_pvld := mul_sync_pvld
-    val mul_data_reg = pipe_p1.io.mul_data_reg
-    val mul_prelu_out = pipe_p1.io.mul_prelu_out
-    val mul_prelu_pvld = pipe_p1.io.mul_prelu_pvld
-    mul_sync_prdy := pipe_p1.io.mul_sync_prdy
+    val pipe_p1_data_in = Cat(mul_data_in, mul_prelu_dout)
+    val pipe_p1 = Module{new NV_NVDLA_BC_pipe(96)}
+    pipe_p1.io.clk := io.nvdla_core_clk
+    pipe_p1.io.vi := mul_sync_pvld
+    mul_sync_prdy := pipe_p1.io.ro
+    pipe_p1.io.di := pipe_p1_data_in
+    val mul_prelu_pvld = pipe_p1.io.vo
+    pipe_p1.io.ri := mul_prelu_prdy
+    val pipe_p1_data_out = pipe_p1.io.dout
+    val mul_prelu_out = pipe_p1_data_out(63, 0)
+    val mul_data_reg = pipe_p1_data_out(95, 64)
 
     val y_mul_shiftright_su = Module{new NV_NVDLA_HLS_shiftrightsu(64, 32, 10)}
     y_mul_shiftright_su.io.data_in := mul_prelu_out
@@ -105,85 +103,22 @@ withClock(io.nvdla_core_clk){
         mul_dout := mul_truncate_out
     }
 
-    val pipe_p2 = Module{new NV_NVDLA_SDP_HLS_Y_INT_MUL_pipe_p2}
-    pipe_p2.io.nvdla_core_clk := io.nvdla_core_clk
-    pipe_p2.io.mul_dout := mul_dout
-    pipe_p2.io.mul_final_prdy := mul_final_prdy
-    pipe_p2.io.mul_prelu_pvld := mul_prelu_pvld
-    val mul_data_final = pipe_p2.io.mul_data_final
-    val mul_final_pvld = pipe_p2.io.mul_final_pvld
-    mul_prelu_prdy := pipe_p2.io.mul_prelu_prdy
-
+    val mul_final_prdy = Wire(Bool())
+    val pipe_p2 = Module{new NV_NVDLA_BC_pipe(32)}
+    pipe_p2.io.clk := io.nvdla_core_clk
+    pipe_p2.io.vi := mul_prelu_pvld
+    mul_prelu_prdy := pipe_p2.io.ro
+    pipe_p2.io.di := mul_dout
+    val mul_final_pvld = pipe_p2.io.vo
+    pipe_p2.io.ri := mul_final_prdy
+    val mul_data_final = pipe_p2.io.dout
+    
     io.chn_in_prdy := Mux(io.cfg_mul_bypass, io.mul_out_prdy, chn_in_srdy)
     mul_final_prdy := Mux(io.cfg_mul_bypass, true.B, io.mul_out_prdy)
     io.mul_out_pvld := Mux(io.cfg_mul_bypass, io.chn_in_pvld, mul_final_pvld)
     io.mul_data_out := Mux(io.cfg_mul_bypass, io.chn_mul_in, mul_data_final)
 }}
 
-
-class NV_NVDLA_SDP_HLS_Y_INT_MUL_pipe_p1 extends Module {
-   val io = IO(new Bundle {
-
-        val nvdla_core_clk = Input(Clock())
-
-        val mul_sync_pvld = Input(Bool())
-        val mul_sync_prdy = Output(Bool())
-        val mul_data_in = Input(UInt(32.W))
-        val mul_prelu_dout = Input(UInt(64.W))
-        
-        val mul_prelu_pvld = Output(Bool())
-        val mul_prelu_prdy = Input(Bool())
-        val mul_data_reg = Output(UInt(32.W))
-        val mul_prelu_out = Output(UInt(64.W))
-    })
-
-  val bc_pipe_0 = Module(new NV_NVDLA_BC_pipe(32))
-  bc_pipe_0.io.clk := io.nvdla_core_clk
-  bc_pipe_0.io.vi := io.mul_sync_pvld
-  io.mul_sync_prdy := bc_pipe_0.io.ro
-  bc_pipe_0.io.di := io.mul_data_in
-  io.mul_prelu_pvld := bc_pipe_0.io.vo
-  bc_pipe_0.io.ri := io.mul_prelu_prdy
-  io.mul_data_reg := bc_pipe_0.io.dout
-
-  val bc_pipe_1 = Module(new NV_NVDLA_BC_pipe(64))
-  bc_pipe_1.io.clk := io.nvdla_core_clk
-  bc_pipe_1.io.vi := io.mul_sync_pvld
-  io.mul_sync_prdy := bc_pipe_1.io.ro
-  bc_pipe_1.io.di := io.mul_prelu_dout
-  io.mul_prelu_pvld := bc_pipe_1.io.vo
-  bc_pipe_1.io.ri := io.mul_prelu_prdy
-  io.mul_prelu_out := bc_pipe_1.io.dout
-
-}
-
-class NV_NVDLA_SDP_HLS_Y_INT_MUL_pipe_p2 extends Module {
-   val io = IO(new Bundle {
-
-        val nvdla_core_clk = Input(Clock())
-
-        val mul_prelu_pvld = Input(Bool())
-        val mul_prelu_prdy = Output(Bool())
-        val mul_dout = Input(UInt(32.W))
-        
-        val mul_final_pvld = Output(Bool())
-        val mul_final_prdy = Input(Bool())
-        val mul_data_final = Output(UInt(32.W))
-    })
-
-  val bc_pipe = Module(new NV_NVDLA_BC_pipe(32))
-
-  bc_pipe.io.clk := io.nvdla_core_clk
-
-  bc_pipe.io.vi := io.mul_prelu_pvld
-  io.mul_prelu_prdy := bc_pipe.io.ro
-  bc_pipe.io.di := io.mul_dout
-
-  io.mul_final_pvld := bc_pipe.io.vo
-  bc_pipe.io.ri := io.mul_final_prdy
-  io.mul_data_final := bc_pipe.io.dout
-
-}
 
 object NV_NVDLA_SDP_HLS_Y_int_mulDriver extends App {
   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_mul)
