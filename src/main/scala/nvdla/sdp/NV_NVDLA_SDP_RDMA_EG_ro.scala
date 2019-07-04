@@ -7,29 +7,24 @@ import chisel3.util._
 class NV_NVDLA_SDP_RDMA_EG_ro(implicit val conf: sdpConfiguration) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
-
         val pwrbus_ram_pd = Input(UInt(32.W))
 
         val sdp_rdma2dp_valid = Output(Bool())
         val sdp_rdma2dp_ready = Input(Bool())
         val sdp_rdma2dp_pd = Output(UInt((conf.AM_DW2 + 1).W))
 
-        val rod_wr_pd = Input(Vec(4,UInt(conf.AM_DW.W)))
-
-        val rod_wr_mask = Input(UInt(4.W))
         val rod_wr_vld = Input(Bool())
         val rod_wr_rdy = Output(Bool())
-        val roc_wr_pd = Input(UInt(2.W))
+        val rod_wr_pd = Input(Vec(4,UInt(conf.AM_DW.W)))
+        val rod_wr_mask = Input(UInt(4.W))
+
         val roc_wr_vld = Input(Bool())
         val roc_wr_rdy = Output(Bool())
+        val roc_wr_pd = Input(UInt(2.W))
+
         val cfg_dp_8 = Input(Bool())
         val cfg_dp_size_1byte = Input(Bool())
         val cfg_mode_per_element = Input(Bool())
-// #ifdef NVDLA_BATCH_ENABLE
-//...
-        // val cfg_mode_multi_batch = Input(Bool())
-        // val reg2dp_batch_number = Input(UInt(5.W))
-
         val reg2dp_channel = Input(UInt(13.W))
         val reg2dp_height = Input(UInt(13.W))
         val reg2dp_width = Input(UInt(13.W))

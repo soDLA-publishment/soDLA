@@ -533,41 +533,23 @@ class NV_NVDLA_SDP_RDMA_REG_dual extends Module{
     io.ew_base_addr_low := ew_base_addr_low_out
     io.ew_batch_stride := ew_batch_stride_out
     io.ew_line_stride := ew_line_stride_out
-
     io.ew_surface_stride := ew_surface_stride_out
-
     io.batch_number := batch_number_out
-
     io.flying_mode := flying_mode_out
-
     io.in_precision := in_precision_out
-
     io.out_precision := out_precision_out
-
     io.proc_precision := proc_precision_out
-
     io.winograd := winograd_out
-
     io.nrdma_data_mode := nrdma_data_mode_out
-
     io.nrdma_data_size := nrdma_data_size_out
-
     io.nrdma_data_use := nrdma_data_use_out
-
     io.nrdma_disable := nrdma_disable_out
-
     io.nrdma_ram_type := nrdma_ram_type_out
-
     io.perf_dma_en := perf_dma_en_out
-
     io.perf_nan_inf_count_en := perf_nan_inf_count_en_out
-
     io.src_base_addr_high := src_base_addr_high_out
-
     io.src_base_addr_low := src_base_addr_low_out
-    
     io.src_ram_type := src_ram_type_out
-
     io.src_line_stride := src_line_stride_out
     io.src_surface_stride := src_surface_stride_out                                                               
 

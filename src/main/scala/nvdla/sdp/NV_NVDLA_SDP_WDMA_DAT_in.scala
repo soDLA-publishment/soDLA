@@ -86,21 +86,15 @@ withClock(io.nvdla_core_clk){
     }
 
     is_last_beat := (beat_count === spt_size)
-
     when(io.cmd2dat_spt_pvld & io.cmd2dat_spt_prdy){
         spt_size := cmd2dat_spt_size
     }
 
     val dfifo_wr_en = VecInit((0 to 3) map { i => beat_count(1,0) === i.U})
-
     val dfifo_wr_prdy = Wire(Vec(4, Bool()))
-
     val dfifo_wr_pvld = VecInit((0 to 3) map {i => io.sdp_dp2wdma_valid & dfifo_wr_en(i)})
-
     val dfifo_wr_rdy = VecInit((0 to 3) map {i => Mux(dfifo_wr_en(i), dfifo_wr_prdy(i), true.B)})
-
     val dfifo_wr_pd = VecInit((0 to 3) map {i => dp2wdma_data})
-    
     val u_dfifo = Array.fill(4){Module(new NV_NVDLA_SDP_WDMA_DAT_IN_dfifo)}
     for(i <- 0 to 3){
         u_dfifo(i).io.nvdla_core_clk := io.nvdla_core_clk
@@ -113,37 +107,22 @@ withClock(io.nvdla_core_clk){
     }
 
     in_dat_rdy := dfifo_wr_rdy.asUInt.andR
+    in_dat_accept := VecInit((0 to 3) 
+                      map { i => dfifo_wr_pvld(i) & dfifo_wr_prdy(i)}).asUInt.orR
     
-    in_dat_accept := VecInit((0 to 3) map {i => dfifo_wr_pvld(i) & dfifo_wr_prdy(i)}).asUInt.orR
+
+    val u_dfifo = Array.fill(4){Module(new NV_NVDLA_IS_pipe(conf.AM_DW))}
+    for(i <- 0 to 3){
+        u_dfifo(i).io.clk := io.nvdla_core_clk
+        u_dfifo(i).io.vi := dfifo_wr_pvld(i)
+        dfifo_wr_prdy(i) := u_dfifo(i).io.ro
+        u_dfifo(i).io.di := dfifo_wr_pd(i)
+        io.dfifo_rd_pvld(i) := u_dfifo(i).io.vo
+        u_dfifo(i).io.ri := io.dfifo_rd_prdy(i)
+        io.dfifo_rd_pd(i) := u_dfifo(i).io.dout
+    }
             
 }}
-
-class NV_NVDLA_SDP_WDMA_DAT_IN_dfifo(implicit val conf: sdpConfiguration) extends Module{
-  val io = IO(new Bundle{
-        val nvdla_core_clk = Input(Clock())
-
-        val dfifo_wr_pvld = Input(Bool())
-        val dfifo_wr_prdy = Output(Bool())
-        val dfifo_wr_pd = Input(UInt(conf.AM_DW.W))
-        
-        val dfifo_rd_pvld = Output(Bool())
-        val dfifo_rd_prdy = Input(Bool())
-        val dfifo_rd_pd = Output(UInt(conf.AM_DW.W))
-  })  
-
-  val is_pipe = Module(new NV_NVDLA_IS_pipe(conf.AM_DW))
-
-  is_pipe.io.clk := io.nvdla_core_clk
-
-  is_pipe.io.vi := io.dfifo_wr_pvld
-  io.dfifo_wr_prdy := is_pipe.io.ro
-  is_pipe.io.di := io.dfifo_wr_pd
-
-  io.dfifo_rd_pvld := is_pipe.io.vo
-  is_pipe.io.ri := io.dfifo_rd_prdy
-  io.dfifo_rd_pd := is_pipe.io.dout
-  
-}
 
  
 object NV_NVDLA_SDP_WDMA_DAT_inDriver extends App {

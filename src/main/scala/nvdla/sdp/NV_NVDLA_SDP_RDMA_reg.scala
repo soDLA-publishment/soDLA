@@ -296,41 +296,29 @@ withClock(io.nvdla_core_clk){
     // GENERATE TWO STATUS FIELDS IN GENERAL SINGLE REGISTER GROUP        //
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
-    dp2reg_status_0 := Mux( reg2dp_d0_op_en === false.B, 
-                            0.U, 
-                            Mux(dp2reg_consumer === true.B, 2.U, 1.U)
-                            )
+    dp2reg_status_0 := Mux(reg2dp_d0_op_en === false.B,  0.U, 
+                       Mux(dp2reg_consumer === true.B, 2.U, 1.U))
 
-    dp2reg_status_1 := Mux( reg2dp_d1_op_en === false.B, 
-                            0.U, 
-                            Mux(dp2reg_consumer === false.B, 2.U, 1.U)
-                            )
+    dp2reg_status_1 := Mux(reg2dp_d1_op_en === false.B, 0.U, 
+                       Mux(dp2reg_consumer === false.B, 2.U, 1.U))
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
     // GENERATE OP_EN LOGIC                                               //
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
-    val reg2dp_op_en_reg = RegInit(0.U(3.W))
+    val reg2dp_op_en_reg = RegInit(0.U)
     val reg_wr_data = Wire(UInt(32.W))
-    val reg2dp_d0_op_en_w = Mux(~reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, 
-                                reg_wr_data(0), 
-                                Mux(io.dp2reg_done && dp2reg_consumer === false.B, false.B, reg2dp_d0_op_en))
-
+    val reg2dp_d0_op_en_w = Mux(~reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), 
+                            Mux(io.dp2reg_done && dp2reg_consumer === false.B, false.B, reg2dp_d0_op_en))
     reg2dp_d0_op_en := reg2dp_d0_op_en_w
-
-    val reg2dp_d1_op_en_w = Mux(~reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, 
-                                reg_wr_data(0), 
-                                Mux(io.dp2reg_done && dp2reg_consumer === true.B, false.B, reg2dp_d1_op_en))
-
+    val reg2dp_d1_op_en_w = Mux(~reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), 
+                            Mux(io.dp2reg_done && dp2reg_consumer === true.B, false.B, reg2dp_d1_op_en))
     reg2dp_d1_op_en := reg2dp_d1_op_en_w
-
     val reg2dp_op_en_ori = Mux(dp2reg_consumer, reg2dp_d1_op_en, reg2dp_d0_op_en)
     val reg2dp_op_en_reg_w = Mux(io.dp2reg_done,  0.U, Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori))
-
     reg2dp_op_en_reg := reg2dp_op_en_reg_w 
     io.reg2dp_op_en := reg2dp_op_en_reg(2)
-
     io.slcg_op_en := ShiftRegister(Fill(4, reg2dp_op_en_ori), 3)
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -395,19 +383,19 @@ withClock(io.nvdla_core_clk){
     val csb_wresp_error = false.B
     val csb_wresp_pd_w = Cat(true.B, csb_wresp_error, csb_wresp_rdat)
 
-    io.sdp_rdma2csb_resp_pd := RegInit(0.U(34.W))
-    io.sdp_rdma2csb_resp_valid := RegInit(false.B)
+    val sdp_rdma2csb_resp_pd_out = RegInit(0.U)
+    val sdp_rdma2csb_resp_valid_out = RegInit(false.B)
 
     when(reg_rd_en){
-        io.sdp_rdma2csb_resp_pd := csb_rresp_pd_w
+        sdp_rdma2csb_resp_pd_out := csb_rresp_pd_w
     }
     .elsewhen(reg_wr_en & req_nposted){
-        io.sdp_rdma2csb_resp_pd := csb_wresp_pd_w
+        sdp_rdma2csb_resp_pd_out := csb_wresp_pd_w
     }
-    io.sdp_rdma2csb_resp_valid := (reg_wr_en & req_nposted) | reg_rd_en
+    sdp_rdma2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
 
-    // io.sdp_rdma2csb_resp_pd := sdp_rdma2csb_resp_pd_out
-    // io.sdp_rdma2csb_resp_valid := sdp_rdma2csb_resp_valid_out
+    io.sdp_rdma2csb_resp_pd := sdp_rdma2csb_resp_pd_out
+    io.sdp_rdma2csb_resp_valid := sdp_rdma2csb_resp_valid_out
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -416,104 +404,59 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////////////////////////////
 
     io.reg2dp_bn_base_addr_high := Mux(dp2reg_consumer, reg2dp_d1_bn_base_addr_high, reg2dp_d0_bn_base_addr_high)
-
     io.reg2dp_bn_base_addr_low := Mux(dp2reg_consumer, reg2dp_d1_bn_base_addr_low, reg2dp_d0_bn_base_addr_low)
-
     io.reg2dp_bn_batch_stride := Mux(dp2reg_consumer, reg2dp_d1_bn_batch_stride, reg2dp_d0_bn_batch_stride)
-
     io.reg2dp_bn_line_stride := Mux(dp2reg_consumer, reg2dp_d1_bn_line_stride, reg2dp_d0_bn_line_stride)
-
     io.reg2dp_bn_surface_stride := Mux(dp2reg_consumer, reg2dp_d1_bn_surface_stride, reg2dp_d0_bn_surface_stride)
-
     io.reg2dp_brdma_data_mode := Mux(dp2reg_consumer, reg2dp_d1_brdma_data_mode, reg2dp_d0_brdma_data_mode)
-
     io.reg2dp_brdma_data_size := Mux(dp2reg_consumer, reg2dp_d1_brdma_data_size, reg2dp_d0_brdma_data_size)
-
     io.reg2dp_brdma_data_use := Mux(dp2reg_consumer, reg2dp_d1_brdma_data_use, reg2dp_d0_brdma_data_use)
-
     io.reg2dp_brdma_disable := Mux(dp2reg_consumer, reg2dp_d1_brdma_disable, reg2dp_d0_brdma_disable)
-
     io.reg2dp_brdma_ram_type := Mux(dp2reg_consumer, reg2dp_d1_brdma_ram_type, reg2dp_d0_brdma_ram_type)
-
     io.reg2dp_bs_base_addr_high := Mux(dp2reg_consumer, reg2dp_d1_bs_base_addr_high, reg2dp_d0_bs_base_addr_high)
-
     io.reg2dp_bs_base_addr_low := Mux(dp2reg_consumer, reg2dp_d1_bs_base_addr_low, reg2dp_d0_bs_base_addr_low)
-
     io.reg2dp_bs_batch_stride := Mux(dp2reg_consumer, reg2dp_d1_bs_batch_stride, reg2dp_d0_bs_batch_stride)
-
     io.reg2dp_bs_line_stride := Mux(dp2reg_consumer, reg2dp_d1_bs_line_stride, reg2dp_d0_bs_line_stride)
-
     io.reg2dp_bs_surface_stride := Mux(dp2reg_consumer, reg2dp_d1_bs_surface_stride, reg2dp_d0_bs_surface_stride)
-
     io.reg2dp_channel := Mux(dp2reg_consumer, reg2dp_d1_channel, reg2dp_d0_channel)
-
     io.reg2dp_height := Mux(dp2reg_consumer, reg2dp_d1_height, reg2dp_d0_height)
-
     io.reg2dp_width := Mux(dp2reg_consumer, reg2dp_d1_width, reg2dp_d0_width)
-
     io.reg2dp_erdma_data_mode := Mux(dp2reg_consumer, reg2dp_d1_erdma_data_mode, reg2dp_d0_erdma_data_mode)
-
     io.reg2dp_erdma_data_size := Mux(dp2reg_consumer, reg2dp_d1_erdma_data_size, reg2dp_d0_erdma_data_size)
-
     io.reg2dp_erdma_data_use := Mux(dp2reg_consumer, reg2dp_d1_erdma_data_use, reg2dp_d0_erdma_data_use)
-
     io.reg2dp_erdma_disable := Mux(dp2reg_consumer, reg2dp_d1_erdma_disable, reg2dp_d0_erdma_disable)
-
     io.reg2dp_erdma_ram_type := Mux(dp2reg_consumer, reg2dp_d1_erdma_ram_type, reg2dp_d0_erdma_ram_type)
-
     io.reg2dp_ew_base_addr_high := Mux(dp2reg_consumer, reg2dp_d1_ew_base_addr_high, reg2dp_d0_ew_base_addr_high)
-
     io.reg2dp_ew_base_addr_low := Mux(dp2reg_consumer, reg2dp_d1_ew_base_addr_low, reg2dp_d0_ew_base_addr_low)
-
     io.reg2dp_ew_batch_stride := Mux(dp2reg_consumer, reg2dp_d1_ew_batch_stride, reg2dp_d0_ew_batch_stride)
-
     io.reg2dp_ew_line_stride := Mux(dp2reg_consumer, reg2dp_d1_ew_line_stride, reg2dp_d0_ew_line_stride)
-
     io.reg2dp_ew_surface_stride := Mux(dp2reg_consumer, reg2dp_d1_ew_surface_stride, reg2dp_d0_ew_surface_stride)
-
     io.reg2dp_batch_number := Mux(dp2reg_consumer, reg2dp_d1_batch_number, reg2dp_d0_batch_number)
-
     io.reg2dp_flying_mode := Mux(dp2reg_consumer, reg2dp_d1_flying_mode, reg2dp_d0_flying_mode)
-
     io.reg2dp_in_precision := Mux(dp2reg_consumer, reg2dp_d1_in_precision, reg2dp_d0_in_precision)
-
     io.reg2dp_out_precision := Mux(dp2reg_consumer, reg2dp_d1_out_precision, reg2dp_d0_out_precision)
-
     io.reg2dp_proc_precision := Mux(dp2reg_consumer, reg2dp_d1_proc_precision, reg2dp_d0_proc_precision)
-
     io.reg2dp_winograd := Mux(dp2reg_consumer, reg2dp_d1_winograd, reg2dp_d0_winograd)
-
     io.reg2dp_nrdma_data_mode := Mux(dp2reg_consumer, reg2dp_d1_nrdma_data_mode, reg2dp_d0_nrdma_data_mode)
-
     io.reg2dp_nrdma_data_size := Mux(dp2reg_consumer, reg2dp_d1_nrdma_data_size, reg2dp_d0_nrdma_data_size)
-
     io.reg2dp_nrdma_data_use := Mux(dp2reg_consumer, reg2dp_d1_nrdma_data_use, reg2dp_d0_nrdma_data_use)
-
     io.reg2dp_nrdma_disable := Mux(dp2reg_consumer, reg2dp_d1_nrdma_disable, reg2dp_d0_nrdma_disable)
-
     io.reg2dp_nrdma_ram_type := Mux(dp2reg_consumer, reg2dp_d1_nrdma_ram_type, reg2dp_d0_nrdma_ram_type)
-
     io.reg2dp_perf_dma_en := Mux(dp2reg_consumer, reg2dp_d1_perf_dma_en, reg2dp_d0_perf_dma_en)
-
     io.reg2dp_perf_nan_inf_count_en := Mux(dp2reg_consumer, reg2dp_d1_perf_nan_inf_count_en, reg2dp_d0_perf_nan_inf_count_en)
-
     io.reg2dp_src_base_addr_high := Mux(dp2reg_consumer, reg2dp_d1_src_base_addr_high, reg2dp_d0_src_base_addr_high)
-
     io.reg2dp_src_base_addr_low := Mux(dp2reg_consumer, reg2dp_d1_src_base_addr_low, reg2dp_d0_src_base_addr_low)
-
     io.reg2dp_src_ram_type := Mux(dp2reg_consumer, reg2dp_d1_src_ram_type, reg2dp_d1_src_ram_type)
-    
     io.reg2dp_src_line_stride := Mux(dp2reg_consumer, reg2dp_d1_src_line_stride, reg2dp_d0_src_line_stride)
-
     io.reg2dp_src_surface_stride := Mux(dp2reg_consumer, reg2dp_d1_src_surface_stride, reg2dp_d0_src_surface_stride)
 
-////////////////////////////////////////////////////////////////////////
-//                                                                    //
-// PASTE ADDIFITON LOGIC HERE FROM EXTRA FILE                         //
-//                                                                    //
-////////////////////////////////////////////////////////////////////////
-// USER logic can be put here:
-//////// Dual Flop Write Control////////
+    ////////////////////////////////////////////////////////////////////////
+    //                                                                    //
+    // PASTE ADDIFITON LOGIC HERE FROM EXTRA FILE                         //
+    //                                                                    //
+    ////////////////////////////////////////////////////////////////////////
+    // USER logic can be put here:
+    //////// Dual Flop Write Control////////
 
     val dp2reg_d0_set = reg2dp_d0_op_en & ~reg2dp_d0_op_en_w
     val dp2reg_d0_clr = ~reg2dp_d0_op_en & reg2dp_d0_op_en_w
@@ -523,112 +466,75 @@ withClock(io.nvdla_core_clk){
     val dp2reg_d1_clr = ~reg2dp_d1_op_en & reg2dp_d1_op_en_w;
     val dp2reg_d1_reg = reg2dp_d1_op_en ^ reg2dp_d1_op_en_w;
 
-//////// for overflow counting register ////////
-
-    val dp2reg_d0_status_nan_input_num_w = Mux(
-                dp2reg_d0_set, 
-                io.dp2reg_status_nan_input_num, 
-                Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_status_nan_input_num)
-                )
+    //////// for overflow counting register ////////
+    val dp2reg_d0_status_nan_input_num_w = Mux(dp2reg_d0_set, io.dp2reg_status_nan_input_num, 
+                                           Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_status_nan_input_num))
     when(dp2reg_d0_reg){
         dp2reg_d0_status_nan_input_num := dp2reg_d0_status_nan_input_num_w
     }
 
-    val dp2reg_d0_brdma_stall_w = Mux(
-                dp2reg_d0_set, 
-                io.dp2reg_brdma_stall, 
-                Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_brdma_stall)
-                )
+    val dp2reg_d0_brdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_brdma_stall, 
+                                  Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_brdma_stall))
     when(dp2reg_d0_reg){
         dp2reg_d0_brdma_stall := dp2reg_d0_brdma_stall_w
     }
 
-    val dp2reg_d0_status_inf_input_num_w = Mux(
-                dp2reg_d0_set, 
-                io.dp2reg_status_inf_input_num, 
-                Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_status_inf_input_num)
-                )
+    val dp2reg_d0_status_inf_input_num_w = Mux(dp2reg_d0_set, io.dp2reg_status_inf_input_num, 
+                                           Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_status_inf_input_num))
     when(dp2reg_d0_reg){
         dp2reg_d0_status_inf_input_num := dp2reg_d0_status_inf_input_num_w
     }
 
-    val dp2reg_d0_erdma_stall_w = Mux(
-                dp2reg_d0_set, 
-                io.dp2reg_erdma_stall, 
-                Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_erdma_stall)
-                )
+    val dp2reg_d0_erdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_erdma_stall, 
+                                  Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_erdma_stall))
     when(dp2reg_d0_reg){
         dp2reg_d0_erdma_stall := dp2reg_d0_erdma_stall_w
     }
 
-    val dp2reg_d0_nrdma_stall_w = Mux(
-                dp2reg_d0_set, 
-                io.dp2reg_nrdma_stall, 
-                Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_nrdma_stall)
-                )
+    val dp2reg_d0_nrdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_nrdma_stall, 
+                                  Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_nrdma_stall))
     when(dp2reg_d0_reg){
         dp2reg_d0_nrdma_stall := dp2reg_d0_nrdma_stall_w
     }
 
-    val dp2reg_d0_mrdma_stall_w = Mux(
-                dp2reg_d0_set, 
-                io.dp2reg_mrdma_stall, 
-                Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_mrdma_stall)
-                )
+    val dp2reg_d0_mrdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_mrdma_stall, 
+                                  Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_mrdma_stall))
     when(dp2reg_d0_reg){
         dp2reg_d0_mrdma_stall := dp2reg_d0_mrdma_stall_w
     }
 
-    val dp2reg_d1_status_nan_input_num_w = Mux(
-                dp2reg_d1_set, 
-                io.dp2reg_status_nan_input_num, 
-                Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_status_nan_input_num)
-                )
+    val dp2reg_d1_status_nan_input_num_w = Mux(dp2reg_d1_set, io.dp2reg_status_nan_input_num, 
+                                           Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_status_nan_input_num))
     when(dp2reg_d1_reg){
         dp2reg_d1_status_nan_input_num := dp2reg_d1_status_nan_input_num_w
     }
 
-    val dp2reg_d1_brdma_stall_w = Mux(
-                dp2reg_d1_set, 
-                io.dp2reg_brdma_stall, 
-                Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_brdma_stall)
-                )
+    val dp2reg_d1_brdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_brdma_stall, 
+                                  Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_brdma_stall))
     when(dp2reg_d1_reg){
         dp2reg_d1_brdma_stall := dp2reg_d1_brdma_stall_w
     }
 
-    val dp2reg_d1_status_inf_input_num_w = Mux(
-                dp2reg_d1_set, 
-                io.dp2reg_status_inf_input_num, 
-                Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_status_inf_input_num)
-                )
+    val dp2reg_d1_status_inf_input_num_w = Mux(dp2reg_d1_set, io.dp2reg_status_inf_input_num, 
+                                           Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_status_inf_input_num))
     when(dp2reg_d1_reg){
         dp2reg_d1_status_inf_input_num := dp2reg_d1_status_inf_input_num_w
     }
 
-    val dp2reg_d1_erdma_stall_w = Mux(
-                dp2reg_d1_set, 
-                io.dp2reg_erdma_stall, 
-                Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_erdma_stall)
-                )
+    val dp2reg_d1_erdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_erdma_stall, 
+                                  Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_erdma_stall))
     when(dp2reg_d1_reg){
         dp2reg_d1_erdma_stall := dp2reg_d1_erdma_stall_w
     }
 
-    val dp2reg_d1_nrdma_stall_w = Mux(
-                dp2reg_d1_set, 
-                io.dp2reg_nrdma_stall, 
-                Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_nrdma_stall)
-                )
+    val dp2reg_d1_nrdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_nrdma_stall, 
+                                 Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_nrdma_stall))
     when(dp2reg_d1_reg){
         dp2reg_d1_nrdma_stall := dp2reg_d1_nrdma_stall_w
     }
 
-    val dp2reg_d1_mrdma_stall_w = Mux(
-                dp2reg_d1_set, 
-                io.dp2reg_mrdma_stall, 
-                Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_mrdma_stall)
-                )
+    val dp2reg_d1_mrdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_mrdma_stall, 
+                                  Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_mrdma_stall))
     when(dp2reg_d1_reg){
         dp2reg_d1_mrdma_stall := dp2reg_d1_mrdma_stall_w
     }
