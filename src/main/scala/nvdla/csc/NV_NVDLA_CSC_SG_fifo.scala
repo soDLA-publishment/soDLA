@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_CSC_SG_dat_fifo extends Module {
+class NV_NVDLA_CSC_SG_fifo(depth: Int, width: Int) extends Module {
     val io = IO(new Bundle {
         //clk
         val clk = Input(Clock())
@@ -13,11 +13,11 @@ class NV_NVDLA_CSC_SG_dat_fifo extends Module {
         val wr_ready = Output(Bool())
         val wr_empty = Output(Bool())
         val wr_req = Input(Bool())
-        val wr_data = Input(UInt(33.W))
+        val wr_data = Input(UInt(width.W))
         
         val rd_ready = Input(Bool())
         val rd_req = Output(Bool())
-        val rd_data = Output(UInt(33.W))
+        val rd_data = Output(UInt(width.W))
 
         val pwrbus_ram_pd = Input(UInt(32.W))
     })
@@ -84,16 +84,16 @@ class NV_NVDLA_CSC_SG_dat_fifo extends Module {
     wr_reserving := wr_req_in && !wr_busy_int   // reserving write space?
 
     val wr_popping = Wire(Bool())       // fwd: write side sees pop?
-    val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(3.W))} // write-side count
+    val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))} // write-side count
     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, wr_count-1.U)
     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count+1.U, wr_count)
     val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
 
-    val wr_count_next_no_wr_popping_is_4 = (wr_count_next_no_wr_popping === 4.U)
-    val wr_count_next_is_4 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_4)
-    val wr_limit_muxed = Wire(UInt(3.W))    // muxed with simulation/emulation overrides
+    val wr_count_next_no_wr_popping_is_full = (wr_count_next_no_wr_popping === depth.U)
+    val wr_count_next_is_full = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_full)
+    val wr_limit_muxed = Wire(UInt(log2Ceil(depth+1).W))    // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
-    wr_busy_next := wr_count_next_is_4 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
+    wr_busy_next := wr_count_next_is_full ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
     wr_busy_in_int := wr_req_in && wr_busy_int
 
     wr_busy_int := wr_busy_next
@@ -110,21 +110,21 @@ class NV_NVDLA_CSC_SG_dat_fifo extends Module {
     // RAM
     //  
 
-    val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(2.W))}
+    val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}
     val wr_adr_next = wr_adr + 1.U
     when(wr_pushing){
         wr_adr := wr_adr_next
     }
     val rd_popping = Wire(Bool())
 
-    val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(2.W))}   // read address this cycle
+    val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}   // read address this cycle
     val ram_we = wr_pushing && (wr_count > 0.U || !rd_popping)      // note: write occurs next cycle
     val ram_iwe = !wr_busy_in && io.wr_req
     
 
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
-    val ram = Module(new nv_flopram_internal_wr_reg(4, 33))
+    val ram = Module(new nv_flopram_internal_wr_reg(depth, width))
     ram.io.clk := io.clk
     ram.io.clk_mgated := clk_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -132,7 +132,7 @@ class NV_NVDLA_CSC_SG_dat_fifo extends Module {
     ram.io.iwe := ram_iwe
     ram.io.we := ram_we
     ram.io.wa := wr_adr
-    ram.io.ra := Mux(wr_count === 0.U, 4.U, Cat(0.U, rd_adr))
+    ram.io.ra := Mux(wr_count === 0.U, depth.U, rd_adr)
     io.rd_data := ram.io.dout
     
 
@@ -151,7 +151,7 @@ class NV_NVDLA_CSC_SG_dat_fifo extends Module {
     // READ SIDE
     //
     rd_popping := io.rd_req && io.rd_ready
-    val rd_count = withClock(clk_mgated){RegInit("b0".asUInt(3.W))}
+    val rd_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))}
     val rd_count_next_rd_popping = Mux(rd_pushing, rd_count, rd_count-1.U)
     val rd_count_next_no_rd_popping = Mux(rd_pushing, rd_count + 1.U, rd_count)
     val rd_count_next = Mux(rd_popping, rd_count_next_rd_popping, rd_count_next_no_rd_popping)
@@ -165,17 +165,8 @@ class NV_NVDLA_CSC_SG_dat_fifo extends Module {
                          (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
                          (rd_pushing || rd_popping || (io.rd_req && io.rd_ready)) || (wr_pushing))
 
-    wr_limit_muxed := "d0".asUInt(3.W)
+    wr_limit_muxed := "d0".asUInt(log2Ceil(depth+1).W)
 
     
 }}
 
-
-
-
-
-
-    
-object NV_NVDLA_CSC_SG_dat_fifoDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_SG_dat_fifo())
-}
