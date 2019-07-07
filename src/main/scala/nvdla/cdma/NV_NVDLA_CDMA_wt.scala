@@ -415,7 +415,7 @@ withClock(io.nvdla_core_clk){
     val dma_req_fifo_data = Wire(UInt(6.W))
     val dma_rsp_fifo_ready = Wire(Bool())
 
-    val u_fifo = Module{new NV_NVDLA_CDMA_WT_fifo}
+    val u_fifo = Module{new NV_NVDLA_CDMA_fifo(128, 6)}
     u_fifo.io.clk := io.nvdla_core_clk
     dma_req_fifo_ready := u_fifo.io.wr_ready
     u_fifo.io.wr_req := dma_req_fifo_req

@@ -5,6 +5,9 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+//NV_NVDLA_CSC_SG_WT_fifo
+//NV_NVDLA_CSC_SG_DAT_fifo
+
 class NV_NVDLA_CSC_SG_fifo(depth: Int, width: Int) extends Module {
     val io = IO(new Bundle {
         //clk
