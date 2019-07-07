@@ -47,7 +47,7 @@ withClock(io.nvdla_core_clk){
 
     val is_pack_last = Wire(Bool())
     val mux_data = Wire(UInt(OW.W))
-    io.out_data = mux_data
+    io.out_data := mux_data
 
     val pack_pvld = RegInit(false.B)
     val pack_prdy = io.out_prdy 
