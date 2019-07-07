@@ -5,10 +5,10 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_SDP_RDMA_pack(implicit val conf: sdpConfiguration) extends Module {
-   val IW = 512
-   val CW = 1
-   val OW = 256
+class NV_NVDLA_SDP_RDMA_pack(IW: Int, CW: Int, OW: Int)(implicit val conf: sdpConfiguration) extends Module {
+   IW == 512
+   CW == 1
+   OW == 256
    val RATIO = IW/OW
    val io = IO(new Bundle {
         //in clock
@@ -104,7 +104,7 @@ withClock(io.nvdla_core_clk){
 }
 
 
-object NV_NVDLA_SDP_RDMA_packDriver extends App {
-  implicit val conf: sdpConfiguration = new sdpConfiguration
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_pack())
-}
+// object NV_NVDLA_SDP_RDMA_packDriver extends App {
+//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_pack())
+// }
