@@ -42,7 +42,7 @@ class sdpConfiguration extends cdmaConfiguration
     val CV_IN_DW = 32*NVDLA_SDP_MAX_THROUGHPUT
     val CV_OUT_DW = 16*NVDLA_SDP_MAX_THROUGHPUT
     val DP_OUT_DW = NVDLA_BPE*NVDLA_SDP_MAX_THROUGHPUT 
-    val P_DOUT_DW = AM_DW                         //int8: 32 * 1B ; int16: 16 * 2B
+    val DP_DOUT_DW = AM_DW                         //int8: 32 * 1B ; int16: 16 * 2B
 
     val LUT_TABLE_LE_DEPTH = 65
     val LUT_TABLE_LO_DEPTH = 257
