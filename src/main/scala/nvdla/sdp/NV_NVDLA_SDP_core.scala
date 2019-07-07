@@ -20,7 +20,7 @@
 
 //         val sdp2pdp_valid = Output(Bool())
 //         val sdp2pdp_ready = Input(Bool())
-//         val sdp2pdp_pd = Output(UInt(conf.DP_DOUT_DW.W))
+//         val sdp2pdp_pd = Output(UInt(conf.DP_OUT_DW.W))
 
 //         val cacc2sdp_valid = Input(Bool())
 //         val cacc2sdp_ready = Output(Bool())
@@ -99,7 +99,7 @@
 //     val cfg_cvt_scale = RegInit(0.U(16.W))
 //     val cfg_cvt_shift = RegInit(0.U(6.W))
 //     val cfg_proc_precision = RegInit(0.U(2.W))
-//     val cfg_out_precision = RegInit(0.W(2.W))
+//     val cfg_out_precision = RegInit(0.U(2.W))
 //     val cfg_nan_to_zero = RegInit(false.B)
 
 //     val op_en_load = Wire(Bool())
@@ -138,9 +138,16 @@
 // //===========================================================================
 // //covert mrdma data from atomic_m to NVDLA_SDP_MAX_THROUGHPUT
 
-//     // val u_dpin_pack = Module(new NV_NVDLA_SDP_RDMA_pack)
-
-//     // ...
+//     val sdp_mrdma_data_in_ready = Wire(Bool())
+//     val u_dpin_pack = Module(new NV_NVDLA_SDP_RDMA_pack(conf.DP_DIN_DW, conf.DP_IN_DW, 2))
+//     u_dpin_pack.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_dpin_pack.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
+//     u_dpin_pack.io.inp_pvld := io.sdp_mrdma2cmux_valid
+//     io.sdp_mrdma2cmux_ready := u_dpin_pack.io.inp_prdy
+//     u_dpin_pack.io.inp_data := io.sdp_mrdma2cmux_pd
+//     val sdp_mrdma_data_in_valid = u_dpin_pack.io.out_pvld
+//     u_dpin_pack.io.out_prdy := sdp_mrdma_data_in_ready
+//     val sdp_mrdma_data_in_pd = u_dpin_pack.io.out_data
 
 // // #ifdef NVDLA_SDP_BS_ENABLE
 // // #ifdef NVDLA_SDP_BN_ENABLE
@@ -159,7 +166,53 @@
 // // #ifdef NVDLA_SDP_BN_ENABLE
 // // #ifdef NVDLA_SDP_EW_ENABLE
 
+// //===========================================
+// // CORE
+// //===========================================
+// // data from MUX ? CC : MEM
 
+//     val sdp_cmux2dp_ready = Wire(Bool())
+//     val u_NV_NVDLA_SDP_cmux = Module(new NV_NVDLA_SDP_cmux)
+//     u_NV_NVDLA_SDP_cmux.io.nvdla_core_clk := io.nvdla_core_clk
+
+//     u_NV_NVDLA_SDP_cmux.io.cacc2sdp_valid := io.cacc2sdp_valid
+//     io.cacc2sdp_ready := u_NV_NVDLA_SDP_cmux.io.cacc2sdp_ready
+//     u_NV_NVDLA_SDP_cmux.io.cacc2sdp_pd := io.cacc2sdp_pd
+
+//     u_NV_NVDLA_SDP_cmux.io.sdp_mrdma2cmux_valid := sdp_mrdma_data_in_valid
+//     sdp_mrdma_data_in_ready := u_NV_NVDLA_SDP_cmux.io.sdp_mrdma2cmux_ready
+//     u_NV_NVDLA_SDP_cmux.io.sdp_mrdma2cmux_pd := sdp_mrdma_data_in_pd
+
+//     val sdp_cmux2dp_valid = u_NV_NVDLA_SDP_cmux.io.sdp_cmux2dp_valid
+//     u_NV_NVDLA_SDP_cmux.io.sdp_cmux2dp_ready := sdp_cmux2dp_ready
+//     val sdp_cmux2dp_pd = u_NV_NVDLA_SDP_cmux.io.sdp_cmux2dp_pd
+
+//     u_NV_NVDLA_SDP_cmux.io.reg2dp_flying_mode := io.reg2dp_flying_mode
+//     u_NV_NVDLA_SDP_cmux.io.reg2dp_nan_to_zero := io.reg2dp_nan_to_zero
+//     u_NV_NVDLA_SDP_cmux.io.reg2dp_proc_precision := io.reg2dp_proc_precision
+//     u_NV_NVDLA_SDP_cmux.io.op_en_load := op_en_load
+
+
+//     val sdp_cmux2dp_data = sdp_cmux2dp_pd
+
+//     val flop_bs_data_out_prdy = Wire(Bool())
+//     sdp_cmux2dp_ready = flop_bs_data_out_prdy
+
+//     val bs_data_in_pd = sdp_cmux2dp_data
+
+// // #ifdef NVDLA_SDP_BS_ENABLE
+
+// //===========================================
+// // MUX between BS and BN
+// //===========================================
+
+//     val flop_bn_data_out_prdy = Wire(Bool())
+//     flop_bs_data_out_prdy = flop_bn_data_out_prdy
+
+//     val bs2bn_data_pvld = Mux(cfg_bs_en, flop_bs_data_out_pvld, sdp_cmux2dp_valid)
+
+// // #ifdef NVDLA_SDP_BN_ENABLE
+// // #ifdef NVDLA_SDP_EW_ENABLE    
 
 
 
