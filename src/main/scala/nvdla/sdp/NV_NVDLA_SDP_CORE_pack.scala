@@ -5,9 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_SDP_CORE_pack extends Module {
-   val IW = 512
-   val OW = 128
+class NV_NVDLA_SDP_CORE_pack(IW: Int = 512, OW: Int = 128) extends Module {
    val RATIO = IW/OW
    val io = IO(new Bundle {
         //in clock
@@ -47,7 +45,7 @@ withClock(io.nvdla_core_clk){
 
     val is_pack_last = Wire(Bool())
     val mux_data = Wire(UInt(OW.W))
-    io.out_data = mux_data
+    io.out_data := mux_data
 
     val pack_pvld = RegInit(false.B)
     val pack_prdy = io.out_prdy 

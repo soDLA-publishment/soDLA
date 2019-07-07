@@ -14,6 +14,7 @@ class NV_NVDLA_CSC_SG_wt_fifo extends Module {
         val wr_empty = Output(Bool())
         val wr_req = Input(Bool())
         val wr_data = Input(UInt(20.W))
+        
         val rd_ready = Input(Bool())
         val rd_req = Output(Bool())
         val rd_data = Output(UInt(20.W))
@@ -123,7 +124,7 @@ class NV_NVDLA_CSC_SG_wt_fifo extends Module {
 
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
-    val ram = Module(new NV_NVDLA_CSC_SG_wt_fifo_flopram_rwsa_4x20())
+    val ram = Module(new nv_flopram_internal_wr_reg(4, 20))
     ram.io.clk := io.clk
     ram.io.clk_mgated := clk_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -169,84 +170,6 @@ class NV_NVDLA_CSC_SG_wt_fifo extends Module {
     
 }}
 
-
-
-
-
-class NV_NVDLA_CSC_SG_wt_fifo_flopram_rwsa_4x20 extends Module {
-    val io = IO(new Bundle {
-        //clk
-        val clk = Input(Clock())
-        val clk_mgated = Input(Clock())
-        
-        val di = Input(UInt(20.W))
-        val iwe = Input(Bool())
-        val we = Input(Bool())
-        val wa = Input(UInt(2.W))
-        val ra = Input(UInt(3.W))
-        val dout = Output(UInt(20.W))
-
-        val pwrbus_ram_pd = Input(UInt(32.W))
-    })
-    //     
-    //          ┌─┐       ┌─┐
-    //       ┌──┘ ┴───────┘ ┴──┐
-    //       │                 │
-    //       │       ───       │          
-    //       │  ─┬┘       └┬─  │
-    //       │                 │
-    //       │       ─┴─       │
-    //       │                 │
-    //       └───┐         ┌───┘
-    //           │         │
-    //           │         │
-    //           │         │
-    //           │         └──────────────┐
-    //           │                        │
-    //           │                        ├─┐
-    //           │                        ┌─┘    
-    //           │                        │   神獸在此
-    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-    //             │ ─┤ ─┤       │ ─┤ ─┤         
-    //             └──┴──┘       └──┴──┘
-withClock(io.clk){
-
-    val di_d = Reg(UInt(20.W))
-    when(io.iwe){
-        di_d := io.di
-    }
-
-    withClock(io.clk_mgated){
-        val ram_ff0 = Reg(UInt(20.W)) 
-        val ram_ff1 = Reg(UInt(20.W))
-        val ram_ff2 = Reg(UInt(20.W))
-        val ram_ff3 = Reg(UInt(20.W))
-
-        when(io.we){
-            when(io.wa === 0.U){
-                ram_ff0 := di_d
-            }
-            when(io.wa === 1.U){
-                ram_ff1 := di_d
-            }
-            when(io.wa === 2.U){
-                ram_ff2 := di_d
-            }
-            when(io.wa === 3.U){
-                ram_ff3 := di_d
-            }
-        }
-
-        io.dout := MuxLookup(io.ra, "b0".asUInt(20.W), Seq(      
-            0.U  -> ram_ff0,
-            1.U  -> ram_ff1,
-            2.U  -> ram_ff2,
-            3.U  -> ram_ff3,
-            4.U  -> di_d
-        )) 
-    }
-
-}}
     
 object NV_NVDLA_CSC_SG_wt_fifoDriver extends App {
   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_SG_wt_fifo())

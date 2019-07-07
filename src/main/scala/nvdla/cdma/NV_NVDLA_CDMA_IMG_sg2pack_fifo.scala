@@ -120,7 +120,7 @@ class NV_NVDLA_CDMA_IMG_sg2pack_fifo extends Module {
 
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
-    val ram = Module(new NV_NVDLA_CDMA_IMG_sg2pack_fifo_flopram_rwsa_128x11())
+    val ram = Module(new nv_flopram_internal_wr_reg(128, 11))
     ram.io.clk := io.clk
     ram.io.clk_mgated := clk_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -178,43 +178,6 @@ class NV_NVDLA_CDMA_IMG_sg2pack_fifo extends Module {
 
     
 }}
-
-class NV_NVDLA_CDMA_IMG_sg2pack_fifo_flopram_rwsa_128x11 extends Module{
-  val io = IO(new Bundle{
-        val clk = Input(Clock())
-        val clk_mgated = Input(Clock())
-
-        val di = Input(UInt(11.W))
-        val iwe = Input(Bool())
-        val we = Input(Bool())
-        val wa = Input(UInt(7.W))
-        val ra = Input(UInt(8.W))
-        val dout = Output(UInt(11.W))
-
-        val pwrbus_ram_pd = Input(UInt(32.W))
-
-  })  
-withClock(io.clk){
-    val di_d = Reg(UInt(11.W))
-    when(io.iwe){
-        di_d := io.di
-    }
-    val ram_ff = Seq.fill(128)(withClock(io.clk_mgated){Reg(UInt(11.W))}) :+ Wire(UInt(11.W))
-    when(io.we){
-        for(i <- 0 to 127){
-            when(io.wa === i.U){
-                ram_ff(i) := di_d
-            }
-        } 
-    }   
-    ram_ff(128) := di_d 
-    io.dout := MuxLookup(io.ra, "b0".asUInt(11.W), 
-        (0 to 128) map { i => i.U -> ram_ff(i)} )
-}}
-
-
-
-
 
 
     

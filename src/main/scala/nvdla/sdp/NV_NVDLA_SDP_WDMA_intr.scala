@@ -28,25 +28,38 @@ class NV_NVDLA_SDP_WDMA_intr(implicit val conf: sdpConfiguration) extends Module
 
 
     })
-
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │          
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){
-
 //============================
 // CFG
 //============================
-
-    val cfg_mode_eql = (io.reg2dp_ew_bypass === false.B) & 
-                        (io.reg2dp_ew_alu_bypass === false.B) & 
-                        (io.reg2dp_ew_alu_algo === 3.U)
-
-    val cfg_mode_pdp = (io.reg2dp_output_dst === true.B)
-
-    val cfg_mode_quite = cfg_mode_eql | cfg_mode_eql
+    val cfg_mode_eql = (io.reg2dp_ew_bypass === 0.U) & (io.reg2dp_ew_alu_bypass === 0.U) & (io.reg2dp_ew_alu_algo === 3.U)
+    val cfg_mode_pdp = (io.reg2dp_output_dst === 1.U)
+    val cfg_mode_quite = cfg_mode_eql | cfg_mode_pdp
 
 //==============
 // Interrupt
 //==============
-
     val intr_fifo_wr_pvld = io.intr_req_pvld & !cfg_mode_quite
     val intr_fifo_wr_pd = io.intr_req_ptr
     val intr_fifo_rd_prdy = io.dma_wr_rsp_complete
