@@ -5,5 +5,6 @@
 // import chisel3.util._
 
 // //very stupidly class extension, sorry for my weak scala
+// --it's fine.
 
 

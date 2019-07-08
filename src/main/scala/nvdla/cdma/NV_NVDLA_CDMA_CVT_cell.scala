@@ -58,7 +58,7 @@ withClock(io.nvdla_core_clk){
     val chn_out_pvld = Wire(Bool())
     val chn_sync_pvld = Wire(Bool())
     val chn_sync_prdy = Wire(Bool())
-    val chn_data_out = Wire(SInt(16.W))
+    val chn_data_out = Wire(UInt(16.W))
 
     val chn_in_pvld  = io.chn_data_in_rsc_vz
     val chn_alu_pvld = io.chn_alu_in_rsc_vz
@@ -77,9 +77,9 @@ withClock(io.nvdla_core_clk){
     chn_in_prdy := chn_sync_prdy & chn_alu_pvld
 
     val chn_data_ext = Wire(SInt(18.W))
-    chn_data_ext := chn_data_in
+    chn_data_ext := chn_data_in.asSInt
     val chn_alu_ext = Wire(SInt(18.W))
-    chn_alu_ext := chn_alu_in
+    chn_alu_ext := chn_alu_in.asSInt
 
     //sub
     val sub_out_prdy = Wire(Bool())

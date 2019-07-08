@@ -259,7 +259,7 @@ for(i <- 0 to conf.BNUM-1){
 
     u_cell(i).io.chn_data_out_rsc_vz := true.B
 
-    cellout(i) := u_cell(i).io.chn_data_out_rsc_z.asUInt
+    cellout(i) := u_cell(i).io.chn_data_out_rsc_z
 }
 
 val cvt_data_cell = VecInit((0 to conf.BNUM-1) map { i => cellout(i)(conf.NVDLA_BPE-1, 0)}).asUInt

@@ -5,11 +5,15 @@ import chisel3.util._
 import chisel3.experimental._
 
 //NV_NVDLA_SDP_BRDMA_cq_lib.v
-//NV_NVDLA_SDP_MRDMA_EG_lat_fifo_lib.v
-//NV_NVDLA_SDP_ERDMA_lat_fifo_lib.v
+//NV_NVDLA_SDP_BRDMA_lat_fifo_lib.v
 //NV_NVDLA_SDP_ERDMA_cq_lib.v
+//NV_NVDLA_SDP_ERDMA_lat_fifo_lib.v
+//NV_NVDLA_SDP_MRDMA_cq_lib.v
+//NV_NVDLA_SDP_MRDMA_EG_lat_fifo_lib.v
+//NV_NVDLA_SDP_NRDMA_cq_lib.v
+//NV_NVDLA_SDP_NRDMA_EG_lat_fifo_lib.v
 
-class NV_NVDLA_SDP_fifo(depth: Int, width: Int) extends Module {
+class NV_NVDLA_SDP_RDMA_fifo(depth: Int, width: Int) extends Module {
     val io = IO(new Bundle {
         //general clock
         val clk = Input(Clock())
@@ -77,7 +81,7 @@ withClock(io.clk){
     wr_reserving := io.wr_vld & !wr_busy_int   // reserving write space?
  
     val wr_popping = withClock(clk_mgated){RegInit(false.B)}  // fwd: write side sees pop?
-    val wr_count = withClock(clk_mgated){RegInit(0.U)}   // write-side 
+    val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W)}   // write-side 
     
     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, (wr_count - 1.U))
     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count + 1.U, wr_count)
@@ -86,7 +90,7 @@ withClock(io.clk){
     val wr_count_next_no_wr_popping_is_full = ( wr_count_next_no_wr_popping === depth.U)
     val wr_count_next_is_full = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_full)
 
-    val wr_limit_muxed = Wire(UInt((log2Ceil(depth)+1).W))  // muxed with simulation/emulation overrides
+    val wr_limit_muxed = Wire(UInt(log2Ceil(depth+1).W))  // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
     val wr_busy_next = wr_count_next_is_full || (wr_limit_reg =/= 0.U &&  wr_count_next>= wr_limit_reg)
     
@@ -99,7 +103,7 @@ withClock(io.clk){
 
     //RAM
 
-    val wr_adr = withClock(clk_mgated){RegInit(0.U)} 			// current write address
+    val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))} 			// current write address
     val rd_adr_p = Wire(UInt(log2Ceil(depth).W))                // read address to use for ram
     val rd_enable = Wire(Bool())
     val ore = Wire(Bool())
@@ -124,7 +128,7 @@ withClock(io.clk){
         wr_adr := wr_adr_next
     }   
     val rd_popping = Wire(Bool())// read side doing pop this cycle?
-    val rd_adr = withClock(clk_mgated){RegInit(0.U)}  // current read address
+    val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}  // current read address
 
     // next    read address 
     val rd_adr_next = rd_adr + 1.U
@@ -150,7 +154,7 @@ withClock(io.clk){
     val rd_vld_int = withClock(clk_mgated){RegInit(false.B)} // internal copy of rd_vld
     io.rd_vld := rd_vld_int
     rd_popping := rd_vld_p && !(rd_vld_int && !io.rd_rdy)
-    val rd_count_p = withClock(clk_mgated){RegInit(0.U)} // read-side fifo count
+    val rd_count_p = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))} // read-side fifo count
     // spyglass disable_block W164a W484
 
     val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p - 1.U)
@@ -182,6 +186,6 @@ withClock(io.clk){
                          (io.wr_vld && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
                          (rd_pushing || rd_popping || (rd_vld_int && io.rd_rdy) || wr_pushing))
  
-    wr_limit_muxed := 0.U
+    wr_limit_muxed := "b0".asUInt(log2Ceil(depth+1).W)
   
 }}
