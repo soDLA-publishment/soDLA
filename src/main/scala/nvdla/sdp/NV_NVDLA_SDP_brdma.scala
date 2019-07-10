@@ -152,8 +152,6 @@ withClock(io.nvdla_core_clk){
 
     val lat_fifo_rd_pd = Wire(UInt(conf.NVDLA_DMA_RD_RSP.W))
     val lat_fifo_rd_pvld = Wire(Bool())
-    val sdp_rdma2dp_alu_ready = Wire(Bool())
-    val sdp_rdma2dp_mul_ready = Wire(Bool())
 
     val u_eg = Module(new NV_NVDLA_SDP_RDMA_eg)
     u_eg.io.nvdla_core_clk := nvdla_gated_clk
@@ -167,8 +165,8 @@ withClock(io.nvdla_core_clk){
     u_eg.io.lat_fifo_rd_pd := lat_fifo_rd_pd
     u_eg.io.lat_fifo_rd_pvld := lat_fifo_rd_pvld 
     val lat_fifo_rd_prdy = u_eg.io.lat_fifo_rd_prdy
-    u_eg.io.sdp_rdma2dp_alu_ready := sdp_rdma2dp_alu_ready
-    u_eg.io.sdp_rdma2dp_mul_ready := sdp_rdma2dp_mul_ready
+    u_eg.io.sdp_rdma2dp_alu_ready := io.sdp_brdma2dp_alu_ready
+    u_eg.io.sdp_rdma2dp_mul_ready := io.sdp_brdma2dp_mul_ready
     io.sdp_brdma2dp_alu_pd := u_eg.io.sdp_rdma2dp_alu_pd
     io.sdp_brdma2dp_alu_valid := u_eg.io.sdp_rdma2dp_alu_valid
     io.sdp_brdma2dp_mul_pd := u_eg.io.sdp_rdma2dp_mul_pd
