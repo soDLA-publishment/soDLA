@@ -81,7 +81,7 @@ withClock(io.clk){
     wr_reserving := io.wr_vld & !wr_busy_int   // reserving write space?
  
     val wr_popping = withClock(clk_mgated){RegInit(false.B)}  // fwd: write side sees pop?
-    val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W)}   // write-side 
+    val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))}   // write-side 
     
     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, (wr_count - 1.U))
     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count + 1.U, wr_count)
