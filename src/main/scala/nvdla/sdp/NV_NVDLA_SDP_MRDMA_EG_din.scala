@@ -62,7 +62,7 @@ withClock(io.nvdla_core_clk){
     io.dma_rd_rsp_ram_type := io.reg2dp_src_ram_type
     io.dma_rd_cdt_lat_fifo_pop := lat_ecc_rd_pvld & lat_ecc_rd_prdy
 
-    val u_lat_fifo = Module(new NV_NVDLA_SDP_RDMA_fifo(conf.NVDLA_VMOD_SDP_MRDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
+    val u_lat_fifo = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_MRDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
     u_lat_fifo.io.clk := io.nvdla_core_clk
     u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     io.dma_rd_rsp_rdy := u_lat_fifo.io.wr_rdy

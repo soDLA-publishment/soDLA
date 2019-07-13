@@ -6,7 +6,7 @@ import chisel3.util._
 
 //NV_NVDLA_SDP_RDMA_ig.v
 
-class NV_NVDLA_SDP_ig(implicit conf: sdpConfiguration) extends Module {
+class NV_NVDLA_SDP_RDMA_ig(implicit conf: sdpConfiguration) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
 
@@ -314,9 +314,9 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_SDP_igDriver extends App {
+object NV_NVDLA_SDP_RDMA_igDriver extends App {
   implicit val conf: sdpConfiguration = new sdpConfiguration
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_ig)
+  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_ig)
 }
 
 

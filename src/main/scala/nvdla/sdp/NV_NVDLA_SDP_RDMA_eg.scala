@@ -15,7 +15,7 @@ class NV_NVDLA_SDP_RDMA_eg(implicit val conf: sdpConfiguration) extends Module {
 
         val cq2eg_pd = Input(UInt(16.W))
         val cq2eg_pvld = Input(Bool())
-        val cq2eg_prdy = Output(Bool())     // read
+        val cq2eg_prdy = Output(Bool())    
 
         val lat_fifo_rd_pd = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
         val lat_fifo_rd_pvld = Input(Bool())
@@ -68,13 +68,13 @@ class NV_NVDLA_SDP_RDMA_eg(implicit val conf: sdpConfiguration) extends Module {
 // CFG REG
 //==============
 
-        val cfg_data_size_1byte = (io.reg2dp_rdma_data_size === false.B)
-        val cfg_data_size_2byte = (io.reg2dp_rdma_data_size === true.B)
+        val cfg_data_size_1byte = (io.reg2dp_rdma_data_size === 0.U)
+        val cfg_data_size_2byte = (io.reg2dp_rdma_data_size === 1.U)
 
         val cfg_mode_mul_only = (io.reg2dp_rdma_data_use === 0.U)
         val cfg_mode_alu_only = (io.reg2dp_rdma_data_use === 1.U)
         val cfg_mode_both = (io.reg2dp_rdma_data_use === 2.U)
-        val cfg_mode_per_element = (io.reg2dp_rdma_data_mode === true.B)
+        val cfg_mode_per_element = (io.reg2dp_rdma_data_mode === 1.U)
 
         val cfg_mode_single = cfg_mode_mul_only || cfg_mode_alu_only   
 
@@ -82,9 +82,6 @@ class NV_NVDLA_SDP_RDMA_eg(implicit val conf: sdpConfiguration) extends Module {
         val cfg_mode_2bytex1 = cfg_data_size_2byte & cfg_mode_single
         val cfg_mode_1bytex2 = cfg_data_size_1byte & cfg_mode_both
         val cfg_mode_2bytex2 = cfg_data_size_2byte & cfg_mode_both
-
-        // #ifdef NVDLA_BATCH_ENABLE
-        // #endif
 
         val cfg_dp_8 = (io.reg2dp_proc_precision === 0.U)
         val cfg_do_8 = (io.reg2dp_out_precision === 0.U)
@@ -104,9 +101,9 @@ class NV_NVDLA_SDP_RDMA_eg(implicit val conf: sdpConfiguration) extends Module {
 
         val lat_fifo_rd_mask = Cat(
                     Fill((4-conf.NVDLA_DMA_MASK_BIT), false.B), 
-                    io.lat_fifo_rd_pd((conf.NVDLA_DMA_RD_RSP-1), conf.NVDLA_MEMIF_WIDTH)
+                    io.lat_fifo_rd_pd(conf.NVDLA_DMA_RD_RSP-1, conf.NVDLA_MEMIF_WIDTH)
                     )
-        val lat_fifo_rd_size = lat_fifo_rd_mask(3) + lat_fifo_rd_mask(2) + lat_fifo_rd_mask(1) + lat_fifo_rd_mask(0)
+        val lat_fifo_rd_size = lat_fifo_rd_mask(3) +& lat_fifo_rd_mask(2) +& lat_fifo_rd_mask(1) +& lat_fifo_rd_mask(0)
 
 //==================================================================
 // Context Queue: read
@@ -115,7 +112,7 @@ class NV_NVDLA_SDP_RDMA_eg(implicit val conf: sdpConfiguration) extends Module {
         val ig2eg_size = io.cq2eg_pd(14,0)
         val ig2eg_cube_end = io.cq2eg_pd(15)
 
-        val beat_size = ig2eg_size + 1.U
+        val beat_size = ig2eg_size +& 1.U
         val beat_count = RegInit(0.U(15.W))
         val beat_count_nxt = beat_count + lat_fifo_rd_size
         val is_last_beat = (beat_count_nxt === beat_size)

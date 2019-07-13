@@ -13,7 +13,7 @@ import chisel3.experimental._
 //NV_NVDLA_SDP_NRDMA_cq_lib.v
 //NV_NVDLA_SDP_NRDMA_EG_lat_fifo_lib.v
 
-class NV_NVDLA_SDP_RDMA_fifo(depth: Int, width: Int) extends Module {
+class NV_NVDLA_SDP_fifo(depth: Int, width: Int) extends Module {
     val io = IO(new Bundle {
         //general clock
         val clk = Input(Clock())

@@ -42,9 +42,9 @@ val io = IO(new Bundle {
     val reg2dp_brdma_data_use = Input(UInt(2.W))  
     val reg2dp_brdma_ram_type = Input(Bool())  
     val reg2dp_bs_base_addr_high = Input(UInt(32.W))  
-    val reg2dp_bs_base_addr_low = Input(UInt((32-conf.AM_DW).W))  
-    val reg2dp_bs_line_stride = Input(UInt((32-conf.AM_DW).W))   
-    val reg2dp_bs_surface_stride = Input(UInt((32-conf.AM_DW).W))
+    val reg2dp_bs_base_addr_low = Input(UInt((32-conf.AM_AW).W))  
+    val reg2dp_bs_line_stride = Input(UInt((32-conf.AM_AW).W))   
+    val reg2dp_bs_surface_stride = Input(UInt((32-conf.AM_AW).W))
     val reg2dp_batch_number = Input(UInt(5.W))  
     val reg2dp_channel = Input(UInt(13.W))  
     val reg2dp_height = Input(UInt(13.W))  
@@ -60,7 +60,7 @@ val io = IO(new Bundle {
 
     val dla_clk_ovr_on_sync = Input(Clock())
     val global_clk_ovr_on_sync = Input(Clock())
-    val tmc2slcg_disable_clock_gating = Input(Clock())
+    val tmc2slcg_disable_clock_gating = Input(Bool())
     val brdma_slcg_op_en = Input(Bool())
     val brdma_disable = Input(Bool())
 
@@ -102,10 +102,10 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_done := eg_done
 
     //=======================================
-    val u_gate = Module(new NV_NVDLA_SDP_BRDMA_gate)
+    val u_gate = Module(new NV_NVDLA_SDP_RDMA_gate)
     u_gate.io.nvdla_core_clk := io.nvdla_core_clk
-    u_gate.io.brdma_disable := io.brdma_disable
-    u_gate.io.brdma_slcg_op_en := io.brdma_slcg_op_en
+    u_gate.io.rdma_disable := io.brdma_disable
+    u_gate.io.rdma_slcg_op_en := io.brdma_slcg_op_en
     u_gate.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync
     u_gate.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_gate.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating
@@ -114,7 +114,7 @@ withClock(io.nvdla_core_clk){
     val ig2cq_prdy = Wire(Bool())
     val dma_rd_req_rdy = Wire(Bool())
 
-    val u_ig = Module(new NV_NVDLA_SDP_ig)
+    val u_ig = Module(new NV_NVDLA_SDP_RDMA_ig)
     u_ig.io.nvdla_core_clk := nvdla_gated_clk
     u_ig.io.op_load := op_load
     val ig2cq_pd = u_ig.io.ig2cq_pd
@@ -140,7 +140,7 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_brdma_stall := u_ig.io.dp2reg_rdma_stall
 
     val cq2eg_prdy = Wire(Bool())
-    val u_cq = Module(new NV_NVDLA_SDP_RDMA_fifo(conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, 16))
+    val u_cq = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, 16))
     u_cq.io.clk := nvdla_gated_clk
     u_cq.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     ig2cq_prdy := u_cq.io.wr_rdy
@@ -183,7 +183,7 @@ withClock(io.nvdla_core_clk){
 
     val dma_rd_rsp_vld = Wire(Bool())
     val dma_rd_rsp_pd = Wire(UInt(conf.NVDLA_DMA_RD_RSP.W))
-    val u_lat_fifo = Module(new NV_NVDLA_SDP_RDMA_fifo(conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
+    val u_lat_fifo = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
     u_lat_fifo.io.clk := nvdla_gated_clk
     u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     val dma_rd_rsp_rdy = u_lat_fifo.io.wr_rdy
@@ -194,7 +194,7 @@ withClock(io.nvdla_core_clk){
     lat_fifo_rd_pd := u_lat_fifo.io.rd_data
 
     val u_NV_NVDLA_SDP_RDMA_dmaif = Module(new NV_NVDLA_SDP_RDMA_dmaif)
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.nvdla_core_clk := nvdla_gated_clk
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.nvdla_core_clk := nvdla_gated_clk
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
 
         io.sdp_b2cvif_rd_req_valid.get := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_req_valid.get
@@ -206,24 +206,24 @@ withClock(io.nvdla_core_clk){
         u_NV_NVDLA_SDP_RDMA_dmaif.io.cvif2sdp_rd_rsp_pd.get := io.cvif2sdp_b_rd_rsp_pd.get
     }
 
-        io.sdp_b2mcif_rd_req_valid := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_valid
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_ready := io.sdp_b2mcif_rd_req_ready
-        io.sdp_b2mcif_rd_req_pd := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_pd
-        io.sdp_b2mcif_rd_cdt_lat_fifo_pop := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_cdt_lat_fifo_pop
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_valid := io.mcif2sdp_b_rd_rsp_valid
-        io.mcif2sdp_b_rd_rsp_ready := u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_ready
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_pd := io.mcif2sdp_b_rd_rsp_pd
+    io.sdp_b2mcif_rd_req_valid := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_valid
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_ready := io.sdp_b2mcif_rd_req_ready
+    io.sdp_b2mcif_rd_req_pd := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_pd
+    io.sdp_b2mcif_rd_cdt_lat_fifo_pop := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_cdt_lat_fifo_pop
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_valid := io.mcif2sdp_b_rd_rsp_valid
+    io.mcif2sdp_b_rd_rsp_ready := u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_ready
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_pd := io.mcif2sdp_b_rd_rsp_pd
 
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_ram_type := io.reg2dp_brdma_ram_type
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_vld := dma_rd_req_vld
-        dma_rd_req_rdy := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_rdy
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_pd := dma_rd_req_pd
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_ram_type := io.reg2dp_brdma_ram_type
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_vld := dma_rd_req_vld
+    dma_rd_req_rdy := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_rdy
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_pd := dma_rd_req_pd
 
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_ram_type := io.reg2dp_brdma_ram_type
-        dma_rd_rsp_vld := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_vld
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_rdy := dma_rd_rsp_rdy
-        dma_rd_rsp_pd := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_pd
-        u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_cdt_lat_fifo_pop := dma_rd_cdt_lat_fifo_pop
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_ram_type := io.reg2dp_brdma_ram_type
+    dma_rd_rsp_vld := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_vld
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_rdy := dma_rd_rsp_rdy
+    dma_rd_rsp_pd := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_pd
+    u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_cdt_lat_fifo_pop := dma_rd_cdt_lat_fifo_pop
 
 }}
 
