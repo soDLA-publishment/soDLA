@@ -75,7 +75,7 @@ withClock(io.nvdla_core_clk){
     val lat_ecc_rd_accept = lat_ecc_rd_pvld & lat_ecc_rd_prdy  
     // val lat_ecc_rd_data(conf.NVDLA_MEMIF_WIDTH - 1, 0) = lat_ecc_rd_pd(conf.NVDLA_MEMIF_WIDTH - 1, 0)    
     val lat_ecc_rd_mask = Cat(0.U((4 - conf.NVDLA_DMA_MASK_BIT).W), lat_ecc_rd_pd(conf.NVDLA_DMA_RD_RSP-1, conf.NVDLA_MEMIF_WIDTH))
-    val lat_ecc_rd_size = lat_ecc_rd_mask(3) + lat_ecc_rd_mask(2) + lat_ecc_rd_mask(1) + lat_ecc_rd_mask(0)
+    val lat_ecc_rd_size = lat_ecc_rd_mask(3) +& lat_ecc_rd_mask(2) +& lat_ecc_rd_mask(1) +& lat_ecc_rd_mask(0)
 
     //========command for pfifo wr ====================
     val is_last_beat = Wire(Bool())

@@ -149,6 +149,7 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
         val reg2dp_proc_precision = Input(UInt(2.W))
         val dp2reg_done = Input(Bool())
         val dp2reg_out_saturation = Output(UInt(32.W))
+
         val dla_clk_ovr_on_sync = Input(Clock())
         val global_clk_ovr_on_sync = Input(Clock())
         val tmc2slcg_disable_clock_gating = Input(Bool())
@@ -176,35 +177,33 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){   
-
-//===========================================
-// CFG
-//===========================================
-
+    //===========================================
+    // CFG
+    //===========================================
     val cfg_bs_en = RegInit(false.B)
     val cfg_bn_en = RegInit(false.B)
     val cfg_ew_en = RegInit(false.B)
     val cfg_mode_eql = RegInit(false.B)
 
     if(conf.NVDLA_SDP_BS_ENABLE){
-        cfg_bs_en := io.reg2dp_bs_bypass.get === false.B
+        cfg_bs_en := io.reg2dp_bs_bypass.get === 0.U
     }
     else{
         cfg_bs_en := false.B
     }
 
     if(conf.NVDLA_SDP_BN_ENABLE){
-        cfg_bn_en := io.reg2dp_bn_bypass.get === false.B
+        cfg_bn_en := io.reg2dp_bn_bypass.get === 0.U
     }
     else{
         cfg_bn_en := false.B
     }
 
-    if(conf.NVDLA_SDP_BS_ENABLE){
-        cfg_ew_en := io.reg2dp_ew_bypass.get === false.B
+    if(conf.NVDLA_SDP_EW_ENABLE){
+        cfg_ew_en := io.reg2dp_ew_bypass.get === 0.U
         cfg_mode_eql := (io.reg2dp_ew_alu_algo.get === 3.U) && 
-                        (io.reg2dp_ew_alu_bypass.get === false.B) && 
-                        (io.reg2dp_ew_bypass.get === false.B)
+                        (io.reg2dp_ew_alu_bypass.get === 0.U) && 
+                        (io.reg2dp_ew_bypass.get === 0.U)
     }
     else{
         cfg_bs_en := false.B
@@ -278,10 +277,9 @@ withClock(io.nvdla_core_clk){
         cfg_nan_to_zero := io.reg2dp_nan_to_zero        
     }
 
-//===========================================
-// SLCG Gate
-//===========================================
-
+    //===========================================
+    // SLCG Gate
+    //===========================================
     val bcore_slcg_en = cfg_bs_en & io.reg2dp_bcore_slcg_op_en
     val ncore_slcg_en = cfg_bn_en & io.reg2dp_ncore_slcg_op_en
 
@@ -315,7 +313,6 @@ withClock(io.nvdla_core_clk){
     //  RDMA data 
     //===========================================================================
     //covert mrdma data from atomic_m to NVDLA_SDP_MAX_THROUGHPUT
-
     val sdp_mrdma_data_in_ready = Wire(Bool())
     val u_dpin_pack = Module(new NV_NVDLA_SDP_RDMA_pack(conf.DP_DIN_DW, conf.DP_IN_DW, 2))
     u_dpin_pack.io.nvdla_core_clk := io.nvdla_core_clk

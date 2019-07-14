@@ -26,7 +26,6 @@ class NV_NVDLA_SDP_RDMA_gate extends Module {
 
     val cfg_clk_en = io.rdma_slcg_op_en & rdma_enable
 
-
     val nvdla_core_clk_slcg_0_en = cfg_clk_en | io.dla_clk_ovr_on_sync.asUInt.toBool |
                                    (io.tmc2slcg_disable_clock_gating|io.global_clk_ovr_on_sync.asUInt.toBool)                                     
 
