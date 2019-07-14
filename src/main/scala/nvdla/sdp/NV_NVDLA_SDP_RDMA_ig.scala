@@ -154,8 +154,8 @@ withClock(io.nvdla_core_clk){
     // DMA Req : ADDR PREPARE
     //==========================================
     // LINE
-    val base_addr_line = RegInit(0.U)
-    val base_addr_surf = RegInit(0.U)
+    val base_addr_line = RegInit("b0".asUInt((conf.NVDLA_MEM_ADDRESS_WIDTH - conf.AM_AW).W))
+    val base_addr_surf = RegInit("b0".asUInt((conf.NVDLA_MEM_ADDRESS_WIDTH - conf.AM_AW).W))
 
     when(io.op_load){
         base_addr_line := cfg_base_addr
@@ -297,10 +297,9 @@ withClock(io.nvdla_core_clk){
 
     val stl_cnt_cur = RegInit("b0".asUInt(32.W))
     val stl_cnt_ext = Cat("b0".asUInt(2.W), stl_cnt_cur)
-    val stl_cnt_inc = stl_cnt_cur + 1.U
-    val stl_cnt_dec = stl_cnt_cur - 1.U
-    val stl_cnt_mod = Mux(rdma_stall_cnt_inc && !dp2reg_rdma_stall_dec, 
-                      stl_cnt_inc, 
+    val stl_cnt_inc = stl_cnt_cur +& 1.U
+    val stl_cnt_dec = stl_cnt_cur -& 1.U
+    val stl_cnt_mod = Mux(rdma_stall_cnt_inc && !dp2reg_rdma_stall_dec, stl_cnt_inc, 
                       Mux(!rdma_stall_cnt_inc && dp2reg_rdma_stall_dec, stl_cnt_dec, stl_cnt_ext))
     val stl_cnt_new = Mux(stl_adv, stl_cnt_mod, stl_cnt_ext)
     val stl_cnt_nxt = Mux(rdma_stall_cnt_clr, 0.U(34.W), stl_cnt_new)
