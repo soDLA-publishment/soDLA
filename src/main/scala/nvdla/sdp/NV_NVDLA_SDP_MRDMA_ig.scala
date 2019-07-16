@@ -13,6 +13,7 @@ class NV_NVDLA_SDP_MRDMA_ig(implicit conf: sdpConfiguration) extends Module {
         val dma_rd_req_vld = Output(Bool())
         val dma_rd_req_rdy = Input(Bool())
         val dma_rd_req_pd = Output(UInt(conf.NVDLA_DMA_RD_REQ.W))
+        val dma_rd_req_ram_type = Output(Bool())
         
         val ig2cq_pvld = Output(Bool())
         val ig2cq_prdy = Input(Bool())
@@ -207,7 +208,7 @@ withClock(io.nvdla_core_clk){
     // VALID: clamp when when cq is not ready
     io.dma_rd_req_vld := cmd_process & io.ig2cq_prdy
     io.dma_rd_req_pd := Cat(dma_req_size, dma_req_addr)
-    val dma_rd_req_ram_type = io.reg2dp_src_ram_type
+    io.dma_rd_req_ram_type := io.reg2dp_src_ram_type
 
     // Accept
     cmd_accept := io.dma_rd_req_vld & io.dma_rd_req_rdy

@@ -5,8 +5,8 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_SDP_CORE_unpack(IW: Int = 512, OW: Int = 128) extends Module {
-   val RATIO = IW/OW
+class NV_NVDLA_SDP_CORE_unpack(IW: Int = 128, OW: Int = 512) extends Module {
+   val RATIO = OW/IW
    val io = IO(new Bundle {
         //in clock
         val nvdla_core_clk = Input(Clock())

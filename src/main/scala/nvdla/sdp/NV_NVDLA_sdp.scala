@@ -10,6 +10,16 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
         val nvdla_core_clk = Input(Clock())
         val pwrbus_ram_pd = Input(UInt(32.W))
 
+        val cacc2sdp_valid = Input(Bool())
+        val cacc2sdp_ready = Output(Bool())
+        val cacc2sdp_pd = Input(UInt((conf.DP_IN_DW+2).W))
+
+        val sdp2pdp_valid = Output(Bool())
+        val sdp2pdp_ready = Input(Bool())
+        val sdp2pdp_pd = Output(UInt(conf.DP_OUT_DW.W))
+
+        val sdp2glb_done_intr_pd = Output(UInt(2.W))
+
         val sdp_brdma2dp_mul_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
         val sdp_brdma2dp_mul_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
         val sdp_brdma2dp_mul_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt((conf.AM_DW2+1).W))) else None
