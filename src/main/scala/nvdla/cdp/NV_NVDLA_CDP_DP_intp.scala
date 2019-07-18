@@ -93,17 +93,16 @@
 //     val lo_slope_uflow_scale = Cat(reg2dp_lut_lo_slope_uflow_scale_sync(15), reg2dp_lut_lo_slope_uflow_scale_sync(15,0))
 //     val lo_slope_oflow_scale = Cat(reg2dp_lut_lo_slope_oflow_scale_sync(15), reg2dp_lut_lo_slope_oflow_scale_sync(15,0))
 
-//     val lut2intp_pd_data = VecInit(
+//     val lut2intp_pd_data = Cat(VecInit(
 //         (0 to (conf.NVDLA_CDP_THROUGHPUT-1)) map {i => Cat(
 //                                         io.lut2intp_X_data_0(i), 
 //                                         io.lut2intp_X_data_0_17b(i), 
-//                                         io.lut2intp_X_data_1(i))})
-//     val lut2intp_pd_data_cat = Cat(lut2intp_pd_data)                                     
+//                                         io.lut2intp_X_data_1(i))}))
 
 //     val lut2intp_pd_info = Cat(io.lut2intp_X_info)
 
 //     val lut2intp_pd = Cat(
-//                         lut2intp_pd_data_cat,
+//                         lut2intp_pd_data,
 //                         lut2intp_pd_info,
 //                         io.lut2intp_X_sel, 
 //                         io.lut2intp_Y_sel
@@ -153,7 +152,7 @@
 // ///////////////////////////////////////////
 //     val xinterp_in_rdy = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 //     val info_in_rdy = Wire(Bool())
-//     intp_in_prdy := (xinterp_in_rdy.asUInt.andR) & info_in_rdy
+//     intp_in_prdy := (xinterp_in_rdy.andR) & info_in_rdy
 
 //     val SQBW = conf.NVDLA_CDP_ICVTO_BWPE * 2 + 3
 //     val hit_in1_pd = VecInit(
@@ -308,7 +307,10 @@
 //         } 
 //     }  
 
-//     val xinterp_in_vld = VecInit((0 to (conf.NVDLA_CDP_THROUGHPUT)) map {i => intp_in_pvld & info_in_rdy & xinterp_in_rdy(i)})
+//     val xinterp_in_vld = Cat(
+//         VecInit((0 to (conf.NVDLA_CDP_THROUGHPUT-1)) map 
+//             {i => intp_in_pvld & info_in_rdy & xinterp_in_rdy(i)})
+//         )
 
 //     val xinterp_out_rdy = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 //     val xinterp_out_pd = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
@@ -335,14 +337,153 @@
 //         xinterp_out_rdy(i) := intp_prdy & info_o_vld & xinterp_out_vld(i)
 //     }
 
-//     val info_o_rdy = intp_prdy & (xinterp_out_vld.asUInt.andR)
+//     val info_o_rdy = intp_prdy & (xinterp_out_vld.andR)
     
-// ///////////////////////////////////////////////
-// //process for normal uflow/oflow info
+//     ///////////////////////////////////////////////
+//     //process for normal uflow/oflow info
+//     val info_in_vld = intp_in_pvld & (xinterp_in_rdy.andR);
 
+// // assign info_Xin_pd  = {
+// // //: my $k = NVDLA_CDP_THROUGHPUT;
+// // //: if($k > 1) {
+// // //:     foreach my $m  (0..$k-2) {
+// // //:       my $i = $k -$m - 1;
+// // //:       print qq(
+// // //:         lut2ip_X_info_${i}[17:16],
+// // //:       );
+// // //:     }
+// // //: }
+// //         lut2ip_X_info_0[17:16]};
 
+// // assign info_Yin_pd  = {
+// // //: my $k = NVDLA_CDP_THROUGHPUT;
+// // //: if($k > 1) {
+// // //:     foreach my $m  (0..$k-2) {
+// // //:       my $i = $k -$m - 1;
+// // //:       print qq(
+// // //:         lut2ip_X_info_${i}[19:18],
+// // //:       );
+// // //:     }
+// // //: }
+// //             lut2ip_X_info_0[19:18]};
 
+//     val info_Xin_pd = Wire(UInt((conf.NVDLA_CDP_THROUGHPUT*2).W))
+//     val info_Yin_pd = Wire(UInt((conf.NVDLA_CDP_THROUGHPUT*2).W))
+//     val dat_info_in = Cat(info_Xin_pd, info_Yin_pd)
+//     val info_in_pd = dat_info_in
 
+//     //////////////////////////
+//     //// THERE IS A FIFO 
+//     //////////////////////////
+
+//     val x_info = VecInit((0 to (conf.NVDLA_CDP_THROUGHPUT-1)) map 
+//                             {i => info_o_pd(i*2+1,i*2)})
+//     val y_info = VecInit((0 to (conf.NVDLA_CDP_THROUGHPUT-1)) map 
+//                             {i => info_o_pd((conf.NVDLA_CDP_THROUGHPUT*2+i*2+1),(conf.NVDLA_CDP_THROUGHPUT*2+i*2))})
+
+// ////////////////////////////////////////////////
+//     val intp_pvld = info_o_vld & (xinterp_out_vld.andR)
+//     val intp_pvld_d = RegInit(false.B)
+//     val intp_prdy_d = Wire(Bool())
+//     intp_prdy = ~intp_pvld_d | intp_prdy_d
+// ////////
+
+//     when(intp_pvld){
+//         intp_pvld_d := true.B
+//     }.elsewhen(intp_prdy_d){
+//         intp_pvld_d := false.B
+//     }
+
+//     val ip2mul_pvld = intp_pvld_d
+
+//     val ip2mul_pd = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, 0.U(17.W)))
+//     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
+//         when(intp_pvld & intp_prdy){
+//             ip2mul_pd(i) := xinterp_out_pd(i)
+//         }
+//     }
+
+// ////////////////////////////////////////////////
+// //LUT perf counters
+// ////////////////////////////////////////////////
+
+//     val layer_done = io.dp2reg_done
+
+//     val both_hybrid_flag = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val both_of_flag = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val both_uf_flag = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val only_le_hit = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val only_lo_hit = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
+//         when(intp_pvld & intp_prdy){
+//             both_hybrid_flag(i) :=  (Cat(x_info(i),y_info(i)) === "b0000".asUInt(4.W)) | 
+//                                     (Cat(x_info(i),y_info(i)) === "b0110".asUInt(4.W)) | 
+//                                     (Cat(x_info(i),y_info(i)) === "b1001".asUInt(4.W))
+//             both_of_flag(i) := (Cat(x_info(i),y_info(i)) === "b1010".asUInt(4.W))
+//             both_uf_flag(i) := (Cat(x_info(i),y_info(i)) === "b0101".asUInt(4.W))
+//             only_le_hit(i)  :=  (Cat(x_info(i),y_info(i)) === "b0001".asUInt(4.W)) | 
+//                                 (Cat(x_info(i),y_info(i)) === "b0010".asUInt(4.W))
+//             only_lo_hit(i)  :=  (Cat(x_info(i),y_info(i)) === "b0100".asUInt(4.W)) | 
+//                                 (Cat(x_info(i),y_info(i)) === "b1000".asUInt(4.W))
+//         }
+//     }
+
+// // function [3:0] fun_bit_sum_8;
+// //   input [7:0] idata;
+// //   reg [3:0] ocnt;
+// //   begin
+// //     ocnt =
+// //         (( idata[0]  
+// //       +  idata[1]  
+// //       +  idata[2] ) 
+// //       + ( idata[3]  
+// //       +  idata[4]  
+// //       +  idata[5] )) 
+// //       + ( idata[6]  
+// //       +  idata[7] ) ;
+// //     fun_bit_sum_8 = ocnt;
+// //   end
+// // endfunction
+
+// //: my $tp = NVDLA_CDP_THROUGHPUT;
+// //: if($tp ==8) {
+// //: print qq(
+// //:     assign both_hybrid_ele = fun_bit_sum_8({both_hybrid_flag});
+// //:     assign both_of_ele     = fun_bit_sum_8({both_of_flag});
+// //:     assign both_uf_ele     = fun_bit_sum_8({both_uf_flag});
+// //:     assign only_le_hit_ele = fun_bit_sum_8({only_le_hit});
+// //:     assign only_lo_hit_ele = fun_bit_sum_8({only_lo_hit});
+// //: );
+// //: } else {
+// //: print qq(
+// //:     assign both_hybrid_ele = fun_bit_sum_8({{(8-${tp}){1'b0}},both_hybrid_flag});
+// //:     assign both_of_ele     = fun_bit_sum_8({{(8-${tp}){1'b0}},both_of_flag});
+// //:     assign both_uf_ele     = fun_bit_sum_8({{(8-${tp}){1'b0}},both_uf_flag});
+// //:     assign only_le_hit_ele = fun_bit_sum_8({{(8-${tp}){1'b0}},only_le_hit});
+// //:     assign only_lo_hit_ele = fun_bit_sum_8({{(8-${tp}){1'b0}},only_lo_hit});
+// //: );
+// //: }
+
+// //assign both_hybrid_ele = fun_bit_sum_8({{(8-NVDLA_CDP_THROUGHPUT){1'b0}},both_hybrid_flag});
+// //assign both_of_ele     = fun_bit_sum_8({{(8-NVDLA_CDP_THROUGHPUT){1'b0}},both_of_flag});
+// //assign both_uf_ele     = fun_bit_sum_8({{(8-NVDLA_CDP_THROUGHPUT){1'b0}},both_uf_flag});
+// //assign only_le_hit_ele = fun_bit_sum_8({{(8-NVDLA_CDP_THROUGHPUT){1'b0}},only_le_hit});
+// //assign only_lo_hit_ele = fun_bit_sum_8({{(8-NVDLA_CDP_THROUGHPUT){1'b0}},only_lo_hit});
+
+//     val both_hybrid_counter = RegInit(0.U(32.W))
+//     val both_of_counter = RegInit(0.U(32.W))
+//     val both_uf_counter = RegInit(0.U(32.W))
+//     val only_le_hit_counter = RegInit(0.U(32.W))
+//     val only_lo_hit_counter = RegInit(0.U(32.W))
+//     when(layer_done){
+//         both_hybrid_counter := 0.U
+//         both_of_counter := 0.U
+//         both_uf_counter := 0.U
+//         only_le_hit_counter := 0.U
+//         only_lo_hit_counter := 0.U
+//     }.elsewhen(intp_pvld_d & intp_prdy_d){
+
+//     }
 
 
 // }}
@@ -352,4 +493,3 @@
 //     implicit val conf: cdpConfiguration = new cdpConfiguration
 //     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_intp())
 // }
-
