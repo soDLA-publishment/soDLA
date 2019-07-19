@@ -631,13 +631,9 @@ withClock(io.nvdla_core_clk){
     val lut_int_addr_trigger = RegInit(false.B) 
     lut_int_addr_trigger := reg2dp_lut_addr_trigger
 
-//assign reg2dp_lut_int_addr_trigger = lut_int_addr_trigger;
-
     val lut_int_data_rd_trigger = reg_rd_en & (Cat(0.U(20.W), reg_offset(11,0)) === "h00c".asUInt(32.W))
     val lut_int_data_wr_trigger = RegInit(false.B)
     lut_int_data_wr_trigger := reg2dp_lut_data_trigger
-
-//assign reg2dp_lut_int_data_wr = lut_int_data_wr_trigger && (lut_int_access_type==NVDLA_SDP_S_LUT_ACCESS_CFG_0_LUT_ACCESS_TYPE_WRITE);
 
     io.reg2dp_lut_int_data_wr := lut_int_data_wr_trigger
 
@@ -646,7 +642,7 @@ withClock(io.nvdla_core_clk){
     when(lut_int_addr_trigger){
         lut_int_addr := reg2dp_lut_addr
     }.elsewhen(lut_int_data_wr_trigger || lut_int_data_rd_trigger){
-        lut_int_addr := lut_int_addr + true.B
+        lut_int_addr := lut_int_addr + 1.U
     }
 
     val lut_int_access_type = RegInit(false.B)
@@ -661,9 +657,11 @@ withClock(io.nvdla_core_clk){
     }
     io.reg2dp_lut_int_table_id := lut_int_table_id
 
+    val reg2dp_lut_int_data_out = Reg(UInt(16.W))
     when(reg2dp_lut_data_trigger){
-        io.reg2dp_lut_int_data := s_reg_wr_data
+        reg2dp_lut_int_data_out := s_reg_wr_data
     }
+    io.reg2dp_lut_int_data := reg2dp_lut_int_data_out
     dp2reg_lut_data := io.dp2reg_lut_int_data
 
     val wdma_slcg_op_en = slcg_op_en(0)
