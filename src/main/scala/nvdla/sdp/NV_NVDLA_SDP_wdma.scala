@@ -57,8 +57,6 @@ val io = IO(new Bundle {
     val dla_clk_ovr_on_sync = Input(Clock())
     val global_clk_ovr_on_sync = Input(Clock())
     val tmc2slcg_disable_clock_gating = Input(Bool())
-    val erdma_slcg_op_en = Input(Bool())
-    val erdma_disable = Input(Bool())
 
 })
 
