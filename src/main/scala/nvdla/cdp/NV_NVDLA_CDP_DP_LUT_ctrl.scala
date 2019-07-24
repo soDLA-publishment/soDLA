@@ -34,17 +34,16 @@ class NV_NVDLA_CDP_DP_LUT_ctrl(implicit val conf: cdpConfiguration) extends Modu
 withClock(io.nvdla_core_clk){
 
 ////////////////////////////////////////////////////////////////////////////////////////
-    val sum2itp_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
-    
-    io.sum2itp_prdy := (sum2itp_rdy.asUInt.andR) && io.sum2sync_prdy
+    val sum2itp_rdy = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
+    io.sum2itp_prdy := ((sum2itp_rdy.andR) & io.sum2sync_prdy).asBool
 
 //////////////////////////////////////////////////////////////////////
 //from intp_ctrl input port to sync fifo for interpolation
-    io.sum2sync_pvld := io.sum2itp_pvld && (sum2itp_rdy.asUInt.andR)
+    io.sum2sync_pvld := (io.sum2itp_pvld & (sum2itp_rdy.andR)).asBool
     io.sum2sync_pd := io.sum2itp_pd
 ///////////////////////////////////////////
 // NVDLA_CDP_THROUGHPUT = 8
-    val sum2itp_vld = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+    val sum2itp_vld = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
     // for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT - 1)){
     //     for(j <- 0 to (conf.NVDLA_CDP_THROUGHPUT - 1)){
     //         sum2itp_vld(i) := io.sum2itp_pvld & io.sum2sync_prdy & 
@@ -71,8 +70,8 @@ withClock(io.nvdla_core_clk){
     val dp2lut_X_pd = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(10.W)))
     val dp2lut_Y_info = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(18.W)))
     val dp2lut_Y_pd = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(10.W)))
-    val dp2lut_vld = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
-    val dp2lut_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+    val dp2lut_vld = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
+    val dp2lut_rdy = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 
     val u_LUT_CTRL_unit = Array.fill(conf.NVDLA_CDP_THROUGHPUT){Module(new NV_NVDLA_CDP_DP_LUT_CTRL_unit)}
     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
@@ -105,7 +104,7 @@ withClock(io.nvdla_core_clk){
         io.dp2lut_Yinfo(i) := dp2lut_Y_info(i)
     }
 
-    io.dp2lut_pvld := dp2lut_vld.asUInt.andR
+    io.dp2lut_pvld := dp2lut_vld.andR
 
 // NVDLA_CDP_THROUGHPUT = 8
     // for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT - 1)){

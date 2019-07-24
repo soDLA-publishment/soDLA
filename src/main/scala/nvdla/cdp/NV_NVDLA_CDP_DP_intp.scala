@@ -1,4 +1,4 @@
-package nvdla
+// package nvdla
 
 // import chisel3._
 // import chisel3.experimental._
@@ -123,24 +123,24 @@ package nvdla
 //     val lut2ip_X_data_0_17b = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
 //     val lut2ip_X_data_1 = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(32.W)))
 //     val lut2ip_X_info = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(20.W)))
-//     val lut2ip_X_sel = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
-//     val lut2ip_Y_sel = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+//     val lut2ip_X_sel = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
+//     val lut2ip_Y_sel = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 
-//     val lut2ip_pd_data = Cat(VecInit(
-//         (0 to (conf.NVDLA_CDP_THROUGHPUT-1)) map {i => Cat(
-//                                         io.lut2ip_X_data_0(i), 
-//                                         io.lut2ip_X_data_0_17b(i), 
-//                                         io.lut2ip_X_data_1(i))}))
-
-//     val lut2ip_pd_info = Cat(io.lut2ip_X_info)
-
-//     val unpacked = lut2intp_data.asTypeOf(new MyBundle)
-//     unpacked.lut2ip_pd_data
-//     unpacked.lut2ip_pd_info
-//     unpacked.lut2ip_X_sel.asUInt
-//     unpacked.lut2ip_Y_sel.asUInt
-
-
+// // assign {
+// // //: my $k = NVDLA_CDP_THROUGHPUT;
+// // //: foreach my $m  (0..$k-1) {
+// // //:     print qq(
+// // //:         lut2ip_x_data_${m}0[31:0],lut2ip_X_data_${m}0_17b[16:0],lut2ip_X_data_${m}1[31:0],
+// // //:     );
+// // //: }
+// // //: my $k = NVDLA_CDP_THROUGHPUT;
+// // //: foreach my $m  (0..$k-1) {
+// // //:     print qq(
+// // //:         lut2ip_X_info_${m}[19:0],
+// // //:     );
+// // //: }
+// //         lut2ip_X_sel,
+// //         lut2ip_Y_sel} = lut2intp_data;                    
     
 // ///////////////////////////////////////////
 // //lock
@@ -150,9 +150,9 @@ package nvdla
 //     io.sync2itp_prdy := intp_in_prdy & lut2intp_valid
 //     val intp_in_pvld = io.sync2itp_pvld & lut2intp_valid
 // ///////////////////////////////////////////
-//     val xinterp_in_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+//     val xinterp_in_rdy = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 //     val info_in_rdy = Wire(Bool())
-//     intp_in_prdy := (xinterp_in_rdy.asUInt.andR) & info_in_rdy
+//     intp_in_prdy := (xinterp_in_rdy.andR) & info_in_rdy
 
 //     val SQBW = conf.NVDLA_CDP_ICVTO_BWPE * 2 + 3
 //     val hit_in1_pd = VecInit(
@@ -312,9 +312,9 @@ package nvdla
 //             {i => intp_in_pvld & info_in_rdy & xinterp_in_rdy(i)})
 //         )
 
-//     val xinterp_out_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+//     val xinterp_out_rdy = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 //     val xinterp_out_pd = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
-//     val xinterp_out_vld = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+//     val xinterp_out_vld = Wire(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 
 //     val u_interp_X = Array.fill(conf.NVDLA_CDP_THROUGHPUT){Module(new NV_NVDLA_CDP_DP_INTP_unit)}
 //     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
@@ -337,37 +337,38 @@ package nvdla
 //         xinterp_out_rdy(i) := intp_prdy & info_o_vld & xinterp_out_vld(i)
 //     }
 
-//     val info_o_rdy = intp_prdy & (xinterp_out_vld.asUInt.andR)
+//     val info_o_rdy = intp_prdy & (xinterp_out_vld.andR)
     
 //     ///////////////////////////////////////////////
 //     //process for normal uflow/oflow info
-//     val info_in_vld = intp_in_pvld & (xinterp_in_rdy.asUInt.andR);
+//     val info_in_vld = intp_in_pvld & (xinterp_in_rdy.andR);
 
+// // assign info_Xin_pd  = {
+// // //: my $k = NVDLA_CDP_THROUGHPUT;
+// // //: if($k > 1) {
+// // //:     foreach my $m  (0..$k-2) {
+// // //:       my $i = $k -$m - 1;
+// // //:       print qq(
+// // //:         lut2ip_X_info_${i}[17:16],
+// // //:       );
+// // //:     }
+// // //: }
+// //         lut2ip_X_info_0[17:16]};
 
-// //      NVDLA_CDP_THROUGHPUT = 8
+// // assign info_Yin_pd  = {
+// // //: my $k = NVDLA_CDP_THROUGHPUT;
+// // //: if($k > 1) {
+// // //:     foreach my $m  (0..$k-2) {
+// // //:       my $i = $k -$m - 1;
+// // //:       print qq(
+// // //:         lut2ip_X_info_${i}[19:18],
+// // //:       );
+// // //:     }
+// // //: }
+// //             lut2ip_X_info_0[19:18]};
 
-//     val info_Xin_pd = Cat(
-//         lut2ip_X_info(7)(17,16),
-//         lut2ip_X_info(6)(17,16),
-//         lut2ip_X_info(5)(17,16),
-//         lut2ip_X_info(4)(17,16),
-//         lut2ip_X_info(3)(17,16),
-//         lut2ip_X_info(2)(17,16),
-//         lut2ip_X_info(1)(17,16),
-//         lut2ip_X_info(0)(17,16)
-//     )
-
-//     val info_Yin_pd = Cat(
-//         lut2ip_Y_info(7)(19,18),
-//         lut2ip_Y_info(6)(19,18),
-//         lut2ip_Y_info(5)(19,18),
-//         lut2ip_Y_info(4)(19,18),
-//         lut2ip_Y_info(3)(19,18),
-//         lut2ip_Y_info(2)(19,18),
-//         lut2ip_Y_info(1)(19,18),
-//         lut2ip_Y_info(0)(19,18)
-//     )
-
+//     val info_Xin_pd = Wire(UInt((conf.NVDLA_CDP_THROUGHPUT*2).W))
+//     val info_Yin_pd = Wire(UInt((conf.NVDLA_CDP_THROUGHPUT*2).W))
 //     val dat_info_in = Cat(info_Xin_pd, info_Yin_pd)
 //     val info_in_pd = dat_info_in
 
@@ -381,7 +382,7 @@ package nvdla
 //                             {i => info_o_pd((conf.NVDLA_CDP_THROUGHPUT*2+i*2+1),(conf.NVDLA_CDP_THROUGHPUT*2+i*2))})
 
 // ////////////////////////////////////////////////
-//     val intp_pvld = info_o_vld & (xinterp_out_vld.asUInt.andR)
+//     val intp_pvld = info_o_vld & (xinterp_out_vld.andR)
 //     val intp_pvld_d = RegInit(false.B)
 //     val intp_prdy_d = Wire(Bool())
 //     intp_prdy = ~intp_pvld_d | intp_prdy_d
@@ -395,7 +396,7 @@ package nvdla
 
 //     val ip2mul_pvld = intp_pvld_d
 
-//     val ip2mul_pd = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U(17.W))))
+//     val ip2mul_pd = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, 0.U(17.W)))
 //     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
 //         when(intp_pvld & intp_prdy){
 //             ip2mul_pd(i) := xinterp_out_pd(i)
@@ -408,11 +409,11 @@ package nvdla
 
 //     val layer_done = io.dp2reg_done
 
-//     val both_hybrid_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-//     val both_of_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-//     val both_uf_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-//     val only_le_hit = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-//     val only_lo_hit = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
+//     val both_hybrid_flag = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val both_of_flag = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val both_uf_flag = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val only_le_hit = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
+//     val only_lo_hit = RegInit(Vec(conf.NVDLA_CDP_THROUGHPUT, false.B))
 //     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
 //         when(intp_pvld & intp_prdy){
 //             both_hybrid_flag(i) :=  (Cat(x_info(i),y_info(i)) === "b0000".asUInt(4.W)) | 
@@ -492,4 +493,3 @@ package nvdla
 //     implicit val conf: cdpConfiguration = new cdpConfiguration
 //     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_intp())
 // }
-
