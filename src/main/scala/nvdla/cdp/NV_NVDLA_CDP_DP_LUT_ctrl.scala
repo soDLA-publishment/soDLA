@@ -37,6 +37,7 @@ class NV_NVDLA_CDP_DP_LUT_ctrl(implicit val conf: cdpConfiguration) extends Modu
 
 withClock(io.nvdla_core_clk){
 
+<<<<<<< HEAD
     ////////////////////////////////////////////////////////////////////////////////////////
     val sum2itp_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
     io.sum2itp_prdy := (sum2itp_rdy.asUInt.andR) & io.sum2sync_prdy
@@ -44,16 +45,44 @@ withClock(io.nvdla_core_clk){
 //////////////////////////////////////////////////////////////////////
 //from intp_ctrl input port to sync fifo for interpolation
     io.sum2sync_pvld := io.sum2itp_pvld & (sum2itp_rdy.asUInt.andR)
+=======
+////////////////////////////////////////////////////////////////////////////////////////
+    val sum2itp_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+    
+    io.sum2itp_prdy := (sum2itp_rdy.asUInt.andR) && io.sum2sync_prdy
+
+//////////////////////////////////////////////////////////////////////
+//from intp_ctrl input port to sync fifo for interpolation
+    io.sum2sync_pvld := io.sum2itp_pvld && (sum2itp_rdy.asUInt.andR)
+>>>>>>> 430c4514aba210f9e7c2ff2bb9e32b618a1bb3f6
     io.sum2sync_pd := io.sum2itp_pd
 ///////////////////////////////////////////
 // NVDLA_CDP_THROUGHPUT = 8
     val sum2itp_vld = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
+<<<<<<< HEAD
     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT - 1)){
         for(j <- 0 to (conf.NVDLA_CDP_THROUGHPUT - 1)){
             sum2itp_vld(i) := io.sum2itp_pvld & io.sum2sync_prdy & 
                         (if(j != i) sum2itp_rdy(j) else true.B) 
         }
     }
+=======
+    // for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT - 1)){
+    //     for(j <- 0 to (conf.NVDLA_CDP_THROUGHPUT - 1)){
+    //         sum2itp_vld(i) := io.sum2itp_pvld & io.sum2sync_prdy & 
+    //                     (if(j != i) sum2itp_rdy(j) else false.B) // no good
+    //     }
+    // }
+    sum2itp_vld(0) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(1) & sum2itp_rdy(2) & sum2itp_rdy(3) & sum2itp_rdy(4) & sum2itp_rdy(5) & sum2itp_rdy(6) & sum2itp_rdy(7)
+    sum2itp_vld(1) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(0) & sum2itp_rdy(2) & sum2itp_rdy(3) & sum2itp_rdy(4) & sum2itp_rdy(5) & sum2itp_rdy(6) & sum2itp_rdy(7)
+    sum2itp_vld(2) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(0) & sum2itp_rdy(1) & sum2itp_rdy(3) & sum2itp_rdy(4) & sum2itp_rdy(5) & sum2itp_rdy(6) & sum2itp_rdy(7)
+    sum2itp_vld(3) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(0) & sum2itp_rdy(1) & sum2itp_rdy(2) & sum2itp_rdy(4) & sum2itp_rdy(5) & sum2itp_rdy(6) & sum2itp_rdy(7)
+    sum2itp_vld(4) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(0) & sum2itp_rdy(1) & sum2itp_rdy(2) & sum2itp_rdy(3) & sum2itp_rdy(5) & sum2itp_rdy(6) & sum2itp_rdy(7)
+    sum2itp_vld(5) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(0) & sum2itp_rdy(1) & sum2itp_rdy(2) & sum2itp_rdy(3) & sum2itp_rdy(4) & sum2itp_rdy(6) & sum2itp_rdy(7)
+    sum2itp_vld(6) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(0) & sum2itp_rdy(1) & sum2itp_rdy(2) & sum2itp_rdy(3) & sum2itp_rdy(4) & sum2itp_rdy(5) & sum2itp_rdy(7)
+    sum2itp_vld(7) := io.sum2itp_pvld & io.sum2sync_prdy & sum2itp_rdy(0) & sum2itp_rdy(1) & sum2itp_rdy(2) & sum2itp_rdy(3) & sum2itp_rdy(4) & sum2itp_rdy(5) & sum2itp_rdy(6)
+
+>>>>>>> 430c4514aba210f9e7c2ff2bb9e32b618a1bb3f6
 
     // val SQSUMO = conf.NVDLA_CDP_ICVTO_BWPE * 2 - 1 + 4
     val sum2itp_a_pd = VecInit(
