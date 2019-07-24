@@ -244,7 +244,7 @@ withClock(io.nvdla_core_clk){
     }
 
     val dat_info_d = RegInit(0.U(17.W))
-    when(load_int_stage1){
+    when(load_int_stage1 === true.B){
         dat_info_d := dat_info
     }
     val dat_info_index_sub = Cat((dat_info_d(16) | int_X_index_uflow_msb), dat_info_d(15,0))
@@ -357,7 +357,7 @@ withClock(io.nvdla_core_clk){
     )
     
     val y_dec_offset_msb = RegInit(0.U((pPP_BW+2).W))
-    val int_Y_input_uflow_msb = RegInit(false.B)
+    val int_Y_input_uflow_msb = false.B
 
     when(load_din_intY){
         when(y_less_than_win_s){
