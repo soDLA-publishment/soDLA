@@ -13,5 +13,6 @@ class cdpConfiguration extends pdpConfiguration
 
     val LARGE_FIFO_RAM = true
     val SMALL_FIFO_RAM = false
+    
 
 }
