@@ -55,6 +55,7 @@ withClock(io.nvdla_core_clk){
     val int8_sum_3_5 = RegInit(0.U((pINT8_BW*2).W))
     val sq_pd_int8_4_d = RegInit(0.U((pINT8_BW*2-1).W))
 
+
     when(io.load_din_d) {
         int8_sum_3_5 := io.sq_pd_int8(3) +& io.sq_pd_int8(5)
         sq_pd_int8_4_d := io.sq_pd_int8(4)
@@ -97,6 +98,7 @@ withClock(io.nvdla_core_clk){
         )
     )
 }}
+
 
 object int_sum_block_tp1Driver extends App {
     implicit val conf: cdpConfiguration = new cdpConfiguration  
