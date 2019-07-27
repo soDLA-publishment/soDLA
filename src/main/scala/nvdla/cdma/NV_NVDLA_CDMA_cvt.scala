@@ -244,22 +244,22 @@ val u_cell = Array.fill(conf.BNUM){Module(new NV_NVDLA_CDMA_CVT_cell)}
 for(i <- 0 to conf.BNUM-1){
     u_cell(i).io.nvdla_core_clk := io.nvdla_hls_clk
 
-    u_cell(i).io.chn_data_in_rsc_z := oprand_0_d0(i).asSInt
+    u_cell(i).io.chn_data_in_rsc_z := oprand_0_d0(i)
     u_cell(i).io.chn_data_in_rsc_vz := cell_en_d0(i)
     mon_cell_op0_ready(i) := u_cell(i).io.chn_data_in_rsc_lz 
 
-    u_cell(i).io.chn_alu_in_rsc_z := oprand_1_d0(i).asSInt
+    u_cell(i).io.chn_alu_in_rsc_z := oprand_1_d0(i)
     u_cell(i).io.chn_alu_in_rsc_vz := cell_en_d0(i)
     mon_cell_op1_ready(i) := u_cell(i).io.chn_alu_in_rsc_lz
 
-    u_cell(i).io.cfg_mul_in_rsc_z := cfg_scale.asSInt
+    u_cell(i).io.cfg_mul_in_rsc_z := cfg_scale
     u_cell(i).io.cfg_in_precision := cfg_in_precision
     u_cell(i).io.cfg_out_precision := cfg_proc_precision
     u_cell(i).io.cfg_truncate := cfg_truncate
 
     u_cell(i).io.chn_data_out_rsc_vz := true.B
 
-    cellout(i) := u_cell(i).io.chn_data_out_rsc_z.asUInt
+    cellout(i) := u_cell(i).io.chn_data_out_rsc_z
 }
 
 val cvt_data_cell = VecInit((0 to conf.BNUM-1) map { i => cellout(i)(conf.NVDLA_BPE-1, 0)}).asUInt

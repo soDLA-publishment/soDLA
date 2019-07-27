@@ -21,7 +21,7 @@ My Progress
 | glb | Done | Not yet | Not yet |
 | csb_master | Done | Not yet | Not yet |
 | cdma| Done | Not yet | Not yet |
-| cora(self-driving package) | To be published in May | Not yet | Not yet |
+| cora(self-driving package) | Not yet | Not yet | Not yet |
 
 Generate Verilog Modules
 ----------------

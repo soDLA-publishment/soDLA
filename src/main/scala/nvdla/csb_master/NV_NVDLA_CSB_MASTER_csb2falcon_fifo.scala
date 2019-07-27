@@ -153,7 +153,7 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfigurat
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
     
-    val ram = Module(new NV_NVDLA_CSB_MASTER_csb2falcon_fifo_flopram_rwa_2x34)
+    val ram = Module(new nv_flopram_internal_wr_reg(2, 34))
     ram.io.clk := wr_clk_dft_mgated
     ram.io.clk_mgated := wr_clk_wr_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -352,38 +352,6 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: csbMasterConfigurat
     
     wr_limit_muxed := "b0".asUInt(2.W)
 }
-
-class NV_NVDLA_CSB_MASTER_csb2falcon_fifo_flopram_rwa_2x34 extends Module{
-  val io = IO(new Bundle{
-        val clk = Input(Clock())
-        val clk_mgated = Input(Clock())
-
-        val di = Input(UInt(34.W))
-        val iwe = Input(Bool())
-        val we = Input(Bool())
-        val wa = Input(UInt(1.W))
-        val ra = Input(UInt(1.W))
-        val dout = Output(UInt(34.W))
-
-        val pwrbus_ram_pd = Input(UInt(32.W))
-
-  })  
-withClock(io.clk){
-    val di_d = Reg(UInt(34.W))
-    when(io.iwe){
-        di_d := io.di
-    }
-    val ram_ff = withClock(io.clk_mgated){Reg(Vec(2, UInt(34.W)))} 
-    when(io.we){
-        for(i <- 0 to 1){
-            when(io.wa === i.U){
-                ram_ff(i) := di_d
-            }
-        }
-    }    
-    io.dout := MuxLookup(io.ra, "b0".asUInt(34.W), 
-        (0 to 1) map { i => i.U -> ram_ff(i)})
-}}
 
 
 

@@ -56,7 +56,13 @@
 //     //////////////////////////////
 //     val load_din = Wire(Bool())
 //     val sdp2pdp_c_end = Wire(Bool())
+//     val sdp2pdp_line_end = Wire(Bool())
+//     val sdp2pdp_surf_end = Wire(Bool())
+//     val sdp2pdp_cube_end = Wire(Bool())
 //     val sdp2pdp_c_cnt = RegInit("b0".asUInt(5.W))
+//     val sdp2pdp_width_cnt = RegInit("b0".asUInt(13.W))
+//     val sdp2pdp_height_cnt = RegInit("b0".asUInt(13.W))
+//     val sdp2pdp_surf_cnt = RegInit("b0".asUInt((13-conf.ATMMBW).W))
     
 //     when(load_din){
 //        when(sdp2pdp_c_end){
@@ -67,11 +73,6 @@
 //        }
 //     }
 
-//     sdp2pdp_c_end := (load_din & (sdp2pdp_c_cnt === (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.SDP_THROUGHPUT-1).U))
-
-//     val sdp2pdp_line_end = Wire(Bool())
-//     val sdp2pdp_width_cnt = RegInit("b0".asUInt(13.W))
-
 //     when(sdp2pdp_c_end){
 //         when(sdp2pdp_line_end){
 //             sdp2pdp_width_cnt := "b0".asUInt(13.W)
@@ -80,11 +81,6 @@
 //             sdp2pdp_width_cnt := sdp2pdp_width_cnt + 1.U
 //         }
 //     }
-
-//     sdp2pdp_line_end := sdp2pdp_c_end & (sdp2pdp_width_cnt === io.reg2dp_cube_in_width(12, 0))
-
-//     val sdp2pdp_surf_end = Wire(Bool())
-//     val sdp2pdp_height_cnt = RegInit("b0".asUInt(13.W))
 
 //     when(sdp2pdp_line_end){
 //         when(sdp2pdp_surf_end){
@@ -95,11 +91,6 @@
 //         }
 //     }
 
-//     sdp2pdp_surf_end := sdp2pdp_line_end & (sdp2pdp_height_cnt === io.reg2dp_cube_in_height(12, 0))
-
-//     val sdp2pdp_cube_end = Wire(Bool())
-//     val sdp2pdp_surf_cnt = RegInit("b0".asUInt((13-conf.ATMMBW).W))
-
 //     when(sdp2pdp_surf_end){
 //         when(sdp2pdp_cube_end){
 //             sdp2pdp_surf_cnt := 0.U
@@ -109,6 +100,9 @@
 //         }
 //     }
 
+//     sdp2pdp_c_end := (load_din & (sdp2pdp_c_cnt === (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.SDP_THROUGHPUT-1).U))
+//     sdp2pdp_line_end := sdp2pdp_c_end & (sdp2pdp_width_cnt === io.reg2dp_cube_in_width(12, 0))
+//     sdp2pdp_surf_end := sdp2pdp_line_end & (sdp2pdp_height_cnt === io.reg2dp_cube_in_height(12, 0))
 //     sdp2pdp_cube_end := sdp2pdp_surf_end & (sdp2pdp_height_cnt === io.reg2dp_cube_in_channel(12, conf.ATMMBW))
 
 //     //////////////////////////////////////////////////////////////////////
@@ -142,10 +136,10 @@
 //     val is_pipe0 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_PDP_ONFLY_INPUT_BW + 1)}
 //     is_pipe0.io.clk := io.nvdla_core_clk
 //     is_pipe0.io.vi := io.sdp2pdp_valid
-//     is_pipe0.io.ri := sdp2pdp_ready_use
+//     val sdp2pdp_ready_f = is_pipe0.io.ro
 //     is_pipe0.io.di := pipe0_i
 //     val sdp2pdp_valid_use_f = is_pipe0.io.vo
-//     val sdp2pdp_ready_f = is_pipe0.io.ro
+//     is_pipe0.io.ri := sdp2pdp_ready_use
 //     val pipe0_o = is_pipe0.io.dout
 
 //     val sdp2pdp_pd_use = pipe0_o(conf.NVDLA_PDP_ONFLY_INPUT_BW, 1)

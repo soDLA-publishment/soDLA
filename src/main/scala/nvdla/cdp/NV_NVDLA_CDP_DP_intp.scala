@@ -1,4 +1,4 @@
-package nvdla
+// package nvdla
 
 // import chisel3._
 // import chisel3.experimental._
@@ -7,16 +7,25 @@ package nvdla
 // class NV_NVDLA_CDP_DP_intp(implicit val conf: cdpConfiguration) extends Module {
 //     val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
-//         val dp2reg_done = Input(Bool())
+//         val pwrbus_ram_pd = Input(UInt(32.W))
+
+//         val intp2mul_pvld = Output(Bool())
 //         val intp2mul_prdy = Input(Bool())
+//         val intp2mul_pd = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
+
+//         val lut2intp_pvld = Input(Bool())
+//         val lut2intp_prdy = Output(Bool())
 //         val lut2intp_X_data_0 = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(32.W)))
 //         val lut2intp_X_data_0_17b = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
 //         val lut2intp_X_data_1 = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(32.W)))
 //         val lut2intp_X_info = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(20.W)))
 //         val lut2intp_X_sel = Input(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
 //         val lut2intp_Y_sel = Input(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
-//         val lut2intp_pvld = Input(Bool())
-//         val pwrbus_ram_pd = Input(UInt(32.W))
+
+//         val sync2itp_pvld = Input(Bool())
+//         val sync2itp_prdy = Output(Bool())
+//         val sync2itp_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE*2+3)).W))
+        
 //         val reg2dp_lut_le_end_high = Input(UInt(6.W))
 //         val reg2dp_lut_le_end_low = Input(UInt(32.W))
 //         val reg2dp_lut_le_function = Input(Bool())
@@ -36,8 +45,7 @@ package nvdla
 //         val reg2dp_lut_lo_start_high = Input(UInt(6.W))
 //         val reg2dp_lut_lo_start_low = Input(UInt(32.W))
 //         val reg2dp_sqsum_bypass = Input(Bool())
-//         val sync2itp_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE*2+3)).W))
-//         val sync2itp_pvld = Input(Bool())
+
 //         val dp2reg_d0_perf_lut_hybrid = Output(UInt(32.W))
 //         val dp2reg_d0_perf_lut_le_hit = Output(UInt(32.W))
 //         val dp2reg_d0_perf_lut_lo_hit = Output(UInt(32.W))
@@ -48,65 +56,46 @@ package nvdla
 //         val dp2reg_d1_perf_lut_lo_hit = Output(UInt(32.W))
 //         val dp2reg_d1_perf_lut_oflow = Output(UInt(32.W))
 //         val dp2reg_d1_perf_lut_uflow = Output(UInt(32.W))
-//         val intp2mul_pd = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
-//         val intp2mul_pvld = Output(Bool())
-//         val lut2intp_prdy = Output(Bool())
-//         val sync2itp_prdy = Output(Bool())
 
-
+//         val dp2reg_done = Input(Bool())
 //     })
 
 // withClock(io.nvdla_core_clk){
-
+//     ///////////////////////////////////////////
 //     val x_exp = RegInit(false.B)
-//     x_exp := (io.reg2dp_lut_le_function === 0.U)
-
 //     val sqsum_bypass_enable = RegInit(false.B)
-//     sqsum_bypass_enable := (io.reg2dp_sqsum_bypass === 1.U)
-
 //     val reg2dp_lut_le_slope_uflow_shift_sync = RegInit(0.U(5.W))
-//     reg2dp_lut_le_slope_uflow_shift_sync := io.reg2dp_lut_le_slope_uflow_shift
-
 //     val reg2dp_lut_le_slope_oflow_shift_sync = RegInit(0.U(5.W))
-//     reg2dp_lut_le_slope_oflow_shift_sync := io.reg2dp_lut_le_slope_oflow_shift
-
 //     val reg2dp_lut_lo_slope_uflow_shift_sync = RegInit(0.U(5.W))
-//     reg2dp_lut_lo_slope_uflow_shift_sync := io.reg2dp_lut_lo_slope_uflow_shift
-
 //     val reg2dp_lut_lo_slope_oflow_shift_sync = RegInit(0.U(5.W))
-//     reg2dp_lut_lo_slope_oflow_shift_sync := io.reg2dp_lut_lo_slope_oflow_shift
-
 //     val reg2dp_lut_le_slope_uflow_scale_sync = RegInit(0.U(16.W))
-//     reg2dp_lut_le_slope_uflow_scale_sync := io.reg2dp_lut_le_slope_uflow_scale
-
 //     val reg2dp_lut_le_slope_oflow_scale_sync = RegInit(0.U(16.W))
-//     reg2dp_lut_le_slope_oflow_scale_sync := io.reg2dp_lut_le_slope_oflow_scale
-
 //     val reg2dp_lut_lo_slope_uflow_scale_sync = RegInit(0.U(16.W))
-//     reg2dp_lut_lo_slope_uflow_scale_sync := io.reg2dp_lut_lo_slope_uflow_scale
-
 //     val reg2dp_lut_lo_slope_oflow_scale_sync = RegInit(0.U(16.W))
-//     reg2dp_lut_lo_slope_oflow_scale_sync := io.reg2dp_lut_lo_slope_oflow_scale
 
+//     x_exp := (io.reg2dp_lut_le_function === 0.U)
+//     sqsum_bypass_enable := (io.reg2dp_sqsum_bypass === 1.U)
+//     reg2dp_lut_le_slope_uflow_shift_sync := io.reg2dp_lut_le_slope_uflow_shift
+//     reg2dp_lut_le_slope_oflow_shift_sync := io.reg2dp_lut_le_slope_oflow_shift
+//     reg2dp_lut_lo_slope_uflow_shift_sync := io.reg2dp_lut_lo_slope_uflow_shift
+//     reg2dp_lut_lo_slope_oflow_shift_sync := io.reg2dp_lut_lo_slope_oflow_shift
+//     reg2dp_lut_le_slope_uflow_scale_sync := io.reg2dp_lut_le_slope_uflow_scale
+//     reg2dp_lut_le_slope_oflow_scale_sync := io.reg2dp_lut_le_slope_oflow_scale
+//     reg2dp_lut_lo_slope_uflow_scale_sync := io.reg2dp_lut_lo_slope_uflow_scale
+//     reg2dp_lut_lo_slope_oflow_scale_sync := io.reg2dp_lut_lo_slope_oflow_scale
+//     ///////////////////////////////////////////
 //     val le_slope_uflow_scale = Cat(reg2dp_lut_le_slope_uflow_scale_sync(15), reg2dp_lut_le_slope_uflow_scale_sync(15,0))
 //     val le_slope_oflow_scale = Cat(reg2dp_lut_le_slope_oflow_scale_sync(15), reg2dp_lut_le_slope_oflow_scale_sync(15,0))
 //     val lo_slope_uflow_scale = Cat(reg2dp_lut_lo_slope_uflow_scale_sync(15), reg2dp_lut_lo_slope_uflow_scale_sync(15,0))
 //     val lo_slope_oflow_scale = Cat(reg2dp_lut_lo_slope_oflow_scale_sync(15), reg2dp_lut_lo_slope_oflow_scale_sync(15,0))
 
-//     val lut2intp_pd_data = Cat(VecInit(
-//         (0 to (conf.NVDLA_CDP_THROUGHPUT-1)) map {i => Cat(
-//                                         io.lut2intp_X_data_0(i), 
-//                                         io.lut2intp_X_data_0_17b(i), 
-//                                         io.lut2intp_X_data_1(i))}))
+//     ///////////////////////////////////////////
+//     //lut2intp pipe sync for timing
 
-//     val lut2intp_pd_info = Cat(io.lut2intp_X_info)
-
-//     val lut2intp_pd = Cat(
-//                         lut2intp_pd_data,
-//                         lut2intp_pd_info,
-//                         io.lut2intp_X_sel, 
-//                         io.lut2intp_Y_sel
-//                         )
+//     val lut2intp_pd_data = VecInit((0 to (conf.NVDLA_CDP_THROUGHPUT-1)) 
+//     map {i => Cat(io.lut2intp_X_data_0(i), io.lut2intp_X_data_0_17b(i), io.lut2intp_X_data_1(i))}).asUInt
+//     val lut2intp_pd_info = io.lut2intp_X_info.asUInt
+//     val lut2intp_pd = Cat(lut2intp_pd_data, lut2intp_pd_info, io.lut2intp_X_sel, io.lut2intp_Y_sel)
 
 //     val lut2intp_ready = Wire(Bool())
 //     val pipe = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_CDP_THROUGHPUT*103))
@@ -118,19 +107,15 @@ package nvdla
 //     pipe.io.ri := lut2intp_ready
 //     val lut2intp_data = pipe.io.dout
 
-
 //     val lut2ip_X_data_0 = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(32.W)))
 //     val lut2ip_X_data_0_17b = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
 //     val lut2ip_X_data_1 = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(32.W)))
 //     val lut2ip_X_info = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(20.W)))
-//     val lut2ip_X_sel = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
-//     val lut2ip_Y_sel = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
 
-//     val lut2ip_pd_data = Cat(VecInit(
-//         (0 to (conf.NVDLA_CDP_THROUGHPUT-1)) map {i => Cat(
-//                                         io.lut2ip_X_data_0(i), 
-//                                         io.lut2ip_X_data_0_17b(i), 
-//                                         io.lut2ip_X_data_1(i))}))
+//     val lut2ip_X_info = VecInit((0 to (conf.NVDLA_CDP_THROUGHPUT-1)) 
+//     map {i => Cat(io.lut2intp_X_data_0(i), io.lut2intp_X_data_0_17b(i), io.lut2intp_X_data_1(i))})
+//     val lut2ip_X_sel = lut2intp_data(2*conf.NVDLA_CDP_THROUGHPUT-1, conf.NVDLA_CDP_THROUGHPUT)
+//     val lut2ip_Y_sel = lut2intp_data(conf.NVDLA_CDP_THROUGHPUT-1, 0)
 
 //     val lut2ip_pd_info = Cat(io.lut2ip_X_info)
 
@@ -142,9 +127,9 @@ package nvdla
 
 
     
-// ///////////////////////////////////////////
-// //lock
-// //from lut2int and sync2itp to intp_in
+//     ///////////////////////////////////////////
+//     //lock
+//     //from lut2int and sync2itp to intp_in
 //     val intp_in_prdy = Wire(Bool())
 //     lut2intp_ready := intp_in_prdy & io.sync2itp_pvld
 //     io.sync2itp_prdy := intp_in_prdy & lut2intp_valid

@@ -5,17 +5,22 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_CDMA_DC_fifo extends Module {
+//NV_NVDLA_CDMA_IMG_fifo
+//NV_NVDLA_CDMA_DC_fifo
+//NV_NVDLA_CDMA_WT_fifo
+
+class NV_NVDLA_CDMA_fifo(depth: Int = 128, width: Int = 6) extends Module {
     val io = IO(new Bundle {
         //clk
         val clk = Input(Clock())
 
-        val wr_ready = Output(Bool())
         val wr_req = Input(Bool())
-        val wr_data = Input(UInt(6.W))
+        val wr_ready = Output(Bool())
+        val wr_data = Input(UInt(width.W))
+
         val rd_ready = Input(Bool())
         val rd_req = Output(Bool())
-        val rd_data = Output(UInt(6.W))
+        val rd_data = Output(UInt(width.W))
 
         val pwrbus_ram_pd = Input(UInt(32.W))
     })
@@ -63,7 +68,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     ////////////////////////////////////////////////////////////////////////
     val wr_reserving = Wire(Bool())
     val wr_req_in = RegInit(false.B)    // registered wr_req
-    val wr_data_in = Reg(UInt(6.W))     // registered wr_data
+    val wr_data_in = Reg(UInt(width.W))     // registered wr_data
     val wr_busy_in = RegInit(false.B)   // inputs being held this cycle?
     io.wr_ready := !wr_busy_in
     val wr_busy_next = Wire(Bool())     // fwd: fifo busy next?
@@ -86,16 +91,16 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     wr_reserving := wr_req_in && !wr_busy_int   // reserving write space?
 
     val wr_popping = withClock(clk_mgated){RegInit(false.B)}       // fwd: write side sees pop?
-    val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(8.W))} // write-side count
+    val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))} // write-side count
     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, wr_count-1.U)
     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count+1.U, wr_count)
     val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
 
-    val wr_count_next_no_wr_popping_is_128 = (wr_count_next_no_wr_popping === 128.U)
-    val wr_count_next_is_128 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_128)
-    val wr_limit_muxed = Wire(UInt(8.W))    // muxed with simulation/emulation overrides
+    val wr_count_next_no_wr_popping_is_full = (wr_count_next_no_wr_popping === depth.U)
+    val wr_count_next_is_full = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_full)
+    val wr_limit_muxed = Wire(UInt(log2Ceil(depth+1).W))    // muxed with simulation/emulation overrides
     val wr_limit_reg = wr_limit_muxed
-    wr_busy_next := wr_count_next_is_128 ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
+    wr_busy_next := wr_count_next_is_full ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
     wr_busy_in_int := wr_req_in && wr_busy_int
 
     wr_busy_int := wr_busy_next
@@ -109,19 +114,19 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     // RAM
     //  
 
-    val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(7.W))}   // current write address
+    val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}   // current write address
     val rd_enable = Wire(Bool())
     val ore = Wire(Bool())
 
     val rd_popping = Wire(Bool())  // read side doing pop this cycle?
-    val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(7.W))}   // current read address
+    val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}   // current read address
     // next    read address
     val rd_adr_next = rd_adr + 1.U 
 
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
-    val ram = Module(new nv_ram_rwsp(128, 6))
+    val ram = Module(new nv_ram_rwsp(depth, width))
     ram.io.clk := io.clk
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     ram.io.wa := wr_adr
@@ -155,7 +160,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
     io.rd_req := rd_req_int
     rd_popping := rd_req_p && !(rd_req_int && !io.rd_ready)
 
-    val rd_count_p = withClock(clk_mgated){RegInit("b0".asUInt(8.W))} //read-side fifo count
+    val rd_count_p = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))} //read-side fifo count
     val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p-1.U)
     val rd_count_p_next_no_rd_popping = Mux(rd_pushing, rd_count_p + 1.U, rd_count_p)
     val rd_count_p_next = Mux(rd_popping, rd_count_p_next_rd_popping, rd_count_p_next_no_rd_popping)
@@ -183,16 +188,7 @@ class NV_NVDLA_CDMA_DC_fifo extends Module {
                          (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
                          (rd_pushing || rd_popping || (rd_req_int && io.rd_ready)) || (wr_pushing))
 
-    wr_limit_muxed := "d0".asUInt(8.W)
+    wr_limit_muxed := "d0".asUInt(log2Ceil(depth+1).W)
 
     
 }}
-
-
-
-
-
-    
-object NV_NVDLA_CDMA_DC_fifoDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_DC_fifo())
-}

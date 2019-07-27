@@ -75,7 +75,7 @@ withClock(io.nvdla_core_clk){
     val lat_ecc_rd_accept = lat_ecc_rd_pvld & lat_ecc_rd_prdy  
     // val lat_ecc_rd_data(conf.NVDLA_MEMIF_WIDTH - 1, 0) = lat_ecc_rd_pd(conf.NVDLA_MEMIF_WIDTH - 1, 0)    
     val lat_ecc_rd_mask = Cat(0.U((4 - conf.NVDLA_DMA_MASK_BIT).W), lat_ecc_rd_pd(conf.NVDLA_DMA_RD_RSP-1, conf.NVDLA_MEMIF_WIDTH))
-    val lat_ecc_rd_size = lat_ecc_rd_mask(3) + lat_ecc_rd_mask(2) + lat_ecc_rd_mask(1) + lat_ecc_rd_mask(0)
+    val lat_ecc_rd_size = lat_ecc_rd_mask(3) +& lat_ecc_rd_mask(2) +& lat_ecc_rd_mask(1) +& lat_ecc_rd_mask(0)
 
     //========command for pfifo wr ====================
     val is_last_beat = Wire(Bool())
@@ -147,17 +147,16 @@ withClock(io.nvdla_core_clk){
                             pfifo_wr_mask(1) & !pfifo_wr_prdy(1) | 
                             pfifo_wr_mask(2) & !pfifo_wr_prdy(3) )
     
-    val u_pfifo =  Array.fill(4){Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_MRDMA_LATENCY_FIFO_DEPTH.toInt, conf.AM_DW))}
+    val u_pfifo =  Array.fill(4){Module(new NV_NVDLA_IS_pipe(conf.AM_DW))}
     for(i <- 0 to 3){
         u_pfifo(i).io.clk := io.nvdla_core_clk
-        u_pfifo(i).io.pwrbus_ram_pd := io.pwrbus_ram_pd
-        pfifo_wr_prdy(i) := u_pfifo(i).io.wr_rdy
-        u_pfifo(i).io.wr_vld := pfifo_wr_pvld(i)
-        u_pfifo(i).io.wr_data := pfifo_wr_pd(i)
+        u_pfifo(i).io.vi := pfifo_wr_pvld(i)
+        pfifo_wr_prdy(i) := u_pfifo(i).io.ro
+        u_pfifo(i).io.di := pfifo_wr_pd(i)
 
-        u_pfifo(i).io.rd_rdy := io.pfifo_rd_prdy(i)
-        io.pfifo_rd_pvld(i) := u_pfifo(i).io.rd_vld
-        io.pfifo_rd_pd(i) := u_pfifo(i).io.rd_data
+        io.pfifo_rd_pvld(i) := u_pfifo(i).io.vo
+        u_pfifo(i).io.ri := io.pfifo_rd_prdy(i)
+        io.pfifo_rd_pd(i) := u_pfifo(i).io.dout
     }
 }}
 

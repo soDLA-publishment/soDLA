@@ -45,6 +45,7 @@ class NV_NVDLA_CDP_RDMA_REG_single extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+withClock(io.nvdla_core_clk){
 // ///// Address decode
     val nvdla_cdp_rdma_s_pointer_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
     val nvdla_cdp_rdma_s_status_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
@@ -67,5 +68,5 @@ class NV_NVDLA_CDP_RDMA_REG_single extends Module {
         
     io.producer := producer_out
     
-}
+}}
 

@@ -42,9 +42,9 @@ val io = IO(new Bundle {
     val reg2dp_erdma_data_use = Input(UInt(2.W))  
     val reg2dp_erdma_ram_type = Input(Bool())  
     val reg2dp_ew_base_addr_high = Input(UInt(32.W))  
-    val reg2dp_ew_base_addr_low = Input(UInt((32-conf.AM_DW).W))  
-    val reg2dp_ew_line_stride = Input(UInt((32-conf.AM_DW).W))   
-    val reg2dp_ew_surface_stride = Input(UInt((32-conf.AM_DW).W))
+    val reg2dp_ew_base_addr_low = Input(UInt((32-conf.AM_AW).W))  
+    val reg2dp_ew_line_stride = Input(UInt((32-conf.AM_AW).W))   
+    val reg2dp_ew_surface_stride = Input(UInt((32-conf.AM_AW).W))
     val reg2dp_batch_number = Input(UInt(5.W))  
     val reg2dp_channel = Input(UInt(13.W))  
     val reg2dp_height = Input(UInt(13.W))  
@@ -60,7 +60,7 @@ val io = IO(new Bundle {
 
     val dla_clk_ovr_on_sync = Input(Clock())
     val global_clk_ovr_on_sync = Input(Clock())
-    val tmc2slcg_disable_clock_gating = Input(Clock())
+    val tmc2slcg_disable_clock_gating = Input(Bool())
     val erdma_slcg_op_en = Input(Bool())
     val erdma_disable = Input(Bool())
 
@@ -114,7 +114,7 @@ withClock(io.nvdla_core_clk){
     val ig2cq_prdy = Wire(Bool())
     val dma_rd_req_rdy = Wire(Bool())
 
-    val u_ig = Module(new NV_NVDLA_SDP_ig)
+    val u_ig = Module(new NV_NVDLA_SDP_RDMA_ig)
     u_ig.io.nvdla_core_clk := nvdla_gated_clk
     u_ig.io.op_load := op_load
     val ig2cq_pd = u_ig.io.ig2cq_pd
@@ -140,7 +140,7 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_erdma_stall := u_ig.io.dp2reg_rdma_stall
 
     val cq2eg_prdy = Wire(Bool())
-    val u_cq = Module(new NV_NVDLA_SDP_RDMA_fifo(conf.NVDLA_VMOD_SDP_ERDMA_LATENCY_FIFO_DEPTH, 16))
+    val u_cq = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_ERDMA_LATENCY_FIFO_DEPTH, 16))
     u_cq.io.clk := nvdla_gated_clk
     u_cq.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     ig2cq_prdy := u_cq.io.wr_rdy
@@ -183,7 +183,7 @@ withClock(io.nvdla_core_clk){
 
     val dma_rd_rsp_vld = Wire(Bool())
     val dma_rd_rsp_pd = Wire(UInt(conf.NVDLA_DMA_RD_RSP.W))
-    val u_lat_fifo = Module(new NV_NVDLA_SDP_RDMA_fifo(conf.NVDLA_VMOD_SDP_ERDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
+    val u_lat_fifo = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_ERDMA_LATENCY_FIFO_DEPTH, conf.NVDLA_DMA_RD_RSP))
     u_lat_fifo.io.clk := nvdla_gated_clk
     u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     val dma_rd_rsp_rdy = u_lat_fifo.io.wr_rdy

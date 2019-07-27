@@ -1,120 +1,106 @@
-// package nvdla
+package nvdla
+
+import chisel3._
+import chisel3.util._
+import chisel3.experimental._
+
+class int_sum_block_tp1(implicit val conf: cdpConfiguration) extends Module {
+    val pINT8_BW = 9
+    val io = IO(new Bundle {
+        //nvdla core clock
+        val nvdla_core_clk = Input(Clock())
+
+        //control signal
+        val int8_en = Input(Bool())
+        val len5 = Input(Bool())
+        val len7 = Input(Bool())
+        val len9 = Input(Bool())
+        val load_din_d = Input(Bool())
+        val load_din_2d = Input(Bool())
+        val reg2dp_normalz_len = Input(UInt(2.W))
+
+        //sq_pd as a input
+        val sq_pd_int8 = Input(Vec(9, UInt((2*pINT8_BW-1).W)))
+
+        //output signal
+        val int8_sum = Output(UInt((2*pINT8_BW+3).W))
+    })
+    //     
+    //          ┌─┐       ┌─┐
+    //       ┌──┘ ┴───────┘ ┴──┐
+    //       │                 │
+    //       │       ───       │
+    //       │  ─┬┘       └┬─  │
+    //       │                 │
+    //       │       ─┴─       │
+    //       │                 │
+    //       └───┐         ┌───┘
+    //           │         │
+    //           │         │
+    //           │         │
+    //           │         └──────────────┐
+    //           │                        │
+    //           │                        ├─┐
+    //           │                        ┌─┘    
+    //           │                        │
+    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+    //             │ ─┤ ─┤       │ ─┤ ─┤         
+    //             └──┴──┘       └──┴──┘ 
+withClock(io.nvdla_core_clk){
+    //load_din_d 1st cycle
+    //add from double sides
+    val int8_sum_0_8 = RegInit(0.U((pINT8_BW*2).W))
+    val int8_sum_1_7 = RegInit(0.U((pINT8_BW*2).W))
+    val int8_sum_2_6 = RegInit(0.U((pINT8_BW*2).W))
+    val int8_sum_3_5 = RegInit(0.U((pINT8_BW*2).W))
+    val sq_pd_int8_4_d = RegInit(0.U((pINT8_BW*2-1).W))
 
 
-// import chisel3._
-// import chisel3.util._
-// import chisel3.experimental._
-// //https://github.com/freechipsproject/chisel3/wiki/Multiple-Clock-Domains
+    when(io.load_din_d) {
+        int8_sum_3_5 := io.sq_pd_int8(3) +& io.sq_pd_int8(5)
+        sq_pd_int8_4_d := io.sq_pd_int8(4)
+        when(io.len9){
+            int8_sum_0_8 := io.sq_pd_int8(0) +& io.sq_pd_int8(8)
+        }
+        when(io.len7|io.len9){
+            int8_sum_1_7 := io.sq_pd_int8(1) +& io.sq_pd_int8(7)
+        }
+        when(io.len5|io.len7|io.len9){
+            int8_sum_2_6 := io.sq_pd_int8(2) +& io.sq_pd_int8(6)
+        }
+    }
+
+    //2nd cycle
+    val int8_sum3 = RegInit(0.U((pINT8_BW*2+1).W))
+    val int8_sum5 = RegInit(0.U((pINT8_BW*2+2).W))
+    val int8_sum7 = RegInit(0.U((pINT8_BW*2+2).W))
+    val int8_sum9 = RegInit(0.U((pINT8_BW*2+3).W))
+
+    //load_din_2d
+    when(io.load_din_2d){
+        int8_sum3 := int8_sum_3_5  +& Cat("b0".U, sq_pd_int8_4_d)
+        when(io.len5|io.len7|io.len9){
+            int8_sum5 := (int8_sum_3_5  +& Cat("b0".U, sq_pd_int8_4_d)) +& Cat("b0".U, int8_sum_2_6)
+        }
+        when(io.len7|io.len9){
+            int8_sum7 := (int8_sum_3_5  +& Cat("b0".U, sq_pd_int8_4_d)) +& (int8_sum_2_6 +& int8_sum_1_7)
+        }
+        when(io.len9){
+            int8_sum9 := (int8_sum_3_5  +& Cat("b0".U, sq_pd_int8_4_d)) +& ((int8_sum_2_6 +& int8_sum_1_7) +& Cat("b0".U, int8_sum_0_8))
+        }
+    }
+    //config
+    io.int8_sum := MuxLookup(io.reg2dp_normalz_len, int8_sum9,
+        Array(
+            "h0".asUInt(2.W) -> Cat("d0".asUInt(2.W), int8_sum3),
+            "h1".asUInt(2.W) -> Cat("d1".asUInt(2.W), int8_sum5),
+            "h2".asUInt(2.W) -> Cat("d2".asUInt(2.W), int8_sum7)
+        )
+    )
+}}
 
 
-
-// class int_sum_block_tp1(implicit val conf: cdpConfiguration) extends Module {
-//     val io = IO(new Bundle {
-//         //nvdla core clock
-//         val nvdla_core_clk = Input(Clock())
-//         val nvdla_core_rstn = Input(Bool())
-
-//         //control signal
-//         // val int8_en = Input(Bool()) 
-//         val len5 = Input(Bool())
-//         val len7 = Input(Bool())
-//         val len9 = Input(Bool())
-//         val load_din_d = Input(Bool())
-//         val load_din_2d = Input(Bool())
-//         val reg2dp_normalz_len = Input(UInt(2.W))
-
-//         //sq_pd as a input
-//         val sq_pd_int8 = Input(Vec(9, UInt((2*conf.pINT8_BW-1).W)))
-
-//         //output signal
-//         val int8_sum = Output(UInt((2*conf.pINT8_BW+3).W))
-//     })
-
-//     //Reg
-//     io.int8_sum := Reg(UInt((conf.pINT8_BW*2+3).W))
-//     val int8_sum3 = Reg(UInt((conf.pINT8_BW*2+1).W))
-//     val int8_sum5 = Reg(UInt((conf.pINT8_BW*2+2).W))
-//     val int8_sum7 = Reg(UInt((conf.pINT8_BW*2+2).W))
-//     val int8_sum9 = Reg(UInt((conf.pINT8_BW*2+2).W))
-
-//         //add from double sides
-//     val int8_sum_0_8 = Reg(UInt((conf.pINT8_BW*2).W))
-//     val int8_sum_1_7 = Reg(UInt((conf.pINT8_BW*2).W))
-//     val int8_sum_2_6 = Reg(UInt((conf.pINT8_BW*2).W))
-//     val int8_sum_3_5 = Reg(UInt((conf.pINT8_BW*2).W))
-//     val sq_pd_int8_4_d = Reg(UInt((conf.pINT8_BW*2-1).W))
-    
-//     //wire
-//     val sq0 = io.sq_pd_int8(0)
-//     val sq1 = io.sq_pd_int8(1)
-//     val sq2 = io.sq_pd_int8(2)
-//     val sq3 = io.sq_pd_int8(3)
-//     val sq5 = io.sq_pd_int8(5)
-//     val sq6 = io.sq_pd_int8(6)
-//     val sq7 = io.sq_pd_int8(7)
-//     val sq8 = io.sq_pd_int8(8)
-    
-    
-//     //compute
-//     //为梦想灼伤了自己，也不要平庸的喘息
-
-//     //load_din_d
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_d) {
-//             int8_sum_3_5 := sq3 + sq5
-//             sq_pd_int8_4_d := io.sq_pd_int8(4)
-//         }
-//     }
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_d & (io.len5|io.len7|io.len9)) {
-//             int8_sum_2_6 := sq2 + sq6
-//         }
-//     }
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_d & (io.len7|io.len9)) {
-//             int8_sum_1_7 := sq1 + sq7
-//         }
-//     }
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_d & (io.len9)) {
-//             int8_sum_0_8 := sq0 + sq8
-//         }
-//     }
-
-//     //load_din_2d
-//     //此处感觉可优化
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_2d) {
-//             int8_sum3 := (int8_sum_3_5  + Cat("b0".U, sq_pd_int8_4_d))
-//         }
-//     }
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_2d & (io.len5|io.len7|io.len9)) {
-//             int8_sum5 := (int8_sum_3_5  + Cat("b0".U, sq_pd_int8_4_d)) + Cat("b0".U, sq_pd_int8_2_6)
-//         }
-//     }
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_2d & (io.len7|io.len9)) {
-//             int8_sum7 := (int8_sum_3_5  + Cat("b0".U, sq_pd_int8_4_d)) + (int8_sum_2_6 + int8_sum_1_7)
-//         }
-//     }
-//     withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) {
-//         when (io.load_din_2d & (io.len9)) {
-//             int8_sum9 := (int8_sum_3_5  + Cat("b0".U, sq_pd_int8_4_d)) + ((int8_sum_2_6 + int8_sum_1_7) + Cat("b0".U, int8_sum_0_8))
-//         }
-//     }
-
-//     //direction
-//     when(io.reg2dp_normalz_len === "b00".U){
-//         io.int8_sum := Cat("b00".U, int8_sum3)
-//     }
-//     .elsewhen(io.reg2dp_normalz_len === "b01".U){
-//         io.int8_sum := Cat("b0".U, int8_sum5)   
-//     }
-//     .elsewhen(io.reg2dp_normalz_len === "b10".U){
-//         io.int8_sum := Cat("b0".U, int8_sum7)   
-//     }
-//     .otherwise{
-//         io.int8_sum := int8_sum9
-//     }
-// }
+object int_sum_block_tp1Driver extends App {
+    implicit val conf: cdpConfiguration = new cdpConfiguration  
+    chisel3.Driver.execute(args, () => new int_sum_block_tp1())
+}

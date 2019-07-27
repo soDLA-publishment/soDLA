@@ -5,10 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_SDP_RDMA_pack(IW: Int, CW: Int, OW: Int)(implicit val conf: sdpConfiguration) extends Module {
-   IW == 512
-   CW == 1
-   OW == 256
+class NV_NVDLA_SDP_RDMA_pack(IW: Int = 512, OW: Int = 256, CW: Int = 1)(implicit val conf: sdpConfiguration) extends Module {
    val RATIO = IW/OW
    val io = IO(new Bundle {
         //in clock
@@ -73,13 +70,14 @@ withClock(io.nvdla_core_clk){
 
     ctrl_end := ctrl_done & Fill(CW, is_pack_last)
 
-//push data 
+    //push data 
     val pack_data = Reg(UInt(IW.W))
     when(inp_acc){
         pack_data := io.inp_data(IW-1,0)
     }
     
-    val pack_data_ext = Cat(Fill((OW*16-IW), false.B), pack_data)
+    val pack_data_ext = Wire(UInt((OW*16).W))
+    pack_data_ext := pack_data
     
     val pack_cnt = RegInit(0.U(4.W))
     when(out_acc){
@@ -92,19 +90,19 @@ withClock(io.nvdla_core_clk){
     
     is_pack_last := Mux(!io.cfg_dp_8, (pack_cnt===(RATIO/2-1).U), (pack_cnt===(RATIO-1).U))
 
-    val pack_seg = VecInit((0 to 15) 
+    val pack_seg = VecInit((0 to RATIO-1) 
                     map {i => pack_data_ext((OW*i + OW - 1), OW*i)})
 
     mux_data := MuxLookup(
                         pack_cnt, 
-                        0.U,
+                        "b0".asUInt(OW.W),
                         (0 to RATIO-1) map {i => i.U -> pack_seg(i)})
 
     }
 }
 
 
-// object NV_NVDLA_SDP_RDMA_packDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
-//   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_pack())
-// }
+object NV_NVDLA_SDP_RDMA_packDriver extends App {
+  implicit val conf: sdpConfiguration = new sdpConfiguration
+  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_pack())
+}

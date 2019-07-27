@@ -53,6 +53,7 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
         val reg2dp_bcore_slcg_op_en = Input(Bool())
         val reg2dp_flying_mode = Input(Bool())
 
+        //ifdef NVDLA_SDP_BN_ENABLE
         val reg2dp_bn_alu_algo = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(UInt(2.W))) else None
         val reg2dp_bn_alu_bypass = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
         val reg2dp_bn_alu_operand = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(UInt(16.W))) else None
@@ -66,6 +67,7 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
         val reg2dp_bn_mul_src = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
         val reg2dp_bn_relu_bypass = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
 
+        //ifdef NVDLA_SDP_BS_ENABLE
         val reg2dp_bs_alu_algo = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt(2.W))) else None
         val reg2dp_bs_alu_bypass = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
         val reg2dp_bs_alu_operand = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt(16.W))) else None
@@ -84,6 +86,7 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
         val reg2dp_cvt_shift = Input(UInt(6.W))
         val reg2dp_ecore_slcg_op_en = Input(Bool())
 
+        //ifdef NVDLA_SDP_EW_ENABLE
         val reg2dp_ew_alu_algo = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(UInt(2.W))) else None
         val reg2dp_ew_alu_bypass = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
         val reg2dp_ew_alu_cvt_bypass = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None        
@@ -104,37 +107,37 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
         val reg2dp_ew_mul_src = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
         val reg2dp_ew_truncate = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(UInt(10.W))) else None
 
-        val reg2dp_lut_slcg_en = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None
-        val reg2dp_lut_hybrid_priority = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None
-        val reg2dp_lut_int_access_type = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
-        val reg2dp_lut_int_addr = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(10.W))) else None        
-        val reg2dp_lut_int_data = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
-        val reg2dp_lut_int_data_wr = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
-        val reg2dp_lut_int_table_id = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
-        val reg2dp_lut_le_end = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None        
-        val reg2dp_lut_le_function = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
-        val reg2dp_lut_le_index_offset = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(8.W))) else None        
-        val reg2dp_lut_le_index_select = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(8.W))) else None        
-        val reg2dp_lut_le_slope_oflow_scale = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
-        val reg2dp_lut_le_slope_oflow_shift = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
-        val reg2dp_lut_le_slope_uflow_scale = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
-        val reg2dp_lut_le_slope_uflow_shift = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
-        val reg2dp_lut_le_start = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None        
-        val reg2dp_lut_lo_end = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None        
-        val reg2dp_lut_lo_index_select = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(8.W))) else None  
-        val reg2dp_lut_lo_slope_oflow_scale = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
-        val reg2dp_lut_lo_slope_oflow_shift = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
-        val reg2dp_lut_lo_slope_uflow_scale = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
-        val reg2dp_lut_lo_slope_uflow_shift = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
-        val reg2dp_lut_lo_start = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None     
-        val reg2dp_lut_oflow_priority = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
-        val reg2dp_lut_uflow_priority = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None  
-        val dp2reg_lut_hybrid = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
-        val dp2reg_lut_int_data = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(16.W))) else None     
-        val dp2reg_lut_le_hit = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
-        val dp2reg_lut_lo_hit = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
-        val dp2reg_lut_oflow = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
-        val dp2reg_lut_uflow = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None      
+        val reg2dp_lut_slcg_en = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None
+        val reg2dp_lut_hybrid_priority = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None
+        val reg2dp_lut_int_access_type = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
+        val reg2dp_lut_int_addr = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(10.W))) else None        
+        val reg2dp_lut_int_data = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
+        val reg2dp_lut_int_data_wr = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
+        val reg2dp_lut_int_table_id = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
+        val reg2dp_lut_le_end = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None        
+        val reg2dp_lut_le_function = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
+        val reg2dp_lut_le_index_offset = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(8.W))) else None        
+        val reg2dp_lut_le_index_select = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(8.W))) else None        
+        val reg2dp_lut_le_slope_oflow_scale = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
+        val reg2dp_lut_le_slope_oflow_shift = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
+        val reg2dp_lut_le_slope_uflow_scale = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
+        val reg2dp_lut_le_slope_uflow_shift = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
+        val reg2dp_lut_le_start = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None        
+        val reg2dp_lut_lo_end = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None        
+        val reg2dp_lut_lo_index_select = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(8.W))) else None  
+        val reg2dp_lut_lo_slope_oflow_scale = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
+        val reg2dp_lut_lo_slope_oflow_shift = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
+        val reg2dp_lut_lo_slope_uflow_scale = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(16.W))) else None        
+        val reg2dp_lut_lo_slope_uflow_shift = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(5.W))) else None        
+        val reg2dp_lut_lo_start = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(UInt(32.W))) else None     
+        val reg2dp_lut_oflow_priority = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None   
+        val reg2dp_lut_uflow_priority = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None  
+        val dp2reg_lut_hybrid = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
+        val dp2reg_lut_int_data = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(16.W))) else None     
+        val dp2reg_lut_le_hit = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
+        val dp2reg_lut_lo_hit = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
+        val dp2reg_lut_oflow = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None     
+        val dp2reg_lut_uflow = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Output(UInt(32.W))) else None      
 
         val reg2dp_nan_to_zero = Input(Bool())
         val reg2dp_ncore_slcg_op_en = Input(Bool())
@@ -146,6 +149,7 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
         val reg2dp_proc_precision = Input(UInt(2.W))
         val dp2reg_done = Input(Bool())
         val dp2reg_out_saturation = Output(UInt(32.W))
+
         val dla_clk_ovr_on_sync = Input(Clock())
         val global_clk_ovr_on_sync = Input(Clock())
         val tmc2slcg_disable_clock_gating = Input(Bool())
@@ -173,35 +177,33 @@ class NV_NVDLA_SDP_core(implicit val conf: sdpConfiguration) extends Module {
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){   
-
-//===========================================
-// CFG
-//===========================================
-
+    //===========================================
+    // CFG
+    //===========================================
     val cfg_bs_en = RegInit(false.B)
     val cfg_bn_en = RegInit(false.B)
     val cfg_ew_en = RegInit(false.B)
     val cfg_mode_eql = RegInit(false.B)
 
     if(conf.NVDLA_SDP_BS_ENABLE){
-        cfg_bs_en := io.reg2dp_bs_bypass.get === false.B
+        cfg_bs_en := io.reg2dp_bs_bypass.get === 0.U
     }
     else{
         cfg_bs_en := false.B
     }
 
     if(conf.NVDLA_SDP_BN_ENABLE){
-        cfg_bn_en := io.reg2dp_bn_bypass.get === false.B
+        cfg_bn_en := io.reg2dp_bn_bypass.get === 0.U
     }
     else{
         cfg_bn_en := false.B
     }
 
-    if(conf.NVDLA_SDP_BS_ENABLE){
-        cfg_ew_en := io.reg2dp_ew_bypass.get === false.B
+    if(conf.NVDLA_SDP_EW_ENABLE){
+        cfg_ew_en := io.reg2dp_ew_bypass.get === 0.U
         cfg_mode_eql := (io.reg2dp_ew_alu_algo.get === 3.U) && 
-                        (io.reg2dp_ew_alu_bypass.get === false.B) && 
-                        (io.reg2dp_ew_bypass.get === false.B)
+                        (io.reg2dp_ew_alu_bypass.get === 0.U) && 
+                        (io.reg2dp_ew_bypass.get === 0.U)
     }
     else{
         cfg_bs_en := false.B
@@ -275,13 +277,11 @@ withClock(io.nvdla_core_clk){
         cfg_nan_to_zero := io.reg2dp_nan_to_zero        
     }
 
-//===========================================
-// SLCG Gate
-//===========================================
-
+    //===========================================
+    // SLCG Gate
+    //===========================================
     val bcore_slcg_en = cfg_bs_en & io.reg2dp_bcore_slcg_op_en
     val ncore_slcg_en = cfg_bn_en & io.reg2dp_ncore_slcg_op_en
-
     val ecore_slcg_en = Wire(Bool())
     if(conf.NVDLA_SDP_EW_ENABLE){
         if(conf.NVDLA_SDP_LUT_ENABLE){
@@ -307,16 +307,15 @@ withClock(io.nvdla_core_clk){
     val nvdla_gated_ecore_clk = u_gate.io.nvdla_gated_ecore_clk
     val nvdla_gated_ncore_clk = u_gate.io.nvdla_gated_ncore_clk
 
-//===========================================================================
-//  DATA PATH LOGIC 
-//  RDMA data 
-//===========================================================================
-//covert mrdma data from atomic_m to NVDLA_SDP_MAX_THROUGHPUT
-
+    //===========================================================================
+    //  DATA PATH LOGIC 
+    //  RDMA data 
+    //===========================================================================
+    //covert mrdma data from atomic_m to NVDLA_SDP_MAX_THROUGHPUT
     val sdp_mrdma_data_in_ready = Wire(Bool())
     val u_dpin_pack = Module(new NV_NVDLA_SDP_RDMA_pack(conf.DP_DIN_DW, conf.DP_IN_DW, 2))
     u_dpin_pack.io.nvdla_core_clk := io.nvdla_core_clk
-    u_dpin_pack.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
+    u_dpin_pack.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
     u_dpin_pack.io.inp_pvld := io.sdp_mrdma2cmux_valid
     io.sdp_mrdma2cmux_ready := u_dpin_pack.io.inp_prdy
     u_dpin_pack.io.inp_data := io.sdp_mrdma2cmux_pd
@@ -324,35 +323,36 @@ withClock(io.nvdla_core_clk){
     u_dpin_pack.io.out_prdy := sdp_mrdma_data_in_ready
     val sdp_mrdma_data_in_pd = u_dpin_pack.io.out_data
 
-// #ifdef NVDLA_SDP_BS_ENABLE
-
+    // #ifdef NVDLA_SDP_BS_ENABLE
+    //covert atomic_m to NVDLA_SDP_BS_THROUGHPUT
     val bs_mul_in_pvld = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
     val bs_mul_in_prdy = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
     val bs_mul_in_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(UInt((conf.BS_OP_DW+1).W))) else None
 
+    val bs_mul_in_data = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_mul_in_pd.get(conf.BS_OP_DW-1,0)) else None
+    val bs_mul_in_layer_end = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_mul_in_pd.get(conf.BS_OP_DW)) else None  
+
+    val bs_alu_in_pvld = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
+    val bs_alu_in_prdy = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
+    val bs_alu_in_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(UInt((conf.BS_OP_DW+1).W))) else None
+
+    val bs_alu_in_data = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_alu_in_pd.get(conf.BS_OP_DW-1,0)) else None
+    val bs_alu_in_layer_end = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_alu_in_pd.get(conf.BS_OP_DW)) else None
+
     val u_bs_mul_pack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BS_OP_DW, 1))) else None
+    val u_bs_alu_pack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BS_OP_DW, 1))) else None
     if(conf.NVDLA_SDP_BS_ENABLE){
         u_bs_mul_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
-        u_bs_mul_pack.get.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
+        u_bs_mul_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
         u_bs_mul_pack.get.io.inp_pvld := io.sdp_brdma2dp_mul_valid.get
         io.sdp_brdma2dp_mul_ready.get := u_bs_mul_pack.get.io.inp_prdy
         u_bs_mul_pack.get.io.inp_data := io.sdp_brdma2dp_mul_pd.get
         bs_mul_in_pvld.get := u_bs_mul_pack.get.io.out_pvld
         u_bs_mul_pack.get.io.out_prdy := bs_mul_in_prdy.get
         bs_mul_in_pd.get := u_bs_mul_pack.get.io.out_data
-    }
 
-    val bs_mul_in_data = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_mul_in_pd.get(conf.BS_OP_DW-1,0)) else None
-    val bs_mul_in_layer_end = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_mul_in_pd.get(conf.BS_OP_DW)) else None    
-
-    val bs_alu_in_pvld = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
-    val bs_alu_in_prdy = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
-    val bs_alu_in_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(UInt((conf.BS_OP_DW+1).W))) else None
-
-    val u_bs_alu_pack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BS_OP_DW, 1))) else None
-    if(conf.NVDLA_SDP_BS_ENABLE){
         u_bs_alu_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
-        u_bs_alu_pack.get.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
+        u_bs_alu_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
         u_bs_alu_pack.get.io.inp_pvld := io.sdp_brdma2dp_alu_valid.get
         io.sdp_brdma2dp_alu_ready.get := u_bs_mul_pack.get.io.inp_prdy
         u_bs_alu_pack.get.io.inp_data := io.sdp_brdma2dp_alu_pd.get
@@ -361,26 +361,11 @@ withClock(io.nvdla_core_clk){
         bs_alu_in_pd.get := u_bs_alu_pack.get.io.out_data
     }
 
-    val bs_alu_in_data = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_alu_in_pd.get(conf.BS_OP_DW-1,0)) else None
-    val bs_alu_in_layer_end = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_alu_in_pd.get(conf.BS_OP_DW)) else None
-
-// #ifdef NVDLA_SDP_BN_ENABLE
-
+    // #ifdef NVDLA_SDP_BN_ENABLE
+    //covert atomic_m to NVDLA_SDP_BN_THROUGHPUT
     val bn_mul_in_pvld = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
     val bn_mul_in_prdy = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
     val bn_mul_in_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(UInt((conf.BN_OP_DW+1).W))) else None
-
-    val u_bn_mul_pack = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BN_OP_DW, 1))) else None
-    if(conf.NVDLA_SDP_BN_ENABLE){
-        u_bn_mul_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
-        u_bn_mul_pack.get.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
-        u_bn_mul_pack.get.io.inp_pvld := io.sdp_nrdma2dp_mul_valid.get
-        io.sdp_nrdma2dp_mul_ready.get := u_bn_mul_pack.get.io.inp_prdy
-        u_bn_mul_pack.get.io.inp_data := io.sdp_nrdma2dp_mul_pd.get
-        bn_mul_in_pvld.get := u_bn_mul_pack.get.io.out_pvld
-        u_bn_mul_pack.get.io.out_prdy := bn_mul_in_prdy.get
-        bn_mul_in_pd.get := u_bn_mul_pack.get.io.out_data
-    }
 
     val bn_mul_in_data = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_mul_in_pd.get(conf.BN_OP_DW-1,0)) else None
     val bn_mul_in_layer_end = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_mul_in_pd.get(conf.BN_OP_DW)) else None    
@@ -389,10 +374,23 @@ withClock(io.nvdla_core_clk){
     val bn_alu_in_prdy = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
     val bn_alu_in_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(UInt((conf.BN_OP_DW+1).W))) else None
 
+    val bn_alu_in_data = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_alu_in_pd.get(conf.BN_OP_DW-1,0)) else None
+    val bn_alu_in_layer_end = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_alu_in_pd.get(conf.BN_OP_DW)) else None
+
+    val u_bn_mul_pack = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BN_OP_DW, 1))) else None
     val u_bn_alu_pack = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BN_OP_DW, 1))) else None
     if(conf.NVDLA_SDP_BN_ENABLE){
+        u_bn_mul_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
+        u_bn_mul_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_bn_mul_pack.get.io.inp_pvld := io.sdp_nrdma2dp_mul_valid.get
+        io.sdp_nrdma2dp_mul_ready.get := u_bn_mul_pack.get.io.inp_prdy
+        u_bn_mul_pack.get.io.inp_data := io.sdp_nrdma2dp_mul_pd.get
+        bn_mul_in_pvld.get := u_bn_mul_pack.get.io.out_pvld
+        u_bn_mul_pack.get.io.out_prdy := bn_mul_in_prdy.get
+        bn_mul_in_pd.get := u_bn_mul_pack.get.io.out_data
+
         u_bn_alu_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
-        u_bn_alu_pack.get.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
+        u_bn_alu_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
         u_bn_alu_pack.get.io.inp_pvld := io.sdp_nrdma2dp_alu_valid.get
         io.sdp_nrdma2dp_alu_ready.get := u_bn_mul_pack.get.io.inp_prdy
         u_bn_alu_pack.get.io.inp_data := io.sdp_nrdma2dp_alu_pd.get
@@ -401,26 +399,12 @@ withClock(io.nvdla_core_clk){
         bn_alu_in_pd.get := u_bn_alu_pack.get.io.out_data
     }
 
-    val bn_alu_in_data = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_alu_in_pd.get(conf.BN_OP_DW-1,0)) else None
-    val bn_alu_in_layer_end = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_alu_in_pd.get(conf.BN_OP_DW)) else None
-    
-// #ifdef NVDLA_SDP_EW_ENABLE
-
+    // #ifdef NVDLA_SDP_EW_ENABLE
+    //=====EW=======
+    //covert atomic_m to NVDLA_SDP_EW_THROUGHPUT
     val ew_mul_in_pvld = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
     val ew_mul_in_prdy = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
     val ew_mul_in_pd = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(UInt((conf.EW_OP_DW+1).W))) else None
-
-    val u_ew_mul_pack = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.EW_OP_DW, 1))) else None
-    if(conf.NVDLA_SDP_EW_ENABLE){
-        u_ew_mul_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
-        u_ew_mul_pack.get.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
-        u_ew_mul_pack.get.io.inp_pvld := io.sdp_erdma2dp_mul_valid.get
-        io.sdp_erdma2dp_mul_ready.get := u_ew_mul_pack.get.io.inp_prdy
-        u_ew_mul_pack.get.io.inp_data := io.sdp_erdma2dp_mul_pd.get
-        ew_mul_in_pvld.get := u_ew_mul_pack.get.io.out_pvld
-        u_ew_mul_pack.get.io.out_prdy := ew_mul_in_prdy.get
-        ew_mul_in_pd.get := u_ew_mul_pack.get.io.out_data
-    }
 
     val ew_mul_in_data = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_mul_in_pd.get(conf.EW_OP_DW-1,0)) else None
     val ew_mul_in_layer_end = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_mul_in_pd.get(conf.EW_OP_DW)) else None    
@@ -429,10 +413,23 @@ withClock(io.nvdla_core_clk){
     val ew_alu_in_prdy = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
     val ew_alu_in_pd = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(UInt((conf.EW_OP_DW+1).W))) else None
 
+    val ew_alu_in_data = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_alu_in_pd.get(conf.EW_OP_DW-1,0)) else None
+    val ew_alu_in_layer_end = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_alu_in_pd.get(conf.EW_OP_DW)) else None
+
+    val u_ew_mul_pack = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.EW_OP_DW, 1))) else None
     val u_ew_alu_pack = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.EW_OP_DW, 1))) else None
     if(conf.NVDLA_SDP_EW_ENABLE){
+        u_ew_mul_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
+        u_ew_mul_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_ew_mul_pack.get.io.inp_pvld := io.sdp_erdma2dp_mul_valid.get
+        io.sdp_erdma2dp_mul_ready.get := u_ew_mul_pack.get.io.inp_prdy
+        u_ew_mul_pack.get.io.inp_data := io.sdp_erdma2dp_mul_pd.get
+        ew_mul_in_pvld.get := u_ew_mul_pack.get.io.out_pvld
+        u_ew_mul_pack.get.io.out_prdy := ew_mul_in_prdy.get
+        ew_mul_in_pd.get := u_ew_mul_pack.get.io.out_data
+
         u_ew_alu_pack.get.io.nvdla_core_clk := io.nvdla_core_clk
-        u_ew_alu_pack.get.io.cfg_dp_8 := !io.reg2dp_proc_precision.asUInt.orR
+        u_ew_alu_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
         u_ew_alu_pack.get.io.inp_pvld := io.sdp_erdma2dp_alu_valid.get
         io.sdp_erdma2dp_alu_ready.get := u_ew_mul_pack.get.io.inp_prdy
         u_ew_alu_pack.get.io.inp_data := io.sdp_erdma2dp_alu_pd.get
@@ -440,9 +437,6 @@ withClock(io.nvdla_core_clk){
         u_ew_alu_pack.get.io.out_prdy := ew_alu_in_prdy.get
         ew_alu_in_pd.get := u_ew_alu_pack.get.io.out_data
     }
-
-    val ew_alu_in_data = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_alu_in_pd.get(conf.EW_OP_DW-1,0)) else None
-    val ew_alu_in_layer_end = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_alu_in_pd.get(conf.EW_OP_DW)) else None
 
     val wait_for_op_en = RegInit(true.B)
     when(io.dp2reg_done){
@@ -453,202 +447,156 @@ withClock(io.nvdla_core_clk){
 
     op_en_load := wait_for_op_en & io.reg2dp_op_en
 
-// #ifdef NVDLA_SDP_BS_ENABLE
-
+    // #ifdef NVDLA_SDP_BS_ENABLE
     val bs_alu_in_en = if(conf.NVDLA_SDP_BS_ENABLE) Some(RegInit(false.B)) else None
     val bs_alu_in_rdy = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
-
-    if(conf.NVDLA_SDP_BS_ENABLE){
-        when(io.dp2reg_done){
-            bs_alu_in_en.get := false.B
-        }.elsewhen(op_en_load){
-            bs_alu_in_en.get := cfg_bs_en && 
-                                (!io.reg2dp_bs_alu_bypass.get) && 
-                                (io.reg2dp_bs_alu_src.get===true.B)
-        }.elsewhen(bs_alu_in_layer_end.get && bs_alu_in_pvld.get && bs_alu_in_prdy.get){
-            bs_alu_in_en.get := false.B
-        }
-
-        bs_alu_in_prdy.get := bs_alu_in_en.get & bs_alu_in_rdy.get
-    }
     val bs_alu_in_vld = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_alu_in_en.get & bs_alu_in_pvld.get) else None
-    
     val bs_mul_in_en = if(conf.NVDLA_SDP_BS_ENABLE) Some(RegInit(false.B)) else None
     val bs_mul_in_rdy = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
+    val bs_mul_in_vld = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_mul_in_en.get & bs_mul_in_pvld.get) else None
 
     if(conf.NVDLA_SDP_BS_ENABLE){
         when(io.dp2reg_done){
-            bs_mul_in_en.get := false.B
-        }.elsewhen(op_en_load){
-            bs_mul_in_en.get := cfg_bs_en && 
-                                (!io.reg2dp_bs_mul_bypass.get) && 
-                                (io.reg2dp_bs_mul_src.get===true.B)
-        }.elsewhen(bs_mul_in_layer_end.get && bs_mul_in_pvld.get && bs_mul_in_prdy.get){
+            bs_alu_in_en.get := false.B
             bs_mul_in_en.get := false.B
         }
-
+        .elsewhen(op_en_load){
+            bs_alu_in_en.get := cfg_bs_en && (!io.reg2dp_bs_alu_bypass.get) && (io.reg2dp_bs_alu_src.get===1.U)
+            bs_mul_in_en.get := cfg_bs_en && (!io.reg2dp_bs_mul_bypass.get) && (io.reg2dp_bs_mul_src.get===1.U)
+        }
+        .elsewhen(bs_alu_in_layer_end.get && bs_alu_in_pvld.get && bs_alu_in_prdy.get){
+            bs_alu_in_en.get := false.B
+        }
+        .elsewhen(bs_mul_in_layer_end.get && bs_mul_in_pvld.get && bs_mul_in_prdy.get){
+            bs_mul_in_en.get := false.B
+        }
+        bs_alu_in_prdy.get := bs_alu_in_en.get & bs_alu_in_rdy.get
         bs_mul_in_prdy.get := bs_mul_in_en.get & bs_mul_in_rdy.get
     }
-    val bs_mul_in_vld = if(conf.NVDLA_SDP_BS_ENABLE) Some(bs_mul_in_en.get & bs_mul_in_pvld.get) else None
-
-// #ifdef NVDLA_SDP_BN_ENABLE
-
+    
+    // #ifdef NVDLA_SDP_BN_ENABLE
     val bn_alu_in_en = if(conf.NVDLA_SDP_BN_ENABLE) Some(RegInit(false.B)) else None
     val bn_alu_in_rdy = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
+    val bn_alu_in_vld = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_alu_in_en.get & bn_alu_in_pvld.get) else None
+    val bn_mul_in_en = if(conf.NVDLA_SDP_BN_ENABLE) Some(RegInit(false.B)) else None
+    val bn_mul_in_rdy = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
+    val bn_mul_in_vld = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_mul_in_en.get & bn_mul_in_pvld.get) else None
 
     if(conf.NVDLA_SDP_BN_ENABLE){
         when(io.dp2reg_done){
             bn_alu_in_en.get := false.B
-        }.elsewhen(op_en_load){
-            bn_alu_in_en.get := cfg_bn_en && 
-                                (!io.reg2dp_bn_alu_bypass.get) && 
-                                (io.reg2dp_bn_alu_src.get===true.B)
-        }.elsewhen(bn_alu_in_layer_end.get && bn_alu_in_pvld.get && bn_alu_in_prdy.get){
+            bn_mul_in_en.get := false.B
+        }
+        .elsewhen(op_en_load){
+            bn_alu_in_en.get := cfg_bn_en && (!io.reg2dp_bn_alu_bypass.get) && (io.reg2dp_bn_alu_src.get===1.U)
+            bn_mul_in_en.get := cfg_bn_en && (!io.reg2dp_bn_mul_bypass.get) && (io.reg2dp_bn_mul_src.get===1.U)
+        }
+        .elsewhen(bn_alu_in_layer_end.get && bn_alu_in_pvld.get && bn_alu_in_prdy.get){
             bn_alu_in_en.get := false.B
+        }
+        .elsewhen(bn_mul_in_layer_end.get && bn_mul_in_pvld.get && bn_mul_in_prdy.get){
+            bn_mul_in_en.get := false.B
         }
 
         bn_alu_in_prdy.get := bn_alu_in_en.get & bn_alu_in_rdy.get
-    }
-    val bn_alu_in_vld = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_alu_in_en.get & bn_alu_in_pvld.get) else None
-    
-    val bn_mul_in_en = if(conf.NVDLA_SDP_BN_ENABLE) Some(RegInit(false.B)) else None
-    val bn_mul_in_rdy = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
-
-    if(conf.NVDLA_SDP_BN_ENABLE){
-        when(io.dp2reg_done){
-            bn_mul_in_en.get := false.B
-        }.elsewhen(op_en_load){
-            bn_mul_in_en.get := cfg_bn_en && 
-                                (!io.reg2dp_bn_mul_bypass.get) && 
-                                (io.reg2dp_bn_mul_src.get===true.B)
-        }.elsewhen(bn_mul_in_layer_end.get && bn_mul_in_pvld.get && bn_mul_in_prdy.get){
-            bn_mul_in_en.get := false.B
-        }
-
         bn_mul_in_prdy.get := bn_mul_in_en.get & bn_mul_in_rdy.get
     }
-    val bn_mul_in_vld = if(conf.NVDLA_SDP_BN_ENABLE) Some(bn_mul_in_en.get & bn_mul_in_pvld.get) else None
 
-// #ifdef NVDLA_SDP_EW_ENABLE
-
+    // #ifdef NVDLA_SDP_EW_ENABLE
     val ew_alu_in_en = if(conf.NVDLA_SDP_EW_ENABLE) Some(RegInit(false.B)) else None
     val ew_alu_in_rdy = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
-
-    if(conf.NVDLA_SDP_EW_ENABLE){
-        when(io.dp2reg_done){
-            ew_alu_in_en.get := false.B
-        }.elsewhen(op_en_load){
-            ew_alu_in_en.get := cfg_ew_en && 
-                                (!io.reg2dp_ew_alu_bypass.get) && 
-                                (io.reg2dp_ew_alu_src.get===true.B)
-        }.elsewhen(ew_alu_in_layer_end.get && ew_alu_in_pvld.get && ew_alu_in_prdy.get){
-            ew_alu_in_en.get := false.B
-        }
-
-        ew_alu_in_prdy.get := ew_alu_in_en.get & ew_alu_in_rdy.get
-    }
     val ew_alu_in_vld = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_alu_in_en.get & ew_alu_in_pvld.get) else None
-    
     val ew_mul_in_en = if(conf.NVDLA_SDP_EW_ENABLE) Some(RegInit(false.B)) else None
     val ew_mul_in_rdy = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
+    val ew_mul_in_vld = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_mul_in_en.get & ew_mul_in_pvld.get) else None
 
     if(conf.NVDLA_SDP_EW_ENABLE){
         when(io.dp2reg_done){
-            ew_mul_in_en.get := false.B
-        }.elsewhen(op_en_load){
-            ew_mul_in_en.get := cfg_ew_en && 
-                                (!io.reg2dp_ew_mul_bypass.get) && 
-                                (io.reg2dp_ew_mul_src.get===true.B)
-        }.elsewhen(ew_mul_in_layer_end.get && ew_mul_in_pvld.get && ew_mul_in_prdy.get){
+            ew_alu_in_en.get := false.B
             ew_mul_in_en.get := false.B
         }
-
+        .elsewhen(op_en_load){
+            ew_alu_in_en.get := cfg_ew_en && (!io.reg2dp_ew_alu_bypass.get) && (io.reg2dp_ew_alu_src.get===1.U)
+            ew_mul_in_en.get := cfg_ew_en && (!io.reg2dp_ew_mul_bypass.get) && (io.reg2dp_ew_mul_src.get===1.U)
+        }
+        .elsewhen(ew_alu_in_layer_end.get && ew_alu_in_pvld.get && ew_alu_in_prdy.get){
+            ew_alu_in_en.get := false.B
+        }
+        .elsewhen(ew_mul_in_layer_end.get && ew_mul_in_pvld.get && ew_mul_in_prdy.get){
+            ew_mul_in_en.get := false.B
+        }
+        ew_alu_in_prdy.get := ew_alu_in_en.get & ew_alu_in_rdy.get
         ew_mul_in_prdy.get := ew_mul_in_en.get & ew_mul_in_rdy.get
     }
-    val ew_mul_in_vld = if(conf.NVDLA_SDP_EW_ENABLE) Some(ew_mul_in_en.get & ew_mul_in_pvld.get) else None
 
-
-//===========================================
-// CORE
-//===========================================
-// data from MUX ? CC : MEM
-
+    //===========================================
+    // CORE
+    //===========================================
+    // data from MUX ? CC : MEM
     val sdp_cmux2dp_ready = Wire(Bool())
     val u_NV_NVDLA_SDP_cmux = Module(new NV_NVDLA_SDP_cmux)
     u_NV_NVDLA_SDP_cmux.io.nvdla_core_clk := io.nvdla_core_clk
-
     u_NV_NVDLA_SDP_cmux.io.cacc2sdp_valid := io.cacc2sdp_valid
     io.cacc2sdp_ready := u_NV_NVDLA_SDP_cmux.io.cacc2sdp_ready
     u_NV_NVDLA_SDP_cmux.io.cacc2sdp_pd := io.cacc2sdp_pd
-
     u_NV_NVDLA_SDP_cmux.io.sdp_mrdma2cmux_valid := sdp_mrdma_data_in_valid
     sdp_mrdma_data_in_ready := u_NV_NVDLA_SDP_cmux.io.sdp_mrdma2cmux_ready
     u_NV_NVDLA_SDP_cmux.io.sdp_mrdma2cmux_pd := sdp_mrdma_data_in_pd
-
     val sdp_cmux2dp_valid = u_NV_NVDLA_SDP_cmux.io.sdp_cmux2dp_valid
     u_NV_NVDLA_SDP_cmux.io.sdp_cmux2dp_ready := sdp_cmux2dp_ready
     val sdp_cmux2dp_pd = u_NV_NVDLA_SDP_cmux.io.sdp_cmux2dp_pd
-
     u_NV_NVDLA_SDP_cmux.io.reg2dp_flying_mode := io.reg2dp_flying_mode
     u_NV_NVDLA_SDP_cmux.io.reg2dp_nan_to_zero := io.reg2dp_nan_to_zero
     u_NV_NVDLA_SDP_cmux.io.reg2dp_proc_precision := io.reg2dp_proc_precision
     u_NV_NVDLA_SDP_cmux.io.op_en_load := op_en_load
 
-
     val sdp_cmux2dp_data = sdp_cmux2dp_pd
 
     // MUX to bypass CORE_x0
+    val flop_bn_data_out_prdy = Wire(Bool())
+    val bn_data_in_prdy = Wire(Bool())
 
-    val flop_bs_data_out_prdy = Wire(Bool())
-    val bs_data_in_prdy = Wire(Bool())
+    val bs_data_in_prdy = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
+    val bs_data_in_pvld = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
+    val bs_data_in_pd = if(conf.NVDLA_SDP_BS_ENABLE) Wire(UInt(conf.BS_IN_DW.W)) else "b0".asUInt(conf.BS_IN_DW.W)
+    val flop_bs_data_out_pvld = if(conf.NVDLA_SDP_BS_ENABLE) Wire(Bool()) else false.B
+    val flop_bs_data_out_prdy = if(conf.NVDLA_SDP_BN_ENABLE) Mux(cfg_bn_en, bn_data_in_prdy, flop_bn_data_out_prdy) else flop_bn_data_out_prdy
+    val flop_bs_data_out_pd = if(conf.NVDLA_SDP_BS_ENABLE) Wire(UInt(conf.BS_DOUT_DW.W)) else "b0".asUInt(conf.BS_DOUT_DW.W)
+
+    val u_bs_dppack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_pack(conf.DP_IN_DW, conf.BS_IN_DW))) else None
+    val u_bs = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_x1_int)) else None
+    val u_bs_dpunpack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_unpack(conf.BS_OUT_DW, conf.BS_DOUT_DW))) else None
+
     if(conf.NVDLA_SDP_BS_ENABLE){
-        sdp_cmux2dp_ready := Mux(cfg_bs_en, bs_data_in_prdy, flop_bs_data_out_prdy)
+        sdp_cmux2dp_ready := Mux(cfg_bs_en, bs_data_in_prdy.get, flop_bs_data_out_prdy)
     }
     else{
         sdp_cmux2dp_ready := flop_bs_data_out_prdy
     }
 
-    val bs_data_in_pd = sdp_cmux2dp_data
-
-    val bs_data_in_pvld = Wire(Bool())
     if(conf.NVDLA_SDP_BS_ENABLE){
-        bs_data_in_pvld := cfg_bs_en & sdp_cmux2dp_valid
-    }
+    bs_data_in_pvld.get := cfg_bs_en & sdp_cmux2dp_valid
+    bs_data_in_pd := sdp_cmux2dp_data
 
-//covert NVDLA_SDP_MAX_THROUGHPUT to NVDLA_SDP_BS_THROUGHPUT
-
-    val flop_bs_data_in_pvld = Wire(Bool())
-    val flop_bs_data_in_prdy = Wire(Bool())
-    val flop_bs_data_in_pd = Wire(UInt(conf.BS_IN_DW.W))
-    val u_bs_dppack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_pack(conf.DP_IN_DW, conf.BS_IN_DW))) else None
-    if(conf.NVDLA_SDP_BS_ENABLE){
+    //covert NVDLA_SDP_MAX_THROUGHPUT to NVDLA_SDP_BS_THROUGHPUT
     u_bs_dppack.get.io.nvdla_core_clk := nvdla_gated_bcore_clk
-    u_bs_dppack.get.io.inp_pvld := bs_data_in_pvld
-    bs_data_in_prdy := u_bs_dppack.get.io.inp_prdy
+    u_bs_dppack.get.io.inp_pvld := bs_data_in_pvld.get
+    bs_data_in_prdy.get := u_bs_dppack.get.io.inp_prdy
     u_bs_dppack.get.io.inp_data := bs_data_in_pd
-    flop_bs_data_in_pvld := u_bs_dppack.get.io.out_pvld
-    u_bs_dppack.get.io.out_prdy := flop_bs_data_in_prdy
-    flop_bs_data_in_pd := u_bs_dppack.get.io.out_data
-    }
+    u_bs.get.io.chn_in_pvld := u_bs_dppack.get.io.out_pvld
+    u_bs_dppack.get.io.out_prdy := u_bs.get.io.chn_in_prdy
+    u_bs.get.io.chn_data_in  := u_bs_dppack.get.io.out_data
 
-    val bs_data_out_pvld = Wire(Bool())
-    val bs_data_out_prdy = Wire(Bool())
-    val bs_data_out_pd = Wire(UInt((conf.BS_OUT_DW+1).W))
-    val u_bs = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_x1_int)) else None
-    if(conf.NVDLA_SDP_BS_ENABLE){
     u_bs.get.io.nvdla_core_clk := nvdla_gated_bcore_clk
-    u_bs.get.io.chn_in_pvld := flop_bs_data_in_pvld
-    flop_bs_data_in_prdy := u_bs.get.io.chn_in_prdy
-    u_bs.get.io.chn_data_in := flop_bs_data_in_pd
     u_bs.get.io.chn_alu_op_pvld := bs_alu_in_vld.get
     bs_alu_in_rdy.get := u_bs.get.io.chn_alu_op_prdy
     u_bs.get.io.chn_alu_op := bs_alu_in_data.get
     u_bs.get.io.chn_mul_op_pvld := bs_mul_in_vld.get
     bs_mul_in_rdy.get := u_bs.get.io.chn_mul_op_prdy
     u_bs.get.io.chn_mul_op := bs_mul_in_data.get
-    bs_data_out_pvld := u_bs.get.io.chn_out_pvld
-    u_bs.get.io.chn_out_prdy := bs_data_out_prdy
-    bs_data_out_pd := u_bs.get.io.chn_data_out
+    u_bs_dpunpack.get.io.inp_pvld := u_bs.get.io.chn_out_pvld
+    u_bs.get.io.chn_out_prdy := u_bs_dpunpack.get.io.inp_prdy
+    u_bs_dpunpack.get.io.inp_data := u_bs.get.io.chn_data_out
     u_bs.get.io.cfg_alu_algo := cfg_bs_alu_algo.get
     u_bs.get.io.cfg_alu_bypass := cfg_bs_alu_bypass.get
     u_bs.get.io.cfg_alu_op := cfg_bs_alu_operand.get
@@ -660,78 +608,50 @@ withClock(io.nvdla_core_clk){
     u_bs.get.io.cfg_mul_shift_value := cfg_bs_mul_shift_value.get
     u_bs.get.io.cfg_mul_src := cfg_bs_mul_src.get
     u_bs.get.io.cfg_relu_bypass := cfg_bs_relu_bypass.get
-    }
 
-//covert NVDLA_SDP_BS_THROUGHPUT to NVDLA_SDP_MAX_THROUGHPUT
-
-    val flop_bs_data_out_pvld = Wire(Bool())
-    val flop_bs_data_out_pd = Wire(UInt(conf.BS_DOUT_DW.W))
-    val u_bs_dpunpack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_unpack(conf.BS_OUT_DW, conf.BS_DOUT_DW))) else None
-    if(conf.NVDLA_SDP_BS_ENABLE){
+    //covert NVDLA_SDP_BS_THROUGHPUT to NVDLA_SDP_MAX_THROUGHPUT
     u_bs_dpunpack.get.io.nvdla_core_clk := nvdla_gated_bcore_clk
-    u_bs_dpunpack.get.io.inp_pvld := bs_data_out_pvld
-    bs_data_out_prdy := u_bs_dpunpack.get.io.inp_prdy
-    u_bs_dpunpack.get.io.inp_data := bs_data_out_pd
     flop_bs_data_out_pvld := u_bs_dpunpack.get.io.out_pvld
     u_bs_dpunpack.get.io.out_prdy := flop_bs_data_out_prdy
     flop_bs_data_out_pd := u_bs_dpunpack.get.io.out_data
     }
 
-//===========================================
-// MUX between BS and BN
-//===========================================
-
-    val flop_bn_data_out_prdy = Wire(Bool())
-    val bn_data_in_prdy = Wire(Bool())
-    if(conf.NVDLA_SDP_BN_ENABLE){
-        flop_bs_data_out_prdy := Mux(cfg_bn_en, bn_data_in_prdy, flop_bn_data_out_prdy)
-    }
-    else{
-        flop_bs_data_out_prdy := flop_bn_data_out_prdy
-    }
-
+    //===========================================
+    // MUX between BS and BN
+    //===========================================
     val bs2bn_data_pvld = Mux(cfg_bs_en, flop_bs_data_out_pvld, sdp_cmux2dp_valid)
     val bn_data_in_pd = Mux(cfg_bs_en, flop_bs_data_out_pd, bs_data_in_pd)
-    
-    val bn_data_in_pvld = Wire(Bool())
-    if(conf.NVDLA_SDP_BN_ENABLE){
-        bn_data_in_pvld := cfg_bn_en & bs2bn_data_pvld
-    }
+    val bn_data_in_pvld = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
 
-//covert NVDLA_SDP_MAX_THROUGHPUT to NVDLA_SDP_BN_THROUGHPUT
+    //covert NVDLA_SDP_MAX_THROUGHPUT to NVDLA_SDP_BN_THROUGHPUT
 
-    val flop_bn_data_in_pvld = Wire(Bool())
-    val flop_bn_data_in_prdy = Wire(Bool())
-    val flop_bn_data_in_pd = Wire(UInt(conf.BN_IN_DW.W))
+    val flop_bn_data_out_pvld = if(conf.NVDLA_SDP_BN_ENABLE) Wire(Bool()) else false.B
+    val flop_bn_data_out_pd = if(conf.NVDLA_SDP_BN_ENABLE) Wire(UInt(conf.BN_DOUT_DW.W)) else "b0".asUInt(conf.BS_DOUT_DW.W)
+
     val u_bn_dppack = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_pack(conf.BN_DIN_DW, conf.BN_IN_DW))) else None
+    val u_bn = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_x2_int)) else None
+    val u_bn_dpunpack = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_unpack(conf.BN_OUT_DW, conf.BN_DOUT_DW))) else None
     if(conf.NVDLA_SDP_BN_ENABLE){
+    bn_data_in_pvld.get := cfg_bn_en & bs2bn_data_pvld
+
     u_bn_dppack.get.io.nvdla_core_clk := nvdla_gated_ncore_clk
-    u_bn_dppack.get.io.inp_pvld := bn_data_in_pvld
+    u_bn_dppack.get.io.inp_pvld := bn_data_in_pvld.get
     bn_data_in_prdy := u_bn_dppack.get.io.inp_prdy
     u_bn_dppack.get.io.inp_data := bn_data_in_pd
-    flop_bn_data_in_pvld := u_bn_dppack.get.io.out_pvld
-    u_bn_dppack.get.io.out_prdy := flop_bn_data_in_prdy
-    flop_bn_data_in_pd := u_bn_dppack.get.io.out_data
-    }
+    u_bn.get.io.chn_in_pvld := u_bn_dppack.get.io.out_pvld
+    u_bn_dppack.get.io.out_prdy := u_bn.get.io.chn_in_prdy
+    u_bn.get.io.chn_data_in := u_bn_dppack.get.io.out_data
 
-    val bn_data_out_pvld = Wire(Bool())
-    val bn_data_out_prdy = Wire(Bool())
-    val bn_data_out_pd = Wire(UInt(conf.BN_OUT_DW.W))
-    val u_bn = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_HLS_x2_int)) else None
-    if(conf.NVDLA_SDP_BN_ENABLE){
     u_bn.get.io.nvdla_core_clk := nvdla_gated_ncore_clk
-    u_bn.get.io.chn_in_pvld := flop_bn_data_in_pvld
-    flop_bn_data_in_prdy := u_bn.get.io.chn_in_prdy
-    u_bn.get.io.chn_data_in := flop_bn_data_in_pd
     u_bn.get.io.chn_alu_op_pvld := bn_alu_in_vld.get
     bn_alu_in_rdy.get := u_bn.get.io.chn_alu_op_prdy
     u_bn.get.io.chn_alu_op := bn_alu_in_data.get
     u_bn.get.io.chn_mul_op_pvld := bn_mul_in_vld.get
     bn_mul_in_rdy.get := u_bn.get.io.chn_mul_op_prdy
     u_bn.get.io.chn_mul_op := bn_mul_in_data.get
-    bn_data_out_pvld := u_bn.get.io.chn_out_pvld
-    u_bn.get.io.chn_out_prdy := bn_data_out_prdy
-    bn_data_out_pd := u_bn.get.io.chn_data_out
+    u_bn_dpunpack.get.io.inp_pvld := u_bn.get.io.chn_out_pvld
+    u_bn.get.io.chn_out_prdy := u_bn_dpunpack.get.io.inp_prdy
+    u_bn_dpunpack.get.io.inp_data := u_bn.get.io.chn_data_out
     u_bn.get.io.cfg_alu_algo := cfg_bn_alu_algo.get
     u_bn.get.io.cfg_alu_bypass := cfg_bn_alu_bypass.get
     u_bn.get.io.cfg_alu_op := cfg_bn_alu_operand.get
@@ -743,31 +663,22 @@ withClock(io.nvdla_core_clk){
     u_bn.get.io.cfg_mul_shift_value := cfg_bn_mul_shift_value.get
     u_bn.get.io.cfg_mul_src := cfg_bn_mul_src.get
     u_bn.get.io.cfg_relu_bypass := cfg_bn_relu_bypass.get 
-    }
+    
+    //covert NVDLA_SDP_BN_THROUGHPUT to NVDLA_SDP_MAX_THROUGHPUT
 
-//covert NVDLA_SDP_BN_THROUGHPUT to NVDLA_SDP_MAX_THROUGHPUT
-
-    val flop_bn_data_out_pvld = Wire(Bool())
-    val flop_bn_data_out_pd = Wire(UInt(conf.BN_DOUT_DW.W))
-    val u_bn_dpunpack = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_unpack(conf.BN_OUT_DW, conf.BN_DOUT_DW))) else None
-    if(conf.NVDLA_SDP_BN_ENABLE){
     u_bn_dpunpack.get.io.nvdla_core_clk := nvdla_gated_ncore_clk
-    u_bn_dpunpack.get.io.inp_pvld := bn_data_out_pvld
-    bn_data_out_prdy := u_bn_dpunpack.get.io.inp_prdy
-    u_bn_dpunpack.get.io.inp_data := bn_data_out_pd
     flop_bn_data_out_pvld := u_bn_dpunpack.get.io.out_pvld
     u_bn_dpunpack.get.io.out_prdy := flop_bn_data_out_prdy
     flop_bn_data_out_pd := u_bn_dpunpack.get.io.out_data
     }
 
-//===========================================
-// MUX between BN and EW
-//===========================================
-
+    //===========================================
+    // MUX between BN and EW
+    //===========================================
     val flop_ew_data_out_prdy = Wire(Bool())
-    val ew_data_in_prdy = Wire(Bool())
+    val ew_data_in_prdy = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
     if(conf.NVDLA_SDP_EW_ENABLE){
-        flop_bn_data_out_prdy := Mux(cfg_ew_en, ew_data_in_prdy, flop_ew_data_out_prdy)
+        flop_bn_data_out_prdy := Mux(cfg_ew_en, ew_data_in_prdy.get, flop_ew_data_out_prdy)
     }
     else{
         flop_bn_data_out_prdy := flop_ew_data_out_prdy
@@ -776,49 +687,41 @@ withClock(io.nvdla_core_clk){
     val bn2ew_data_pvld = Mux(cfg_bn_en, flop_bn_data_out_pvld, bs2bn_data_pvld)
     val ew_data_in_pd = Mux(cfg_bn_en, flop_bn_data_out_pd, bn_data_in_pd)
     
-    val ew_data_in_pvld = Wire(Bool())
+    val ew_data_in_pvld = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
     if(conf.NVDLA_SDP_EW_ENABLE){
-        ew_data_in_pvld := cfg_ew_en & bn2ew_data_pvld
+        ew_data_in_pvld.get := cfg_ew_en & bn2ew_data_pvld
     }
 
-//===========================================
-// CORE: y
-//===========================================
-//covert NVDLA_SDP_MAX_THROUGHPUT to NVDLA_SDP_EW_THROUGHPUT
-
-    val flop_ew_data_in_pvld = Wire(Bool())
-    val flop_ew_data_in_prdy = Wire(Bool())
-    val flop_ew_data_in_pd = Wire(UInt(conf.EW_IN_DW.W))
+    //===========================================
+    // CORE: y
+    //===========================================
+    val flop_ew_data_out_pvld = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
+    val flop_ew_data_out_pd = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(UInt(conf.EW_DOUT_DW.W))) else None
+    //covert NVDLA_SDP_MAX_THROUGHPUT to NVDLA_SDP_EW_THROUGHPUT
     val u_ew_dppack = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_pack(conf.EW_DIN_DW, conf.EW_IN_DW))) else None
-    if(conf.NVDLA_SDP_EW_ENABLE){
-    u_ew_dppack.get.io.nvdla_core_clk := nvdla_gated_ecore_clk
-    u_ew_dppack.get.io.inp_pvld := ew_data_in_pvld
-    ew_data_in_prdy := u_ew_dppack.get.io.inp_prdy
-    u_ew_dppack.get.io.inp_data := ew_data_in_pd
-    flop_ew_data_in_pvld := u_ew_dppack.get.io.out_pvld
-    u_ew_dppack.get.io.out_prdy := flop_ew_data_in_prdy
-    flop_ew_data_in_pd := u_ew_dppack.get.io.out_data 
-    }
-
-    val ew_data_out_pvld = Wire(Bool())
-    val ew_data_out_prdy = Wire(Bool())
-    val ew_data_out_pd = Wire(UInt(conf.EW_OUT_DW.W))
     val u_ew = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_y)) else None
+    val u_ew_dpunpack = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_unpack(conf.EW_OUT_DW, conf.EW_DOUT_DW))) else None
     if(conf.NVDLA_SDP_EW_ENABLE){
+        
+    u_ew_dppack.get.io.nvdla_core_clk := nvdla_gated_ecore_clk
+    u_ew_dppack.get.io.inp_pvld := ew_data_in_pvld.get
+    ew_data_in_prdy.get := u_ew_dppack.get.io.inp_prdy
+    u_ew_dppack.get.io.inp_data := ew_data_in_pd
+    u_ew.get.io.ew_data_in_pvld := u_ew_dppack.get.io.out_pvld
+    u_ew_dppack.get.io.out_prdy := u_ew.get.io.ew_data_in_prdy
+    u_ew.get.io.ew_data_in_pd := u_ew_dppack.get.io.out_data 
+
     u_ew.get.io.nvdla_core_clk := nvdla_gated_ecore_clk
     u_ew.get.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     u_ew.get.io.ew_alu_in_vld := ew_alu_in_vld.get
     ew_alu_in_rdy.get := u_ew.get.io.ew_alu_in_rdy
     u_ew.get.io.ew_alu_in_data := ew_alu_in_data.get
-    u_ew.get.io.ew_data_in_pvld := flop_ew_data_in_pvld
-    flop_ew_data_in_prdy := u_ew.get.io.ew_data_in_prdy
-    u_ew.get.io.ew_data_in_pd := flop_ew_data_in_pd
     u_ew.get.io.ew_mul_in_vld := ew_mul_in_vld.get
     ew_mul_in_rdy.get := u_ew.get.io.ew_mul_in_rdy
     u_ew.get.io.ew_mul_in_data := ew_mul_in_data.get
-    ew_data_out_pvld := u_ew.get.io.ew_data_out_pvld
-    u_ew.get.io.ew_data_out_prdy := ew_data_out_prdy
-    ew_data_out_pd := u_ew.get.io.ew_data_out_pd
+    u_ew_dpunpack.get.io.inp_pvld := u_ew.get.io.ew_data_out_pvld
+    u_ew.get.io.ew_data_out_prdy := u_ew_dpunpack.get.io.inp_prdy
+    u_ew_dpunpack.get.io.inp_data := u_ew.get.io.ew_data_out_pd
 
     u_ew.get.io.reg2dp_ew_alu_algo := io.reg2dp_ew_alu_algo.get
     u_ew.get.io.reg2dp_ew_alu_bypass := io.reg2dp_ew_alu_bypass.get
@@ -875,36 +778,28 @@ withClock(io.nvdla_core_clk){
     u_ew.get.io.reg2dp_perf_lut_en := io.reg2dp_perf_lut_en
     u_ew.get.io.reg2dp_proc_precision := io.reg2dp_proc_precision
     u_ew.get.io.op_en_load := op_en_load
-    }
+    
 
-//covert NVDLA_SDP_EW_THROUGHPUT to NVDLA_SDP_MAX_THROUGHPUT
-
-    val flop_ew_data_out_pvld = Wire(Bool())
-    val flop_ew_data_out_pd = Wire(UInt(conf.EW_DOUT_DW.W))
-    val u_ew_dpunpack = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_CORE_unpack(conf.EW_OUT_DW, conf.EW_DOUT_DW))) else None
-    if(conf.NVDLA_SDP_EW_ENABLE){
+    //covert NVDLA_SDP_EW_THROUGHPUT to NVDLA_SDP_MAX_THROUGHPUT
     u_ew_dpunpack.get.io.nvdla_core_clk := nvdla_gated_ecore_clk
-    u_ew_dpunpack.get.io.inp_pvld := ew_data_out_pvld
-    ew_data_out_prdy := u_ew_dpunpack.get.io.inp_prdy
-    u_ew_dpunpack.get.io.inp_data := ew_data_out_pd
-    flop_ew_data_out_pvld := u_ew_dpunpack.get.io.out_pvld
+    flop_ew_data_out_pvld.get := u_ew_dpunpack.get.io.out_pvld
     u_ew_dpunpack.get.io.out_prdy := flop_ew_data_out_prdy
-    flop_ew_data_out_pd := u_ew_dpunpack.get.io.out_data
+    flop_ew_data_out_pd.get := u_ew_dpunpack.get.io.out_data
     }
 
-//===========================================
-// MUX between EW and CVT
-//===========================================
-
+    //===========================================
+    // MUX between EW and CVT
+    //===========================================
+    val ew2cvt_data_pvld = if(conf.NVDLA_SDP_EW_ENABLE) Some(Wire(Bool())) else None
     val cvt_data_in_prdy = Wire(Bool())
     val cvt_data_in_pvld = Wire(Bool())
     val cvt_data_in_pd = Wire(UInt(conf.CV_IN_DW.W))
 
     if(conf.NVDLA_SDP_EW_ENABLE){
         flop_ew_data_out_prdy := cvt_data_in_prdy
-        val ew2cvt_data_pvld = Mux(cfg_ew_en, flop_ew_data_out_pvld, bn2ew_data_pvld)
-        cvt_data_in_pvld := ew2cvt_data_pvld
-        cvt_data_in_pd := Mux(cfg_ew_en, flop_ew_data_out_pd, ew_data_in_pd)
+        ew2cvt_data_pvld.get := Mux(cfg_ew_en, flop_ew_data_out_pvld.get, bn2ew_data_pvld)
+        cvt_data_in_pvld := ew2cvt_data_pvld.get
+        cvt_data_in_pd := Mux(cfg_ew_en, flop_ew_data_out_pd.get, ew_data_in_pd)
     }
     else{
         flop_ew_data_out_prdy := cvt_data_in_prdy
@@ -930,8 +825,8 @@ withClock(io.nvdla_core_clk){
     val cvt_data_out_data = cvt_data_out_pd(conf.CV_OUT_DW-1,0)
     val cvt_data_out_sat = cvt_data_out_pd(conf.CV_OUT_DW+conf.NVDLA_SDP_MAX_THROUGHPUT-1, conf.CV_OUT_DW)
 
-// to (PDP | WDMA)
-    val cfg_mode_pdp = io.reg2dp_output_dst === true.B
+    // to (PDP | WDMA)
+    val cfg_mode_pdp = io.reg2dp_output_dst === 1.U
     val core2wdma_rdy = Wire(Bool())
     val core2pdp_rdy = Wire(Bool())
     cvt_data_out_prdy := core2wdma_rdy & ((!cfg_mode_pdp) || core2pdp_rdy)
@@ -942,8 +837,8 @@ withClock(io.nvdla_core_clk){
     val core2wdma_pd = Mux(cfg_mode_pdp, Fill(conf.DP_OUT_DW, false.B), cvt_data_out_data)
     val core2pdp_pd = Mux(cfg_mode_pdp, cvt_data_out_data(conf.DP_OUT_DW-1,0), Fill(conf.DP_OUT_DW, false.B))
 
-//covert NVDLA_SDP_MAX_THROUGHPUT to atomic_m
-//only int8 or int16. If support both, use NV_NVDLA_SDP_WDMA_unpack
+    //covert NVDLA_SDP_MAX_THROUGHPUT to atomic_m
+    //only int8 or int16. If support both, use NV_NVDLA_SDP_WDMA_unpack
     val u_dpout_unpack = Module(new NV_NVDLA_SDP_CORE_unpack(conf.DP_OUT_DW, conf.DP_DOUT_DW))
     u_dpout_unpack.io.nvdla_core_clk := io.nvdla_core_clk
     u_dpout_unpack.io.inp_pvld := core2wdma_vld
@@ -953,8 +848,7 @@ withClock(io.nvdla_core_clk){
     u_dpout_unpack.io.out_prdy := io.sdp_dp2wdma_ready
     io.sdp_dp2wdma_pd := u_dpout_unpack.io.out_data
 
-//pdp THROUGHPUT is NVDLA_SDP_MAX_THROUGHPUT
-
+    //pdp THROUGHPUT is NVDLA_SDP_MAX_THROUGHPUT
     val pipe_p11 = Module{new NV_NVDLA_IS_pipe(conf.DP_OUT_DW)}
     pipe_p11.io.clk := io.nvdla_core_clk
     pipe_p11.io.vi := core2pdp_vld
@@ -964,31 +858,21 @@ withClock(io.nvdla_core_clk){
     pipe_p11.io.ri := io.sdp2pdp_ready
     io.sdp2pdp_pd := pipe_p11.io.dout
 
-//===========================================
-// PERF STATISTIC: SATURATION 
+    //===========================================
+    // PERF STATISTIC: SATURATION 
 
     val saturation_bits = RegInit(0.U(conf.NVDLA_SDP_MAX_THROUGHPUT.W))
     when(cvt_data_out_pvld & cvt_data_out_prdy){
-        // if(conf.NVDLA_FEATURE_DATA_TYPE_FP16){
-        //     when(cfg_out_precision === 2.U){
-        //         for(i <- 0 to conf.NVDLA_SDP_MAX_THROUGHPUT-1){
-        //             saturation_bits(i) := cvt_data_out_data(16*2*i-1, 16*i) === "h7b".asUInt
-        //         }
-        //     }
-        // }
-        // else{
-            saturation_bits := cvt_data_out_sat
-        // }
+        saturation_bits := cvt_data_out_sat
     }.otherwise{
         saturation_bits := 0.U
     }
 
-    def fun_my_bit_sum(idata: UInt): UInt =
-            (((idata(0) + idata(1) + idata(2)) + (idata(3) + idata(4) + idata(5))) + 
-            ((idata(6) + idata(7) + idata(8)) + (idata(9) + idata(10) + idata(11)))) +
-            (idata(12) + idata(13) + idata(14)) + idata(15)
-
-    val cvt_saturation_add = fun_my_bit_sum(Cat(Fill(16-conf.NVDLA_SDP_MAX_THROUGHPUT, false.B), saturation_bits))
+    val idata = Wire(UInt(16.W))
+    idata := saturation_bits
+    val cvt_saturation_add = idata(0) +& idata(1) +& idata(2) +& idata(3) +& idata(4) +& idata(5) +& 
+                             idata(6) +& idata(7) +& idata(8) +& idata(9) +& idata(10) +& idata(11) +&
+                             idata(12) +& idata(13) +& idata(14) +& idata(15)
     val cvt_saturation_sub = false.B
     val cvt_saturation_clr = op_en_load
     val cvt_saturation_cen = io.reg2dp_perf_sat_en
@@ -997,20 +881,20 @@ withClock(io.nvdla_core_clk){
     val cvt_sat_sub_ext = Cat(Fill(4, false.B), cvt_saturation_sub)
     val cvt_sat_inc = cvt_sat_add_ext > cvt_sat_sub_ext
     val cvt_sat_dec = cvt_sat_add_ext < cvt_sat_sub_ext
-    val cvt_sat_mod_ext = Mux(cvt_sat_inc, (cvt_sat_add_ext - cvt_sat_sub_ext) , (cvt_sat_sub_ext - cvt_sat_add_ext))
+    val cvt_sat_mod_ext = Mux(cvt_sat_inc, (cvt_sat_add_ext -& cvt_sat_sub_ext) , (cvt_sat_sub_ext -& cvt_sat_add_ext))(4, 0)
 
     val cvt_saturation_cnt = Reg(UInt(32.W))
-    val cvt_sat_sub_guard = cvt_saturation_cnt(31,1).asUInt.orR === false.B
+    val cvt_sat_sub_guard = cvt_saturation_cnt(31,1).orR === false.B
     val cvt_sat_sub_act = cvt_saturation_cnt(0)
     val cvt_sat_sub_act_ext = Cat(Fill(4, false.B), cvt_sat_sub_act)
     val cvt_sat_sub_flow = cvt_sat_dec & cvt_sat_sub_guard & (cvt_sat_sub_act_ext < cvt_sat_mod_ext)
 
-    val cvt_sat_add_guard = cvt_saturation_cnt(31,5).asUInt.andR === true.B
+    val cvt_sat_add_guard = cvt_saturation_cnt(31,5).andR === true.B
     val cvt_sat_add_act = cvt_saturation_cnt(4,0)
     val cvt_sat_add_act_ext = cvt_sat_add_act
-    val cvt_sat_add_flow = cvt_sat_inc & cvt_sat_add_guard & (cvt_sat_add_act_ext + cvt_sat_mod_ext > 31.U )
+    val cvt_sat_add_flow = cvt_sat_inc & cvt_sat_add_guard & ((cvt_sat_add_act_ext + cvt_sat_mod_ext) > 31.U )
 
-    val i_add = Mux(cvt_sat_add_flow, (31.U - cvt_sat_add_act), Mux(cvt_sat_sub_flow, 0.U, cvt_saturation_add))
+    val i_add = Mux(cvt_sat_add_flow, (31.U -& cvt_sat_add_act), Mux(cvt_sat_sub_flow, 0.U, cvt_saturation_add))
     val i_sub = Mux(cvt_sat_sub_flow, cvt_sat_sub_act, Mux(cvt_sat_add_flow, 0.U, cvt_saturation_sub))
 
     val cvt_sat_cvt_sat_adv = i_add =/= Cat(Fill(4,false.B), i_sub(0))
@@ -1018,7 +902,7 @@ withClock(io.nvdla_core_clk){
     val cvt_sat_cvt_sat_cnt_cur = RegInit(0.U(32.W))
     val cvt_sat_cvt_sat_cnt_ext = Cat(false.B, false.B, cvt_sat_cvt_sat_cnt_cur)
     val cvt_sat_cvt_sat_cnt_mod = Reg(UInt(34.W))
-    cvt_sat_cvt_sat_cnt_mod := cvt_sat_cvt_sat_cnt_cur + i_add - i_sub(0)
+    cvt_sat_cvt_sat_cnt_mod := cvt_sat_cvt_sat_cnt_cur +& i_add(4, 0) -& i_sub(0)
     val cvt_sat_cvt_sat_cnt_new = Mux(cvt_sat_cvt_sat_adv, cvt_sat_cvt_sat_cnt_mod, cvt_sat_cvt_sat_cnt_ext)
     val cvt_sat_cvt_sat_cnt_nxt = Mux(cvt_saturation_clr, 0.U, cvt_sat_cvt_sat_cnt_new)
 
@@ -1027,9 +911,6 @@ withClock(io.nvdla_core_clk){
     }
     cvt_saturation_cnt := cvt_sat_cvt_sat_cnt_cur
     io.dp2reg_out_saturation := cvt_saturation_cnt
-
-
-
 
 }}
 

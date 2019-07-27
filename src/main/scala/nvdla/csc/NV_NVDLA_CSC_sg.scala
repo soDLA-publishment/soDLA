@@ -472,7 +472,7 @@ withClock(io.nvdla_core_clk){
     val wt_push_req = pkg_vld & dat_push_ready
     val wt_pop_ready = Wire(Bool())
 
-    val u_dat_fifo = Module(new NV_NVDLA_CSC_SG_dat_fifo)
+    val u_dat_fifo = Module(new NV_NVDLA_CSC_SG_fifo(4, 33))
     u_dat_fifo.io.clk := io.nvdla_core_clk
     u_dat_fifo.io.wr_req := dat_push_req
     u_dat_fifo.io.wr_data := dat_push_data
@@ -483,7 +483,7 @@ withClock(io.nvdla_core_clk){
     dat_pop_req := u_dat_fifo.io.rd_req
     val dat_pop_data = u_dat_fifo.io.rd_data
 
-    val u_wt_fifo = Module(new NV_NVDLA_CSC_SG_wt_fifo)
+    val u_wt_fifo = Module(new NV_NVDLA_CSC_SG_fifo(4, 20))
     u_wt_fifo.io.clk := io.nvdla_core_clk
     u_wt_fifo.io.wr_req := wt_push_req
     u_wt_fifo.io.wr_data := wt_push_data
