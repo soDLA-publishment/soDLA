@@ -15,7 +15,7 @@
 //         val nvdla_core_rstn = Input(Bool())
 
 //         //control signal
-//         val int8_en = Input(Bool())
+//         // val int8_en = Input(Bool()) 
 //         val len5 = Input(Bool())
 //         val len7 = Input(Bool())
 //         val len9 = Input(Bool())
