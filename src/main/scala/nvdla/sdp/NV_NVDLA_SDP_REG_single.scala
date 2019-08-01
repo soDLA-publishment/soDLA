@@ -126,46 +126,9 @@ class NV_NVDLA_SDP_REG_single extends Module{
     "h00".asUInt(32.W)  -> nvdla_sdp_s_status_0_out
     ))
 
-    //Register flop declarations
-
-    val lut_access_type_out = RegInit(false.B)
-    val lut_addr_out = RegInit("b0".asUInt(10.W))
-    val lut_table_id_out = RegInit(false.B)
-    val lut_hybrid_priority_out = RegInit(false.B)
-    val lut_le_function_out = RegInit(false.B)
-    val lut_oflow_priority_out = RegInit(false.B)
-    val lut_uflow_priority_out = RegInit(false.B)
-    val lut_le_index_offset_out = RegInit("b0".asUInt(8.W))
-    val lut_le_index_select_out = RegInit("b0".asUInt(8.W))
-    val lut_lo_index_select_out = RegInit("b0".asUInt(8.W))
-    val lut_le_end_out = RegInit("b0".asUInt(32.W))
-    val lut_le_slope_oflow_scale_out = RegInit("b0".asUInt(16.W))
-    val lut_le_slope_uflow_scale_out = RegInit("b0".asUInt(16.W))
-    val lut_le_slope_oflow_shift_out = RegInit("b0".asUInt(5.W))
-    val lut_le_slope_uflow_shift_out = RegInit("b0".asUInt(5.W))
-    val lut_le_start_out = RegInit("b0".asUInt(32.W))
-    val lut_lo_end_out = RegInit("b0".asUInt(32.W))
-    val lut_lo_slope_oflow_scale_out = RegInit("b0".asUInt(16.W))
-    val lut_lo_slope_uflow_scale_out = RegInit("b0".asUInt(16.W))
-    val lut_lo_slope_oflow_shift_out = RegInit("b0".asUInt(5.W))
-    val lut_lo_slope_uflow_shift_out = RegInit("b0".asUInt(5.W))
-    val lut_lo_start_out = RegInit("b0".asUInt(32.W))    
-    val producer_out = RegInit(false.B)
-
-
-  // Not generating flops for field NVDLA_SDP_S_LUT_ACCESS_DATA_0::lut_data (to be implemented outside)
-
-
-
-
-  // Not generating flops for read-only field NVDLA_SDP_S_POINTER_0::consumer
-
-
-
-  // Not generating flops for read-only field NVDLA_SDP_S_STATUS_0::status_0
-
-  // Not generating flops for read-only field NVDLA_SDP_S_STATUS_0::status_1
-
+  //yifengdu y.f.du1994@gmail.com update on Aug 1, 2019 
+  //Solve Java heap space problem
+  
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_access_type
     io.lut_access_type := RegEnable(io.reg_wr_data(17), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_addr
