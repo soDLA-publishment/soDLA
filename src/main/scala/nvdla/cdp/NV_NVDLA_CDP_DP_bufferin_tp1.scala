@@ -78,7 +78,7 @@
 // //: }
 //     val is_4ele_here = (is_pos_c === 0.U) // NVDLA_CDP_THROUGHPUT = 8
 
-//     val is_posc_end = (is_pos_c === ((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT).U - 1.U))
+//     val is_posc_end = (is_pos_c === ((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT) - 1).U)
 
 //     // val wAIT = "b000".asUInt(3.W)
 //     // val nORMAL_C = "b001".asUInt(3.W)
@@ -104,6 +104,7 @@
 //         }
 //         is (nORMAL_C) {
 //             when(is_b_sync & is_posc_end & is_last_c & is_last_h & is_last_w & load_din){
+//                 normalC2CubeEnd := true.B
 //                 stat_cur := cUBE_END
 //             }.elsewhen(is_b_sync & is_posc_end & is_last_c & load_din){
 //                 stat_cur := fIRST_C
@@ -126,9 +127,6 @@
 //             }
 //         }
 //     } 
-//     when(stat_cur === nORMAL_C){
-//         normalC2CubeEnd := true.B
-//     }
 
 //     val data_shift_valid = RegInit(false.B)
 //     val data_shift_ready = Wire(Bool())
@@ -150,12 +148,12 @@
 
 //     val data_shift = RegInit(
 //         VecInit(
-//             Seq.fill(8/conf.NVDLA_CDP_THROUGHPUT+1)
+//             Seq.fill(2)
 //             (VecInit(
 //                 Seq.fill(8)(0.U((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE).W)))
 //                 )
 //                 )
-//             )
+//             )   //8/conf.NVDLA_CDP_THROUGHPUT+1 = 2, 2 columns
 //     val data_1stC = RegInit(
 //         VecInit(
 //             Seq.fill(8)(0.U((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE).W))
@@ -164,46 +162,54 @@
 
 //     val cube_end_width_cnt = RegInit(0.U(4.W))
 
-// // 8/conf.NVDLA_CDP_THROUGHPUT+1 = 2, only 2 columns here
-//     for(i <- 0 until 8){
-//         switch (stat_cur) {
-//             is (wAIT) {
-//                 when(load_din){
+//     switch (stat_cur) {
+//         is (wAIT) {
+//             when(load_din){
+//                 for(i <- 0 to 7){
 //                     when(is_pos_w === i.U){
-//                         data_shift(0)(i) := dp_data  
-//                     }.otherwise{
-//                         data_shift(0)(i) := 0.U
+//                         data_shift(0)(i) := dp_data
 //                     }
+//                     data_shift(0)(i) := 0.U
 //                     data_shift(1)(i) := 0.U
 //                 }
 //             }
-//             is (nORMAL_C) {
-//                 when(load_din){
+//         }
+//         is (nORMAL_C) {
+//             when(load_din){
+//                 for(i <- 0 to 7){
 //                     when(is_pos_w === i.U){
 //                         data_shift(0)(i) := dp_data
 //                         data_shift(1)(i) := data_shift(0)(i)
 //                     }
 //                 }
 //             }
-//             is (fIRST_C) {
+//         }
+//         is (fIRST_C) {
+//             for(i <- 0 to 7){
 //                 when(hold_here & rdma2dp_ready_normal){
 //                     when(width_pre_cnt === i.U){
 //                         data_shift(0)(i) := 0.U
 //                         data_shift(1)(i) := data_shift(0)(i)
 //                     }
 //                 }.elsewhen((is_pos_w === i.U) & load_din){
+//                     data_1stC(i) := dp_data
 //                     data_shift(0)(i) := 0.U
 //                     data_shift(1)(i) := data_shift(0)(i)
-//                     data_1stC(i) := dp_data
 //                 }
 //             }
-//             is (sECOND_C) {
-//                 when(is_pos_w === i.U){
-//                     data_shift(0)(i) := dp_data
+//         }
+//         is (sECOND_C) {
+//             when(load_din){
+//                 for(i <- 0 to 7){
+//                     when(is_pos_w === i.U){
+//                         data_shift(0)(i) := dp_data
+//                     }
 //                 }
 //             }
-//             is (cUBE_END) {
-//                 when(rdma2dp_ready_normal){
+//         }
+//         is (cUBE_END) {
+//             when(rdma2dp_ready_normal){
+//                 for(i <- 0 to 7){
 //                     when(cube_end_width_cnt === i.U){
 //                         data_shift(0)(i) := 0.U
 //                         data_shift(1)(i) := data_shift(0)(i)
@@ -212,7 +218,6 @@
 //             }
 //         }
 //     }
-
 
 //     when((stat_cur===nORMAL_C) & is_last_c & is_b_sync & is_posc_end & load_din){
 //         width_pre := is_width
@@ -232,8 +237,8 @@
 
 //     val width_cur = Mux(((stat_cur===fIRST_C) & (is_pos_w === 0.U)), width_cur_1, width_cur_2)
 
-//     more2less := (stat_cur===fIRST_C) & (width_cur<width_pre)
-//     val less2more = (stat_cur===fIRST_C) & (width_cur>width_pre)
+//     more2less := (stat_cur===fIRST_C) & (width_cur < width_pre)
+//     val less2more = (stat_cur===fIRST_C) & (width_cur > width_pre)
 //     val l2m_1stC_vld = (stat_cur===fIRST_C) & less2more & (is_pos_w <= width_pre)
 
 //     when((stat_cur===fIRST_C) & more2less){
@@ -444,9 +449,11 @@
 //         when(more2less){
 //             when(hold_here){
 //                 pos_w_align := width_pre_cnt
+//             }.otherwise{
+//                 pos_w_align := is_pos_w
 //             }
 //         }.elsewhen(less2more){
-//             when(is_pos_w === width_pre){
+//             when(is_pos_w <= width_pre){
 //                 pos_w_align := is_pos_w
 //             }.otherwise{
 //                 pos_w_align := 0.U
@@ -604,3 +611,4 @@
 //     implicit val conf: cdpConfiguration = new cdpConfiguration
 //     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_bufferin_tp1())
 // }
+
