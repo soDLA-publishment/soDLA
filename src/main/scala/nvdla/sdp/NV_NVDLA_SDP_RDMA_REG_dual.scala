@@ -228,7 +228,7 @@ class NV_NVDLA_SDP_RDMA_REG_dual extends Module{
     // Register: NVDLA_SDP_RDMA_D_BN_SURFACE_STRIDE_0    Field: bn_surface_stride
     io.bn_surface_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bn_surface_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_data_mode
-    io.brdma_data_mode := RegEnable(io.reg_wr_data(4), false.B), nvdla_sdp_rdma_d_brdma_cfg_0_wren)
+    io.brdma_data_mode := RegEnable(io.reg_wr_data(4), false.B, nvdla_sdp_rdma_d_brdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_data_size
     io.brdma_data_size := RegEnable(io.reg_wr_data(3), false.B, nvdla_sdp_rdma_d_brdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_data_use
