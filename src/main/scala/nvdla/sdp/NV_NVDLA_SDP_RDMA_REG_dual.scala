@@ -214,344 +214,102 @@ class NV_NVDLA_SDP_RDMA_REG_dual extends Module{
 
     //Register flop declarations
 
-    val bn_base_addr_high_out = RegInit("b0".asUInt(32.W))
-    val bn_base_addr_low_out = RegInit("b0".asUInt(32.W))
-    val bn_batch_stride_out = RegInit("b0".asUInt(32.W))
-    val bn_line_stride_out = RegInit("b0".asUInt(32.W))
-    val bn_surface_stride_out = RegInit("b0".asUInt(32.W))
-    val brdma_data_mode_out = RegInit(false.B)
-    val brdma_data_size_out = RegInit(false.B)
-    val brdma_data_use_out = RegInit("b00".asUInt(2.W))
-    val brdma_disable_out = RegInit(true.B)
-    val brdma_ram_type_out = RegInit(false.B)
-    val bs_base_addr_high_out = RegInit("b0".asUInt(32.W))
-    val bs_base_addr_low_out = RegInit("b0".asUInt(32.W))
-    val bs_batch_stride_out = RegInit("b0".asUInt(32.W))
-    val bs_line_stride_out = RegInit("b0".asUInt(32.W))
-    val bs_surface_stride_out = RegInit("b0".asUInt(32.W))
-    val channel_out = RegInit("b0".asUInt(13.W))
-    val height_out = RegInit("b0".asUInt(13.W))
-    val width_a_out = RegInit("b0".asUInt(13.W))
-    val erdma_data_mode_out = RegInit(false.B)
-    val erdma_data_size_out = RegInit(false.B)
-    val erdma_data_use_out = RegInit("b00".asUInt(2.W))
-    val erdma_disable_out = RegInit(true.B)
-    val erdma_ram_type_out = RegInit(false.B)
-    val ew_base_addr_high_out = RegInit("b0".asUInt(32.W))
-    val ew_base_addr_low_out = RegInit("b0".asUInt(32.W))
-    val ew_batch_stride_out = RegInit("b0".asUInt(32.W))
-    val ew_line_stride_out = RegInit("b0".asUInt(32.W))
-    val ew_surface_stride_out = RegInit("b0".asUInt(32.W))
-    val batch_number_out = RegInit("b0".asUInt(32.W))
-    val flying_mode_out = RegInit(false.B)
-    val in_precision_out = RegInit("b01".asUInt(2.W))
-    val out_precision_out = RegInit("b00".asUInt(2.W))
-    val proc_precision_out = RegInit("b01".asUInt(2.W))
-    val winograd_out = RegInit(false.B)
-    val nrdma_data_mode_out = RegInit(false.B)
-    val nrdma_data_size_out = RegInit(false.B)
-    val nrdma_data_use_out = RegInit("b00".asUInt(2.W))
-    val nrdma_disable_out = RegInit(true.B)
-    val nrdma_ram_type_out = RegInit(false.B)
-    val perf_dma_en_out = RegInit(false.B)
-    val perf_nan_inf_count_en_out = RegInit(false.B)
-    val src_base_addr_high_out = RegInit("b0".asUInt(32.W))
-    val src_base_addr_low_out = RegInit("b0".asUInt(32.W))
-    val src_ram_type_out = RegInit(false.B)
-    val src_line_stride_out = RegInit("b0".asUInt(32.W))
-    val src_surface_stride_out = RegInit("b0".asUInt(32.W))
 
+    //yifengdu y.f.du1994@gmail.com update on Aug 1, 2019 
+    //Solve Java heap space problem
     // Register: NVDLA_SDP_RDMA_D_BN_BASE_ADDR_HIGH_0    Field: bn_base_addr_high
-    when(nvdla_sdp_rdma_d_bn_base_addr_high_0_wren){
-        bn_base_addr_high_out := io.reg_wr_data
-    }
-
+    io.bn_base_addr_high := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bn_base_addr_high_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BN_BASE_ADDR_LOW_0    Field: bn_base_addr_low
-    when(nvdla_sdp_rdma_d_bn_base_addr_low_0_wren){
-        bn_base_addr_low_out := io.reg_wr_data
-    }
-
+    io.bn_base_addr_low := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bn_base_addr_low_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BN_BATCH_STRIDE_0    Field: bn_batch_stride
-    when(nvdla_sdp_rdma_d_bn_batch_stride_0_wren){
-        bn_batch_stride_out := io.reg_wr_data
-    }
-
+    io.bn_batch_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bn_batch_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BN_LINE_STRIDE_0    Field: bn_line_stride
-    when(nvdla_sdp_rdma_d_bn_line_stride_0_wren){
-        bn_line_stride_out := io.reg_wr_data
-    }
-
+    io.bn_line_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bn_line_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BN_SURFACE_STRIDE_0    Field: bn_surface_stride
-    when(nvdla_sdp_rdma_d_bn_surface_stride_0_wren){
-        bn_surface_stride_out := io.reg_wr_data
-    }
-
+    io.bn_surface_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bn_surface_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_data_mode
-    when(nvdla_sdp_rdma_d_brdma_cfg_0_wren){
-        brdma_data_mode_out := io.reg_wr_data(4)
-    }
-
+    io.brdma_data_mode := RegEnable(io.reg_wr_data(4), false.B), nvdla_sdp_rdma_d_brdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_data_size
-    when(nvdla_sdp_rdma_d_brdma_cfg_0_wren){
-        brdma_data_size_out := io.reg_wr_data(3)
-    }
-
+    io.brdma_data_size := RegEnable(io.reg_wr_data(3), false.B, nvdla_sdp_rdma_d_brdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_data_use
-    when(nvdla_sdp_rdma_d_brdma_cfg_0_wren){
-        brdma_data_use_out := io.reg_wr_data(2, 1)
-    }
-
+    io.brdma_data_use := RegEnable(io.reg_wr_data(2, 1), "b00".asUInt(2.W), nvdla_sdp_rdma_d_brdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_disable
-    when(nvdla_sdp_rdma_d_brdma_cfg_0_wren){
-        brdma_disable_out := io.reg_wr_data(0)
-    }
-
+    io.brdma_disable := RegEnable(io.reg_wr_data(0), true.B, nvdla_sdp_rdma_d_brdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BRDMA_CFG_0    Field: brdma_ram_type
-    when(nvdla_sdp_rdma_d_brdma_cfg_0_wren){
-        brdma_ram_type_out := io.reg_wr_data(5)
-    }
-
+    io.brdma_ram_type := RegEnable(io.reg_wr_data(5), false.B, nvdla_sdp_rdma_d_brdma_cfg_0_wren)
+    
     // Register: NVDLA_SDP_RDMA_D_BS_BASE_ADDR_HIGH_0    Field: bs_base_addr_high
-    when(nvdla_sdp_rdma_d_bs_base_addr_high_0_wren){
-        bs_base_addr_high_out := io.reg_wr_data
-    }
-
+    io.bs_base_addr_high := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bs_base_addr_high_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BS_BASE_ADDR_LOW_0    Field: bs_base_addr_low
-    when(nvdla_sdp_rdma_d_bs_base_addr_low_0_wren){
-        bs_base_addr_low_out := io.reg_wr_data
-    }
-
+    io.bs_base_addr_low := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bs_base_addr_low_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BS_BATCH_STRIDE_0    Field: bs_batch_stride
-    when(nvdla_sdp_rdma_d_bs_batch_stride_0_wren){
-        bs_batch_stride_out := io.reg_wr_data
-    }
-
+    io.bs_batch_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bs_batch_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BS_LINE_STRIDE_0    Field: bs_line_stride
-    when(nvdla_sdp_rdma_d_bs_line_stride_0_wren){
-        bs_line_stride_out := io.reg_wr_data
-    }
-
+    io.bs_line_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bs_line_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_BS_SURFACE_STRIDE_0    Field: bs_surface_stride
-    when(nvdla_sdp_rdma_d_bs_surface_stride_0_wren){
-        bs_surface_stride_out := io.reg_wr_data
-    }
-
+    io.bs_surface_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_bs_surface_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_DATA_CUBE_CHANNEL_0    Field: channel
-    when(nvdla_sdp_rdma_d_data_cube_channel_0_wren){
-        channel_out := io.reg_wr_data(12, 0)
-    }
-
+    io.channel := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_sdp_rdma_d_data_cube_channel_0_wren)
     // Register: NVDLA_SDP_RDMA_D_DATA_CUBE_HEIGHT_0    Field: height
-    when(nvdla_sdp_rdma_d_data_cube_height_0_wren){
-        height_out := io.reg_wr_data(12, 0)
-    }
-
+    io.height := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_sdp_rdma_d_data_cube_height_0_wren)
     // Register: NVDLA_SDP_RDMA_D_DATA_CUBE_width_a_0    Field: width_a
-    when(nvdla_sdp_rdma_d_data_cube_width_a_0_wren){
-        width_a_out := io.reg_wr_data(12, 0)
-    }
-
+    io.width_a := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_sdp_rdma_d_data_cube_width_a_0_wren)
     // Register: NVDLA_SDP_RDMA_D_ERDMA_CFG_0    Field: erdma_data_mode
-    when(nvdla_sdp_rdma_d_erdma_cfg_0_wren){
-        erdma_data_mode_out := io.reg_wr_data(4)
-    }
-
+    io.erdma_data_mode := RegEnable(io.reg_wr_data(4), false.B, nvdla_sdp_rdma_d_erdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_ERDMA_CFG_0    Field: erdma_data_size
-    when(nvdla_sdp_rdma_d_erdma_cfg_0_wren){
-        erdma_data_size_out := io.reg_wr_data(3)
-    }
-
+    io.erdma_data_size := RegEnable(io.reg_wr_data(3), false.B, nvdla_sdp_rdma_d_erdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_ERDMA_CFG_0    Field: erdma_data_use
-    when(nvdla_sdp_rdma_d_erdma_cfg_0_wren){
-        erdma_data_use_out := io.reg_wr_data(2, 1)
-    }
-
+    io.erdma_data_use := RegEnable(io.reg_wr_data(2, 1), "b00".asUInt(2.W), nvdla_sdp_rdma_d_erdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_ERDMA_CFG_0    Field: erdma_disable
-    when(nvdla_sdp_rdma_d_erdma_cfg_0_wren){
-        erdma_disable_out := io.reg_wr_data(0)
-    }
-
+    io.erdma_disable := RegEnable(io.reg_wr_data(0), true.B, nvdla_sdp_rdma_d_erdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_ERDMA_CFG_0    Field: erdma_ram_type
-    when(nvdla_sdp_rdma_d_erdma_cfg_0_wren){
-        erdma_ram_type_out := io.reg_wr_data(5)
-    }
-
+    io.erdma_ram_type := RegEnable(io.reg_wr_data(5), false.B, nvdla_sdp_rdma_d_erdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_EW_BASE_ADDR_HIGH_0    Field: ew_base_addr_high
-    when(nvdla_sdp_rdma_d_ew_base_addr_high_0_wren){
-        ew_base_addr_high_out := io.reg_wr_data
-    }
-
+    io.ew_base_addr_high := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_ew_base_addr_high_0_wren)
     // Register: NVDLA_SDP_RDMA_D_EW_BASE_ADDR_LOW_0    Field: ew_base_addr_low
-    when(nvdla_sdp_rdma_d_ew_base_addr_low_0_wren){
-        ew_base_addr_low_out := io.reg_wr_data
-    }
-
+    io.ew_base_addr_low := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_ew_base_addr_low_0_wren)
     // Register: NVDLA_SDP_RDMA_D_EW_BATCH_STRIDE_0    Field: ew_batch_stride
-    when(nvdla_sdp_rdma_d_ew_batch_stride_0_wren){
-        ew_batch_stride_out := io.reg_wr_data
-    }
-
+    io.ew_batch_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_ew_batch_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_EW_LINE_STRIDE_0    Field: ew_line_stride
-    when(nvdla_sdp_rdma_d_ew_line_stride_0_wren){
-        ew_line_stride_out := io.reg_wr_data
-    }
-
+    io.ew_line_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_ew_line_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_EW_SURFACE_STRIDE_0    Field: ew_surface_stride
-    when(nvdla_sdp_rdma_d_ew_surface_stride_0_wren){
-        ew_surface_stride_out := io.reg_wr_data
-    }
-
+    io.ew_surface_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_ew_surface_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_FEATURE_MODE_CFG_0    Field: batch_number
-    when(nvdla_sdp_rdma_d_feature_mode_cfg_0_wren){
-        batch_number_out := io.reg_wr_data(12, 8)
-    }
-
+    io.batch_number := RegEnable(io.reg_wr_data(12, 8), "b0".asUInt(32.W), nvdla_sdp_rdma_d_feature_mode_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_FEATURE_MODE_CFG_0    Field: flying_mode
-    when(nvdla_sdp_rdma_d_feature_mode_cfg_0_wren){
-        flying_mode_out := io.reg_wr_data(0)
-    }
-
+    io.flying_mode := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_rdma_d_feature_mode_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_FEATURE_MODE_CFG_0    Field: in_precision
-    when(nvdla_sdp_rdma_d_feature_mode_cfg_0_wren){
-        in_precision_out := io.reg_wr_data(3, 2)
-    }
-
+    io.in_precision := RegEnable(io.reg_wr_data(3, 2), "b01".asUInt(2.W), nvdla_sdp_rdma_d_feature_mode_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_FEATURE_MODE_CFG_0    Field: out_precision
-    when(nvdla_sdp_rdma_d_feature_mode_cfg_0_wren){
-        out_precision_out := io.reg_wr_data(7, 6)
-    }
-
+    io.out_precision := RegEnable(io.reg_wr_data(7, 6), "b00".asUInt(2.W), nvdla_sdp_rdma_d_feature_mode_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_FEATURE_MODE_CFG_0    Field: proc_precision
-    when(nvdla_sdp_rdma_d_feature_mode_cfg_0_wren){
-        proc_precision_out := io.reg_wr_data(5, 4)
-    }
-
+    io.proc_precision := RegEnable(io.reg_wr_data(5, 4), "b01".asUInt(2.W), nvdla_sdp_rdma_d_feature_mode_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_FEATURE_MODE_CFG_0    Field: winograd
-    when(nvdla_sdp_rdma_d_feature_mode_cfg_0_wren){
-        winograd_out := io.reg_wr_data(1)
-    }
-
+    io.winograd := RegEnable(io.reg_wr_data(1), false.B, nvdla_sdp_rdma_d_feature_mode_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_NRDMA_CFG_0    Field: nrdma_data_mode
-    when(nvdla_sdp_rdma_d_nrdma_cfg_0_wren){
-        nrdma_data_mode_out := io.reg_wr_data(4)
-    }
-
+    io.nrdma_data_mode := RegEnable(io.reg_wr_data(4), false.B, nvdla_sdp_rdma_d_nrdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_NRDMA_CFG_0    Field: nrdma_data_size
-    when(nvdla_sdp_rdma_d_nrdma_cfg_0_wren){
-        nrdma_data_size_out := io.reg_wr_data(3)
-    }
-
+    io.nrdma_data_size := RegEnable(io.reg_wr_data(3), false.B, nvdla_sdp_rdma_d_nrdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_NRDMA_CFG_0    Field: nrdma_data_use
-    when(nvdla_sdp_rdma_d_nrdma_cfg_0_wren){
-        nrdma_data_use_out := io.reg_wr_data(2, 1)
-    }
-
+    io.nrdma_data_use := RegEnable(io.reg_wr_data(2, 1), "b00".asUInt(2.W), nvdla_sdp_rdma_d_nrdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_NRDMA_CFG_0    Field: nrdma_disable
-    when(nvdla_sdp_rdma_d_nrdma_cfg_0_wren){
-        nrdma_disable_out := io.reg_wr_data(0)
-    }
-
+    io.nrdma_disable := RegEnable(io.reg_wr_data(0), true.B, nvdla_sdp_rdma_d_nrdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_NRDMA_CFG_0    Field: nrdma_ram_type
-    when(nvdla_sdp_rdma_d_nrdma_cfg_0_wren){
-        nrdma_ram_type_out := io.reg_wr_data(5)
-    }
-
-    // Not generating flops for field NVDLA_SDP_RDMA_D_OP_ENABLE_0::op_en (to be implemented outside)
-
-    // Not generating flops for read-only field NVDLA_SDP_RDMA_D_PERF_BRDMA_READ_STALL_0::brdma_stall
-
+    io.nrdma_ram_type := RegEnable(io.reg_wr_data(5), false.B, nvdla_sdp_rdma_d_nrdma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_PERF_ENABLE_0    Field: perf_dma_en
-    when(nvdla_sdp_rdma_d_perf_enable_0_wren){
-        perf_dma_en_out := io.reg_wr_data(0)
-    }
-
+    io.perf_dma_en := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_rdma_d_perf_enable_0_wren)
     // Register: NVDLA_SDP_RDMA_D_PERF_ENABLE_0    Field: perf_nan_inf_count_en
-   when(nvdla_sdp_rdma_d_perf_enable_0_wren){
-        perf_nan_inf_count_en_out := io.reg_wr_data(1)
-    }
-
-    // Not generating flops for read-only field NVDLA_SDP_RDMA_D_PERF_ERDMA_READ_STALL_0::erdma_stall
-
-    // Not generating flops for read-only field NVDLA_SDP_RDMA_D_PERF_MRDMA_READ_STALL_0::mrdma_stall
-
-    // Not generating flops for read-only field NVDLA_SDP_RDMA_D_PERF_NRDMA_READ_STALL_0::nrdma_stall
-
+    io.perf_nan_inf_count_en := RegEnable(io.reg_wr_data(1), false.B, nvdla_sdp_rdma_d_perf_enable_0_wren)
     // Register: NVDLA_SDP_RDMA_D_SRC_BASE_ADDR_HIGH_0    Field: src_base_addr_high
-    when(nvdla_sdp_rdma_d_src_base_addr_high_0_wren){
-        src_base_addr_high_out := io.reg_wr_data
-    }
-
+    io.src_base_addr_high := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_src_base_addr_high_0_wren)
     // Register: NVDLA_SDP_RDMA_D_SRC_BASE_ADDR_LOW_0    Field: src_base_addr_low
-    when(nvdla_sdp_rdma_d_src_base_addr_low_0_wren){
-        src_base_addr_low_out := io.reg_wr_data
-    }
-
+    io.src_base_addr_low := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_src_base_addr_low_0_wren)
     // Register: NVDLA_SDP_RDMA_D_SRC_DMA_CFG_0    Field: src_ram_type
-    when(nvdla_sdp_rdma_d_src_dma_cfg_0_wren){
-        src_ram_type_out := io.reg_wr_data(0)
-    }
-
+    io.src_ram_type := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_rdma_d_src_dma_cfg_0_wren)
     // Register: NVDLA_SDP_RDMA_D_SRC_LINE_STRIDE_0    Field: src_line_stride
-    when(nvdla_sdp_rdma_d_src_line_stride_0_wren){
-        src_line_stride_out := io.reg_wr_data
-    }
-
+    io.src_line_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_src_line_stride_0_wren)
     // Register: NVDLA_SDP_RDMA_D_SRC_SURFACE_STRIDE_0    Field: src_surface_stride
-    when(nvdla_sdp_rdma_d_src_surface_stride_0_wren){
-        src_surface_stride_out := io.reg_wr_data
-    }
-
-    // Not generating flops for read-only field NVDLA_SDP_RDMA_D_STATUS_INF_INPUT_NUM_0::status_inf_input_num
-
-    // Not generating flops for read-only field NVDLA_SDP_RDMA_D_STATUS_NAN_INPUT_NUM_0::status_nan_input_num
-
-
-    io.bn_base_addr_high := bn_base_addr_high_out
-    io.bn_base_addr_low := bn_base_addr_low_out
-    io.bn_batch_stride := bn_batch_stride_out
-    io.bn_line_stride := bn_line_stride_out
-    io.bn_surface_stride := bn_surface_stride_out
-    io.brdma_data_mode := brdma_data_mode_out
-    io.brdma_data_size := brdma_data_size_out
-    io.brdma_data_use := brdma_data_use_out
-    io.brdma_disable := brdma_disable_out
-    io.brdma_ram_type := brdma_ram_type_out
-    io.bs_base_addr_high := bs_base_addr_high_out
-    io.bs_base_addr_low := bs_base_addr_low_out
-    io.bs_batch_stride := bs_batch_stride_out
-    io.bs_line_stride := bs_line_stride_out
-    io.bs_surface_stride := bs_surface_stride_out
-    io.channel := channel_out
-    io.height := height_out
-    io.width_a := width_a_out
-    io.erdma_data_mode := erdma_data_mode_out
-    io.erdma_data_size := erdma_data_size_out
-    io.erdma_data_use := erdma_data_use_out
-    io.erdma_disable := erdma_disable_out
-    io.erdma_ram_type := erdma_ram_type_out
-    io.ew_base_addr_high := ew_base_addr_high_out
-    io.ew_base_addr_low := ew_base_addr_low_out
-    io.ew_batch_stride := ew_batch_stride_out
-    io.ew_line_stride := ew_line_stride_out
-    io.ew_surface_stride := ew_surface_stride_out
-    io.batch_number := batch_number_out
-    io.flying_mode := flying_mode_out
-    io.in_precision := in_precision_out
-    io.out_precision := out_precision_out
-    io.proc_precision := proc_precision_out
-    io.winograd := winograd_out
-    io.nrdma_data_mode := nrdma_data_mode_out
-    io.nrdma_data_size := nrdma_data_size_out
-    io.nrdma_data_use := nrdma_data_use_out
-    io.nrdma_disable := nrdma_disable_out
-    io.nrdma_ram_type := nrdma_ram_type_out
-    io.perf_dma_en := perf_dma_en_out
-    io.perf_nan_inf_count_en := perf_nan_inf_count_en_out
-    io.src_base_addr_high := src_base_addr_high_out
-    io.src_base_addr_low := src_base_addr_low_out
-    io.src_ram_type := src_ram_type_out
-    io.src_line_stride := src_line_stride_out
-    io.src_surface_stride := src_surface_stride_out                                                               
+    io.src_surface_stride := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_src_surface_stride_0_wren)                                                               
 
 }}
 
