@@ -77,22 +77,14 @@ withClock(io.nvdla_core_clk){
 
 
     val cmd_size = RegInit(0.U(14.W))
+    val cmd_addr = RegInit(0.U((conf.NVDLA_MEM_ADDRESS_WIDTH - conf.AM_AW).W))
+    val cmd_odd = RegInit(false.B)
+    val cmd_cube_end = RegInit(false.B)
+
     when(io.cmd2dat_dma_pvld & io.cmd2dat_dma_prdy){
         cmd_size := cmd2dat_dma_size
-    }
-
-    val cmd_addr = RegInit(0.U((conf.NVDLA_MEM_ADDRESS_WIDTH - conf.AM_AW).W))
-    when(io.cmd2dat_dma_pvld & io.cmd2dat_dma_prdy){
         cmd_addr := cmd2dat_dma_addr
-    }
-
-    val cmd_odd = RegInit(false.B)
-    when(io.cmd2dat_dma_pvld & io.cmd2dat_dma_prdy){
         cmd_odd := cmd2dat_dma_odd
-    }
-    
-    val cmd_cube_end = RegInit(false.B)
-    when(io.cmd2dat_dma_pvld & io.cmd2dat_dma_prdy){
         cmd_cube_end := cmd2dat_dma_cube_end
     }
 

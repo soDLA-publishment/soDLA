@@ -65,18 +65,8 @@ class NV_NVDLA_CMAC_REG_dual extends Module {
     ))
 
     // Register flop declarations
-
-    val conv_mode_out = RegInit(false.B)
-    val proc_precision_out = RegInit("b01".U)
-
-    when(nvdla_cmac_a_d_misc_cfg_0_wren){
-        conv_mode_out:= io.reg_wr_data(0)
-    }
-    when(nvdla_cmac_a_d_op_enable_0_wren){
-        proc_precision_out:= io.reg_wr_data(13, 12)
-    }
         
-    io.conv_mode := conv_mode_out
-    io.proc_precision := proc_precision_out
+    io.conv_mode := RegEnable(io.reg_wr_data(0), false.B, nvdla_cmac_a_d_misc_cfg_0_wren)
+    io.proc_precision := RegEnable(io.reg_wr_data(13, 12), "b01".U, nvdla_cmac_a_d_op_enable_0_wren)
 
 }}

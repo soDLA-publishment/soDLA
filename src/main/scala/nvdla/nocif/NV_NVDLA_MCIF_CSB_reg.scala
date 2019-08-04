@@ -100,159 +100,48 @@ withClock(io.nvdla_core_clk){
 
     // Register flop declarations
 
-    val rd_os_cnt_out = RegInit("b11111111".asUInt(8.W))
-    val wr_os_cnt_out = RegInit("b11111111".asUInt(8.W))
-    val rd_weight_bdma_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_cdp_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_pdp_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_sdp_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_cdma_dat_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_sdp_b_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_sdp_e_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_sdp_n_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_cdma_wt_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_rbk_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_rsv_0_out = RegInit("b00000001".asUInt(8.W))
-    val rd_weight_rsv_1_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_bdma_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_cdp_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_pdp_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_sdp_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_rbk_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_rsv_0_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_rsv_1_out = RegInit("b00000001".asUInt(8.W))
-    val wr_weight_rsv_2_out = RegInit("b00000001".asUInt(8.W))
-
-// Register: NVDLA_MCIF_CFG_OUTSTANDING_CNT_0    Field: rd_os_cnt
-    when(nvdla_mcif_cfg_outstanding_cnt_0_wren){
-        rd_os_cnt_out := io.reg_wr_data(7, 0)
-    }
-
-  // Register: NVDLA_MCIF_CFG_OUTSTANDING_CNT_0    Field: wr_os_cnt
-    when(nvdla_mcif_cfg_outstanding_cnt_0_wren){
-        wr_os_cnt_out := io.reg_wr_data(15, 8)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_bdma
-    when(nvdla_mcif_cfg_rd_weight_0_0_wren){
-        rd_weight_bdma_out := io.reg_wr_data(7, 0)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_cdp
-    when(nvdla_mcif_cfg_rd_weight_0_0_wren){
-        rd_weight_cdp_out := io.reg_wr_data(31, 24)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_pdp
-    when(nvdla_mcif_cfg_rd_weight_0_0_wren){
-        rd_weight_pdp_out := io.reg_wr_data(23, 16)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_sdp
-    when(nvdla_mcif_cfg_rd_weight_0_0_wren){
-        rd_weight_sdp_out := io.reg_wr_data(15, 8)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_cdma_dat
-    when(nvdla_mcif_cfg_rd_weight_1_0_wren){
-        rd_weight_cdma_dat_out := io.reg_wr_data(31, 24)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_sdp_b
-    when(nvdla_mcif_cfg_rd_weight_1_0_wren){
-        rd_weight_sdp_b_out := io.reg_wr_data(7, 0)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_sdp_e
-    when(nvdla_mcif_cfg_rd_weight_1_0_wren){
-        rd_weight_sdp_e_out := io.reg_wr_data(23, 16)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_sdp_n
-    when(nvdla_mcif_cfg_rd_weight_1_0_wren){
-        rd_weight_sdp_n_out := io.reg_wr_data(15, 8)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_cdma_wt
-    when(nvdla_mcif_cfg_rd_weight_2_0_wren){
-        rd_weight_cdma_wt_out := io.reg_wr_data(7, 0)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_rbk
-    when(nvdla_mcif_cfg_rd_weight_2_0_wren){
-        rd_weight_rbk_out := io.reg_wr_data(15, 8)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_rsv_0
-    when(nvdla_mcif_cfg_rd_weight_2_0_wren){
-        rd_weight_rsv_0_out := io.reg_wr_data(31, 24)
-    }
-
-  // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_rsv_1
-    when(nvdla_mcif_cfg_rd_weight_2_0_wren){
-        rd_weight_rsv_1_out := io.reg_wr_data(23, 16)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_bdma
-    when(nvdla_mcif_cfg_wr_weight_0_0_wren){
-        wr_weight_bdma_out := io.reg_wr_data(7, 0)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_cdp
-    when(nvdla_mcif_cfg_wr_weight_0_0_wren){
-        wr_weight_cdp_out := io.reg_wr_data(31, 24)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_pdp
-    when(nvdla_mcif_cfg_wr_weight_0_0_wren){
-        wr_weight_pdp_out := io.reg_wr_data(23, 16)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_sdp
-    when(nvdla_mcif_cfg_wr_weight_0_0_wren){
-        wr_weight_sdp_out := io.reg_wr_data(15, 8)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rbk
-    when(nvdla_mcif_cfg_wr_weight_1_0_wren){
-        wr_weight_rbk_out := io.reg_wr_data(7, 0)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rsv_0
-    when(nvdla_mcif_cfg_wr_weight_1_0_wren){
-        wr_weight_rsv_0_out := io.reg_wr_data(31, 24)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rsv_1
-    when(nvdla_mcif_cfg_wr_weight_1_0_wren){
-        wr_weight_rsv_1_out := io.reg_wr_data(23, 16)
-    }
-
-  // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rsv_2
-    when(nvdla_mcif_cfg_wr_weight_1_0_wren){
-        wr_weight_rsv_2_out := io.reg_wr_data(15, 8)
-    }
-
-    io.rd_os_cnt := rd_os_cnt_out
-    io.wr_os_cnt := wr_os_cnt_out
-    io.rd_weight_bdma := rd_weight_bdma_out
-    io.rd_weight_cdp := rd_weight_cdp_out
-    io.rd_weight_pdp := rd_weight_pdp_out
-    io.rd_weight_sdp := rd_weight_sdp_out
-    io.rd_weight_cdma_dat := rd_weight_cdma_dat_out
-    io.rd_weight_sdp_b := rd_weight_sdp_b_out
-    io.rd_weight_sdp_e := rd_weight_sdp_e_out
-    io.rd_weight_sdp_n := rd_weight_sdp_n_out
-    io.rd_weight_cdma_wt := rd_weight_cdma_wt_out
-    io.rd_weight_rbk := rd_weight_rbk_out
-    io.rd_weight_rsv_0 := rd_weight_rsv_0_out
-    io.rd_weight_rsv_1 := rd_weight_rsv_1_out
-    io.wr_weight_bdma := wr_weight_bdma_out
-    io.wr_weight_cdp := wr_weight_cdp_out
-    io.wr_weight_pdp := wr_weight_pdp_out
-    io.wr_weight_sdp := wr_weight_sdp_out
-    io.wr_weight_rbk := wr_weight_rbk_out
-    io.wr_weight_rsv_0 := wr_weight_rsv_0_out
-    io.wr_weight_rsv_1 := wr_weight_rsv_1_out
-    io.wr_weight_rsv_2 := wr_weight_rsv_2_out
+    // Register: NVDLA_MCIF_CFG_OUTSTANDING_CNT_0    Field: rd_os_cnt
+    io.rd_os_cnt := RegEnable(io.reg_wr_data(7, 0), "b11111111".asUInt(8.W), nvdla_mcif_cfg_outstanding_cnt_0_wren)
+    // Register: NVDLA_MCIF_CFG_OUTSTANDING_CNT_0    Field: wr_os_cnt
+    io.wr_os_cnt := RegEnable(io.reg_wr_data(15, 8), "b11111111".asUInt(8.W), nvdla_mcif_cfg_outstanding_cnt_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_bdma
+    io.rd_weight_bdma := RegEnable(io.reg_wr_data(7, 0), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_cdp
+    io.rd_weight_cdp := RegEnable(io.reg_wr_data(31, 24), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_pdp
+    io.rd_weight_pdp := RegEnable(io.reg_wr_data(23, 16), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_0_0    Field: rd_weight_sdp
+    io.rd_weight_sdp := RegEnable(io.reg_wr_data(15, 8), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_cdma_dat
+    io.rd_weight_cdma_dat := RegEnable(io.reg_wr_data(31, 24), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_1_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_sdp_b
+    io.rd_weight_sdp_b := RegEnable(io.reg_wr_data(7, 0), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_1_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_sdp_e
+    io.rd_weight_sdp_e := RegEnable(io.reg_wr_data(23, 16), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_1_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_1_0    Field: rd_weight_sdp_n
+    io.rd_weight_sdp_n := RegEnable(io.reg_wr_data(15, 8), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_1_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_cdma_wt
+    io.rd_weight_cdma_wt := RegEnable(io.reg_wr_data(7, 0), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_2_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_rbk
+    io.rd_weight_rbk := RegEnable(io.reg_wr_data(15, 8), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_2_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_rsv_0
+    io.rd_weight_rsv_0 := RegEnable(io.reg_wr_data(31, 24), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_2_0_wren)
+    // Register: NVDLA_MCIF_CFG_RD_WEIGHT_2_0    Field: rd_weight_rsv_1
+    io.rd_weight_rsv_1 := RegEnable(io.reg_wr_data(23, 16), "b00000001".asUInt(8.W), nvdla_mcif_cfg_rd_weight_2_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_bdma
+    io.wr_weight_bdma := RegEnable(io.reg_wr_data(7, 0), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_cdp
+    io.wr_weight_cdp := RegEnable(io.reg_wr_data(31, 24), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_pdp
+    io.wr_weight_pdp := RegEnable(io.reg_wr_data(23, 16), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_0_0    Field: wr_weight_sdp
+    io.wr_weight_sdp := RegEnable(io.reg_wr_data(15, 8), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_0_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rbk
+    io.wr_weight_rbk := RegEnable(io.reg_wr_data(7, 0), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_1_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rsv_0
+    io.wr_weight_rsv_0 := RegEnable(io.reg_wr_data(31, 24), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_1_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rsv_1
+    io.wr_weight_rsv_1 := RegEnable(io.reg_wr_data(23, 16), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_1_0_wren)
+    // Register: NVDLA_MCIF_CFG_WR_WEIGHT_1_0    Field: wr_weight_rsv_2
+    io.wr_weight_rsv_2 := RegEnable(io.reg_wr_data(15, 8), "b00000001".asUInt(8.W), nvdla_mcif_cfg_wr_weight_1_0_wren)
 }}

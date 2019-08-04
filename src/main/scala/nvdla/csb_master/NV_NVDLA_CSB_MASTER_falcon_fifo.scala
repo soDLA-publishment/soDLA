@@ -5,7 +5,7 @@
 // import chisel3.util._
 // import chisel3.iotesters.Driver
 
-// class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: csbMasterConfiguration)  extends Module {
+// class NV_NVDLA_CSB_MASTER_falcon_fifo(depth:Int, width:Int)(implicit val conf: csbMasterConfiguration)  extends Module {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val wr_clk = Input(Clock())
@@ -18,8 +18,8 @@
 //         val rd_req = Output(Bool())   
 
 //         //data signal
-//         val wr_data = Input(UInt(50.W))
-//         val rd_data = Output(UInt(50.W))
+//         val wr_data = Input(UInt(width.W))
+//         val rd_data = Output(UInt(width.W))
 
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 
@@ -108,20 +108,20 @@
 //     val wr_busy_int = withClock(wr_clk_wr_mgated){RegInit(false.B)}		        	// copy for internal use
 //     wr_reserving := wr_req_in && !wr_busy_int    // reserving write space?
 //     val wr_popping = Wire(Bool())	               // fwd: write side sees pop?
-//     val wr_count = withClock(wr_clk_wr_mgated){RegInit("d0".asUInt(3.W))}	// write-side 
+//     val wr_count = withClock(wr_clk_wr_mgated){RegInit(0.U(log2Ceil(depth+1).W))}	// write-side 
     
-//     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, (wr_count - "d1".U(1.W)))
-//     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count + "d1".U(1.W), wr_count)
+//     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, (wr_count - 1.U))
+//     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count + 1.U, wr_count)
 //     val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
 
-//     val wr_count_next_no_wr_popping_is_4 = ( wr_count_next_no_wr_popping === "d4".U(3.W))
-//     val wr_count_next_is_4 = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_4)
+//     val wr_count_next_no_wr_popping_is_full = ( wr_count_next_no_wr_popping === depth.U(log2Ceil(depth+1).W))
+//     val wr_count_next_is_full = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_full)
 
-//     val wr_limit_muxed = Wire(UInt(3.W))  // muxed with simulation/emulation overrides
+//     val wr_limit_muxed = Wire(UInt(log2Ceil(depth+1).W))  // muxed with simulation/emulation overrides
 //     val wr_limit_reg = wr_limit_muxed
     
-//     wr_busy_next := wr_count_next_is_4 | 
-//                     (wr_limit_reg =/= "d0".U(3.W) && 
+//     wr_busy_next := wr_count_next_is_full | 
+//                     (wr_limit_reg =/= 0.U(log2Ceil(depth+1).W) && 
 //                     wr_count_next >= wr_limit_reg) // busy next cycle? // check wr_limit if != 0  
 
 //     wr_busy_in_int := wr_req_in && wr_busy_int
@@ -135,7 +135,7 @@
 
 //     //RAM
 
-//     val wr_adr = withClock(wr_clk_wr_mgated){RegInit("d0".asUInt(2.W))}				// current write address
+//     val wr_adr = withClock(wr_clk_wr_mgated){RegInit(0.U(log2Ceil(depth).W))}				// current write address
 
 
 //     // spyglass disable_block W484
@@ -145,7 +145,7 @@
 //         wr_adr := wr_adr_next
 //     }
 
-//     val rd_adr = withClock(rd_clk_rd_mgated){RegInit("d0".asUInt(2.W))}	
+//     val rd_adr = withClock(rd_clk_rd_mgated){RegInit(0.U(log2Ceil(depth).W))}	
 //     val ram_we = wr_pushing
 //     val ram_iwe = !wr_busy_in && io.wr_req
 
@@ -153,7 +153,7 @@
 //     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
     
-//     val ram = Module(new nv_flopram_internal_wr_reg(4, 50))
+//     val ram = Module(new nv_flopram_internal_wr_reg(depth, width))
 //     ram.io.clk := wr_clk_dft_mgated
 //     ram.io.clk_mgated := wr_clk_wr_mgated
 //     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -172,58 +172,58 @@
 //     }
 
 //     //
-// // ASYNCHRONOUS BOUNDARY USING TRADITIONAL SYNCHRONIZERS
-// //
-// // Our goal here is to translate wr_pushing pulses into rd_pushing
-// // pulses on the read side and, conversely, to translate rd_popping
-// // pulses to wr_popping pulses on the write side.
-// //
-// // We don't try to optimize the case where the async fifo depth is
-// // a power of two.  We handle the general case using one scheme to
-// // avoid maintaining different implementations.  We may use a couple
-// // more counters, but they are quite cheap in the grand scheme of things.
-// // This wr_pushing/rd_pushing/rd_popping/wr_popping centric scheme also
-// // fits in well with the case where there is no asynchronous boundary.
-// //
-// // The scheme works as follows.  For the wr_pushing -> rd_pushing translation,
-// // we keep an 2-bit gray counter on the write and read sides.
-// // This counter is initialized to 0 on both sides.   When wr_pushing
-// // is pulsed, the write side gray-increments its counter, registers it,
-// // then sends it through an 2-bit synchronizer to the other side.
-// // Whenever the read side sees the new gray counter not equal to its
-// // copy of the gray counter, it gray-increments its counter and pulses
-// // rd_pushing=1.  The actual value of the gray counter is irrelevant.
-// // It must be a power-of-2 to make the gray code work.  Otherwise,
-// // we're just looking for changes in the gray value.
-// //
-// // The same technique is used for the rd_popping -> wr_popping translation.
-// //
-// // The gray counter algorithm uses a 1-bit polarity register that starts
-// // off as 0 and is inverted whenever the gray counter is incremented.
-// //
-// // In plain English, the next gray counter is determined as follows:
-// // if the current polarity register is 0, invert bit 0 (the lsb); otherwise,
-// // find the rightmost one bit and invert the bit to the left of the one bit
-// // if the one bit is not the msb else invert the msb one bit.  The
-// // general expression is thus:
-// //
-// // { gray[n-1] ^ (polarity             & ~gray[n-3] & ~gray[n-4] & ... ),
-// //   gray[n-2] ^ (polarity & gray[n-3] & ~gray[n-4] & ~gray[n-5] & ... ),
-// //   gray[n-3] ^ (polarity & gray[n-4] & ~gray[n-5] & ~gray[n-6] & ... ),
-// //   ...
-// //   gray[0]   ^ (~polarity) }
-// //
-// // For n == 1, the next gray value is obviously just ~gray.
-// //
-// // The wr_pushing/rd_popping signal does not affect the registered
-// // gray counter until the next cycle.  However, for non-FF-type rams,
-// // the write will not complete until the end of the next cycle, so
-// // we must delay wr_pushing yet another more cycle,
-// // unless the -rd_clk_le_2x_wr_clk option was given
-// // (or the -rd_clk_le_2x_wr_clk_dynamic option was given
-// // and the rd_clk_le_2x_wr_clk signal is 1).
-// //
-//     val wr_pushing_gray_cntr = Wire(UInt(3.W))
+//     // ASYNCHRONOUS BOUNDARY USING TRADITIONAL SYNCHRONIZERS
+//     //
+//     // Our goal here is to translate wr_pushing pulses into rd_pushing
+//     // pulses on the read side and, conversely, to translate rd_popping
+//     // pulses to wr_popping pulses on the write side.
+//     //
+//     // We don't try to optimize the case where the async fifo depth is
+//     // a power of two.  We handle the general case using one scheme to
+//     // avoid maintaining different implementations.  We may use a couple
+//     // more counters, but they are quite cheap in the grand scheme of things.
+//     // This wr_pushing/rd_pushing/rd_popping/wr_popping centric scheme also
+//     // fits in well with the case where there is no asynchronous boundary.
+//     //
+//     // The scheme works as follows.  For the wr_pushing -> rd_pushing translation,
+//     // we keep an 2-bit gray counter on the write and read sides.
+//     // This counter is initialized to 0 on both sides.   When wr_pushing
+//     // is pulsed, the write side gray-increments its counter, registers it,
+//     // then sends it through an 2-bit synchronizer to the other side.
+//     // Whenever the read side sees the new gray counter not equal to its
+//     // copy of the gray counter, it gray-increments its counter and pulses
+//     // rd_pushing=1.  The actual value of the gray counter is irrelevant.
+//     // It must be a power-of-2 to make the gray code work.  Otherwise,
+//     // we're just looking for changes in the gray value.
+//     //
+//     // The same technique is used for the rd_popping -> wr_popping translation.
+//     //
+//     // The gray counter algorithm uses a 1-bit polarity register that starts
+//     // off as 0 and is inverted whenever the gray counter is incremented.
+//     //
+//     // In plain English, the next gray counter is determined as follows:
+//     // if the current polarity register is 0, invert bit 0 (the lsb); otherwise,
+//     // find the rightmost one bit and invert the bit to the left of the one bit
+//     // if the one bit is not the msb else invert the msb one bit.  The
+//     // general expression is thus:
+//     //
+//     // { gray[n-1] ^ (polarity             & ~gray[n-3] & ~gray[n-4] & ... ),
+//     //   gray[n-2] ^ (polarity & gray[n-3] & ~gray[n-4] & ~gray[n-5] & ... ),
+//     //   gray[n-3] ^ (polarity & gray[n-4] & ~gray[n-5] & ~gray[n-6] & ... ),
+//     //   ...
+//     //   gray[0]   ^ (~polarity) }
+//     //
+//     // For n == 1, the next gray value is obviously just ~gray.
+//     //
+//     // The wr_pushing/rd_popping signal does not affect the registered
+//     // gray counter until the next cycle.  However, for non-FF-type rams,
+//     // the write will not complete until the end of the next cycle, so
+//     // we must delay wr_pushing yet another more cycle,
+//     // unless the -rd_clk_le_2x_wr_clk option was given
+//     // (or the -rd_clk_le_2x_wr_clk_dynamic option was given
+//     // and the rd_clk_le_2x_wr_clk signal is 1).
+//     //
+//     val wr_pushing_gray_cntr = Wire(UInt(log2Ceil(depth+1).W))
 
 //     // clk gating of strict synchronizers
 //     val wr_clk_wr_mgated_snd_gate = Module(new NV_CLK_gate_power)
@@ -232,12 +232,23 @@
 //     val wr_clk_wr_mgated_strict_snd_gated = wr_clk_wr_mgated_snd_gate.io.clk_gated
 
 //     // wr_pushing -> rd_pushing translation
-//     val wr_pushing_gray = Module(new NV_NVDLA_CSB_MASTER_falcon2csb_fifo_gray_cntr_strict)
+//     val wr_pushing_gray = Module(new NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr_strict)
 //     if(conf.NV_FPGA_FIFOGEN){
 //         wr_pushing_gray.io.inc.get := wr_pushing
 //     }
 //     wr_pushing_gray.io.gray := wr_pushing_gray_cntr
 //     val wr_pushing_gray_cntr_next = wr_pushing_gray.io.gray_next
+
+//     val nv_AFIFO_wr_pushing_sync = Array(log2Ceil(depth+1)){Module(new p_STRICTSYNC3DOTM_C_PPP)}
+//     for(i <- 0 to log2Ceil(depth+1)-1){
+//         nv_AFIFO_wr_pushing_sync(i).io.SRC_CLK := wr_clk_wr_mgated_strict_snd_gated
+//         nv_AFIFO_wr_pushing_sync(i).io.SRC_D_NEXT := wr_pushing_gray_cntr_next(i)
+//         nv_AFIFO_wr_pushing_sync(i).io.DST_CLK := rd_clk_dft_mgated
+//         nv_AFIFO_wr_pushing_sync(i).io.ATPG_CTL := false.B
+//         nv_AFIFO_wr_pushing_sync(i).io.TEST_MODE := false.B
+//         val wr_pushing_gray_cntr_0 = nv_AFIFO_wr_pushing_sync0.io.SRC_D
+//         val wr_pushing_gray_cntr_sync_0 = nv_AFIFO_wr_pushing_sync0.io.DST_Q
+//     }
 
 //     val nv_AFIFO_wr_pushing_sync0 = Module(new p_STRICTSYNC3DOTM_C_PPP)
 //     nv_AFIFO_wr_pushing_sync0.io.SRC_CLK := wr_clk_wr_mgated_strict_snd_gated
@@ -257,22 +268,13 @@
 //     val wr_pushing_gray_cntr_1 = nv_AFIFO_wr_pushing_sync1.io.SRC_D
 //     val wr_pushing_gray_cntr_sync_1 = nv_AFIFO_wr_pushing_sync1.io.DST_Q
 
-//     val nv_AFIFO_wr_pushing_sync2 = Module(new p_STRICTSYNC3DOTM_C_PPP)
-//     nv_AFIFO_wr_pushing_sync2.io.SRC_CLK := wr_clk_wr_mgated_strict_snd_gated
-//     nv_AFIFO_wr_pushing_sync2.io.SRC_D_NEXT := wr_pushing_gray_cntr_next(2)
-//     nv_AFIFO_wr_pushing_sync2.io.DST_CLK := rd_clk_dft_mgated
-//     nv_AFIFO_wr_pushing_sync2.io.ATPG_CTL := false.B
-//     nv_AFIFO_wr_pushing_sync2.io.TEST_MODE := false.B
-//     val wr_pushing_gray_cntr_2 = nv_AFIFO_wr_pushing_sync2.io.SRC_D
-//     val wr_pushing_gray_cntr_sync_2 = nv_AFIFO_wr_pushing_sync2.io.DST_Q
+//     wr_pushing_gray_cntr := Cat(wr_pushing_gray_cntr_1, wr_pushing_gray_cntr_0)
+//     val wr_pushing_gray_cntr_sync = Cat(wr_pushing_gray_cntr_sync_1, wr_pushing_gray_cntr_sync_0)
 
-//     wr_pushing_gray_cntr := Cat(wr_pushing_gray_cntr_2, wr_pushing_gray_cntr_1, wr_pushing_gray_cntr_0)
-//     val wr_pushing_gray_cntr_sync = Cat(wr_pushing_gray_cntr_sync_2, wr_pushing_gray_cntr_sync_1, wr_pushing_gray_cntr_sync_0)
-
-//     val rd_pushing_gray_cntr = Wire(UInt(3.W))
+//     val rd_pushing_gray_cntr = Wire(UInt(2.W))
 //     val rd_pushing = wr_pushing_gray_cntr_sync =/= rd_pushing_gray_cntr
 
-//     val rd_pushing_gray = Module(new NV_NVDLA_CSB_MASTER_falcon2csb_fifo_gray_cntr)
+//     val rd_pushing_gray = Module(new NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr)
 //     rd_pushing_gray.io.clk := rd_clk_rd_mgated
 //     rd_pushing_gray.io.inc := rd_pushing
 //     rd_pushing_gray_cntr := rd_pushing_gray.io.gray
@@ -290,8 +292,8 @@
 //     //
 //     // rd_popping -> wr_popping translation
 //     //
-//     val rd_popping_gray_cntr = Wire(UInt(3.W))
-//     val rd_popping_gray = Module(new NV_NVDLA_CSB_MASTER_falcon2csb_fifo_gray_cntr_strict)
+//     val rd_popping_gray_cntr = Wire(UInt(2.W))
+//     val rd_popping_gray = Module(new NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr_strict)
 //     if(conf.NV_FPGA_FIFOGEN){
 //         rd_popping_gray.io.inc.get := rd_popping
 //     }
@@ -316,22 +318,13 @@
 //     val rd_popping_gray_cntr_1 = nv_AFIFO_rd_popping_sync1.io.SRC_D
 //     val rd_popping_gray_cntr_sync_1 = nv_AFIFO_rd_popping_sync1.io.DST_Q
 
-//     val nv_AFIFO_rd_popping_sync2 = Module(new p_STRICTSYNC3DOTM_C_PPP)
-//     nv_AFIFO_rd_popping_sync2.io.SRC_CLK := rd_clk_rd_mgated_strict_snd_gated
-//     nv_AFIFO_rd_popping_sync2.io.SRC_D_NEXT := rd_popping_gray_cntr_next(1)
-//     nv_AFIFO_rd_popping_sync2.io.DST_CLK := wr_clk_strict_rcv_gated
-//     nv_AFIFO_rd_popping_sync2.io.ATPG_CTL := false.B
-//     nv_AFIFO_rd_popping_sync2.io.TEST_MODE := false.B
-//     val rd_popping_gray_cntr_2 = nv_AFIFO_rd_popping_sync2.io.SRC_D
-//     val rd_popping_gray_cntr_sync_2 = nv_AFIFO_rd_popping_sync2.io.DST_Q
+//     rd_popping_gray_cntr := Cat(rd_popping_gray_cntr_1, rd_popping_gray_cntr_0)
+//     val rd_popping_gray_cntr_sync = Cat(rd_popping_gray_cntr_sync_1, rd_popping_gray_cntr_sync_0)
 
-//     rd_popping_gray_cntr := Cat(rd_popping_gray_cntr_2, rd_popping_gray_cntr_1, rd_popping_gray_cntr_0)
-//     val rd_popping_gray_cntr_sync = Cat(rd_popping_gray_cntr_sync_2, rd_popping_gray_cntr_sync_1, rd_popping_gray_cntr_sync_0)
-
-//     val wr_popping_gray_cntr = Wire(UInt(3.W))
+//     val wr_popping_gray_cntr = Wire(UInt(2.W))
 //     wr_popping := rd_popping_gray_cntr_sync =/= wr_popping_gray_cntr
 
-//     val wr_popping_gray = Module(new NV_NVDLA_CSB_MASTER_falcon2csb_fifo_gray_cntr)
+//     val wr_popping_gray = Module(new NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr)
 //     wr_popping_gray.io.clk := wr_clk_wr_mgated
 //     wr_popping_gray.io.inc := wr_popping
 //     wr_popping_gray_cntr := wr_popping_gray.io.gray
@@ -343,7 +336,7 @@
 //     val rd_req_int = withClock(rd_clk_rd_mgated){RegInit(false.B)}  // internal copy of rd_req
 //     io.rd_req := rd_req_int
 //     rd_popping := rd_req_p && !(rd_req_int && !io.rd_ready)
-//     val rd_count_p = withClock(rd_clk_rd_mgated){RegInit("b0".asUInt(3.W))}
+//     val rd_count_p = withClock(rd_clk_rd_mgated){RegInit("b0".asUInt(2.W))}
 //     val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p-1.U)
 //     val rd_count_p_next_no_rd_popping = Mux(rd_pushing, rd_count_p+1.U, rd_count_p)
 
@@ -354,7 +347,7 @@
 //         rd_count_p := rd_count_p_next
 //     }
 
-//     val nv_AFIFO_rd_data = withClock(rd_clk_rd_mgated){Reg(UInt(50.W))}
+//     val nv_AFIFO_rd_data = withClock(rd_clk_rd_mgated){Reg(UInt(34.W))}
 //     val rd_req_next = (rd_req_p || (rd_req_int && !io.rd_ready))
 
 //     rd_req_int := rd_req_next
@@ -368,9 +361,8 @@
 //     wr_clk_wr_mgated_enable := dft_qualifier_wr_enable && (wr_reserving || wr_pushing || wr_popping || wr_popping || (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next))
 //     rd_clk_rd_mgated_enable := dft_qualifier_rd_enable && ((rd_pushing ||rd_popping || (rd_req_int && io.rd_ready)))
     
-//     wr_limit_muxed := "b0".asUInt(3.W)
+//     wr_limit_muxed := "b0".asUInt(2.W)
 // }
-
 
 
 
@@ -379,19 +371,20 @@
 // // gray counter implementation.
 // //
 
-// class NV_NVDLA_CSB_MASTER_falcon2csb_fifo_gray_cntr_strict(implicit val conf: csbMasterConfiguration) extends Module {
+// class NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr_strict(depth:Int)(implicit val conf: csbMasterConfiguration) extends Module {
 //   val io = IO(new Bundle{
 //       val inc = if(conf.NV_FPGA_FIFOGEN) Some(Input(Bool())) else None
-//       val gray = Input(UInt(3.W))
-//       val gray_next = Output(UInt(3.W))
+//       val gray = Input(UInt(log2Ceil(depth+1).W))
+//       val gray_next = Output(UInt(log2Ceil(depth+1).W))
 //   })
-//    val polarity = io.gray(0) ^ io.gray(1)  ^ io.gray(2)   // polarity of gray counter bits
+//    val polarity = io.gray.xorR    // polarity of gray counter bits
+//    val polarity_out = Vec
       
 //    if(conf.NV_FPGA_FIFOGEN){
-//        io.gray_next := Mux(~io.inc.get, io.gray, Cat(io.gray(2)^(polarity&(!io.gray(0))), io.gray(1)^(polarity&io.gray(0)), io.gray(0)^(!polarity)))
+//        io.gray_next := Mux(~io.inc.get, io.gray, Cat(io.gray(1)^polarity, io.gray(0)^(!polarity)))
 //    }
 //    else {
-//        io.gray_next := Cat(io.gray(2)^(polarity&(!io.gray(0))), io.gray(1)^(polarity&io.gray(0)), io.gray(0)^(!polarity))
+//        io.gray_next := Cat(io.gray(1)^polarity, io.gray(0)^(!polarity)) 
 //    }
 
 
@@ -400,24 +393,24 @@
 
 
 
-// class NV_NVDLA_CSB_MASTER_falcon2csb_fifo_gray_cntr extends Module {
+// class NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr extends Module {
 //   val io = IO(new Bundle{
 //       val clk = Input(Clock())
 //       val inc = Input(Bool())
-//       val gray = Output(UInt(3.W))
+//       val gray = Output(UInt(2.W))
 //   })
 //   withClock(io.clk){
-//       val gray_out = RegInit("b0".asUInt(3.W))  // gray counter
-//       val polarity = gray_out(0) ^ gray_out(1)^ gray_out(2)   // polarity of gray counter bits
+//       val gray_out = RegInit("b0".asUInt(2.W))  // gray counter
+//       val polarity = gray_out(0) ^ gray_out(1)   // polarity of gray counter bits
 //       when(io.inc){
-//           gray_out := Cat(io.gray(2)^(polarity&(!io.gray(0))), io.gray(1)^(polarity&io.gray(0)), io.gray(0)^(!polarity))
+//           gray_out := Cat(gray_out(1)^polarity, gray_out(0)^(!polarity))
 //       }
 //       io.gray := gray_out
 //   }
 // }
 
 
-// object NV_NVDLA_CSB_MASTER_falcon2csb_fifoDriver extends App {
+// object NV_NVDLA_CSB_MASTER_csb2falcon_fifoDriver extends App {
 //   implicit val conf: csbMasterConfiguration = new csbMasterConfiguration
-//   chisel3.Driver.execute(args, () => new NV_NVDLA_CSB_MASTER_falcon2csb_fifo())
+//   chisel3.Driver.execute(args, () => new NV_NVDLA_CSB_MASTER_csb2falcon_fifo())
 // }

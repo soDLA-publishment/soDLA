@@ -6,6 +6,9 @@ import chisel3.util._
 import chisel3.iotesters.Driver
 
 
+
+
+
 class NV_NVDLA_CDMA_dma_mux(implicit conf: cdmaConfiguration) extends Module {
 
     val io = IO(new Bundle {
@@ -92,50 +95,15 @@ withClock(io.nvdla_core_clk){
     val req_mc_in_pd = (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, mc_sel_dc_w)&io.dc_dat2mcif_rd_req_pd)|
                        (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, mc_sel_img_w)&io.img_dat2mcif_rd_req_pd)
     
-    
-    //pipe skid buffer
-    //reg
-    val req_mc_in_prdy = RegInit(true.B)
     val req_mc_out_prdy = Wire(Bool())
-    val skid_flop_req_mc_in_prdy = RegInit(true.B)
-    val skid_flop_req_mc_in_pvld = RegInit(false.B)
-    val skid_flop_req_mc_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    val pipe_skid_req_mc_in_pvld = RegInit(false.B)
-    val pipe_skid_req_mc_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    //Wire
-    val skid_req_mc_in_pvld = Wire(Bool())
-    val skid_req_mc_in_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    val skid_req_mc_in_prdy = Wire(Bool())
-    val pipe_skid_req_mc_in_prdy = Wire(Bool())
-    val req_mc_out_pvld = Wire(Bool())
-    val req_mc_out_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    //skid ready
-    req_mc_in_prdy := skid_req_mc_in_prdy
-    skid_flop_req_mc_in_prdy := skid_req_mc_in_prdy
-    //skid valid
-    when(skid_flop_req_mc_in_prdy){
-        skid_flop_req_mc_in_pvld := req_mc_in_pvld
-    }
-    skid_req_mc_in_pvld := Mux(skid_flop_req_mc_in_prdy, req_mc_in_pvld, skid_flop_req_mc_in_pvld)
-    //skid data
-    when(skid_flop_req_mc_in_prdy & req_mc_in_pvld){
-        skid_flop_req_mc_in_pd := req_mc_in_pd
-    }
-    skid_req_mc_in_pd := Mux(skid_flop_req_mc_in_prdy, req_mc_in_pd, skid_flop_req_mc_in_pd)
-    //pipe ready
-    skid_req_mc_in_prdy := pipe_skid_req_mc_in_prdy || !pipe_skid_req_mc_in_pvld
-    //pipe valid
-    when(skid_req_mc_in_prdy){
-        pipe_skid_req_mc_in_pvld := skid_req_mc_in_pvld
-    }
-    //pipe data
-    when(skid_req_mc_in_prdy && skid_req_mc_in_pvld){
-        pipe_skid_req_mc_in_pd := skid_req_mc_in_pd
-    }
-    //pipe output
-    pipe_skid_req_mc_in_prdy := req_mc_out_prdy
-    req_mc_out_pvld := pipe_skid_req_mc_in_pvld
-    req_mc_out_pd := pipe_skid_req_mc_in_pd
+    val pipe_p1 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_CDMA_MEM_RD_REQ)}
+    pipe_p1.io.clk := io.nvdla_core_clk
+    pipe_p1.io.vi := req_mc_in_pvld
+    val req_mc_in_prdy = pipe_p1.io.ro
+    pipe_p1.io.di := req_mc_in_pd
+    val req_mc_out_pvld = pipe_p1.io.vo
+    pipe_p1.io.ri := req_mc_out_prdy
+    val req_mc_out_pd = pipe_p1.io.dout
 
     io.dc_dat2mcif_rd_req_ready := req_mc_in_prdy & io.dc_dat2mcif_rd_req_valid
     io.img_dat2mcif_rd_req_ready := req_mc_in_prdy & io.img_dat2mcif_rd_req_valid
@@ -152,49 +120,16 @@ withClock(io.nvdla_core_clk){
 //////////////// MCIF interface ////////////////
     val rsp_mc_in_pvld = io.mcif2cdma_dat_rd_rsp_valid
     val rsp_mc_in_pd = io.mcif2cdma_dat_rd_rsp_pd
-    //pipe  skid buffer
-    //reg
-    val rsp_mc_in_prdy = RegInit(true.B)
+
     val rsp_mc_out_prdy = Wire(Bool())
-    val skid_flop_rsp_mc_in_prdy = RegInit(true.B)
-    val skid_flop_rsp_mc_in_pvld = RegInit(false.B)
-    val skid_flop_rsp_mc_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    val pipe_skid_rsp_mc_in_pvld = RegInit(false.B)
-    val pipe_skid_rsp_mc_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    //Wire
-    val skid_rsp_mc_in_pvld = Wire(Bool())
-    val skid_rsp_mc_in_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    val skid_rsp_mc_in_prdy = Wire(Bool())
-    val pipe_skid_rsp_mc_in_prdy = Wire(Bool())
-    val rsp_mc_out_pvld = Wire(Bool())
-    val rsp_mc_out_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    //skid ready
-    rsp_mc_in_prdy := skid_rsp_mc_in_prdy
-    skid_flop_rsp_mc_in_prdy := skid_rsp_mc_in_prdy
-    //skid valid
-    when(skid_flop_rsp_mc_in_prdy){
-        skid_flop_rsp_mc_in_pvld := rsp_mc_in_pvld
-    }
-    skid_rsp_mc_in_pvld := Mux(skid_flop_rsp_mc_in_prdy, rsp_mc_in_pvld, skid_flop_rsp_mc_in_pvld)
-    //skid data
-    when(skid_flop_rsp_mc_in_prdy & rsp_mc_in_pvld){
-        skid_flop_rsp_mc_in_pd := rsp_mc_in_pd
-    }
-    skid_rsp_mc_in_pd := Mux(skid_flop_rsp_mc_in_prdy, rsp_mc_in_pd, skid_flop_rsp_mc_in_pd)
-    //pipe ready
-    skid_rsp_mc_in_prdy := pipe_skid_rsp_mc_in_prdy || !pipe_skid_rsp_mc_in_pvld
-    //pipe valid
-    when(skid_rsp_mc_in_prdy){
-        pipe_skid_rsp_mc_in_pvld := skid_rsp_mc_in_pvld
-    }
-    //pipe data
-    when(skid_rsp_mc_in_prdy && skid_rsp_mc_in_pvld){
-        pipe_skid_rsp_mc_in_pd := skid_rsp_mc_in_pd
-    }
-    //pipe output
-    pipe_skid_rsp_mc_in_prdy := rsp_mc_out_prdy
-    rsp_mc_out_pvld := pipe_skid_rsp_mc_in_pvld
-    rsp_mc_out_pd := pipe_skid_rsp_mc_in_pd
+    val pipe_p2 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_CDMA_MEM_RD_REQ)}
+    pipe_p2.io.clk := io.nvdla_core_clk
+    pipe_p2.io.vi := rsp_mc_in_pvld
+    val rsp_mc_in_prdy = pipe_p2.io.ro
+    pipe_p2.io.di := rsp_mc_in_pd
+    val rsp_mc_out_pvld = pipe_p2.io.vo
+    pipe_p2.io.ri := rsp_mc_out_prdy
+    val rsp_mc_out_pd = pipe_p2.io.dout
 
     io.mcif2cdma_dat_rd_rsp_ready := rsp_mc_in_prdy
     io.mcif2dc_dat_rd_rsp_valid  := rsp_mc_out_pvld & mc_sel_dc
@@ -216,50 +151,15 @@ withClock(io.nvdla_core_clk){
     val req_cv_in_pd = (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, cv_sel_dc_w)&io.dc_dat2cvif_rd_req_pd.get)|
                        (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, cv_sel_img_w)&io.img_dat2cvif_rd_req_pd.get)
     
-    
-    //pipe skid buffer
-    //reg
-    val req_cv_in_prdy = RegInit(true.B)
     val req_cv_out_prdy = Wire(Bool())
-    val skid_flop_req_cv_in_prdy = RegInit(true.B)
-    val skid_flop_req_cv_in_pvld = RegInit(false.B)
-    val skid_flop_req_cv_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    val pipe_skid_req_cv_in_pvld = RegInit(false.B)
-    val pipe_skid_req_cv_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    //Wire
-    val skid_req_cv_in_pvld = Wire(Bool())
-    val skid_req_cv_in_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    val skid_req_cv_in_prdy = Wire(Bool())
-    val pipe_skid_req_cv_in_prdy = Wire(Bool())
-    val req_cv_out_pvld = Wire(Bool())
-    val req_cv_out_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    //skid ready
-    req_cv_in_prdy := skid_req_cv_in_prdy
-    skid_flop_req_cv_in_prdy := skid_req_cv_in_prdy
-    //skid valid
-    when(skid_flop_req_cv_in_prdy){
-        skid_flop_req_cv_in_pvld := req_cv_in_pvld
-    }
-    skid_req_cv_in_pvld := Mux(skid_flop_req_cv_in_prdy, req_cv_in_pvld, skid_flop_req_cv_in_pvld)
-    //skid data
-    when(skid_flop_req_cv_in_prdy & req_cv_in_pvld){
-        skid_flop_req_cv_in_pd := req_cv_in_pd
-    }
-    skid_req_cv_in_pd := Mux(skid_flop_req_cv_in_prdy, req_cv_in_pd, skid_flop_req_cv_in_pd)
-    //pipe ready
-    skid_req_cv_in_prdy := pipe_skid_req_cv_in_prdy || !pipe_skid_req_cv_in_pvld
-    //pipe valid
-    when(skid_req_cv_in_prdy){
-        pipe_skid_req_cv_in_pvld := skid_req_cv_in_pvld
-    }
-    //pipe data
-    when(skid_req_cv_in_prdy && skid_req_cv_in_pvld){
-        pipe_skid_req_cv_in_pd := skid_req_cv_in_pd
-    }
-    //pipe output
-    pipe_skid_req_cv_in_prdy := req_cv_out_prdy
-    req_cv_out_pvld := pipe_skid_req_cv_in_pvld
-    req_cv_out_pd := pipe_skid_req_cv_in_pd
+    val pipe_p3 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_CDMA_MEM_RD_REQ)}
+    pipe_p3.io.clk := io.nvdla_core_clk
+    pipe_p3.io.vi := req_cv_in_pvld
+    val req_cv_in_prdy = pipe_p3.io.ro
+    pipe_p3.io.di := req_cv_in_pd
+    val req_cv_out_pvld = pipe_p3.io.vo
+    pipe_p3.io.ri := req_cv_out_prdy
+    val req_cv_out_pd = pipe_p3.io.dout
 
     io.dc_dat2cvif_rd_req_ready.get := req_cv_in_prdy & io.dc_dat2cvif_rd_req_valid.get
     io.img_dat2cvif_rd_req_ready.get := req_cv_in_prdy & io.img_dat2cvif_rd_req_valid.get
@@ -275,49 +175,16 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////
     val rsp_cv_in_pvld = io.cvif2cdma_dat_rd_rsp_valid.get
     val rsp_cv_in_pd = io.cvif2cdma_dat_rd_rsp_pd.get
-    //pipe  skid buffer
-    //reg
-    val rsp_cv_in_prdy = RegInit(true.B)
+
     val rsp_cv_out_prdy = Wire(Bool())
-    val skid_flop_rsp_cv_in_prdy = RegInit(true.B)
-    val skid_flop_rsp_cv_in_pvld = RegInit(false.B)
-    val skid_flop_rsp_cv_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    val pipe_skid_rsp_cv_in_pvld = RegInit(false.B)
-    val pipe_skid_rsp_cv_in_pd = Reg(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    //Wire
-    val skid_rsp_cv_in_pvld = Wire(Bool())
-    val skid_rsp_cv_in_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    val skid_rsp_cv_in_prdy = Wire(Bool())
-    val pipe_skid_rsp_cv_in_prdy = Wire(Bool())
-    val rsp_cv_out_pvld = Wire(Bool())
-    val rsp_cv_out_pd = Wire(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-    //skid ready
-    rsp_cv_in_prdy := skid_rsp_cv_in_prdy
-    skid_flop_rsp_cv_in_prdy := skid_rsp_cv_in_prdy
-    //skid valid
-    when(skid_flop_rsp_cv_in_prdy){
-        skid_flop_rsp_cv_in_pvld := rsp_cv_in_pvld
-    }
-    skid_rsp_cv_in_pvld := Mux(skid_flop_rsp_cv_in_prdy, rsp_cv_in_pvld, skid_flop_rsp_cv_in_pvld)
-    //skid data
-    when(skid_flop_rsp_cv_in_prdy & rsp_cv_in_pvld){
-        skid_flop_rsp_cv_in_pd := rsp_cv_in_pd
-    }
-    skid_rsp_cv_in_pd := Mux(skid_flop_rsp_cv_in_prdy, rsp_cv_in_pd, skid_flop_rsp_cv_in_pd)
-    //pipe ready
-    skid_rsp_cv_in_prdy := pipe_skid_rsp_cv_in_prdy || !pipe_skid_rsp_cv_in_pvld
-    //pipe valid
-    when(skid_rsp_cv_in_prdy){
-        pipe_skid_rsp_cv_in_pvld := skid_rsp_cv_in_pvld
-    }
-    //pipe data
-    when(skid_rsp_cv_in_prdy && skid_rsp_cv_in_pvld){
-        pipe_skid_rsp_cv_in_pd := skid_rsp_cv_in_pd
-    }
-    //pipe output
-    pipe_skid_rsp_cv_in_prdy := rsp_cv_out_prdy
-    rsp_cv_out_pvld := pipe_skid_rsp_cv_in_pvld
-    rsp_cv_out_pd := pipe_skid_rsp_cv_in_pd
+    val pipe_p4 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_CDMA_MEM_RD_REQ)}
+    pipe_p4.io.clk := io.nvdla_core_clk
+    pipe_p4.io.vi := rsp_cv_in_pvld
+    val rsp_cv_in_prdy = pipe_p4.io.ro
+    pipe_p4.io.di := rsp_cv_in_pd
+    val rsp_cv_out_pvld = pipe_p4.io.vo
+    pipe_p4.io.ri := rsp_cv_out_prdy
+    val rsp_cv_out_pd = pipe_p4.io.dout
 
     io.cvif2cdma_dat_rd_rsp_ready.get := rsp_cv_in_prdy
     io.cvif2dc_dat_rd_rsp_valid.get := rsp_cv_out_pvld & cv_sel_dc

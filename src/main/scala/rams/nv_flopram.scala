@@ -57,7 +57,7 @@ withClock(io.clk){
 }}
 
 // 
-// Flop-Based RAM (with internal wr_reg)
+// Flop-Based RAM (with asynchronous wr_reg)
 //
 
 class nv_flopram_internal_wr_reg(dep: Int, wid: Int) extends Module {

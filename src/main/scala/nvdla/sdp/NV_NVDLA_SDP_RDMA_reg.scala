@@ -469,76 +469,47 @@ withClock(io.nvdla_core_clk){
     //////// for overflow counting register ////////
     val dp2reg_d0_status_nan_input_num_w = Mux(dp2reg_d0_set, io.dp2reg_status_nan_input_num, 
                                            Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_status_nan_input_num))
-    when(dp2reg_d0_reg){
-        dp2reg_d0_status_nan_input_num := dp2reg_d0_status_nan_input_num_w
-    }
-
     val dp2reg_d0_brdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_brdma_stall, 
                                   Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_brdma_stall))
-    when(dp2reg_d0_reg){
-        dp2reg_d0_brdma_stall := dp2reg_d0_brdma_stall_w
-    }
-
     val dp2reg_d0_status_inf_input_num_w = Mux(dp2reg_d0_set, io.dp2reg_status_inf_input_num, 
                                            Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_status_inf_input_num))
-    when(dp2reg_d0_reg){
-        dp2reg_d0_status_inf_input_num := dp2reg_d0_status_inf_input_num_w
-    }
-
     val dp2reg_d0_erdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_erdma_stall, 
                                   Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_erdma_stall))
-    when(dp2reg_d0_reg){
-        dp2reg_d0_erdma_stall := dp2reg_d0_erdma_stall_w
-    }
-
     val dp2reg_d0_nrdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_nrdma_stall, 
                                   Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_nrdma_stall))
-    when(dp2reg_d0_reg){
-        dp2reg_d0_nrdma_stall := dp2reg_d0_nrdma_stall_w
-    }
-
     val dp2reg_d0_mrdma_stall_w = Mux(dp2reg_d0_set, io.dp2reg_mrdma_stall, 
                                   Mux(dp2reg_d0_clr, 0.U, dp2reg_d0_mrdma_stall))
+
     when(dp2reg_d0_reg){
+        dp2reg_d0_status_nan_input_num := dp2reg_d0_status_nan_input_num_w
+        dp2reg_d0_brdma_stall := dp2reg_d0_brdma_stall_w
+        dp2reg_d0_status_inf_input_num := dp2reg_d0_status_inf_input_num_w
+        dp2reg_d0_erdma_stall := dp2reg_d0_erdma_stall_w
+        dp2reg_d0_nrdma_stall := dp2reg_d0_nrdma_stall_w
         dp2reg_d0_mrdma_stall := dp2reg_d0_mrdma_stall_w
     }
 
     val dp2reg_d1_status_nan_input_num_w = Mux(dp2reg_d1_set, io.dp2reg_status_nan_input_num, 
                                            Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_status_nan_input_num))
-    when(dp2reg_d1_reg){
-        dp2reg_d1_status_nan_input_num := dp2reg_d1_status_nan_input_num_w
-    }
-
     val dp2reg_d1_brdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_brdma_stall, 
                                   Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_brdma_stall))
-    when(dp2reg_d1_reg){
-        dp2reg_d1_brdma_stall := dp2reg_d1_brdma_stall_w
-    }
-
     val dp2reg_d1_status_inf_input_num_w = Mux(dp2reg_d1_set, io.dp2reg_status_inf_input_num, 
                                            Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_status_inf_input_num))
-    when(dp2reg_d1_reg){
-        dp2reg_d1_status_inf_input_num := dp2reg_d1_status_inf_input_num_w
-    }
-
     val dp2reg_d1_erdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_erdma_stall, 
                                   Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_erdma_stall))
-    when(dp2reg_d1_reg){
-        dp2reg_d1_erdma_stall := dp2reg_d1_erdma_stall_w
-    }
-
     val dp2reg_d1_nrdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_nrdma_stall, 
                                  Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_nrdma_stall))
-    when(dp2reg_d1_reg){
-        dp2reg_d1_nrdma_stall := dp2reg_d1_nrdma_stall_w
-    }
-
     val dp2reg_d1_mrdma_stall_w = Mux(dp2reg_d1_set, io.dp2reg_mrdma_stall, 
                                   Mux(dp2reg_d1_clr, 0.U, dp2reg_d1_mrdma_stall))
+
     when(dp2reg_d1_reg){
+        dp2reg_d1_status_nan_input_num := dp2reg_d1_status_nan_input_num_w
+        dp2reg_d1_brdma_stall := dp2reg_d1_brdma_stall_w
+        dp2reg_d1_status_inf_input_num := dp2reg_d1_status_inf_input_num_w
+        dp2reg_d1_erdma_stall := dp2reg_d1_erdma_stall_w
+        dp2reg_d1_nrdma_stall := dp2reg_d1_nrdma_stall_w
         dp2reg_d1_mrdma_stall := dp2reg_d1_mrdma_stall_w
     }
-
 
 }}
 

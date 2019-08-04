@@ -13,16 +13,16 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: cmacCo
         val nvdla_core_clk = Input(Clock())
 
         //wt and dat
-        val dat_actv_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val dat_actv_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val dat_actv_nz = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val dat_actv_pvld = Input(Vec(conf.CMAC_ATOMC, Bool()))
 
-        val wt_actv_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val wt_actv_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val wt_actv_nz = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val wt_actv_pvld = Input(Vec(conf.CMAC_ATOMC, Bool()))
 
         //output
-        val mac_out_data = Output(conf.CMAC_TYPE(conf.CMAC_RESULT_WIDTH.W))
+        val mac_out_data = Output(UInt(conf.CMAC_RESULT_WIDTH.W))
         val mac_out_pvld = Output(Bool())         
     })
 
@@ -58,11 +58,11 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: cmacCo
 
     for(i <- 0 to conf.CMAC_ATOMC-1){
         when(io.wt_actv_pvld(i)&io.wt_actv_nz(i)&io.dat_actv_pvld(i)&io.dat_actv_nz(i)){                       
-             mout(i) := io.wt_actv_data(i)*io.dat_actv_data(i)
+             mout(i) := io.wt_actv_data(i).asSInt*io.dat_actv_data(i).asSInt
         }
     }  
 
-    val sum_out = mout.reduce(_+&_)
+    val sum_out = mout.reduce(_+&_).asUInt
     
     //add retiming
     val pp_pvld_d0 = io.dat_actv_pvld(0)&io.wt_actv_pvld(0)

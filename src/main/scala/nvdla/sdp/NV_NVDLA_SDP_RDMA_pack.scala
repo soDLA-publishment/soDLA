@@ -46,7 +46,7 @@ class NV_NVDLA_SDP_RDMA_pack(IW: Int = 512, OW: Int = 256, CW: Int = 1)(implicit
 withClock(io.nvdla_core_clk){
 
     val ctrl_end = Wire(UInt(CW.W))
-    val mux_data = Reg(UInt(OW.W))
+    val mux_data = Wire(UInt(OW.W))
     io.out_data := Cat(ctrl_end, mux_data)
 
     val pack_prdy = io.out_prdy

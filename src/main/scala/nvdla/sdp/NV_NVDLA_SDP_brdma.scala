@@ -102,7 +102,7 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_done := eg_done
 
     //=======================================
-    val u_gate = Module(new NV_NVDLA_SDP_RDMA_gate)
+    val u_gate = Module(new NV_NVDLA_SDP_RDMA_gate())
     u_gate.io.nvdla_core_clk := io.nvdla_core_clk
     u_gate.io.rdma_disable := io.brdma_disable
     u_gate.io.rdma_slcg_op_en := io.brdma_slcg_op_en

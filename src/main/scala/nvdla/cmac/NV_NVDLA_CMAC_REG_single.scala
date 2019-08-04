@@ -62,14 +62,6 @@ class NV_NVDLA_CMAC_REG_single extends Module {
     ))
 
     // Register flop declarations
-
-    val producer_out = RegInit(false.B)
-
-    when(nvdla_cmac_a_s_pointer_0_wren){
-        producer_out:= io.reg_wr_data(0)
-    }
-        
-    io.producer := producer_out
-
+    io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_cmac_a_s_pointer_0_wren)
 }}
 

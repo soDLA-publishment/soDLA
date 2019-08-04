@@ -219,289 +219,97 @@ class NV_NVDLA_PDP_REG_dual extends Module {
     "h6c".asUInt(32.W)  -> nvdla_pdp_d_src_surface_stride_0_out
     ))
 
-    // Register flop declarations
-
-    val cya_out = RegInit("b0".asUInt(32.W))
-    val cube_in_channel_out = RegInit("b0".asUInt(13.W))
-    val cube_in_height_out = RegInit("b0".asUInt(13.W))
-    val cube_in_width_out = RegInit("b0".asUInt(13.W))
-    val cube_out_channel_out = RegInit("b0".asUInt(13.W))
-    val cube_out_height_out = RegInit("b0".asUInt(13.W))
-    val cube_out_width_out = RegInit("b0".asUInt(13.W))
-    val input_data_out = RegInit("b0".asUInt(2.W))
-    val dst_base_addr_high_out = RegInit("b0".asUInt(32.W))
-    val dst_base_addr_low_out = RegInit("b0".asUInt(32.W))
-    val dst_line_stride_out = RegInit("b0".asUInt(32.W))
-    val dst_ram_type_out = RegInit(false.B)
-    val dst_surface_stride_out = RegInit("b0".asUInt(32.W))
-    val nan_to_zero_out = RegInit(false.B)
-    val flying_mode_out = RegInit(false.B)
-    val pooling_method_out = RegInit("b0".asUInt(2.W))
-    val split_num_out = RegInit("b0".asUInt(8.W))
-    val partial_width_in_first_out = RegInit("b0".asUInt(10.W))
-    val partial_width_in_last_out = RegInit("b0".asUInt(10.W))
-    val partial_width_in_mid_out = RegInit("b0".asUInt(10.W))
-    val partial_width_out_first_out = RegInit("b0".asUInt(10.W))
-    val partial_width_out_last_out = RegInit("b0".asUInt(10.W))
-    val partial_width_out_mid_out = RegInit("b0".asUInt(10.W))
-    val dma_en_out = RegInit(false.B)
-    val kernel_height_out = RegInit("b0".asUInt(4.W))
-    val kernel_stride_height_out = RegInit("b0".asUInt(4.W))
-    val kernel_stride_width_out = RegInit("b0".asUInt(4.W))
-    val kernel_width_out = RegInit("b0".asUInt(4.W))
-    val pad_bottom_out = RegInit("b0".asUInt(3.W))
-    val pad_left_out = RegInit("b0".asUInt(3.W))
-    val pad_right_out = RegInit("b0".asUInt(3.W))
-    val pad_top_out = RegInit("b0".asUInt(3.W))
-    val pad_value_1x_out = RegInit("b0".asUInt(19.W))
-    val pad_value_2x_out = RegInit("b0".asUInt(19.W))
-    val pad_value_3x_out = RegInit("b0".asUInt(19.W))
-    val pad_value_4x_out = RegInit("b0".asUInt(19.W))
-    val pad_value_5x_out = RegInit("b0".asUInt(19.W))
-    val pad_value_6x_out = RegInit("b0".asUInt(19.W))
-    val pad_value_7x_out = RegInit("b0".asUInt(19.W))
-    val recip_kernel_height_out = RegInit("b0".asUInt(17.W))
-    val recip_kernel_width_out = RegInit("b0".asUInt(17.W))
-    val src_base_addr_high_out = RegInit("b0".asUInt(32.W))
-    val src_base_addr_low_out = RegInit("b0".asUInt(32.W))
-    val src_line_stride_out = RegInit("b0".asUInt(32.W))
-    val src_surface_stride_out = RegInit("b0".asUInt(32.W))
+    // Register flop declaration
 
     // Register: NVDLA_PDP_D_CYA_0    Field: cya
-    when(nvdla_pdp_d_cya_0_wren){
-        cya_out := io.reg_wr_data(31, 0)
-    }
+    io.cya := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_cya_0_wren)   
     // Register: NVDLA_PDP_D_DATA_CUBE_IN_CHANNEL_0    Field: cube_in_channel
-    when(nvdla_pdp_d_data_cube_in_channel_0_wren){
-        cube_in_channel_out:= io.reg_wr_data(12, 0)
-    }
+    io.cube_in_channel := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_d_data_cube_in_channel_0_wren)   
     // Register: NVDLA_PDP_D_DATA_CUBE_IN_HEIGHT_0    Field: cube_in_height
-    when(nvdla_pdp_d_data_cube_in_height_0_wren){
-        cube_in_height_out:= io.reg_wr_data(12, 0)
-    }
-    // Register: NVDLA_PDP_D_DATA_CUBE_IN_WIDTH_0    Field: cube_in_width
-    when(nvdla_pdp_d_data_cube_in_width_0_wren){
-        cube_in_width_out:= io.reg_wr_data(12, 0)
-    }
+    io.cube_in_height := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_d_data_cube_in_height_0_wren)  
+    // Register: NVDLA_PDP_D_DATA_CUBE_IN_WIDTH_0    Field: cube_in_width 
+    io.cube_in_width := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_d_data_cube_in_width_0_wren)   
     // Register: NVDLA_PDP_D_DATA_CUBE_OUT_CHANNEL_0    Field: cube_out_channel
-    when(nvdla_pdp_d_data_cube_out_channel_0_wren){
-        cube_out_channel_out:= io.reg_wr_data(12, 0)
-    }
-    // Register: NVDLA_PDP_D_DATA_CUBE_OUT_HEIGHT_0    Field: cube_out_height
-    when(nvdla_pdp_d_data_cube_out_height_0_wren){
-        cube_out_height_out:= io.reg_wr_data(12, 0)
-    }
-    // Register: NVDLA_PDP_D_DATA_CUBE_OUT_WIDTH_0    Field: cube_out_width
-    when(nvdla_pdp_d_data_cube_out_width_0_wren){
-        cube_out_width_out:= io.reg_wr_data(12, 0)
-    }
+    io.cube_out_channel := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_d_data_cube_out_channel_0_wren)  
+    // Register: NVDLA_PDP_D_DATA_CUBE_OUT_HEIGHT_0    Field: cube_out_height 
+    io.cube_out_height := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_d_data_cube_out_height_0_wren)  
+    // Register: NVDLA_PDP_D_DATA_CUBE_OUT_WIDTH_0    Field: cube_out_width 
+    io.cube_out_width := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_d_data_cube_out_width_0_wren)   
     // Register: NVDLA_PDP_D_DATA_FORMAT_0    Field: input_data
-    when(nvdla_pdp_d_data_format_0_wren){
-        input_data_out:= io.reg_wr_data(1, 0)
-    }
+    io.input_data := RegEnable(io.reg_wr_data(1, 0), "b0".asUInt(2.W), nvdla_pdp_d_data_format_0_wren)   
     // Register: NVDLA_PDP_D_DST_BASE_ADDR_HIGH_0    Field: dst_base_addr_high
-    when(nvdla_pdp_d_dst_base_addr_high_0_wren){
-        dst_base_addr_high_out:= io.reg_wr_data(31, 0)
-    }
-    // Register: NVDLA_PDP_D_DST_BASE_ADDR_LOW_0    Field: dst_base_addr_low
-    when(nvdla_pdp_d_dst_base_addr_low_0_wren){
-        dst_base_addr_low_out:= io.reg_wr_data(31, 0)
-    }
+    io.dst_base_addr_high := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_dst_base_addr_high_0_wren)  
+    // Register: NVDLA_PDP_D_DST_BASE_ADDR_LOW_0    Field: dst_base_addr_low 
+    io.dst_base_addr_low := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_dst_base_addr_low_0_wren)   
     // Register: NVDLA_PDP_D_DST_LINE_STRIDE_0    Field: dst_line_stride
-    when(nvdla_pdp_d_dst_line_stride_0_wren){
-        dst_line_stride_out:= io.reg_wr_data(31, 0)
-    }
+    io.dst_line_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_dst_line_stride_0_wren)   
     // Register: NVDLA_PDP_D_DST_RAM_CFG_0    Field: dst_ram_type
-    when(nvdla_pdp_d_dst_ram_cfg_0_wren){
-        dst_ram_type_out:= io.reg_wr_data(0)
-    }
+    io.dst_ram_type := RegEnable(io.reg_wr_data(0), false.B, nvdla_pdp_d_dst_ram_cfg_0_wren)   
     // Register: NVDLA_PDP_D_DST_SURFACE_STRIDE_0    Field: dst_surface_stride
-    when(nvdla_pdp_d_dst_surface_stride_0_wren){
-        dst_surface_stride_out:= io.reg_wr_data(31, 0)
-    }
-    // Not generating flops for read-only field NVDLA_PDP_D_INF_INPUT_NUM_0::inf_input_num
-    // Register: NVDLA_PDP_D_NAN_FLUSH_TO_ZERO_0    Field: nan_to_zero
-    when(nvdla_pdp_d_nan_flush_to_zero_0_wren){
-        nan_to_zero_out:= io.reg_wr_data(0)
-    }
-    // Not generating flops for read-only field NVDLA_PDP_D_NAN_INPUT_NUM_0::nan_input_num
-
-    // Not generating flops for read-only field NVDLA_PDP_D_NAN_OUTPUT_NUM_0::nan_output_num
-
+    io.dst_surface_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_dst_surface_stride_0_wren) 
+    // Register: NVDLA_PDP_D_NAN_FLUSH_TO_ZERO_0    Field: nan_to_zero  
+    io.nan_to_zero := RegEnable(io.reg_wr_data(0), false.B, nvdla_pdp_d_nan_flush_to_zero_0_wren)   
     // Register: NVDLA_PDP_D_OPERATION_MODE_CFG_0    Field: flying_mode
-    when(nvdla_pdp_d_operation_mode_cfg_0_wren){
-        flying_mode_out:= io.reg_wr_data(4)
-    }
+    io.flying_mode := RegEnable(io.reg_wr_data(4), false.B, nvdla_pdp_d_operation_mode_cfg_0_wren)   
     // Register: NVDLA_PDP_D_OPERATION_MODE_CFG_0    Field: pooling_method
-    when(nvdla_pdp_d_operation_mode_cfg_0_wren){
-        pooling_method_out:= io.reg_wr_data(1, 0)
-    }
+    io.pooling_method := RegEnable(io.reg_wr_data(1, 0), "b0".asUInt(2.W), nvdla_pdp_d_operation_mode_cfg_0_wren)   
     // Register: NVDLA_PDP_D_OPERATION_MODE_CFG_0    Field: split_num
-    when(nvdla_pdp_d_operation_mode_cfg_0_wren){
-        split_num_out:= io.reg_wr_data(15, 8)
-    }
-
-    // Not generating flops for field NVDLA_PDP_D_OP_ENABLE_0::op_en (to be implemented outside)
-
-    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_first
-    when(nvdla_pdp_d_partial_width_in_0_wren){
-        partial_width_in_first_out:= io.reg_wr_data(9, 0)
-    }
-    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_last
-    when(nvdla_pdp_d_partial_width_in_0_wren){
-        partial_width_in_last_out:= io.reg_wr_data(19, 10)
-    }
+    io.split_num := RegEnable(io.reg_wr_data(15, 8), "b0".asUInt(8.W), nvdla_pdp_d_operation_mode_cfg_0_wren)  
+    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_first 
+    io.partial_width_in_first := RegEnable(io.reg_wr_data(9, 0), "b0".asUInt(10.W), nvdla_pdp_d_partial_width_in_0_wren) 
+    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_last  
+    io.partial_width_in_last := RegEnable(io.reg_wr_data(19, 10), "b0".asUInt(10.W), nvdla_pdp_d_partial_width_in_0_wren)   
     // Register: NVDLA_PDP_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_mid
-    when(nvdla_pdp_d_partial_width_in_0_wren){
-        partial_width_in_mid_out:= io.reg_wr_data(29, 20)
-    }
-    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_OUT_0    Field: partial_width_out_first
-    when(nvdla_pdp_d_partial_width_out_0_wren){
-        partial_width_out_first_out:= io.reg_wr_data(9, 0)
-    }
-    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_OUT_0    Field: partial_width_out_last
-    when(nvdla_pdp_d_partial_width_out_0_wren){
-        partial_width_out_last_out:= io.reg_wr_data(19, 10)
-    }
+    io.partial_width_in_mid := RegEnable(io.reg_wr_data(29, 20), "b0".asUInt(10.W), nvdla_pdp_d_partial_width_in_0_wren)  
+    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_OUT_0    Field: partial_width_out_first 
+    io.partial_width_out_first := RegEnable(io.reg_wr_data(9, 0), "b0".asUInt(10.W), nvdla_pdp_d_partial_width_out_0_wren)  
+    // Register: NVDLA_PDP_D_PARTIAL_WIDTH_OUT_0    Field: partial_width_out_last 
+    io.partial_width_out_last := RegEnable(io.reg_wr_data(19, 10), "b0".asUInt(10.W), nvdla_pdp_d_partial_width_out_0_wren)   
     // Register: NVDLA_PDP_D_PARTIAL_WIDTH_OUT_0    Field: partial_width_out_mid
-    when(nvdla_pdp_d_partial_width_out_0_wren){
-        partial_width_out_mid_out:= io.reg_wr_data(29, 20)
-    }
-    // Register: NVDLA_PDP_D_PERF_ENABLE_0    Field: dma_en
-    when(nvdla_pdp_d_perf_enable_0_wren){
-        dma_en_out:= io.reg_wr_data(0)
-    }
-    // Not generating flops for read-only field NVDLA_PDP_D_PERF_WRITE_STALL_0::perf_write_stall
+    io.partial_width_out_mid := RegEnable(io.reg_wr_data(29, 20), "b0".asUInt(10.W), nvdla_pdp_d_partial_width_out_0_wren)  
+    // Register: NVDLA_PDP_D_PERF_ENABLE_0    Field: dma_en 
+    io.dma_en := RegEnable(io.reg_wr_data(0), false.B, nvdla_pdp_d_perf_enable_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_KERNEL_CFG_0    Field: kernel_heigh
-    when(nvdla_pdp_d_pooling_kernel_cfg_0_wren){
-        kernel_height_out:= io.reg_wr_data(11, 8)
-    }
+    io.kernel_height := RegEnable(io.reg_wr_data(11, 8), "b0".asUInt(4.W), nvdla_pdp_d_pooling_kernel_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_KERNEL_CFG_0    Field: kernel_stride_height
-    when(nvdla_pdp_d_pooling_kernel_cfg_0_wren){
-        kernel_stride_height_out:= io.reg_wr_data(23, 20)
-    }
+    io.kernel_stride_height := RegEnable(io.reg_wr_data(23, 20), "b0".asUInt(4.W), nvdla_pdp_d_pooling_kernel_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_KERNEL_CFG_0    Field: kernel_stride_width
-    when(nvdla_pdp_d_pooling_kernel_cfg_0_wren){
-        kernel_stride_width_out:= io.reg_wr_data(19, 16)
-    }
-    // Register: NVDLA_PDP_D_POOLING_KERNEL_CFG_0    Field: kernel_width
-    when(nvdla_pdp_d_pooling_kernel_cfg_0_wren){
-        kernel_width_out:= io.reg_wr_data(3, 0)
-    }
+    io.kernel_stride_width := RegEnable(io.reg_wr_data(19, 16), "b0".asUInt(4.W), nvdla_pdp_d_pooling_kernel_cfg_0_wren)  
+    // Register: NVDLA_PDP_D_POOLING_KERNEL_CFG_0    Field: kernel_width 
+    io.kernel_width := RegEnable(io.reg_wr_data(3, 0), "b0".asUInt(4.W), nvdla_pdp_d_pooling_kernel_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_CFG_0    Field: pad_bottom
-    when(nvdla_pdp_d_pooling_padding_cfg_0_wren){
-        pad_bottom_out:= io.reg_wr_data(14, 12)
-    }
+    io.pad_bottom := RegEnable(io.reg_wr_data(14, 12), "b0".asUInt(3.W), nvdla_pdp_d_pooling_padding_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_CFG_0    Field: pad_left
-    when(nvdla_pdp_d_pooling_padding_cfg_0_wren){
-        pad_left_out:= io.reg_wr_data(2, 0)
-    }
+    io.pad_left := RegEnable(io.reg_wr_data(2, 0), "b0".asUInt(3.W), nvdla_pdp_d_pooling_padding_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_CFG_0    Field: pad_right
-    when(nvdla_pdp_d_pooling_padding_cfg_0_wren){
-        pad_right_out:= io.reg_wr_data(10, 8)
-    }
-    // Register: NVDLA_PDP_D_POOLING_PADDING_CFG_0    Field: pad_top
-    when(nvdla_pdp_d_pooling_padding_cfg_0_wren){
-        pad_top_out:= io.reg_wr_data(6, 4)
-    }
-
-    // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_1_CFG_0    Field: pad_value_1x
-    when(nvdla_pdp_d_pooling_padding_value_1_cfg_0_wren){
-        pad_value_1x_out:= io.reg_wr_data(18, 0)
-    }
+    io.pad_right := RegEnable(io.reg_wr_data(10, 8), "b0".asUInt(3.W), nvdla_pdp_d_pooling_padding_cfg_0_wren)  
+    // Register: NVDLA_PDP_D_POOLING_PADDING_CFG_0    Field: pad_top 
+    io.pad_top := RegEnable(io.reg_wr_data(6, 4), "b0".asUInt(3.W), nvdla_pdp_d_pooling_padding_cfg_0_wren)  
+    // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_1_CFG_0    Field: pad_value_1x 
+    io.pad_value_1x := RegEnable(io.reg_wr_data(18, 0), "b0".asUInt(19.W), nvdla_pdp_d_pooling_padding_value_1_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_2_CFG_0    Field: pad_value_2x
-    when(nvdla_pdp_d_pooling_padding_value_2_cfg_0_wren){
-        pad_value_2x_out:= io.reg_wr_data(18, 0)
-    }
+    io.pad_value_2x := RegEnable(io.reg_wr_data(18, 0), "b0".asUInt(19.W), nvdla_pdp_d_pooling_padding_value_2_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_3_CFG_0    Field: pad_value_3x
-    when(nvdla_pdp_d_pooling_padding_value_3_cfg_0_wren){
-        pad_value_3x_out:= io.reg_wr_data(18, 0)
-    }
+    io.pad_value_3x := RegEnable(io.reg_wr_data(18, 0), "b0".asUInt(19.W), nvdla_pdp_d_pooling_padding_value_3_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_4_CFG_0    Field: pad_value_4x
-    when(nvdla_pdp_d_pooling_padding_value_4_cfg_0_wren){
-        pad_value_4x_out:= io.reg_wr_data(18, 0)
-    }
+    io.pad_value_4x := RegEnable(io.reg_wr_data(18, 0), "b0".asUInt(19.W), nvdla_pdp_d_pooling_padding_value_4_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_5_CFG_0    Field: pad_value_5x
-    when(nvdla_pdp_d_pooling_padding_value_5_cfg_0_wren){
-        pad_value_5x_out:= io.reg_wr_data(18, 0)
-    }
+    io.pad_value_5x := RegEnable(io.reg_wr_data(18, 0), "b0".asUInt(19.W), nvdla_pdp_d_pooling_padding_value_5_cfg_0_wren)   
     // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_6_CFG_0    Field: pad_value_6x
-    when(nvdla_pdp_d_pooling_padding_value_6_cfg_0_wren){
-        pad_value_6x_out:= io.reg_wr_data(18, 0)
-    }
-    // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_7_CFG_0    Field: pad_value_7x
-    when(nvdla_pdp_d_pooling_padding_value_7_cfg_0_wren){
-        pad_value_7x_out:= io.reg_wr_data(18, 0)
-    }
+    io.pad_value_6x := RegEnable(io.reg_wr_data(18, 0), "b0".asUInt(19.W), nvdla_pdp_d_pooling_padding_value_6_cfg_0_wren) 
+    // Register: NVDLA_PDP_D_POOLING_PADDING_VALUE_7_CFG_0    Field: pad_value_7x  
+    io.pad_value_7x := RegEnable(io.reg_wr_data(18, 0), "b0".asUInt(19.W), nvdla_pdp_d_pooling_padding_value_7_cfg_0_wren)   
     // Register: NVDLA_PDP_D_RECIP_KERNEL_HEIGHT_0    Field: recip_kernel_height
-    when(nvdla_pdp_d_recip_kernel_height_0_wren){
-        recip_kernel_height_out:= io.reg_wr_data(16, 0)
-    }
+    io.recip_kernel_height := RegEnable(io.reg_wr_data(16, 0), "b0".asUInt(17.W), nvdla_pdp_d_recip_kernel_height_0_wren)   
     // Register: NVDLA_PDP_D_RECIP_KERNEL_WIDTH_0    Field: recip_kernel_width
-    when(nvdla_pdp_d_recip_kernel_width_0_wren){
-        recip_kernel_width_out:= io.reg_wr_data(16, 0)
-    }
+    io.recip_kernel_width := RegEnable(io.reg_wr_data(16, 0), "b0".asUInt(17.W), nvdla_pdp_d_recip_kernel_width_0_wren)   
     // Register: NVDLA_PDP_D_SRC_BASE_ADDR_HIGH_0    Field: src_base_addr_high
-    when(nvdla_pdp_d_src_base_addr_high_0_wren){
-        src_base_addr_high_out:= io.reg_wr_data(31, 0)
-    }
+    io.src_base_addr_high := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_src_base_addr_high_0_wren)  
     // Register: NVDLA_PDP_D_SRC_BASE_ADDR_LOW_0    Field: src_base_addr_low
-    when(nvdla_pdp_d_src_base_addr_low_0_wren){
-        src_base_addr_low_out:= io.reg_wr_data(31, 0)
-    }
-    // Register: NVDLA_PDP_D_SRC_LINE_STRIDE_0    Field: src_line_stride
-    when(nvdla_pdp_d_src_line_stride_0_wren){
-        src_line_stride_out:= io.reg_wr_data(31, 0)
-    }
+    io.src_base_addr_low := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_src_base_addr_low_0_wren)   
+    // Register: NVDLA_PDP_D_SRC_LINE_ST,RIDE_0    Field: src_line_stride
+    io.src_line_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_src_line_stride_0_wren)   
     // Register: NVDLA_PDP_D_SRC_SURFACE_STRIDE_0    Field: src_surface_stride
-    when(nvdla_pdp_d_src_surface_stride_0_wren){
-        src_surface_stride_out:= io.reg_wr_data(31, 0)
-    }
-
-    io.cya := cya_out
-    io.cube_in_channel := cube_in_channel_out
-    io.cube_in_height := cube_in_height_out
-    io.cube_in_width := cube_in_width_out
-    io.cube_out_channel := cube_out_channel_out
-    io.cube_out_height := cube_out_height_out
-    io.cube_out_width := cube_out_width_out
-    io.input_data := input_data_out
-    io.dst_base_addr_high := dst_base_addr_high_out
-    io.dst_base_addr_low := dst_base_addr_low_out
-    io.dst_line_stride := dst_line_stride_out
-    io.dst_ram_type := dst_ram_type_out
-    io.dst_surface_stride := dst_surface_stride_out
-    io.nan_to_zero := nan_to_zero_out
-    io.flying_mode := flying_mode_out
-    io.pooling_method := pooling_method_out
-    io.split_num := split_num_out
-    io.partial_width_in_first := partial_width_in_first_out
-    io.partial_width_in_last := partial_width_in_last_out
-    io.partial_width_in_mid := partial_width_in_mid_out
-    io.partial_width_out_first := partial_width_out_first_out
-    io.partial_width_out_last := partial_width_out_last_out
-    io.partial_width_out_mid := partial_width_out_mid_out
-    io.dma_en := dma_en_out
-    io.kernel_height := kernel_height_out
-    io.kernel_stride_height := kernel_stride_height_out
-    io.kernel_stride_width := kernel_stride_width_out
-    io.kernel_width := kernel_width_out
-    io.pad_bottom := pad_bottom_out
-    io.pad_left := pad_left_out
-    io.pad_right := pad_right_out
-    io.pad_top := pad_top_out
-    io.pad_value_1x := pad_value_1x_out
-    io.pad_value_2x := pad_value_2x_out
-    io.pad_value_3x := pad_value_3x_out
-    io.pad_value_4x := pad_value_4x_out
-    io.pad_value_5x := pad_value_5x_out
-    io.pad_value_6x := pad_value_6x_out
-    io.pad_value_7x := pad_value_7x_out
-    io.recip_kernel_height := recip_kernel_height_out
-    io.recip_kernel_width := recip_kernel_width_out
-    io.src_base_addr_high := src_base_addr_high_out
-    io.src_base_addr_low := src_base_addr_low_out
-    io.src_line_stride := src_line_stride_out
-    io.src_surface_stride := src_surface_stride_out    
+    io.src_surface_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_d_src_surface_stride_0_wren)   
 
 }}

@@ -98,14 +98,14 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_done := eg_done
 
     //=======================================
-    val u_gate = Module(new NV_NVDLA_SDP_RDMA_gate)
+    val u_gate = Module(new NV_NVDLA_slcg(1, true))
     u_gate.io.nvdla_core_clk := io.nvdla_core_clk
-    u_gate.io.rdma_disable := io.mrdma_disable
-    u_gate.io.rdma_slcg_op_en := io.mrdma_slcg_op_en
+    u_gate.io.slcg_disable.get := io.mrdma_disable
+    u_gate.io.slcg_en(0) := io.mrdma_slcg_op_en
     u_gate.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync
     u_gate.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_gate.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating
-    val nvdla_gated_clk = u_gate.io.nvdla_gated_clk 
+    val nvdla_gated_clk = u_gate.io.nvdla_core_gated_clk
 
     val ig2cq_prdy = Wire(Bool())
     val dma_rd_req_rdy = Wire(Bool())

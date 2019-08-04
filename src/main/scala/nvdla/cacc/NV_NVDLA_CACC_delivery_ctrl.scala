@@ -41,7 +41,7 @@ class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Modu
         val cacc2sdp_valid = Input(Bool())
 
         //dlv
-        val dlv_data = Input(Vec(conf.CACC_ATOMK, SInt(conf.CACC_FINAL_WIDTH.W)))
+        val dlv_data = Input(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
         val dlv_mask = Input(Bool())
         val dlv_pd = Input(UInt(2.W))
         val dlv_valid = Input(Bool())

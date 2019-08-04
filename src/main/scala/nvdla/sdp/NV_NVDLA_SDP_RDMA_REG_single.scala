@@ -64,8 +64,6 @@ class NV_NVDLA_SDP_RDMA_REG_single extends Module {
     // Register flop declarations
     //yifengdu y.f.du1994@gmail.com update on Aug 1, 2019 
     //Solve Java heap space problem
-    val producer_out = RegInit(false.B)
-
     io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_rdma_s_pointer_0_wren)
 
 }}

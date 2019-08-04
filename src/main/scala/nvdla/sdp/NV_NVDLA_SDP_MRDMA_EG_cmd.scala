@@ -73,18 +73,12 @@ withClock(io.nvdla_core_clk){
 
     //dma_size is in unit of atomic_m * 1B
     val cmd_spt_size = RegInit("b0".asUInt(13.W))
-    when(cq2eg_accept){
-        cmd_spt_size := ig2eg_size
-    }
-
     //dma_size is in unit of 16B
     val cmd_dma_size = RegInit("b0".asUInt(14.W))
-    when(cq2eg_accept){
-        cmd_dma_size := ig2eg_size
-    }
-
     val cmd_cube_end = RegInit(false.B)
     when(cq2eg_accept){
+        cmd_spt_size := ig2eg_size
+        cmd_dma_size := ig2eg_size
         cmd_cube_end := ig2eg_cube_end
     }
 

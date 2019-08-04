@@ -68,24 +68,10 @@ class NV_NVDLA_CDMA_single_reg extends Module {
     "h0".asUInt(32.W)  -> nvdla_cdma_s_status_0_out
     ))
 
-// ///// Register flop declarations
-    val arb_weight_out = RegInit("b1111".asUInt(4.W))
-    val arb_wmb_out = RegInit("b0011".asUInt(4.W))
-    val producer_out = RegInit(false.B)
-
-    when(nvdla_cdma_s_arbiter_0_wren){
-        arb_weight_out:= io.reg_wr_data(3, 0)
-    } 
-    when(nvdla_cdma_s_arbiter_0_wren){
-        arb_wmb_out:= io.reg_wr_data(19, 16)
-    }  
-    when(nvdla_cdma_s_pointer_0_wren){
-        producer_out:= io.reg_wr_data(0)
-    }
-    
-    io.arb_weight := arb_weight_out
-    io.arb_wmb := arb_wmb_out
-    io.producer := producer_out
+// ///// Register flop declarations    
+    io.arb_weight := RegEnable(io.reg_wr_data(3, 0), "b1111".asUInt(4.W), nvdla_cdma_s_arbiter_0_wren)
+    io.arb_wmb := RegEnable(io.reg_wr_data(19, 16), "b0011".asUInt(4.W), nvdla_cdma_s_arbiter_0_wren)
+    io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_cdma_s_pointer_0_wren)
     
 }
 

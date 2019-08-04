@@ -39,12 +39,9 @@ class NV_NVDLA_apb2csb extends Module {
   withClock(io.pclk){
 
   val rd_trans_low = RegInit(false.B)
-  val rd_trans_vld = Wire(Bool())
-  val wr_trans_vld = Wire(Bool())
 
-  wr_trans_vld := io.psel & io.penable & io.pwrite
-  rd_trans_vld := io.psel & io.penable & !io.pwrite 
-
+  val wr_trans_vld = io.psel & io.penable & io.pwrite
+  val rd_trans_vld = io.psel & io.penable & !io.pwrite 
 
   when(io.nvdla2csb_valid & rd_trans_low){
     rd_trans_low := false.B
@@ -59,12 +56,10 @@ class NV_NVDLA_apb2csb extends Module {
   io.csb2nvdla_write := io.pwrite
   io.csb2nvdla_nposted := false.B
 
-  io.prdata := io.nvdla2csb_data(31,0)
+  io.prdata := io.nvdla2csb_data
   io.pready := !(wr_trans_vld&(!io.csb2nvdla_ready)|rd_trans_vld&(!io.nvdla2csb_valid))
 
-  }
-
-}
+}}
 
 object NV_NVDLA_apb2csbDriver extends App {
   chisel3.Driver.execute(args, () => new NV_NVDLA_apb2csb())

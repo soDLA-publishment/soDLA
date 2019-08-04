@@ -24,5 +24,4 @@ class cmacConfiguration extends project_spec
     val PKT_nvdla_stripe_info_stripe_st_FIELD = 5
     val PKT_nvdla_stripe_info_stripe_end_FIELD = 6
     val PKT_nvdla_stripe_info_layer_end_FIELD = 8
-    val CMAC_TYPE = SInt
 }

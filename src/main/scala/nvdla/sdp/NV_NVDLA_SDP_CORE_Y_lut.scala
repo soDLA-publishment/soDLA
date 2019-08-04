@@ -475,15 +475,14 @@ val lut_out_pd_8 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => out_
 val lut_out_pd = Cat(lut_out_pd_8, lut_out_pd_7, lut_out_pd_6, lut_out_pd_5, lut_out_pd_4,
                      lut_out_pd_3, lut_out_pd_2, lut_out_pd_1, lut_out_pd_0)
 
-val pipe_p2 = Module(new NV_NVDLA_SDP_CORE_Y_lut_pipe_p2)
-pipe_p2.io.nvdla_core_clk := io.nvdla_core_clk
-pipe_p2.io.lut_out_pvld := lut_out_pvld
-lut_out_prdy := pipe_p2.io.lut_out_prdy
-pipe_p2.io.lut_out_pd := lut_out_pd
-io.lut2inp_pvld := pipe_p2.io.lut2inp_pvld
-pipe_p2.io.lut2inp_prdy := io.lut2inp_prdy
-io.lut2inp_pd := pipe_p2.io.lut2inp_pd
-
+val pipe_p2 = Module(new NV_NVDLA_IS_pipe(conf.EW_LUT_OUT_DW))
+pipe_p2.io.clk := io.nvdla_core_clk
+pipe_p2.io.vi := lut_out_pvld
+lut_out_prdy := pipe_p2.io.ro
+pipe_p2.io.di := lut_out_pd
+io.lut2inp_pvld := pipe_p2.io.vo
+pipe_p2.io.ri := io.lut2inp_prdy
+io.lut2inp_pd := pipe_p2.io.dout
 }}
 
 
@@ -575,7 +574,7 @@ class NV_NVDLA_SDP_CORE_Y_LUT_dat(width:Int) extends Module {
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
-    val ram = Module(new NV_NVDLA_SDP_CORE_Y_LUT_dat_flopram_rwsa(2, 32))
+    val ram = Module(new nv_flopram(2, 32))
     ram.io.clk := nvdla_core_clk_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     ram.io.di := io.dat_fifo_wr_pd
@@ -723,7 +722,7 @@ class NV_NVDLA_SDP_CORE_Y_LUT_cmd(width:Int) extends Module {
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
-    val ram = Module(new NV_NVDLA_SDP_CORE_Y_LUT_cmd_flopram_rwsa(2, width))
+    val ram = Module(new nv_flopram(2, width))
     ram.io.clk := nvdla_core_clk_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     ram.io.di := io.cmd_fifo_wr_pd
@@ -782,113 +781,7 @@ class NV_NVDLA_SDP_CORE_Y_LUT_cmd(width:Int) extends Module {
 
 
 
-class NV_NVDLA_SDP_CORE_Y_LUT_dat_flopram_rwsa(depth:Int, width:Int) extends Module{
-  val io = IO(new Bundle{
-        val clk = Input(Clock())
 
-        val di = Input(UInt(width.W))
-        val we = Input(Bool())
-        val wa = Input(UInt((depth-1).W))
-        val ra = Input(UInt(depth.W))
-        val dout = Output(UInt(width.W))
-
-        val pwrbus_ram_pd = Input(UInt(32.W))
-
-  })  
-withClock(io.clk){
-    val ram_ff = Seq.fill(depth){Reg(UInt(width.W))} :+ Wire(UInt(width.W))
-    when(io.we){
-        for(i <- 0 to depth-1){
-            when(io.wa === i.U){
-                ram_ff(i) := io.di
-            }
-        } 
-    }   
-    ram_ff(depth) := io.di
-    io.dout := MuxLookup(io.ra, "b0".asUInt(width.W), 
-        (0 to depth) map { i => i.U -> ram_ff(i)} )
-}}
-
-class NV_NVDLA_SDP_CORE_Y_LUT_cmd_flopram_rwsa(depth:Int, width:Int) extends Module{
-  val io = IO(new Bundle{
-        val clk = Input(Clock())
-
-        val di = Input(UInt(width.W))
-        val we = Input(Bool())
-        val wa = Input(UInt((depth-1).W))
-        val ra = Input(UInt(depth.W))
-        val dout = Output(UInt(width.W))
-
-        val pwrbus_ram_pd = Input(UInt(32.W))
-
-  })  
-withClock(io.clk){
-    val ram_ff = Seq.fill(depth){Reg(UInt(width.W))} :+ Wire(UInt(width.W))
-    when(io.we){
-        for(i <- 0 to depth-1){
-            when(io.wa === i.U){
-                ram_ff(i) := io.di
-            }
-        } 
-    }   
-    ram_ff(depth) := io.di
-    io.dout := MuxLookup(io.ra, "b0".asUInt(width.W), 
-        (0 to depth) map { i => i.U -> ram_ff(i)} )
-}}
-
-class NV_NVDLA_SDP_CORE_Y_lut_pipe_p1(implicit val conf: sdpConfiguration) extends Module{
-  val io = IO(new Bundle{
-        val nvdla_core_clk = Input(Clock())
-
-        val idx2lut_pvld = Input(Bool())
-        val idx2lut_prdy = Output(Bool())
-        val idx2lut_pd = Input(UInt(conf.EW_IDX_OUT_DW.W))
-        
-        val lut_in_pvld = Output(Bool())
-        val lut_in_prdy = Input(Bool())
-        val lut_in_pd = Output(UInt(conf.EW_IDX_OUT_DW.W))
-  })  
-
-  val is_pipe = Module(new NV_NVDLA_IS_pipe(conf.EW_IDX_OUT_DW))
-
-  is_pipe.io.clk := io.nvdla_core_clk
-
-  is_pipe.io.vi := io.idx2lut_pvld
-  io.idx2lut_prdy := is_pipe.io.ro
-  is_pipe.io.di := io.idx2lut_pd
-
-  io.lut_in_pvld := is_pipe.io.vo
-  is_pipe.io.ri := io.lut_in_prdy 
-  io.lut_in_pd := is_pipe.io.dout
-  
-}
-
-class NV_NVDLA_SDP_CORE_Y_lut_pipe_p2(implicit val conf: sdpConfiguration) extends Module{
-  val io = IO(new Bundle{
-        val nvdla_core_clk = Input(Clock())
-
-        val lut_out_pvld = Input(Bool())
-        val lut_out_prdy = Output(Bool())
-        val lut_out_pd = Input(UInt(conf.EW_LUT_OUT_DW.W))
-        
-        val lut2inp_pvld = Output(Bool())
-        val lut2inp_prdy = Input(Bool())
-        val lut2inp_pd = Output(UInt(conf.EW_LUT_OUT_DW.W))
-  })  
-
-  val is_pipe = Module(new NV_NVDLA_IS_pipe(conf.EW_LUT_OUT_DW))
-
-  is_pipe.io.clk := io.nvdla_core_clk
-
-  is_pipe.io.vi := io.lut_out_pvld
-  io.lut_out_prdy := is_pipe.io.ro
-  is_pipe.io.di := io.lut_out_pd
-
-  io.lut2inp_pvld := is_pipe.io.vo
-  is_pipe.io.ri := io.lut2inp_prdy
-  io.lut2inp_pd := is_pipe.io.dout
-  
-}
 
 
 

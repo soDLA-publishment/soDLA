@@ -58,14 +58,8 @@ class NV_NVDLA_CACC_REG_single extends Module {
     "h0".asUInt(32.W)  -> nvdla_csc_s_status_0_out
     ))
 
-// ///// Register flop declarations
-    val producer_out = RegInit(false.B)
-
-    when(nvdla_csc_s_pointer_0_wren){
-        producer_out:= io.reg_wr_data(0)
-    }
-        
-    io.producer := producer_out
+// ///// Register flop declarations        
+    io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_csc_s_pointer_0_wren)
     
 }
 

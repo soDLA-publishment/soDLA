@@ -80,6 +80,8 @@ val dbuf_rd_data = u_accu_dbuf.io.dout
 
 //get signal for SDP
 val dbuf_rd_valid = RegInit(false.B)
+
+//which data to be fetched by sdp.
 val rd_data_mask = RegInit("b1".asUInt(conf.CACC_DWIDTH_DIV_SWIDTH.W))
 val rd_data_mask_pre = if(conf.CACC_DWIDTH_DIV_SWIDTH>=2) 
                        Mux(io.cacc2sdp_valid & io.cacc2sdp_ready, Cat(rd_data_mask(conf.CACC_DWIDTH_DIV_SWIDTH-2, 0), 

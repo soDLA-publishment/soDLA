@@ -128,55 +128,55 @@ class NV_NVDLA_SDP_REG_dual extends Module{
     withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_sdp_d_cvt_offset_0_wren = (io.reg_offset === "hc0".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_cvt_scale_0_wren = (io.reg_offset ===  "hc4".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_cvt_shift_0_wren = (io.reg_offset ===  "hc8".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_data_cube_channel_0_wren = (io.reg_offset ===  "h44".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_data_cube_height_0_wren = (io.reg_offset === "h40".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_data_cube_width_0_wren = (io.reg_offset === "h3c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_data_format_0_wren = (io.reg_offset === "hbc".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bn_alu_cfg_0_wren = (io.reg_offset === "h70".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bn_alu_src_value_0_wren = (io.reg_offset === "h74".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bn_cfg_0_wren = (io.reg_offset === "h6c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bn_mul_cfg_0_wren = (io.reg_offset === "h78".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bn_mul_src_value_0_wren = (io.reg_offset === "h7c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bs_alu_cfg_0_wren = (io.reg_offset === "h5c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bs_alu_src_value_0_wren = (io.reg_offset === "h60".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bs_cfg_0_wren = (io.reg_offset === "h58".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bs_mul_cfg_0_wren = (io.reg_offset === "h64".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_bs_mul_src_value_0_wren = (io.reg_offset === "h68".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_alu_cfg_0_wren = (io.reg_offset === "h84".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_alu_cvt_offset_value_0_wren = (io.reg_offset === "h8c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_alu_cvt_scale_value_0_wren = (io.reg_offset === "h90".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_alu_cvt_truncate_value_0_wren = (io.reg_offset === "h94".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_alu_src_value_0_wren = (io.reg_offset === "h88".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_cfg_0_wren = (io.reg_offset === "h80".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_mul_cfg_0_wren = (io.reg_offset === "h98".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_mul_cvt_offset_value_0_wren = (io.reg_offset === "ha0".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_mul_cvt_scale_value_0_wren = (io.reg_offset === "ha4".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_mul_cvt_truncate_value_0_wren = (io.reg_offset === "ha8".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_mul_src_value_0_wren = (io.reg_offset === "h9c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dp_ew_truncate_value_0_wren = (io.reg_offset === "hac".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dst_base_addr_high_0_wren = (io.reg_offset === "h4c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dst_base_addr_low_0_wren = (io.reg_offset === "h48".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dst_batch_stride_0_wren = (io.reg_offset === "hb8".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dst_dma_cfg_0_wren = (io.reg_offset === "hb4".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dst_line_stride_0_wren = (io.reg_offset === "h50".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_dst_surface_stride_0_wren = (io.reg_offset === "h54".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_feature_mode_cfg_0_wren = (io.reg_offset === "hb0".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_op_enable_0_wren = (io.reg_offset === "h38".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_enable_0_wren = (io.reg_offset === "hdc".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_lut_hybrid_0_wren = (io.reg_offset === "hf0".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_lut_le_hit_0_wren = (io.reg_offset === "hf4".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_lut_lo_hit_0_wren = (io.reg_offset === "hf8".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_lut_oflow_0_wren = (io.reg_offset === "he8".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_lut_uflow_0_wren = (io.reg_offset === "he4".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_out_saturation_0_wren = (io.reg_offset === "hec".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_perf_wdma_write_stall_0_wren = (io.reg_offset === "he0".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_status_0_wren = (io.reg_offset === "hcc".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_status_inf_input_num_0_wren = (io.reg_offset === "hd4".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_status_nan_input_num_0_wren = (io.reg_offset === "hd0".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_d_status_nan_output_num_0_wren = (io.reg_offset === "hd8".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_d_cvt_offset_0_wren = (io.reg_offset === "hc0".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_cvt_scale_0_wren = (io.reg_offset ===  "hc4".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_cvt_shift_0_wren = (io.reg_offset ===  "hc8".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_data_cube_channel_0_wren = (io.reg_offset ===  "h44".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_data_cube_height_0_wren = (io.reg_offset === "h40".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_data_cube_width_0_wren = (io.reg_offset === "h3c".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_data_format_0_wren = (io.reg_offset === "hbc".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bn_alu_cfg_0_wren = (io.reg_offset === "h70".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bn_alu_src_value_0_wren = (io.reg_offset === "h74".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bn_cfg_0_wren = (io.reg_offset === "h6c".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bn_mul_cfg_0_wren = (io.reg_offset === "h78".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bn_mul_src_value_0_wren = (io.reg_offset === "h7c".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bs_alu_cfg_0_wren = (io.reg_offset === "h5c".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bs_alu_src_value_0_wren = (io.reg_offset === "h60".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bs_cfg_0_wren = (io.reg_offset === "h58".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bs_mul_cfg_0_wren = (io.reg_offset === "h64".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_bs_mul_src_value_0_wren = (io.reg_offset === "h68".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_alu_cfg_0_wren = (io.reg_offset === "h84".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_alu_cvt_offset_value_0_wren = (io.reg_offset === "h8c".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_alu_cvt_scale_value_0_wren = (io.reg_offset === "h90".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_alu_cvt_truncate_value_0_wren = (io.reg_offset === "h94".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_alu_src_value_0_wren = (io.reg_offset === "h88".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_cfg_0_wren = (io.reg_offset === "h80".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_mul_cfg_0_wren = (io.reg_offset === "h98".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_mul_cvt_offset_value_0_wren = (io.reg_offset === "ha0".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_mul_cvt_scale_value_0_wren = (io.reg_offset === "ha4".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_mul_cvt_truncate_value_0_wren = (io.reg_offset === "ha8".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_mul_src_value_0_wren = (io.reg_offset === "h9c".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dp_ew_truncate_value_0_wren = (io.reg_offset === "hac".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dst_base_addr_high_0_wren = (io.reg_offset === "h4c".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dst_base_addr_low_0_wren = (io.reg_offset === "h48".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dst_batch_stride_0_wren = (io.reg_offset === "hb8".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dst_dma_cfg_0_wren = (io.reg_offset === "hb4".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dst_line_stride_0_wren = (io.reg_offset === "h50".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_dst_surface_stride_0_wren = (io.reg_offset === "h54".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_feature_mode_cfg_0_wren = (io.reg_offset === "hb0".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_op_enable_0_wren = (io.reg_offset === "h38".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_enable_0_wren = (io.reg_offset === "hdc".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_lut_hybrid_0_wren = (io.reg_offset === "hf0".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_lut_le_hit_0_wren = (io.reg_offset === "hf4".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_lut_lo_hit_0_wren = (io.reg_offset === "hf8".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_lut_oflow_0_wren = (io.reg_offset === "he8".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_lut_uflow_0_wren = (io.reg_offset === "he4".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_out_saturation_0_wren = (io.reg_offset === "hec".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_perf_wdma_write_stall_0_wren = (io.reg_offset === "he0".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_status_0_wren = (io.reg_offset === "hcc".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_status_inf_input_num_0_wren = (io.reg_offset === "hd4".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_status_nan_input_num_0_wren = (io.reg_offset === "hd0".asUInt(32.W)) & io.reg_wr_en ;   
+    val nvdla_sdp_d_status_nan_output_num_0_wren = (io.reg_offset === "hd8".asUInt(32.W)) & io.reg_wr_en ;   
 
 
     val nvdla_sdp_d_cvt_offset_0_out = io.cvt_offset
@@ -380,7 +380,7 @@ class NV_NVDLA_SDP_REG_dual extends Module{
   // Register: NVDLA_SDP_D_DP_EW_CFG_0    Field: ew_mul_prelu
     io.ew_mul_prelu := RegEnable(io.reg_wr_data(5), false.B, nvdla_sdp_d_dp_ew_cfg_0_wren)
   // Register: NVDLA_SDP_D_DP_EW_MUL_CFG_0    Field: ew_mul_cvt_bypass
-    io.ew_mul_cvt_bypass := RegEnable(io.reg_wr_data(1), true.B nvdla_sdp_d_dp_ew_mul_cfg_0_wren)
+    io.ew_mul_cvt_bypass := RegEnable(io.reg_wr_data(1), true.B, nvdla_sdp_d_dp_ew_mul_cfg_0_wren)
   // Register: NVDLA_SDP_D_DP_EW_MUL_CFG_0    Field: ew_mul_src
     io.ew_mul_src := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_d_dp_ew_mul_cfg_0_wren)
   // Register: NVDLA_SDP_D_DP_EW_MUL_CVT_OFFSET_VALUE_0    Field: ew_mul_cvt_offset
@@ -418,7 +418,7 @@ class NV_NVDLA_SDP_REG_dual extends Module{
   // Register: NVDLA_SDP_D_PERF_ENABLE_0    Field: perf_dma_en
     io.perf_dma_en := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_d_perf_enable_0_wren)
   // Register: NVDLA_SDP_D_PERF_ENABLE_0    Field: perf_lut_en
-    io.perf_lut_en := RegInit(io.reg_wr_data(1), false.B, nvdla_sdp_d_perf_enable_0_wren)
+    io.perf_lut_en := RegEnable(io.reg_wr_data(1), false.B, nvdla_sdp_d_perf_enable_0_wren)
   // Register: NVDLA_SDP_D_PERF_ENABLE_0    Field: perf_nan_inf_count_en
     io.perf_nan_inf_count_en := RegEnable(io.reg_wr_data(3), false.B, nvdla_sdp_d_perf_enable_0_wren)
   // Register: NVDLA_SDP_D_PERF_ENABLE_0    Field: perf_sat_en

@@ -116,84 +116,27 @@ class NV_NVDLA_CDP_RDMA_REG_dual extends Module {
 
     // Register flop declarations
 
-    val cya_out = RegInit("b0".asUInt(32.W))
-    val channel_out = RegInit("b0".asUInt(13.W))
-    val height_out = RegInit("b0".asUInt(13.W))
-    val width_out = RegInit("b0".asUInt(13.W))
-    val input_data_out = RegInit("b0".asUInt(2.W))
-    val dma_en_out = RegInit(false.B)
-    val src_base_addr_high_out = RegInit("b0".asUInt(32.W))
-    val src_base_addr_low_out = RegInit("b0".asUInt(32.W))
-    val src_ram_type_out = RegInit(false.B)
-    val src_line_stride_out = RegInit("b0".asUInt(32.W))
-    val src_surface_stride_out = RegInit("b0".asUInt(32.W))
-
     // Register: NVDLA_CDP_RDMA_D_CYA_0    Field: cya
-    when(nvdla_cdp_rdma_d_cya_0_wren){
-        cya_out:= io.reg_wr_data(31, 0)
-    }
+    io.cya := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_rdma_d_cya_0_wren)
     // Register: NVDLA_CDP_RDMA_D_DATA_CUBE_CHANNEL_0    Field: channel
-    when(nvdla_cdp_rdma_d_data_cube_channel_0_wren){
-        channel_out:= io.reg_wr_data(12, 0)
-    }
+    io.channel := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_cdp_rdma_d_data_cube_channel_0_wren)
     // Register: NVDLA_CDP_RDMA_D_DATA_CUBE_HEIGHT_0    Field: height
-    when(nvdla_cdp_rdma_d_data_cube_height_0_wren){
-        height_out:= io.reg_wr_data(12, 0)
-    }
+    io.height := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_cdp_rdma_d_data_cube_height_0_wren)
     // Register: NVDLA_CDP_RDMA_D_DATA_CUBE_WIDTH_0    Field: width
-    when(nvdla_cdp_rdma_d_data_cube_width_0_wren){
-        width_out:= io.reg_wr_data(12, 0)
-    }
+    io.cdp_width := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_cdp_rdma_d_data_cube_width_0_wren)
     // Register: NVDLA_CDP_RDMA_D_DATA_FORMAT_0    Field: input_data
-    when(nvdla_cdp_rdma_d_data_format_0_wren){
-        input_data_out:= io.reg_wr_data(1, 0)
-    }
-
-    // Not generating flops for constant field NVDLA_CDP_RDMA_D_OPERATION_MODE_0::operation_mode
-
-    // Not generating flops for field NVDLA_CDP_RDMA_D_OP_ENABLE_0::op_en (to be implemented outside)
-
+    io.input_data := RegEnable(io.reg_wr_data(1, 0), "b0".asUInt(2.W), nvdla_cdp_rdma_d_data_format_0_wren)
     // Register: NVDLA_CDP_RDMA_D_PERF_ENABLE_0    Field: dma_en
-    when(nvdla_cdp_rdma_d_perf_enable_0_wren){
-        dma_en_out:= io.reg_wr_data(0)
-    }
-
-    // Not generating flops for read-only field NVDLA_CDP_RDMA_D_PERF_READ_STALL_0::perf_read_stall
-
+    io.dma_en := RegEnable(io.reg_wr_data(0), false.B, nvdla_cdp_rdma_d_perf_enable_0_wren)
     // Register: NVDLA_CDP_RDMA_D_SRC_BASE_ADDR_HIGH_0    Field: src_base_addr_high
-    when(nvdla_cdp_rdma_d_src_base_addr_high_0_wren){
-        src_base_addr_high_out := io.reg_wr_data(31, 0)
-    }
+    io.src_base_addr_high := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_rdma_d_src_base_addr_high_0_wren)
     // Register: NVDLA_CDP_RDMA_D_SRC_BASE_ADDR_LOW_0    Field: src_base_addr_low
-    when(nvdla_cdp_rdma_d_src_base_addr_low_0_wren){
-        src_base_addr_low_out:= io.reg_wr_data(31, 0)
-    }
-
-    // Not generating flops for constant field NVDLA_CDP_RDMA_D_SRC_COMPRESSION_EN_0::src_compression_en
-
+    io.src_base_addr_low := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_rdma_d_src_base_addr_low_0_wren)
     // Register: NVDLA_CDP_RDMA_D_SRC_DMA_CFG_0    Field: src_ram_type
-    when(nvdla_cdp_rdma_d_src_dma_cfg_0_wren){
-        src_ram_type_out:= io.reg_wr_data(0)
-    }
+    io.src_ram_type := RegEnable(io.reg_wr_data(0), false.B, nvdla_cdp_rdma_d_src_dma_cfg_0_wren)
     // Register: NVDLA_CDP_RDMA_D_SRC_LINE_STRIDE_0    Field: src_line_stride
-    when(nvdla_cdp_rdma_d_src_line_stride_0_wren){
-        src_line_stride_out:= io.reg_wr_data(31, 0)
-    }
+    io.src_line_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_rdma_d_src_line_stride_0_wren)
     // Register: NVDLA_CDP_RDMA_D_SRC_SURFACE_STRIDE_0    Field: src_surface_stride
-    when(nvdla_cdp_rdma_d_src_surface_stride_0_wren){
-        src_surface_stride_out:= io.reg_wr_data(31, 0)
-    }
-        
-    io.cya := cya_out
-    io.channel := channel_out
-    io.height := height_out
-    io.cdp_width := width_out
-    io.input_data := input_data_out
-    io.dma_en := dma_en_out
-    io.src_base_addr_high := src_base_addr_high_out
-    io.src_base_addr_low := src_base_addr_low_out
-    io.src_ram_type := src_ram_type_out
-    io.src_line_stride := src_line_stride_out
-    io.src_surface_stride := src_surface_stride_out
+    io.src_surface_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_rdma_d_src_surface_stride_0_wren)
 
 }}

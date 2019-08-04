@@ -47,10 +47,6 @@ class NV_NVDLA_CACC_assembly_buffer(implicit conf: caccConfiguration) extends Mo
 //             └──┴──┘       └──┴──┘
 withClock(io.nvdla_core_clk){
 
-val abuf_rd_data_ecc = Wire(UInt(conf.CACC_ABUF_WIDTH.W))
-
-// instance 
-
 val u_accu_abuf_0 = Module(new nv_ram_rws(conf.CACC_ABUF_DEPTH, conf.CACC_ABUF_WIDTH))
 
 u_accu_abuf_0.io.clk := io.nvdla_core_clk
@@ -59,7 +55,7 @@ u_accu_abuf_0.io.re := io.abuf_rd_en
 u_accu_abuf_0.io.we := io.abuf_wr_en
 u_accu_abuf_0.io.wa := io.abuf_wr_addr
 u_accu_abuf_0.io.di := io.abuf_wr_data
-abuf_rd_data_ecc := u_accu_abuf_0.io.dout
+val abuf_rd_data_ecc = u_accu_abuf_0.io.dout
 
 val abuf_rd_en_d1 = RegNext(io.abuf_rd_en, false.B)
 val abuf_rd_raw_data = abuf_rd_data_ecc
