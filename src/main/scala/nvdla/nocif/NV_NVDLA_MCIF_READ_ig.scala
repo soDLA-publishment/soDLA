@@ -18,7 +18,7 @@ class NV_NVDLA_MCIF_READ_ig (implicit conf: cscConfiguration) extends Module {
         val mcif2noc_axi_ar_arready = Input(Bool())
         val mcif2noc_axi_ar_arid = Output(UInt(8.W))
         val mcif2noc_axi_ar_arlen = Output(UInt(4.W))
-        val mcif2noc_axi_ar_araddr = Output(UInt(NVDLA_MEM_ADDRESS_WIDTH.W))
+        val mcif2noc_axi_ar_araddr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
 
         val eg2ig_axi_vld = Input(Bool())
         //if(UVDLA_PRIMARY_MEMIF_WIDTH > NVDLA_MEMORY_ATOMIC_WIDTH)

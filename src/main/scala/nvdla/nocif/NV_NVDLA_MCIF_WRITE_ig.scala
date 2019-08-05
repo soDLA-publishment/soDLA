@@ -27,12 +27,12 @@ class NV_NVDLA_MCIF_WRITE_ig extends Module {
         val mcif2noc_axi_aw_awready = Input(Bool())
         val mcif2noc_axi_aw_awid = Output(UInt(8.W))
         val mcif2noc_axi_aw_awlen = Output(UInt(4.W))
-        val mcif2noc_axi_aw_awaddr = Output(UInt(NVDLA_MEM_ADDRESS_WIDTH.W))
+        val mcif2noc_axi_aw_awaddr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
         
         val mcif2noc_axi_w_wvalid = Output(Bool())
         val mcif2noc_axi_w_wready = Input(Bool())
-        val mcif2noc_axi_w_wdata = Output(UInt(NVDLA_PRIMARY_MEMIF_WIDTH.W))
-        val mcif2noc_axi_w_wstrb = Output(UInt(NVDLA_PRIMARY_MEMIF_STRB.W))
+        val mcif2noc_axi_w_wdata = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
+        val mcif2noc_axi_w_wstrb = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_STRB.W))
         val mcif2noc_axi_w_wlast = Output(Bool())
 
         //WDMA_NAME 

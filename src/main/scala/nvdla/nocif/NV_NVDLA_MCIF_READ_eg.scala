@@ -18,7 +18,7 @@ class NV_NVDLA_MCIF_READ_eg(implicit conf: cscConfiguration) extends Module {
         //if(NVDLA_PRIMARY_MEMIF_WIDTH > NVDLA_MEMORY_ATOMIC_WIDTH)
         //cq_rd
         val cq_rd_pvld = Input(Vec(conf.RDMA_NUM, Bool()))
-        val cq_rd_prdy = Output(Vec(conf.RDMA_NUM, Bool())
+        val cq_rd_prdy = Output(Vec(conf.RDMA_NUM, Bool()))
         val cq_rd_pd = Input(Vec(conf.RDMA_NUM, UInt(7.W))
 
         //RDMA_NAME mcif2rd_rsp
@@ -28,7 +28,7 @@ class NV_NVDLA_MCIF_READ_eg(implicit conf: cscConfiguration) extends Module {
         val noc2mcif_axi_r_rready = Output(Bool())
         val noc2mcif_axi_r_rid = Input(UInt(8.W))
         val noc2mcif_axi_r_rlast = Input(Bool())
-        val noc2mcif_axi_r_rdata = Input(UInt(NVDLA_PRIMARY_MEMIF_WIDTH.W))
+        val noc2mcif_axi_r_rdata = Input(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
         })
     withClock(io.nvdla_core_clk){
 }}
