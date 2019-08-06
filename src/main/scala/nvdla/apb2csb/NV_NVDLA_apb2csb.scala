@@ -13,7 +13,7 @@ class NV_NVDLA_apb2csb extends Module {
     //clock
     val pclk = Input(Clock())
 
-    //apb interface
+    // Flow control signals from the master
     val psel= Input(Bool())
     val penable = Input(Bool())
     val pwrite  = Input(Bool())
@@ -38,26 +38,26 @@ class NV_NVDLA_apb2csb extends Module {
   //input  nvdla2csb_wr_complete
   withClock(io.pclk){
 
-  val rd_trans_low = RegInit(false.B)
+    val rd_trans_low = RegInit(false.B)
 
-  val wr_trans_vld = io.psel & io.penable & io.pwrite
-  val rd_trans_vld = io.psel & io.penable & !io.pwrite 
+    val wr_trans_vld = io.psel & io.penable & io.pwrite
+    val rd_trans_vld = io.psel & io.penable & !io.pwrite 
 
-  when(io.nvdla2csb_valid & rd_trans_low){
-    rd_trans_low := false.B
-  } 
-  .elsewhen(io.csb2nvdla_ready & rd_trans_vld){
-    rd_trans_low := true.B
-  }    
+    when(io.nvdla2csb_valid & rd_trans_low){
+      rd_trans_low := false.B
+    } 
+    .elsewhen(io.csb2nvdla_ready & rd_trans_vld){
+      rd_trans_low := true.B
+    }    
 
-  io.csb2nvdla_valid := wr_trans_vld | rd_trans_vld & !rd_trans_low
-  io.csb2nvdla_addr := io.paddr(17,2)
-  io.csb2nvdla_wdat := io.pwdata(31,0)
-  io.csb2nvdla_write := io.pwrite
-  io.csb2nvdla_nposted := false.B
+    io.csb2nvdla_valid := wr_trans_vld | rd_trans_vld & !rd_trans_low
+    io.csb2nvdla_addr := io.paddr(17,2)
+    io.csb2nvdla_wdat := io.pwdata(31,0)
+    io.csb2nvdla_write := io.pwrite
+    io.csb2nvdla_nposted := false.B
 
-  io.prdata := io.nvdla2csb_data
-  io.pready := !(wr_trans_vld&(!io.csb2nvdla_ready)|rd_trans_vld&(!io.nvdla2csb_valid))
+    io.prdata := io.nvdla2csb_data
+    io.pready := !(wr_trans_vld&(!io.csb2nvdla_ready)|rd_trans_vld&(!io.nvdla2csb_valid))
 
 }}
 

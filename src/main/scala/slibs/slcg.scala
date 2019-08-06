@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 
-class NV_NVDLA_slcg(input_num: Int, io_slcg_disable: Boolean) extends Module {
+class NV_NVDLA_slcg(input_num: Int = 1, io_slcg_disable: Boolean = false) extends Module {
    val io = IO(new Bundle {
         //in clock
         val dla_clk_ovr_on_sync = Input(Clock())
