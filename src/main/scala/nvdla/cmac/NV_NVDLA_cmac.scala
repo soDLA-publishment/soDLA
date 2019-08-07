@@ -2,15 +2,20 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
-import chisel3.iotesters.Driver
+import chisel3.util._
 
 
-class NV_NVDLA_cmac(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_cmac(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())  
         val nvdla_core_rstn = Input(Bool())
+        //Port for SLCG
+        val dla_clk_ovr_on_sync = Input(Clock())
+        val global_clk_ovr_on_sync = Input(Clock())
+        val tmc2slcg_disable_clock_gating = Input(Bool())
 
+        //csb
         val cmac_a2csb_resp_valid = Output(Bool())  /* data valid */
         val cmac_a2csb_resp_pd = Output(UInt(34.W))/* pkt_id_width=1 pkt_widths=33,33  */
 
@@ -23,11 +28,6 @@ class NV_NVDLA_cmac(implicit val conf: cmacConfiguration) extends Module {
         val sc2mac_dat = Flipped(ValidIO(new csc2cmac_data_if))  /* data valid */
         val sc2mac_wt = Flipped(ValidIO(new csc2cmac_wt_if))    /* data valid */
         
-        //Port for SLCG
-        val dla_clk_ovr_on_sync = Input(Clock())
-        val global_clk_ovr_on_sync = Input(Clock())
-        val tmc2slcg_disable_clock_gating = Input(Bool())
-           
     })
 //     
 //          ┌─┐       ┌─┐
@@ -66,21 +66,26 @@ withReset(!io.nvdla_core_rstn){
 
     u_core.io.nvdla_core_clk := io.nvdla_core_clk               //|< i
 
-    u_core.io.sc2mac_dat_pvld := io.sc2mac_dat_pvld               //|< i
-    u_core.io.sc2mac_dat_mask := io.sc2mac_dat_mask        //|< i
-    u_core.io.sc2mac_dat_data := io.sc2mac_dat_data        //|< i )
-    u_core.io.sc2mac_dat_pd := io.sc2mac_dat_pd            //|< i
+    u_core.io.sc2mac_dat_pvld := io.sc2mac_dat.valid               //|< i
+    u_core.io.sc2mac_dat_mask := io.sc2mac_dat.bits.mask        //|< i
+    u_core.io.sc2mac_dat_data := io.sc2mac_dat.bits.data        //|< i )
+    u_core.io.sc2mac_dat_pd := Cat(io.sc2mac_dat.bits.layer_end, io.sc2mac_dat.bits.channel_end, io.sc2mac_dat.bits.stripe_end,
+                                   io.sc2mac_dat.bits.stripe_st, io.sc2mac_dat.bits.batch_index)       //|< i
 
-    u_core.io.sc2mac_wt_pvld := io.sc2mac_wt_pvld                //|< i
-    u_core.io.sc2mac_wt_mask := io.sc2mac_wt_mask         //|< i
-    u_core.io.sc2mac_wt_data := io.sc2mac_wt_data         //|< i )
-    u_core.io.sc2mac_wt_sel := io.sc2mac_wt_sel            //|< i
+    u_core.io.sc2mac_wt_pvld := io.sc2mac_wt.valid                //|< i
+    u_core.io.sc2mac_wt_mask := io.sc2mac_wt.bits.mask         //|< i
+    u_core.io.sc2mac_wt_data := io.sc2mac_wt.bits.data         //|< i )
+    u_core.io.sc2mac_wt_sel := io.sc2mac_wt.bits.sel            //|< i
 
-    io.mac2accu_pvld := u_core.io.mac2accu_pvld                 //|> o
-    io.mac2accu_mask := u_core.io.mac2accu_mask            //|> o
-    io.mac2accu_mode := u_core.io.mac2accu_mode            //|> o(
-    io.mac2accu_data := u_core.io.mac2accu_data         //|> o )
-    io.mac2accu_pd := u_core.io.mac2accu_pd              //|> o
+    io.mac2accu.valid := u_core.io.mac2accu_pvld                 //|> o
+    io.mac2accu.bits.mask := u_core.io.mac2accu_mask            //|> o
+    io.mac2accu.bits.mode := u_core.io.mac2accu_mode            //|> o(
+    io.mac2accu.bits.data := u_core.io.mac2accu_data         //|> o )
+    io.mac2accu.bits.batch_index := u_core.io.mac2accu_pd(4, 0)              //|> o
+    io.mac2accu.bits.stripe_st := u_core.io.mac2accu_pd(5)              //|> o
+    io.mac2accu.bits.stripe_end := u_core.io.mac2accu_pd(6)              //|> o
+    io.mac2accu.bits.channel_end := u_core.io.mac2accu_pd(7)              //|> o
+    io.mac2accu.bits.layer_end := u_core.io.mac2accu_pd(8)              //|> o
 
     u_core.io.reg2dp_op_en := reg2dp_op_en               //|< w
     u_core.io.reg2dp_conv_mode := reg2dp_conv_mode          //|< w
@@ -118,6 +123,6 @@ withReset(!io.nvdla_core_rstn){
 
 
 object NV_NVDLA_cmacDriver extends App {
-  implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_cmac())
 }
