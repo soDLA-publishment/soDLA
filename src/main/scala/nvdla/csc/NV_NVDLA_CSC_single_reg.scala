@@ -42,11 +42,11 @@
 // //             │ ─┤ ─┤       │ ─┤ ─┤         
 // //             └──┴──┘       └──┴──┘ 
 // // ///// Address decode
-//     val nvdla_csc_s_pointer_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_csc_s_status_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
+//     val nvdla_csc_s_pointer_0_wren = (io.reg_control.offset === "h4".asUInt(32.W))&io.reg_control.wr_en
+//     val nvdla_csc_s_status_0_wren = (io.reg_control.offset === "h0".asUInt(32.W))&io.reg_control.wr
 
 // // ///// Output mux  
-//     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+//     io.reg_rd_data := MuxLookup(io.reg_control.offset, "b0".asUInt(32.W), 
 //     Seq(  
 //     //nvdla_csc_s_pointer_0_out    
 //     "h4".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),
@@ -55,7 +55,7 @@
 //     ))
 
 // // ///// Register flop declarations
-//     io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_csc_s_pointer_0_wren)
+//     io.producer := RegEnable(io.reg_control.wr_data(0), false.B, nvdla_csc_s_pointer_0_wren)
     
 // }
 

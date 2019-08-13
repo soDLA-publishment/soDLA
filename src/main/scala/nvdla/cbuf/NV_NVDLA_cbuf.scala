@@ -5,7 +5,6 @@ import chisel3.experimental._
 import chisel3.util._
 
 
-
 class NV_NVDLA_cbuf(useRealClock:Boolean = true)(implicit val conf: nvdlaConfig) extends Module {
  
   val io = IO(new Bundle {
@@ -209,7 +208,7 @@ class cbufImpl{
     }
 
 //get sc data read valid
-    io.sc2buf_dat_rd.data.valid := ShiftRegister(bank_ram_data_rd_valid.asUInt.orR, 4)
+    io.sc2buf_dat_rd.valid := ShiftRegister(bank_ram_data_rd_valid.asUInt.orR, 4)
     
     val bank_ram_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, UInt(conf.CBUF_RAM_WIDTH.W))))
 
@@ -291,7 +290,7 @@ class cbufImpl{
             l4group_data_rd_data := l3group_data_rd_data(0)(0)|l3group_data_rd_data(1)(0)                    
         }
     
-        io.sc2buf_dat_rd.data.bits := l4group_data_rd_data
+        io.sc2buf_dat_rd.data := l4group_data_rd_data
     }
     if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
         val l1group_data_rd_data = RegNext(bank_data_rd_data)//first pipe
@@ -319,7 +318,7 @@ class cbufImpl{
             l4group_data_rd_data(1) := l3group_data_rd_data(0)(1)|l3group_data_rd_data(1)(1)         
         }
 
-        io.sc2buf_dat_rd.data.bits := RegNext((Cat(l4group_data_rd_data(1), l4group_data_rd_data(0)) >> Cat(sc2buf_dat_rd_shift_5T, "b0".asUInt(3.W)))(conf.CBUF_RD_PORT_WIDTH-1, 0))
+        io.sc2buf_dat_rd.data := RegNext((Cat(l4group_data_rd_data(1), l4group_data_rd_data(0)) >> Cat(sc2buf_dat_rd_shift_5T, "b0".asUInt(3.W)))(conf.CBUF_RD_PORT_WIDTH-1, 0))
     }
 
     /////////////////////step3: read weight handle

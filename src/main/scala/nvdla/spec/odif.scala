@@ -14,7 +14,8 @@ class cdma2buf_wr_if(implicit val conf: nvdlaConfig) extends Bundle{
 
 
 class buf2csc_data_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
-    val data = ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W))
+    val valid = Output(Bool())
+    val data = Output(UInt(conf.CBUF_RD_PORT_WIDTH.W))
     val en = Input(Bool())
     val addr = Input(UInt(conf.CBUF_ADDR_WIDTH.W))
     val shift = Input(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))

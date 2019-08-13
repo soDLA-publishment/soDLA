@@ -16,7 +16,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: nvdlaConfig) extends Module {
 
         //reg2dp
         val reg2dp_op_en = Output(Bool())
-        val reg2dp_flop = new cmac_reg_flop_outputs
+        val reg2dp_field = new cmac_reg_flop_outputs
         val dp2reg_done = Input(Bool())
 
         //slave cg op
@@ -58,10 +58,10 @@ withClock(io.nvdla_core_clk){
     val u_single_reg = Module(new NV_NVDLA_CMAC_REG_single)
 
     u_single_reg.io.nvdla_core_clk := io.nvdla_core_clk
-    u_single_reg.io.reg_control.offset := reg_offset
-    u_single_reg.io.reg_control.wr_data := reg_wr_data 
-    u_single_reg.io.reg_control.wr_en := s_reg_wr_en
-    val s_reg_rd_data = u_single_reg.io.reg_control.rd_data
+    u_single_reg.io.reg.offset := reg_offset
+    u_single_reg.io.reg.wr_data := reg_wr_data 
+    u_single_reg.io.reg.wr_en := s_reg_wr_en
+    val s_reg_rd_data = u_single_reg.io.reg.rd_data
     u_single_reg.io.consumer := dp2reg_consumer
     u_single_reg.io.status_0 := dp2reg_status_0
     u_single_reg.io.status_1 := dp2reg_status_1 
@@ -73,12 +73,12 @@ withClock(io.nvdla_core_clk){
 
     val u_dual_reg_d0 = Module(new NV_NVDLA_CMAC_REG_dual)
     u_dual_reg_d0.io.nvdla_core_clk := io.nvdla_core_clk
-    u_dual_reg_d0.io.reg_control.offset := reg_offset
-    u_dual_reg_d0.io.reg_control.wr_data := reg_wr_data
-    u_dual_reg_d0.io.reg_control.wr_en := d0_reg_wr_en
-    val d0_reg_rd_data = u_dual_reg_d0.io.reg_control.rd_data
+    u_dual_reg_d0.io.reg.offset := reg_offset
+    u_dual_reg_d0.io.reg.wr_data := reg_wr_data
+    u_dual_reg_d0.io.reg.wr_en := d0_reg_wr_en
+    val d0_reg_rd_data = u_dual_reg_d0.io.reg.rd_data
     u_dual_reg_d0.io.op_en := reg2dp_d0_op_en
-    val reg2dp_d0_flop = u_dual_reg_d0.io.reg_flop
+    val reg2dp_d0_field = u_dual_reg_d0.io.field
     val reg2dp_d0_op_en_trigger = u_dual_reg_d0.io.op_en_trigger
 
     val d1_reg_wr_en = Wire(Bool())
@@ -86,12 +86,12 @@ withClock(io.nvdla_core_clk){
 
     val u_dual_reg_d1 = Module(new NV_NVDLA_CMAC_REG_dual)
     u_dual_reg_d1.io.nvdla_core_clk := io.nvdla_core_clk
-    u_dual_reg_d1.io.reg_control.offset := reg_offset
-    u_dual_reg_d1.io.reg_control.wr_data := reg_wr_data
-    u_dual_reg_d1.io.reg_control.wr_en := d1_reg_wr_en
-    val d1_reg_rd_data = u_dual_reg_d1.io.reg_control.rd_data
+    u_dual_reg_d1.io.reg.offset := reg_offset
+    u_dual_reg_d1.io.reg.wr_data := reg_wr_data
+    u_dual_reg_d1.io.reg.wr_en := d1_reg_wr_en
+    val d1_reg_rd_data = u_dual_reg_d1.io.reg.rd_data
     u_dual_reg_d1.io.op_en := reg2dp_d1_op_en 
-    val reg2dp_d1_flop = u_dual_reg_d1.io.reg_flop
+    val reg2dp_d1_field = u_dual_reg_d1.io.field
     val reg2dp_d1_op_en_trigger = u_dual_reg_d1.io.op_en_trigger
 
     ////////////////////////////////////////////////////////////////////////
@@ -214,6 +214,6 @@ withClock(io.nvdla_core_clk){
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
 
-    io.reg2dp_flop := Mux(dp2reg_consumer, reg2dp_d1_flop, reg2dp_d0_flop)
+    io.reg2dp_field := Mux(dp2reg_consumer, reg2dp_d1_field, reg2dp_d0_field)
 
 }}
