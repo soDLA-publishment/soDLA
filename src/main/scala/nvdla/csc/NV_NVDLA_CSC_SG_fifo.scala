@@ -3,7 +3,6 @@
 // import chisel3._
 // import chisel3.experimental._
 // import chisel3.util._
-// import chisel3.iotesters.Driver
 
 // //NV_NVDLA_CSC_SG_WT_fifo
 // //NV_NVDLA_CSC_SG_DAT_fifo

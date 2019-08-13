@@ -10,10 +10,7 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         //Register control interface
-//         val reg_rd_data = Output(UInt(32.W))
-//         val reg_offset = Input(UInt(12.W))
-//         val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
-//         val reg_wr_en = Input(Bool())
+//         val reg_control = new reg_control_if
 
 //         //Writable register flop/trigger outputs
 //         val atomics = Output(UInt(21.W))
@@ -107,11 +104,6 @@
 //     val nvdla_csc_d_zero_padding_0_wren = (io.reg_offset === "h54".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
 //     val nvdla_csc_d_zero_padding_value_0_wren = (io.reg_offset === "h58".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
 
-//     val nvdla_csc_d_atomics_0_out = Cat("b0".asUInt(11.W), io.atomics )
-//     val nvdla_csc_d_bank_0_out = Cat("b0".asUInt(11.W), io.weight_bank, "b0".asUInt(11.W), io.data_bank)
-//     val nvdla_csc_d_batch_number_0_out = Cat("b0".asUInt(27.W), io.batches )
-//     val nvdla_csc_d_conv_stride_ext_0_out = Cat("b0".asUInt(13.W), io.conv_y_stride_ext, "b0".asUInt(13.W), io.conv_x_stride_ext )
-//     val nvdla_csc_d_cya_0_out =  io.cya 
 //     val nvdla_csc_d_datain_format_0_out = Cat("b0".asUInt(31.W), io.datain_format)
 //     val nvdla_csc_d_datain_size_ext_0_0_out = Cat("b0".asUInt(3.W), io.datain_height_ext, "b0".asUInt(3.W), io.datain_width_ext )
 //     val nvdla_csc_d_datain_size_ext_1_0_out = Cat("b0".asUInt(19.W), io.datain_channel_ext)
@@ -139,12 +131,17 @@
 //     //Output mux
 
 //     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
-//     Seq(      
-//     "h44".asUInt(32.W)  -> nvdla_csc_d_atomics_0_out,
-//     "h5c".asUInt(32.W)  -> nvdla_csc_d_bank_0_out,
-//     "h1c".asUInt(32.W)  -> nvdla_csc_d_batch_number_0_out,
-//     "h4c".asUInt(32.W)  -> nvdla_csc_d_conv_stride_ext_0_out,
-//     "h64".asUInt(32.W)  -> nvdla_csc_d_cya_0_out,
+//     Seq(  
+//     //nvdla_csc_d_atomics_0_out    
+//     "h44".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.atomics),
+//     //nvdla_csc_d_bank_0_out
+//     "h5c".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.weight_bank, "b0".asUInt(11.W), io.data_bank),
+//     //nvdla_csc_d_batch_number_0_out
+//     "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.batches),
+//     //nvdla_csc_d_conv_stride_ext_0_out
+//     "h4c".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.conv_y_stride_ext, "b0".asUInt(13.W), io.conv_x_stride_ext),
+//     //nvdla_csc_d_cya_0_out
+//     "h64".asUInt(32.W)  -> io.cya,
 //     "h10".asUInt(32.W)  -> nvdla_csc_d_datain_format_0_out,
 //     "h14".asUInt(32.W)  -> nvdla_csc_d_datain_size_ext_0_0_out,
 //     "h18".asUInt(32.W)  -> nvdla_csc_d_datain_size_ext_1_0_out,

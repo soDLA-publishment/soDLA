@@ -14,7 +14,7 @@
 //         val reg_wr_data = Input(UInt(32.W))
 //         val reg_wr_en = Input(Bool())
 //     }) 
-//     withClock(io.nvdla_core_clk){
+// withClock(io.nvdla_core_clk){
 
 //     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
 //     Seq( 

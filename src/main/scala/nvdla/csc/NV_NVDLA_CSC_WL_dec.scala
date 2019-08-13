@@ -3,9 +3,8 @@
 //  import chisel3._
 //  import chisel3.experimental._
 //  import chisel3.util._
-//  import chisel3.iotesters.Driver
 
-// class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
+// class NV_NVDLA_CSC_WL_dec(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         //clock
 //         val nvdla_core_clk = Input(Clock())    
@@ -146,7 +145,7 @@
 // }}
 
 // object NV_NVDLA_CSC_WL_decDriver extends App {
-//   implicit val conf: cscConfiguration = new cscConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_WL_dec)
 // }
 

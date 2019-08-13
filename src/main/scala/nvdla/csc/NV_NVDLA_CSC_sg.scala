@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_CSC_sg(implicit val conf: cscConfiguration) extends Module {
+// class NV_NVDLA_CSC_sg(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         //clk
 //         val nvdla_core_clk = Input(Clock())
@@ -644,7 +644,7 @@
 
 
 // object NV_NVDLA_CSC_sgDriver extends App {
-//   implicit val conf: cscConfiguration = new cscConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_sg())
 // }
 

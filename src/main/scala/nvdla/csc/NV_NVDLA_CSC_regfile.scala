@@ -3,22 +3,16 @@
 // import chisel3._
 // import chisel3.experimental._
 // import chisel3.util._
-// import chisel3.iotesters.Driver
 
 // //Implementation overview of ping-pong register file.
 
-// class NV_NVDLA_CSC_regfile(implicit val conf: cscConfiguration) extends Module {
+// class NV_NVDLA_CSC_regfile(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val nvdla_core_clk = Input(Clock())      
 
 //         //csb2csc
-//         val csb2csc_req_pd = Input(UInt(63.W))
-//         val csb2csc_req_pvld = Input(Bool())
-//         val csb2csc_req_prdy = Output(Bool())
-        
-//         val csc2csb_resp_pd = Output(UInt(34.W))
-//         val csc2csb_resp_valid = Output(Bool())
+//         val csb2csc = new csb2dp_if
 
 //         //reg2dp
 //         val dp2reg_done = Input(Bool())
@@ -376,6 +370,6 @@
 // }}
 
 // object NV_NVDLA_CSC_regfileDriver extends App {
-//   implicit val conf: cscConfiguration = new cscConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_regfile())
 // }

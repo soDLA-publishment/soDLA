@@ -29,6 +29,24 @@ class cmacConfiguration extends project_spec
 }
 
 
+class cmac_core_actv(implicit val conf: nvdlaConfig) extends Bundle{
+    val nz = Output(Bool())
+    val data = Output(UInt(conf.CMAC_BPE.W))
+}
+
+class cmac_reg_flop_outputs extends Bundle{
+    val conv_mode = Output(Bool())
+    val proc_precision = Output(UInt(2.W))
+}
+
+
+
+
+
+
+
+
+
 
 
 

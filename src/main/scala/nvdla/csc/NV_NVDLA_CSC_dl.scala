@@ -3,11 +3,10 @@
 // import chisel3._
 // import chisel3.experimental._
 // import chisel3.util._
-// import chisel3.iotesters.Driver
 
 // //6/28/2019 redpanda3 update
 // //prevent java heap space
-// class NV_NVDLA_CSC_dlIO(implicit conf: cscConfiguration) extends Bundle{
+// class NV_NVDLA_CSC_dlIO(implicit conf: nvdlaConfig) extends Bundle{
 
 //     val nvdla_core_clk = Input(Clock())
 //     val nvdla_core_ng_clk = Input(Clock())
@@ -36,15 +35,8 @@
 //     val sc2buf_dat_rd_next1_en = Output(Bool())
 //     val sc2buf_dat_rd_next1_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
 
-//     val sc2mac_dat_a_pvld = Output(Bool())              /* data valid */
-//     val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-//     val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-//     val sc2mac_dat_a_pd = Output(UInt(9.W))
-
-//     val sc2mac_dat_b_pvld = Output(Bool())              /* data valid */
-//     val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-//     val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-//     val sc2mac_dat_b_pd = Output(UInt(9.W))
+//     val sc2mac_dat_a = ValidIO(new csc2cmac_data_if)              /* data valid */
+//     val sc2mac_dat_b = ValidIO(new csc2cmac_data_if)             /* data valid */
 
 //     val reg2dp_op_en = Input(Bool())
 //     val reg2dp_conv_mode = Input(Bool())
@@ -74,7 +66,7 @@
 
 // }
 
-// class NV_NVDLA_CSC_dl(implicit val conf: cscConfiguration) extends Module {
+// class NV_NVDLA_CSC_dl(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new NV_NVDLA_CSC_dlIO)
 //     //     
 //     //          ┌─┐       ┌─┐
@@ -1277,20 +1269,20 @@
 //     }
 // }
 
-// io.sc2mac_dat_a_pvld := sc2mac_dat_a_pvld_out
-// io.sc2mac_dat_b_pvld := sc2mac_dat_a_pvld_out
-// io.sc2mac_dat_a_pd := sc2mac_dat_a_pd_out
-// io.sc2mac_dat_b_pd := sc2mac_dat_a_pd_out
-// io.sc2mac_dat_a_mask := sc2mac_dat_a_mask_out
-// io.sc2mac_dat_b_mask := sc2mac_dat_b_mask_out
-// io.sc2mac_dat_a_data := sc2mac_dat_a_data_out
-// io.sc2mac_dat_b_data := sc2mac_dat_b_data_out
+// io.sc2mac_dat_a.valid := sc2mac_dat_a_pvld_out
+// io.sc2mac_dat_b.valid := sc2mac_dat_a_pvld_out
+// io.sc2mac_dat_a.bits.pd := sc2mac_dat_a_pd_out
+// io.sc2mac_dat_b.bits.pd := sc2mac_dat_a_pd_out
+// io.sc2mac_dat_a.bits.mask := sc2mac_dat_a_mask_out
+// io.sc2mac_dat_b.bits.mask := sc2mac_dat_b_mask_out
+// io.sc2mac_dat_a.bits.data := sc2mac_dat_a_data_out
+// io.sc2mac_dat_b.bits.data := sc2mac_dat_b_data_out
 
 // }}
 
 
 // object NV_NVDLA_CSC_dlDriver extends App {
-//   implicit val conf: cscConfiguration = new cscConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_dl())
 // }
 

@@ -31,7 +31,7 @@
 //         val csb2cfgrom_req_prdy = Input(Bool())     /* data return handshake */
 //         val csb2cfgrom_req_pd = Output(UInt(63.W))
 //         val cfgrom2csb_resp_valid = Input(Bool())
-//         val cfgrom2csb_resp_pd = Input(Bool())
+//         val cfgrom2csb_resp_pd = Input(UInt(34.W))
 
 //         //csb2glb
 //         val csb2glb_req_pvld = Output(Bool())

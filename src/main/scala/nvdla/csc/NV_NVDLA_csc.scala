@@ -2,10 +2,10 @@
 
 // import chisel3._
 // import chisel3.experimental._
-// import chisel3.iotesters.Driver
+// import chisel3.util._
 
 
-// class NV_NVDLA_csc(implicit val conf: cscConfiguration) extends Module {
+// class NV_NVDLA_csc(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val nvdla_core_clk = Input(Clock())   
@@ -65,26 +65,12 @@
 //         val sc2buf_wt_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
 
 //         //mac_dat
-//         val sc2mac_dat_a_pvld = Output(Bool())
-//         val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-//         val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-//         val sc2mac_dat_a_pd = Output(UInt(9.W))
-
-//         val sc2mac_dat_b_pvld = Output(Bool())
-//         val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-//         val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-//         val sc2mac_dat_b_pd = Output(UInt(9.W))   
+//         val sc2mac_dat_a = ValidIO(new csc2cmac_data_if)    /* data valid */
+//         val sc2mac_dat_b = ValidIO(new csc2cmac_data_if)    /* data valid */
 
 //         //mac_wt
-//         val sc2mac_wt_a_pvld = Output(Bool())
-//         val sc2mac_wt_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-//         val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-//         val sc2mac_wt_a_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
-
-//         val sc2mac_wt_b_pvld = Output(Bool())
-//         val sc2mac_wt_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-//         val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-//         val sc2mac_wt_b_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
+//         val sc2mac_wt_a = ValidIO(new csc2cmac_wt_if)    /* data valid */
+//         val sc2mac_wt_b = ValidIO(new csc2cmac_wt_if)    /* data valid */
 
 //         //pwrbus
 //         val pwrbus_ram_pd = Input(UInt(32.W))
@@ -173,7 +159,7 @@
 
 //     u_regfile.io.csb2csc_req_pd := io.csb2csc_req_pd       //|< i
 //     u_regfile.io.csb2csc_req_pvld := io.csb2csc_req_pvld           //|< i
-//     u_regfile.io.dp2reg_done := dp2reg_done                   //|< w
+//     u_regfile.io.dp2reg_done := u_sg.io.dp2reg_done                  //|< w
 
 //     io.csc2csb_resp_pd := u_regfile.io.csc2csb_resp_pd      //|> o
 //     io.csc2csb_resp_valid := u_regfile.io.csc2csb_resp_valid         //|> o
@@ -265,16 +251,12 @@
 //     u_sg.io.reg2dp_weight_bank := reg2dp_weight_bank 
 //     u_sg.io.reg2dp_atomics := reg2dp_atomics
 //     u_sg.io.reg2dp_rls_slices := reg2dp_rls_slices 
-//     dp2reg_done := u_sg.io.dp2reg_done
 //     sg2dl_pvld := u_sg.io.sg2dl_pvld
 //     sg2dl_pd := u_sg.io.sg2dl_pd
-//     sg2wl_pvld := u_sg.io.sg2wl_pvld 
-//     sg2wl_pd := u_sg.io.sg2wl_pd
-//     sc_state := u_sg.io.sc_state
 //     io.sc2cdma_dat_pending_req := u_sg.io.sc2cdma_dat_pending_req
 //     io.sc2cdma_wt_pending_req := u_sg.io.sc2cdma_wt_pending_req
 //     sg2dl_reuse_rls := u_sg.io.sg2dl_reuse_rls
-//     sg2wl_reuse_rls := u_sg.io.sg2wl_reuse_rls
+//     sg2wl_reuse_rls := 
 
 //     //==========================================================
 //     // Weight loader
@@ -283,10 +265,10 @@
 //     val u_wl = Module(new NV_NVDLA_CSC_wl)
 
 //     u_wl.io.nvdla_core_clk := nvdla_op_gated_clk(1)
-//     u_wl.io.sg2wl_pvld := sg2wl_pvld
-//     u_wl.io.sg2wl_pd := sg2wl_pd
-//     u_wl.io.sc_state := sc_state 
-//     u_wl.io.sg2wl_reuse_rls := sg2wl_reuse_rls
+//     u_wl.io.sg2wl_pvld := u_sg.io.sg2wl_pvld 
+//     u_wl.io.sg2wl_pd := u_sg.io.sg2wl_pd
+//     u_wl.io.sc_state := u_sg.io.sc_state
+//     u_wl.io.sg2wl_reuse_rls := u_sg.io.sg2wl_reuse_rls
 //     u_wl.io.sc2cdma_wt_pending_req := io.sc2cdma_wt_pending_req
 //     u_wl.io.cdma2sc_wt_updt := io.cdma2sc_wt_updt
 //     u_wl.io.cdma2sc_wt_kernels := io.cdma2sc_wt_kernels 
@@ -312,14 +294,9 @@
 //     io.sc2cdma_wmb_entries := u_wl.io.sc2cdma_wmb_entries
 //     io.sc2buf_wt_rd_en := u_wl.io.sc2buf_wt_rd_en 
 //     io.sc2buf_wt_rd_addr := u_wl.io.sc2buf_wt_rd_addr
-//     io.sc2mac_wt_a_pvld := u_wl.io.sc2mac_wt_a_pvld
-//     io.sc2mac_wt_a_mask := u_wl.io.sc2mac_wt_a_mask
-//     io.sc2mac_wt_a_data := u_wl.io.sc2mac_wt_a_data
-//     io.sc2mac_wt_a_sel := u_wl.io.sc2mac_wt_a_sel
-//     io.sc2mac_wt_b_pvld := u_wl.io.sc2mac_wt_b_pvld
-//     io.sc2mac_wt_b_mask := u_wl.io.sc2mac_wt_b_mask
-//     io.sc2mac_wt_b_data := u_wl.io.sc2mac_wt_b_data
-//     io.sc2mac_wt_b_sel := u_wl.io.sc2mac_wt_b_sel
+//     io.sc2mac_wt_a := u_wl.io.sc2mac_wt_a
+//     io.sc2mac_wt_b := u_wl.io.sc2mac_wt_b
+
 
 //     //==========================================================
 //     // Data loader
@@ -370,14 +347,8 @@
 //     io.sc2buf_dat_rd_shift := u_dl.io.sc2buf_dat_rd_shift
 //     io.sc2buf_dat_rd_next1_en := u_dl.io.sc2buf_dat_rd_next1_en
 //     io.sc2buf_dat_rd_next1_addr := u_dl.io.sc2buf_dat_rd_next1_addr
-//     io.sc2mac_dat_a_pvld := u_dl.io.sc2mac_dat_a_pvld
-//     io.sc2mac_dat_a_mask := u_dl.io.sc2mac_dat_a_mask
-//     io.sc2mac_dat_a_data := u_dl.io.sc2mac_dat_a_data
-//     io.sc2mac_dat_a_pd := u_dl.io.sc2mac_dat_a_pd
-//     io.sc2mac_dat_b_pvld := u_dl.io.sc2mac_dat_b_pvld
-//     io.sc2mac_dat_b_mask := u_dl.io.sc2mac_dat_b_mask
-//     io.sc2mac_dat_b_data := u_dl.io.sc2mac_dat_b_data
-//     io.sc2mac_dat_b_pd := u_dl.io.sc2mac_dat_b_pd
+//     io.sc2mac_dat_a <> u_dl.io.sc2mac_dat_a
+//     io.sc2mac_dat_b <> u_dl.io.sc2mac_dat_b
 //     slcg_wg_en := u_dl.io.slcg_wg_en
     
 
@@ -400,16 +371,10 @@
 //     }
 
 
-
-
-
-
- 
-
 // }}
 
 
 // object NV_NVDLA_cscDriver extends App {
-//   implicit val conf: cscConfiguration = new cscConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_csc())
 // }

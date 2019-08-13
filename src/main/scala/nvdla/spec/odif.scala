@@ -4,66 +4,123 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
+
+class cdma2buf_wr_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val en = Output(Vec(conf.CBUF_WR_PORT_NUMBER, Bool()))
+    val sel = Output(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_WR_BANK_SEL_WIDTH.W)))
+    val addr = Output(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_ADDR_WIDTH.W)))
+    val data = Output(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_WR_PORT_WIDTH.W)))
+}
+
+
+class buf2csc_data_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
+    val data = ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W))
+    val en = Input(Bool())
+    val addr = Input(UInt(conf.CBUF_ADDR_WIDTH.W))
+    val shift = Input(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
+    val next1_en = Input(Bool())
+    val next1_addr = Input(UInt(conf.CBUF_ADDR_WIDTH.W))
+}
+
+class buf2csc_wt_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
+    val data = ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W))
+    val en = Input(Bool())
+    val addr = Input(UInt(conf.CBUF_ADDR_WIDTH.W))
+}
+
 // flow valid
-class csc2cmac_data_if(implicit val conf: nvdlaConfig) extends Bundle{
+class csc2cmac_data_if(implicit val conf: nvdlaConfig)  extends Bundle{
+    val mask = Output(Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, Bool()))
+    val data = Output(Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, UInt(conf.NVDLA_BPE.W)))
+//pd
+//   field batch_index 5
+//   field stripe_st 1
+//   field stripe_end 1
+//   field channel_end 1
+//   field layer_end 1
+    val pd = Output(UInt(9.W))
+}
+
+//  flow valid
+class csc2cmac_wt_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val sel = Output(Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, Bool()))
     val mask = Output(Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, Bool()))
     val data = Output(Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, UInt(conf.NVDLA_BPE.W)))
 }
 
 //  flow valid
-class csc2cmac_wt_if(implicit val conf: nvdlaConfig) extends Bundle{
-    val sel = Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, Bool())
-    val mask = Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, Bool())
-    val data = Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, UInt(conf.NVDLA_BPE.W))
-}
-
-//  flow valid
 class cmac2cacc_if(implicit val conf: nvdlaConfig) extends Bundle{
-    val mask = Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, Bool())
-    val data = Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, UInt(conf.NVDLA_MAC_RESULT_WIDTH.W))
-    val mode = Bool()
-    val batch_index = UInt(5.W)
-    val stripe_st = Bool()
-    val stripe_end = Bool()
-    val channel_end = Bool()
-    val layer_end = Bool()
+    val mask = Output(Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, Bool()))
+    val data = Output(Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, UInt(conf.NVDLA_MAC_RESULT_WIDTH.W)))
+    val mode = Output(Bool())
+//pd
+//   field batch_index 5
+//   field stripe_st 1
+//   field stripe_end 1
+//   field channel_end 1
+//   field layer_end 1
+    val pd = Output(UInt(9.W))
 }
 
 // flow valid_ready
 class cacc2sdp_if(implicit val conf: nvdlaConfig) extends Bundle{
-    val pd = Vec(NVDLA_SDP_MAX_THROUGHPUT, UInt(conf.NVDLA_CACC_SDP_SINGLE_THROUGHPUT.W))
-    val pd_batch_end = Bool()
-    val pd_layer_end = Bool()
+//   field pd[NVDLA_SDP_MAX_THROUGHPUT]  NVDLA_CACC_SDP_SINGLE_THROUGHPUT
+//   field pd_batch_end  1
+//   field pd_layer_end  1
+    val pd = Output(UInt((conf.NVDLA_SDP_MAX_THROUGHPUT*conf.NVDLA_CACC_SDP_SINGLE_THROUGHPUT+2).W))
 }
 
 //  flow valid_ready
 class sdp2pdp_if(implicit val conf: nvdlaConfig) extends Bundle{
-    val pd = UInt((conf.NVDLA_SDP_MAX_THROUGHPUT * conf.NVDLA_BPE).W)
+    val pd = Output(UInt((conf.NVDLA_SDP_MAX_THROUGHPUT * conf.NVDLA_BPE).W))
 }
 
 //  flow valid_ready
-class nvdla_dma_rd_req(implicit val conf: nvdlaConfig) extends Bundle{
-    val addr = UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W)
-    val size = UInt(conf.NVDLA_DMA_RD_SIZE.W)
+class nvdla_dma_rd_req_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+    val size = Output(UInt(conf.NVDLA_DMA_RD_SIZE.W))
 }
 
 //  flow valid_ready
-class nvdla_dma_rd_rsp(implicit val conf: nvdlaConfig) extends Bundle{
-    val data = UInt(conf.NVDLA_MEMIF_WIDTH.W)
-    val mask = UInt(conf.NVDLA_DMA_MASK_BIT.W)
+class nvdla_dma_rd_rsp_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val data = Output(UInt(conf.NVDLA_MEMIF_WIDTH.W))
+    val mask = Output(UInt(conf.NVDLA_DMA_MASK_BIT.W))
 }
 
 //  flow valid_ready
-class nvdla_dma_wr_req(implicit val conf: nvdlaConfig) extends Bundle{
-    val addr = UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W)
-    val size = UInt(conf.NVDLA_DMA_WR_SIZE.W)
-    val data = UInt(conf.NVDLA_MEMIF_WIDTH.W)
-    val mask = UInt(conf.NVDLA_DMA_MASK_BIT.W)
+class nvdla_dma_wr_req_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+    val size = Output(UInt(conf.NVDLA_DMA_WR_SIZE.W))
+    val data = Output(UInt(conf.NVDLA_MEMIF_WIDTH.W))
+    val mask = Output(UInt(conf.NVDLA_DMA_MASK_BIT.W))
 }
 
-class nvdla_dma_wr_rsp(implicit val conf: nvdlaConfig) extends Bundle{
-    val complete = Bool()
+class nvdla_dma_wr_rsp_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val complete = Output(Bool())
 }
+
+
+class csb2dp_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val req = Flipped(DecoupledIO(UInt(63.W)))
+    val resp = ValidIO(UInt(34.W))
+}
+
+class nvdla_clock_if extends Bundle{
+    val nvdla_core_clk = Output(Clock()) 
+    val dla_clk_ovr_on_sync = Output(Clock())
+    val global_clk_ovr_on_sync = Output(Clock())
+    val tmc2slcg_disable_clock_gating = Output(Bool())
+}
+
+// Register control interface
+class reg_control_if extends Bundle{
+    val rd_data = Output(UInt(32.W))
+    val offset = Input(UInt(12.W))
+    val wr_data = Input(UInt(32.W))
+    val wr_en = Input(Bool())
+}
+
+
 
 
 

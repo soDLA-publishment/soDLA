@@ -10,11 +10,7 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         // Register control interface
-//         val reg_rd_data = Output(UInt(32.W))
-//         val reg_offset = Input(UInt(12.W))
-
-//         val reg_wr_en = Input(Bool())
-//         val reg_wr_data = Input(UInt(32.W))
+//         val reg_control = new reg_control_if
 
 //         // Writable register flop/trigger outputs
 //         val producer = Output(Bool())
@@ -48,14 +44,14 @@
 // // ///// Address decode
 //     val nvdla_csc_s_pointer_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
 //     val nvdla_csc_s_status_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_csc_s_pointer_0_out = Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
-//     val nvdla_csc_s_status_0_out = Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 
 // // ///// Output mux  
 //     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
-//     Seq(      
-//     "h4".asUInt(32.W)  -> nvdla_csc_s_pointer_0_out,
-//     "h0".asUInt(32.W)  -> nvdla_csc_s_status_0_out
+//     Seq(  
+//     //nvdla_csc_s_pointer_0_out    
+//     "h4".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),
+//     //nvdla_csc_s_status_0_out
+//     "h0".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 //     ))
 
 // // ///// Register flop declarations

@@ -5,7 +5,7 @@
 // import chisel3.util._
 // import chisel3.iotesters.Driver
 
-// class NV_NVDLA_cacc(implicit conf: caccConfiguration) extends Module {
+// class NV_NVDLA_cacc(implicit conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         // clk
 //         val nvdla_core_clk = Input(Clock())
@@ -19,22 +19,11 @@
 //         val cacc2csb_resp_pd = Output(UInt(34.W))   /* pkt_id_width=1 pkt_widths=33,33  */
 
 //         //mac
-//         val mac_a2accu_pvld = Input(Bool())
-//         val mac_a2accu_mode = Input(Bool())
-//         val mac_a2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-//         val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
-//         val mac_a2accu_pd = Input(UInt(9.W))
-
-//         val mac_b2accu_pvld = Input(Bool())
-//         val mac_b2accu_mode = Input(Bool())
-//         val mac_b2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-//         val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
-//         val mac_b2accu_pd = Input(UInt(9.W))
+//         val mac_a2accu = Flipped(ValidIO(new cmac2cacc_if))    /* data valid */
+//         val mac_b2accu = Flipped(ValidIO(new cmac2cacc_if))    /* data valid */
 
 //         //sdp
-//         val cacc2sdp_valid = Output(Bool())  /* data valid */
-//         val cacc2sdp_ready = Input(Bool())  /* data return handshake */
-//         val cacc2sdp_pd = Output(UInt(conf.CACC_SDP_WIDTH.W))
+//         val cacc2sdp = ValidIO(new cacc2sdp_if)    /* data valid */
 
 //         //csc
 //         val accu2sc_credit_vld = Output(Bool())
@@ -155,7 +144,8 @@
 //     u_assembly_ctrl.io.reg2dp_clip_truncate := reg2dp_clip_truncate
 
 //     u_assembly_ctrl.io.dp2reg_done := dp2reg_done
-//     u_assembly_ctrl.io.mac_a2accu_pd := io.mac_a2accu_pd
+//     u_assembly_ctrl.io.mac_a2accu_pd := Cat(io.mac_a2accu.bits.channel_end, io.mac_a2accu.bits.stripe_st, io.mac_a2accu.bits.stripe_end,
+//                                             io.mac_a2accu.bits.
 //     u_assembly_ctrl.io.mac_a2accu_pvld := io.mac_a2accu_pvld
 //     u_assembly_ctrl.io.mac_b2accu_pd := io.mac_b2accu_pd
 //     u_assembly_ctrl.io.mac_b2accu_pvld := io.mac_b2accu_pvld 
@@ -311,7 +301,7 @@
 
 
 // object NV_NVDLA_caccDriver extends App {
-//   implicit val conf: caccConfiguration = new caccConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_cacc())
 // }
 
