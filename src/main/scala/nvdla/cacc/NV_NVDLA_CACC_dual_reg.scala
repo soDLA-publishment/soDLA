@@ -59,50 +59,49 @@ class NV_NVDLA_CACC_dual_reg extends Module{
     withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_cacc_d_batch_number_0_wren = (io.reg_offset === "h1c".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_clip_cfg_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_cya_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_dataout_addr_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_dataout_map_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_dataout_size_0_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_dataout_size_1_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_line_stride_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_misc_cfg_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_op_enable_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_out_saturation_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en ;    
-    val nvdla_cacc_d_surf_stride_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en ;    
-
-    val nvdla_cacc_d_batch_number_0_out = Cat("b0".asUInt(27.W), io.batches)
-    val nvdla_cacc_d_clip_cfg_0_out =  Cat("b0".asUInt(27.W), io.clip_truncate)
-    val nvdla_cacc_d_cya_0_out =  Cat(io.cya)
-    val nvdla_cacc_d_dataout_addr_0_out =  Cat(io.dataout_addr)
-    val nvdla_cacc_d_dataout_map_0_out =  Cat("b0".asUInt(15.W), io.surf_packed, "b0".asUInt(15.W), io.line_packed)
-    val nvdla_cacc_d_dataout_size_0_0_out =  Cat("b0".asUInt(3.W), io.dataout_height, "b0".asUInt(3.W), io.dataout_width)
-    val nvdla_cacc_d_dataout_size_1_0_out =  Cat("b0".asUInt(19.W), io.dataout_channel)
-    val nvdla_cacc_d_line_stride_0_out =  Cat("b0".asUInt(8.W), io.line_stride)
-    val nvdla_cacc_d_misc_cfg_0_out =  Cat("b0".asUInt(18.W), io.proc_precision, "b0".asUInt(11.W), io.conv_mode)
-    val nvdla_cacc_d_op_enable_0_out =  Cat("b0".asUInt(31.W), io.op_en)
-    val nvdla_cacc_d_out_saturation_0_out =  Cat( io.sat_count)
-    val nvdla_cacc_d_surf_stride_0_out =  Cat("b0".asUInt(8.W), io.surf_stride)
+    val nvdla_cacc_d_batch_number_0_wren = (io.reg_offset === "h1c".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_clip_cfg_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_cya_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_addr_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_map_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_size_0_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_size_1_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_line_stride_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_misc_cfg_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_op_enable_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_out_saturation_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_surf_stride_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en  
 
     io.op_en_trigger := nvdla_cacc_d_op_enable_0_wren
 
     //Output mux
 
     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
-    Seq(      
-    "h1c".asUInt(32.W)  -> nvdla_cacc_d_batch_number_0_out,
-    "h2c".asUInt(32.W)  -> nvdla_cacc_d_clip_cfg_0_out,
-    "h34".asUInt(32.W)  -> nvdla_cacc_d_cya_0_out,
-    "h18".asUInt(32.W)  -> nvdla_cacc_d_dataout_addr_0_out,
-    "h28".asUInt(32.W)  -> nvdla_cacc_d_dataout_map_0_out,
-    "h10".asUInt(32.W)  -> nvdla_cacc_d_dataout_size_0_0_out,
-    "h14".asUInt(32.W)  -> nvdla_cacc_d_dataout_size_1_0_out,
-    "h20".asUInt(32.W)  -> nvdla_cacc_d_line_stride_0_out,
-    "h0c".asUInt(32.W)  -> nvdla_cacc_d_misc_cfg_0_out,
-    "h08".asUInt(32.W)  -> nvdla_cacc_d_op_enable_0_out,
-    "h30".asUInt(32.W)  -> nvdla_cacc_d_out_saturation_0_out,
-    "h24".asUInt(32.W)  -> nvdla_cacc_d_surf_stride_0_out                                                                              
+    Seq( 
+    //nvdla_cacc_d_batch_number_0_out     
+    "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.batches),
+    //nvdla_cacc_d_clip_cfg_0_out
+    "h2c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.clip_truncate),
+    //nvdla_cacc_d_cya_0_out
+    "h34".asUInt(32.W)  -> io.cya,
+    //nvdla_cacc_d_dataout_addr_0_out
+    "h18".asUInt(32.W)  -> io.dataout_addr,
+    //nvdla_cacc_d_dataout_map_0_out
+    "h28".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.surf_packed, "b0".asUInt(15.W), io.line_packed),
+    //nvdla_cacc_d_dataout_size_0_0_out
+    "h10".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.dataout_height, "b0".asUInt(3.W), io.dataout_width),
+    //nvdla_cacc_d_dataout_size_1_0_out
+    "h14".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.dataout_channel),
+    //nvdla_cacc_d_line_stride_0_out
+    "h20".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.line_stride),
+    //nvdla_cacc_d_misc_cfg_0_out
+    "h0c".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.proc_precision, "b0".asUInt(11.W), io.conv_mode),
+    //nvdla_cacc_d_op_enable_0_out
+    "h08".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.op_en),
+    //nvdla_cacc_d_out_saturation_0_out
+    "h30".asUInt(32.W)  -> io.sat_count,
+    //nvdla_cacc_d_surf_stride_0_out
+    "h24".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.surf_stride)                                                                         
     ))
 
     //Register flop declarations

@@ -49,21 +49,17 @@
 
 //     val nvdla_sdp_rdma_s_pointer_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
 //     val nvdla_sdp_rdma_s_status_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
-    
-//     val nvdla_sdp_rdma_s_pointer_0_out = Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
-//     val nvdla_sdp_rdma_s_status_0_out = Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 
 //     // Output mux
    
 //     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
-//     Seq(      
-//     "h4".asUInt(32.W)  -> nvdla_sdp_rdma_s_pointer_0_out,
-//     "h0".asUInt(32.W)  -> nvdla_sdp_rdma_s_status_0_out 
+//     Seq(  
+//     //nvdla_sdp_rdma_s_pointer_0_out    
+//     "h4".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),
+//     //nvdla_sdp_rdma_s_status_0_out
+//     "h0".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 //     ))
 
-//     // Register flop declarations
-//     //yifengdu y.f.du1994@gmail.com update on Aug 1, 2019 
-//     //Solve Java heap space problem
 //     io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_rdma_s_pointer_0_wren)
 
 // }}

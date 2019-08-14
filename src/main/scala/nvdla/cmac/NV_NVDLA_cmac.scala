@@ -48,8 +48,6 @@ withReset(!io.nvdla_core_rstn){
     //==========================================================
     // reg
     //==========================================================
-
-
     val u_core = Module(new NV_NVDLA_CMAC_core)
     val u_reg = Module(new NV_NVDLA_CMAC_reg)
     //clk
@@ -57,11 +55,11 @@ withReset(!io.nvdla_core_rstn){
     u_reg.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk        //|< i
     u_core.io.slcg_op_en := u_reg.io.slcg_op_en           
     
-    u_core.io.sc2mac_dat <> io.sc2mac_dat               //|< i
-    u_core.io.sc2mac_wt <> io.sc2mac_wt         //|< i
-    io.mac2accu <> u_core.io.mac2accu                 //|> o
+    u_core.io.sc2mac_dat <> io.sc2mac_dat               //|< b
+    u_core.io.sc2mac_wt <> io.sc2mac_wt         //|< b
+    io.mac2accu <> u_core.io.mac2accu                 //|> b
       
-    u_reg.io.dp2reg_done := u_core.io.dp2reg_done       
+    u_reg.io.dp2reg_done := u_core.io.dp2reg_done       //|< i
     u_reg.io.csb2cmac_a <> io.csb2cmac_a        //|< b
 
 }}
