@@ -121,6 +121,17 @@ class reg_control_if extends Bundle{
     val wr_en = Input(Bool())
 }
 
+// 
+
+class cdma2sc_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+    val size = Output(UInt(conf.NVDLA_DMA_WR_SIZE.W))
+    val data = Output(UInt(conf.NVDLA_MEMIF_WIDTH.W))
+    val mask = Output(UInt(conf.NVDLA_DMA_MASK_BIT.W))
+}
+
+
+
 
 
 
