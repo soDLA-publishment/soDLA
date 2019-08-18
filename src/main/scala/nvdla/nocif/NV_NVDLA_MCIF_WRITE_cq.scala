@@ -6,19 +6,16 @@ import chisel3.util._
 
 //Implementation overview of ping-pong register file.
 
-class NV_NVDLA_MCIF_WRITE_cq extends Module {
+class NV_NVDLA_MCIF_WRITE_cq(implicit conf:nocifConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())      
-        
+        val nvdla_core_rstn = Input(Bool())
         //cq_wr
         val cq_wr_prdy = Output(Bool())
         val cq_wr_pvld = Input(Bool())
         val cq_wr_thread_id = Input(UInt(3.W))
-
-        //ifdef FV_RAND_WR_PAUSE
-        val cq_wr_pause = Input(Bool())
-
+        val cq_wr_pause = if(conf.FV_RAND_WR_PAUSE) Some(Input(Bool())) else None
         val cq_wr_pd = Input(UInt(3.W))
         
         //cq_rd0
@@ -47,10 +44,11 @@ class NV_NVDLA_MCIF_WRITE_cq extends Module {
         val cq_rd4_pd = Output(UInt(3.W))
 
         val pwrbus_ram_pd = Input(UInt(32.W))
+    })
 
-        })
     withClock(io.nvdla_core_clk){
-}}
+    }
+}
 
 
 
