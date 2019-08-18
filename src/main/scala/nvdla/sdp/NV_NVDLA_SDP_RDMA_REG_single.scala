@@ -13,7 +13,7 @@
 //         val reg.rd_data = Output(UInt(32.W))
 //         val reg.offset = Input(UInt(12.W))
 
-//         val reg_wr_data = Input(UInt(32.W))
+//         val reg.wr_data = Input(UInt(32.W))
 //         val reg.wr_en = Input(Bool())
 
 //         // producer, consumer, status
@@ -60,7 +60,7 @@
 //     "h0".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 //     ))
 
-//     io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_rdma_s_pointer_0_wren)
+//     io.producer := RegEnable(io.reg.wr_data(0), false.B, nvdla_sdp_rdma_s_pointer_0_wren)
 
 // }}
 

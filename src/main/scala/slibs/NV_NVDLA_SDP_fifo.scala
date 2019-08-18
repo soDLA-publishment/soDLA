@@ -3,7 +3,7 @@
 // import chisel3._
 // import chisel3.experimental._
 
-// class NV_NVDLA_SDP_fifo(depth: Int, width: Int, reg_wr_data: Boolean, reg.rd_data: Boolean) extends RawModule {
+// class NV_NVDLA_SDP_fifo(depth: Int, width: Int, reg.wr_data: Boolean, reg.rd_data: Boolean) extends RawModule {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val clk = Input(Clock())
@@ -69,8 +69,8 @@
 //     // WRITE SIDE
 //     //  
 //     val wr_reserving = Wire(Bool()) 
-//     val wr_req_in = if(reg_wr_data) Some(RegInit(false.B)) else None    // registered wr_req                     
-//     var wr_data_in = if(reg_wr_data) Some(Reg(UInt(width.W))) else None // registered wr_data
+//     val wr_req_in = if(reg.wr_data) Some(RegInit(false.B)) else None    // registered wr_req                     
+//     var wr_data_in = if(reg.wr_data) Some(Reg(UInt(width.W))) else None // registered wr_data
 //     val wr_busy_in = RegInit(false.B)    // inputs being held this cycle?  or  copy for internal use
 //     io.wr_ready := !wr_busy_in
 
@@ -86,7 +86,7 @@
 //     when(!wr_busy_in_int){
 //         wr_req_in := io.wr_req && !wr_busy_in
 //     }
-//     if(reg_wr_data){ 
+//     if(reg.wr_data){ 
 //     when(!wr_busy_in && io.wr_req){
 //         wr_data_in := io.wr_data
 //     }}}
@@ -94,7 +94,7 @@
 
 //     wr_reserving := wr_req_in & !wr_busy_int    // reserving write space?
 
-//     if(reg_wr_data){
+//     if(reg.wr_data){
 //         val wr_popping = Reg(Bool())  // fwd: write side sees pop?
 //     }
 //     else{

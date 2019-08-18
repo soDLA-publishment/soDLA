@@ -90,30 +90,30 @@ class NV_NVDLA_CACC_dual_reg extends Module{
     ))
 
     //Register flop declarations
-    io.batches := RegEnable(io.reg_wr_data(4, 0), "b0".asUInt(5.W), nvdla_cacc_d_batch_number_0_wren)
+    io.batches := RegEnable(io.reg.wr_data(4, 0), "b0".asUInt(5.W), nvdla_cacc_d_batch_number_0_wren)
     // Register: NVDLA_CACC_D_CLIP_CFG_0    Field: clip_truncate
-    io.clip_truncate := RegEnable(io.reg_wr_data(4, 0), "b0".asUInt(5.W), nvdla_cacc_d_clip_cfg_0_wren)
+    io.clip_truncate := RegEnable(io.reg.wr_data(4, 0), "b0".asUInt(5.W), nvdla_cacc_d_clip_cfg_0_wren)
     // Register: NVDLA_CACC_D_CYA_0    Field: cya
-    io.cya := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_cacc_d_cya_0_wren)
+    io.cya := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_cacc_d_cya_0_wren)
     // Register: NVDLA_CACC_D_DATAOUT_ADDR_0    Field: dataout_addr
-    io.dataout_addr := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_cacc_d_dataout_addr_0_wren)
+    io.dataout_addr := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_cacc_d_dataout_addr_0_wren)
     // Register: NVDLA_CACC_D_DATAOUT_MAP_0    Field: line_packed
-    io.line_packed := RegEnable(io.reg_wr_data(0), false.B, nvdla_cacc_d_dataout_map_0_wren)
+    io.line_packed := RegEnable(io.reg.wr_data(0), false.B, nvdla_cacc_d_dataout_map_0_wren)
     // Register: NVDLA_CACC_D_DATAOUT_MAP_0    Field: surf_packed
-    io.surf_packed := RegEnable(io.reg_wr_data(16), false.B, nvdla_cacc_d_dataout_map_0_wren)
+    io.surf_packed := RegEnable(io.reg.wr_data(16), false.B, nvdla_cacc_d_dataout_map_0_wren)
     // Register: NVDLA_CACC_D_DATAOUT_SIZE_0_0    Field: dataout_height
-    io.dataout_height := RegEnable(io.reg_wr_data(28, 16), "b0".asUInt(13.W), nvdla_cacc_d_dataout_size_0_0_wren)
+    io.dataout_height := RegEnable(io.reg.wr_data(28, 16), "b0".asUInt(13.W), nvdla_cacc_d_dataout_size_0_0_wren)
     // Register: NVDLA_CACC_D_DATAOUT_SIZE_0_0    Field: dataout_width
-    io.dataout_width := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_cacc_d_dataout_size_0_0_wren)
+    io.dataout_width := RegEnable(io.reg.wr_data(12, 0), "b0".asUInt(13.W), nvdla_cacc_d_dataout_size_0_0_wren)
     // Register: NVDLA_CACC_D_DATAOUT_SIZE_1_0    Field: dataout_channel
-    io.dataout_channel := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_cacc_d_dataout_size_1_0_wren)
+    io.dataout_channel := RegEnable(io.reg.wr_data(12, 0), "b0".asUInt(13.W), nvdla_cacc_d_dataout_size_1_0_wren)
     // Register: NVDLA_CACC_D_LINE_STRIDE_0    Field: line_stride
-    io.line_stride := RegEnable(io.reg_wr_data(23, 0), "b0".asUInt(24.W), nvdla_cacc_d_line_stride_0_wren)
+    io.line_stride := RegEnable(io.reg.wr_data(23, 0), "b0".asUInt(24.W), nvdla_cacc_d_line_stride_0_wren)
     // Register: NVDLA_CACC_D_MISC_CFG_0    Field: conv_mode
-    io.conv_mode := RegEnable(io.reg_wr_data(0), false.B, nvdla_cacc_d_misc_cfg_0_wren)
+    io.conv_mode := RegEnable(io.reg.wr_data(0), false.B, nvdla_cacc_d_misc_cfg_0_wren)
     // Register: NVDLA_CACC_D_MISC_CFG_0    Field: proc_precision
-    io.proc_precision := RegEnable(io.reg_wr_data(13, 12), "b01".asUInt(2.W), nvdla_cacc_d_misc_cfg_0_wren)
+    io.proc_precision := RegEnable(io.reg.wr_data(13, 12), "b01".asUInt(2.W), nvdla_cacc_d_misc_cfg_0_wren)
     // Register: NVDLA_CACC_D_SURF_STRIDE_0    Field: surf_stride
-    io.surf_stride := RegEnable(io.reg_wr_data(23, 0), "b0".asUInt(24.W), nvdla_cacc_d_surf_stride_0_wren)                                                           
+    io.surf_stride := RegEnable(io.reg.wr_data(23, 0), "b0".asUInt(24.W), nvdla_cacc_d_surf_stride_0_wren)                                                           
 
 }}

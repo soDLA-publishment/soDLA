@@ -161,14 +161,14 @@
 //     io.glb2csb_resp_pd := RegEnable(rsp_pd, rsp_vld)
 //     val reg.offset = Cat(req_addr(9, 0), "b0".asUInt(2.W))
 //     val reg.wr_en = req_vld & req_write
-//     val reg_wr_data = io.req_wdat
+//     val reg.wr_data = io.req_wdat
 
 //     val u_reg = Module(new NV_NVDLA_GLB_CSB_reg)
 
 //     u_reg.io.nvdla_core_clk := io.nvdla_core_clk
 
 //     u_reg.io.reg.offset := reg.offset
-//     u_reg.io.reg_wr_data := reg_wr_data
+//     u_reg.io.reg.wr_data := reg.wr_data
 //     u_reg.io.reg.wr_en := reg.wr_en
 //     reg.rd_data := u_reg.io.reg.rd_data
 

@@ -111,42 +111,42 @@ class NV_NVDLA_PDP_RDMA_REG_dual extends Module {
     // Register flop declarations
 
     // Register: NVDLA_PDP_RDMA_D_CYA_0    Field: cya
-    io.cya := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_cya_0_wren)
+    io.cya := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_cya_0_wren)
     // Register: NVDLA_PDP_RDMA_D_DATA_CUBE_IN_CHANNEL_0    Field: cube_in_channel
-    io.cube_in_channel := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_rdma_d_data_cube_in_channel_0_wren)
+    io.cube_in_channel := RegEnable(io.reg.wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_rdma_d_data_cube_in_channel_0_wren)
     // Register: NVDLA_PDP_RDMA_D_DATA_CUBE_IN_HEIGHT_0    Field: cube_in_height
-    io.cube_in_height := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_rdma_d_data_cube_in_height_0_wren)
+    io.cube_in_height := RegEnable(io.reg.wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_rdma_d_data_cube_in_height_0_wren)
     // Register: NVDLA_PDP_RDMA_D_DATA_CUBE_IN_WIDTH_0    Field: cube_in_width
-    io.cube_in_width := RegEnable(io.reg_wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_rdma_d_data_cube_in_width_0_wren)
+    io.cube_in_width := RegEnable(io.reg.wr_data(12, 0), "b0".asUInt(13.W), nvdla_pdp_rdma_d_data_cube_in_width_0_wren)
     // Register: NVDLA_PDP_RDMA_D_DATA_FORMAT_0    Field: input_data
-    io.input_data := RegEnable(io.reg_wr_data(1, 0), "b0".asUInt(2.W), nvdla_pdp_rdma_d_data_format_0_wren)
+    io.input_data := RegEnable(io.reg.wr_data(1, 0), "b0".asUInt(2.W), nvdla_pdp_rdma_d_data_format_0_wren)
     // Register: NVDLA_PDP_RDMA_D_FLYING_MODE_0    Field: flying_mode
-    io.flying_mode := RegEnable(io.reg_wr_data(0), false.B, nvdla_pdp_rdma_d_flying_mode_0_wren)
+    io.flying_mode := RegEnable(io.reg.wr_data(0), false.B, nvdla_pdp_rdma_d_flying_mode_0_wren)
     // Register: NVDLA_PDP_RDMA_D_OPERATION_MODE_CFG_0    Field: split_num
-    io.split_num := RegEnable(io.reg_wr_data(7, 0), "b0".asUInt(8.W), nvdla_pdp_rdma_d_operation_mode_cfg_0_wren)
+    io.split_num := RegEnable(io.reg.wr_data(7, 0), "b0".asUInt(8.W), nvdla_pdp_rdma_d_operation_mode_cfg_0_wren)
     // Register: NVDLA_PDP_RDMA_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_first
-    io.partial_width_in_first := RegEnable(io.reg_wr_data(9, 0), "b0".asUInt(10.W), nvdla_pdp_rdma_d_partial_width_in_0_wren)
+    io.partial_width_in_first := RegEnable(io.reg.wr_data(9, 0), "b0".asUInt(10.W), nvdla_pdp_rdma_d_partial_width_in_0_wren)
     // Register: NVDLA_PDP_RDMA_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_last
-    io.partial_width_in_last := RegEnable(io.reg_wr_data(19, 10), "b0".asUInt(10.W), nvdla_pdp_rdma_d_partial_width_in_0_wren)
+    io.partial_width_in_last := RegEnable(io.reg.wr_data(19, 10), "b0".asUInt(10.W), nvdla_pdp_rdma_d_partial_width_in_0_wren)
     // Register: NVDLA_PDP_RDMA_D_PARTIAL_WIDTH_IN_0    Field: partial_width_in_mid
-    io.partial_width_in_mid := RegEnable(io.reg_wr_data(29, 20), "b0".asUInt(10.W), nvdla_pdp_rdma_d_partial_width_in_0_wren)
+    io.partial_width_in_mid := RegEnable(io.reg.wr_data(29, 20), "b0".asUInt(10.W), nvdla_pdp_rdma_d_partial_width_in_0_wren)
     // Register: NVDLA_PDP_RDMA_D_PERF_ENABLE_0    Field: dma_en
-    io.dma_en := RegEnable(io.reg_wr_data(0), false.B, nvdla_pdp_rdma_d_perf_enable_0_wren)
+    io.dma_en := RegEnable(io.reg.wr_data(0), false.B, nvdla_pdp_rdma_d_perf_enable_0_wren)
     // Register: NVDLA_PDP_RDMA_D_POOLING_KERNEL_CFG_0    Field: kernel_stride_width
-    io.kernel_stride_width := RegEnable(io.reg_wr_data(7, 4), "b0".asUInt(4.W), nvdla_pdp_rdma_d_pooling_kernel_cfg_0_wren)
+    io.kernel_stride_width := RegEnable(io.reg.wr_data(7, 4), "b0".asUInt(4.W), nvdla_pdp_rdma_d_pooling_kernel_cfg_0_wren)
     // Register: NVDLA_PDP_RDMA_D_POOLING_KERNEL_CFG_0    Field: kernel_width
-    io.kernel_width := RegEnable(io.reg_wr_data(3, 0), "b0".asUInt(4.W), nvdla_pdp_rdma_d_pooling_kernel_cfg_0_wren)
+    io.kernel_width := RegEnable(io.reg.wr_data(3, 0), "b0".asUInt(4.W), nvdla_pdp_rdma_d_pooling_kernel_cfg_0_wren)
     // Register: NVDLA_PDP_RDMA_D_POOLING_PADDING_CFG_0    Field: pad_width
-    io.pad_width := RegEnable(io.reg_wr_data(3, 0), "b0".asUInt(4.W), nvdla_pdp_rdma_d_pooling_padding_cfg_0_wren)
+    io.pad_width := RegEnable(io.reg.wr_data(3, 0), "b0".asUInt(4.W), nvdla_pdp_rdma_d_pooling_padding_cfg_0_wren)
     // Register: NVDLA_PDP_RDMA_D_SRC_BASE_ADDR_HIGH_0    Field: src_base_addr_high
-    io.src_base_addr_high := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_base_addr_high_0_wren)
+    io.src_base_addr_high := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_base_addr_high_0_wren)
     // Register: NVDLA_PDP_RDMA_D_SRC_BASE_ADDR_LOW_0    Field: src_base_addr_low
-    io.src_base_addr_low := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_base_addr_low_0_wren)
+    io.src_base_addr_low := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_base_addr_low_0_wren)
     // Register: NVDLA_PDP_RDMA_D_SRC_LINE_STRIDE_0    Field: src_line_stride
-    io.src_line_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_line_stride_0_wren)
+    io.src_line_stride := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_line_stride_0_wren)
     // Register: NVDLA_PDP_RDMA_D_SRC_RAM_CFG_0    Field: src_ram_type
-    io.src_ram_type := RegEnable(io.reg_wr_data(0), false.B, nvdla_pdp_rdma_d_src_ram_cfg_0_wren)
+    io.src_ram_type := RegEnable(io.reg.wr_data(0), false.B, nvdla_pdp_rdma_d_src_ram_cfg_0_wren)
     // Register: NVDLA_PDP_RDMA_D_SRC_SURFACE_STRIDE_0    Field: src_surface_stride
-    io.src_surface_stride := RegEnable(io.reg_wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_surface_stride_0_wren)
+    io.src_surface_stride := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_surface_stride_0_wren)
 
 }}

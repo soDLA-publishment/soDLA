@@ -12,7 +12,7 @@ class NV_NVDLA_SDP_REG_single extends Module{
         //Register control interface
         val reg.rd_data = Output(UInt(32.W))
         val reg.offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
+        val reg.wr_data = Input(UInt(32.W))//(UNUSED_DEC)
         val reg.wr_en = Input(Bool())
 
         //Writable register flop/trigger outputs
@@ -129,51 +129,51 @@ class NV_NVDLA_SDP_REG_single extends Module{
   //Solve Java heap space problem
   
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_access_type
-    io.lut_access_type := RegEnable(io.reg_wr_data(17), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
+    io.lut_access_type := RegEnable(io.reg.wr_data(17), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_addr
-    io.lut_addr := RegEnable(io.reg_wr_data(9,0), "b0".asUInt(10.W), nvdla_sdp_s_lut_access_cfg_0_wren)
+    io.lut_addr := RegEnable(io.reg.wr_data(9,0), "b0".asUInt(10.W), nvdla_sdp_s_lut_access_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_table_id
-    io.lut_table_id := RegEnable(io.reg_wr_data(16), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
+    io.lut_table_id := RegEnable(io.reg.wr_data(16), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_CFG_0    Field: lut_hybrid_priority
-    io.lut_hybrid_priority := RegEnable(io.reg_wr_data(6), false.B, nvdla_sdp_s_lut_cfg_0_wren)
+    io.lut_hybrid_priority := RegEnable(io.reg.wr_data(6), false.B, nvdla_sdp_s_lut_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_CFG_0    Field: lut_le_function
-    io.lut_le_function := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_s_lut_cfg_0_wren)
+    io.lut_le_function := RegEnable(io.reg.wr_data(0), false.B, nvdla_sdp_s_lut_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_CFG_0    Field: lut_oflow_priority
-    io.lut_oflow_priority := RegEnable(io.reg_wr_data(5), false.B, nvdla_sdp_s_lut_cfg_0_wren)
+    io.lut_oflow_priority := RegEnable(io.reg.wr_data(5), false.B, nvdla_sdp_s_lut_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_CFG_0    Field: lut_uflow_priority
-    io.lut_uflow_priority := RegEnable(io.reg_wr_data(4), false.B, nvdla_sdp_s_lut_cfg_0_wren)
+    io.lut_uflow_priority := RegEnable(io.reg.wr_data(4), false.B, nvdla_sdp_s_lut_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_INFO_0    Field: lut_le_index_offset
-    io.lut_le_index_offset := RegEnable(io.reg_wr_data(7,0), "b0".asUInt(8.W), nvdla_sdp_s_lut_info_0_wren)
+    io.lut_le_index_offset := RegEnable(io.reg.wr_data(7,0), "b0".asUInt(8.W), nvdla_sdp_s_lut_info_0_wren)
   // Register: NVDLA_SDP_S_LUT_INFO_0    Field: lut_le_index_select
-    io.lut_le_index_select := RegEnable(io.reg_wr_data(15,8), "b0".asUInt(8.W), nvdla_sdp_s_lut_info_0_wren)
+    io.lut_le_index_select := RegEnable(io.reg.wr_data(15,8), "b0".asUInt(8.W), nvdla_sdp_s_lut_info_0_wren)
   // Register: NVDLA_SDP_S_LUT_INFO_0    Field: lut_lo_index_select
-    io.lut_lo_index_select := RegEnable(io.reg_wr_data(23,16), "b0".asUInt(8.W), nvdla_sdp_s_lut_info_0_wren)
+    io.lut_lo_index_select := RegEnable(io.reg.wr_data(23,16), "b0".asUInt(8.W), nvdla_sdp_s_lut_info_0_wren)
   // Register: NVDLA_SDP_S_LUT_LE_END_0    Field: lut_le_end
-    io.lut_le_end := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_le_end_0_wren)
+    io.lut_le_end := RegEnable(io.reg.wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_le_end_0_wren)
   // Register: NVDLA_SDP_S_LUT_LE_SLOPE_SCALE_0    Field: lut_le_slope_oflow_scale
-    io.lut_le_slope_oflow_scale := RegEnable(io.reg_wr_data(31,16), "b0".asUInt(16.W), nvdla_sdp_s_lut_le_slope_scale_0_wren)
+    io.lut_le_slope_oflow_scale := RegEnable(io.reg.wr_data(31,16), "b0".asUInt(16.W), nvdla_sdp_s_lut_le_slope_scale_0_wren)
   // Register: NVDLA_SDP_S_LUT_LE_SLOPE_SCALE_0    Field: lut_le_slope_uflow_scale
-    io.lut_le_slope_uflow_scale := RegEnable(io.reg_wr_data(15,0), "b0".asUInt(16.W), nvdla_sdp_s_lut_le_slope_scale_0_wren)
+    io.lut_le_slope_uflow_scale := RegEnable(io.reg.wr_data(15,0), "b0".asUInt(16.W), nvdla_sdp_s_lut_le_slope_scale_0_wren)
   // Register: NVDLA_SDP_S_LUT_LE_SLOPE_SHIFT_0    Field: lut_le_slope_oflow_shift
-    io.lut_le_slope_oflow_shift := RegEnable(io.reg_wr_data(9,5), "b0".asUInt(5.W), nvdla_sdp_s_lut_le_slope_shift_0_wren)
+    io.lut_le_slope_oflow_shift := RegEnable(io.reg.wr_data(9,5), "b0".asUInt(5.W), nvdla_sdp_s_lut_le_slope_shift_0_wren)
   // Register: NVDLA_SDP_S_LUT_LE_SLOPE_SHIFT_0    Field: lut_le_slope_uflow_shift
-    io.lut_le_slope_uflow_shift := RegEnable(io.reg_wr_data(4,0), "b0".asUInt(5.W), nvdla_sdp_s_lut_le_slope_shift_0_wren)
+    io.lut_le_slope_uflow_shift := RegEnable(io.reg.wr_data(4,0), "b0".asUInt(5.W), nvdla_sdp_s_lut_le_slope_shift_0_wren)
   // Register: NVDLA_SDP_S_LUT_LE_START_0    Field: lut_le_start
-    io.lut_le_start := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_le_start_0_wren)
+    io.lut_le_start := RegEnable(io.reg.wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_le_start_0_wren)
   // Register: NVDLA_SDP_S_LUT_LO_END_0    Field: lut_lo_end
-    io.lut_lo_end := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_lo_end_0_wren)
+    io.lut_lo_end := RegEnable(io.reg.wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_lo_end_0_wren)
   // Register: NVDLA_SDP_S_LUT_LO_SLOPE_SCALE_0    Field: lut_lo_slope_oflow_scale
-    io.lut_lo_slope_oflow_scale := RegEnable(io.reg_wr_data(31,16), "b0".asUInt(16.W), nvdla_sdp_s_lut_lo_slope_scale_0_wren)
+    io.lut_lo_slope_oflow_scale := RegEnable(io.reg.wr_data(31,16), "b0".asUInt(16.W), nvdla_sdp_s_lut_lo_slope_scale_0_wren)
   // Register: NVDLA_SDP_S_LUT_LO_SLOPE_SCALE_0    Field: lut_lo_slope_uflow_scale
-    io.lut_lo_slope_uflow_scale := RegEnable(io.reg_wr_data(15,0), "b0".asUInt(16.W), nvdla_sdp_s_lut_lo_slope_scale_0_wren)
+    io.lut_lo_slope_uflow_scale := RegEnable(io.reg.wr_data(15,0), "b0".asUInt(16.W), nvdla_sdp_s_lut_lo_slope_scale_0_wren)
   // Register: NVDLA_SDP_S_LUT_LO_SLOPE_SHIFT_0    Field: lut_lo_slope_oflow_shift
-    io.lut_lo_slope_oflow_shift := RegEnable(io.reg_wr_data(9,5), "b0".asUInt(5.W), nvdla_sdp_s_lut_lo_slope_shift_0_wren)
+    io.lut_lo_slope_oflow_shift := RegEnable(io.reg.wr_data(9,5), "b0".asUInt(5.W), nvdla_sdp_s_lut_lo_slope_shift_0_wren)
   // Register: NVDLA_SDP_S_LUT_LO_SLOPE_SHIFT_0    Field: lut_lo_slope_uflow_shift
-    io.lut_lo_slope_uflow_shift := RegEnable(io.reg_wr_data(4,0), "b0".asUInt(5.W), nvdla_sdp_s_lut_lo_slope_shift_0_wren)
+    io.lut_lo_slope_uflow_shift := RegEnable(io.reg.wr_data(4,0), "b0".asUInt(5.W), nvdla_sdp_s_lut_lo_slope_shift_0_wren)
   // Register: NVDLA_SDP_S_LUT_LO_START_0    Field: lut_lo_start
-    io.lut_lo_start := RegEnable(io.reg_wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_lo_start_0_wren)
+    io.lut_lo_start := RegEnable(io.reg.wr_data, "b0".asUInt(32.W), nvdla_sdp_s_lut_lo_start_0_wren)
   // Register: NVDLA_SDP_S_POINTER_0    Field: producer
-    io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_sdp_s_pointer_0_wren)
+    io.producer := RegEnable(io.reg.wr_data(0), false.B, nvdla_sdp_s_pointer_0_wren)
 
 }}
 

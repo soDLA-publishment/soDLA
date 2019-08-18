@@ -14,7 +14,7 @@
 //         val reg.offset = Input(UInt(12.W))
 
 //         val reg.wr_en = Input(Bool())
-//         val reg_wr_data = Input(UInt(32.W))
+//         val reg.wr_data = Input(UInt(32.W))
 
 //         // Writable register flop/trigger outputs
 //         val producer = Output(Bool())
@@ -60,7 +60,7 @@
 //     ))
 
 // // ///// Register flop declarations
-//     io.producer := RegEnable(io.reg_wr_data(0), false.B, nvdla_cdp_rdma_s_pointer_0_wren)
+//     io.producer := RegEnable(io.reg.wr_data(0), false.B, nvdla_cdp_rdma_s_pointer_0_wren)
     
 // }}
 

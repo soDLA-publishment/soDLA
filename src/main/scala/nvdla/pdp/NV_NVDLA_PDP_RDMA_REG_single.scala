@@ -14,7 +14,7 @@ class NV_NVDLA_PDP_RDMA_REG_single extends Module {
         val reg.offset = Input(UInt(12.W))
 
         val reg.wr_en = Input(Bool())
-        val reg_wr_data = Input(UInt(32.W))
+        val reg.wr_data = Input(UInt(32.W))
 
         // Writable register flop/trigger outputs
         val producer = Output(Bool())
@@ -62,7 +62,7 @@ class NV_NVDLA_PDP_RDMA_REG_single extends Module {
     val producer_out = RegInit(false.B)
 
     when(nvdla_pdp_rdma_s_pointer_0_wren){
-        producer_out:= io.reg_wr_data(0)
+        producer_out:= io.reg.wr_data(0)
     }
         
     io.producer := producer_out

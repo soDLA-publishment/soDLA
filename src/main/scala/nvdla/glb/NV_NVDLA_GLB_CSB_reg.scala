@@ -12,7 +12,7 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
         // Register control interface
         val reg.rd_data = Output(UInt(32.W))
         val reg.offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))
+        val reg.wr_data = Input(UInt(32.W))
         val reg.wr_en = Input(Bool())
 
         // Writable register flop/trigger outputs
@@ -155,22 +155,22 @@ withClock(io.nvdla_core_clk){
     val sdp_done_mask1_out = RegInit(false.B)
 
     when(nvdla_glb_s_intr_mask_0_wren){
-        bdma_done_mask0_out := io.reg_wr_data(6)
-        bdma_done_mask1_out := io.reg_wr_data(7)
-        cacc_done_mask0_out := io.reg_wr_data(20)
-        cacc_done_mask1_out := io.reg_wr_data(21)
-        cdma_dat_done_mask0_out := io.reg_wr_data(16)
-        cdma_dat_done_mask1_out := io.reg_wr_data(17)
-        cdma_wt_done_mask0_out := io.reg_wr_data(18)
-        cdma_wt_done_mask1_out := io.reg_wr_data(19)
-        cdp_done_mask0_out := io.reg_wr_data(2)
-        cdp_done_mask1_out := io.reg_wr_data(3)
-        pdp_done_mask0_out := io.reg_wr_data(4)
-        pdp_done_mask1_out := io.reg_wr_data(5)
-        rubik_done_mask0_out := io.reg_wr_data(8)
-        rubik_done_mask1_out := io.reg_wr_data(9)
-        sdp_done_mask0_out := io.reg_wr_data(0)
-        sdp_done_mask1_out := io.reg_wr_data(1)       
+        bdma_done_mask0_out := io.reg.wr_data(6)
+        bdma_done_mask1_out := io.reg.wr_data(7)
+        cacc_done_mask0_out := io.reg.wr_data(20)
+        cacc_done_mask1_out := io.reg.wr_data(21)
+        cdma_dat_done_mask0_out := io.reg.wr_data(16)
+        cdma_dat_done_mask1_out := io.reg.wr_data(17)
+        cdma_wt_done_mask0_out := io.reg.wr_data(18)
+        cdma_wt_done_mask1_out := io.reg.wr_data(19)
+        cdp_done_mask0_out := io.reg.wr_data(2)
+        cdp_done_mask1_out := io.reg.wr_data(3)
+        pdp_done_mask0_out := io.reg.wr_data(4)
+        pdp_done_mask1_out := io.reg.wr_data(5)
+        rubik_done_mask0_out := io.reg.wr_data(8)
+        rubik_done_mask1_out := io.reg.wr_data(9)
+        sdp_done_mask0_out := io.reg.wr_data(0)
+        sdp_done_mask1_out := io.reg.wr_data(1)       
     }  
 
     io.bdma_done_mask0 := bdma_done_mask0_out
