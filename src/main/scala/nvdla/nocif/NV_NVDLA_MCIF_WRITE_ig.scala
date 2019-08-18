@@ -6,10 +6,11 @@ import chisel3.util._
 
 //Implementation overview of ping-pong register file.
 
-class NV_NVDLA_MCIF_WRITE_ig extends Module {
+class NV_NVDLA_MCIF_WRITE_ig (implicit conf: nocifConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())      
+        val nvdla_core_rstn = Input(Bool())
 
         val pwrbus_ram_pd = Input(UInt(32.W))
         val reg3dp_wr_os_cnt = Input(UInt(8.W))

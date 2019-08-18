@@ -6,35 +6,50 @@ import chisel3.util._
 
 //Implementation overview of ping-pong register file.
 
-class NV_NVDLA_MCIF_WRITE_ig extends Module {
+class NV_NVDLA_MCIF_write(implicit conf: nocifConfiguration) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
-        val pwrbus_ram_pd = Input(UInt(32.W))
+        val nvdla_core_rstn = Input(Bool())
 
-        //mcif2noc
-        val mcif2noc_axi_aw_awvalid = Output(Bool())
-        val mcif2noc_axi_aw_awready = Input(Bool())
-        val mcif2noc_axi_aw_awid = Output(UInt(8.W))
-        val mcif2noc_axi_aw_awlen = Output(UInt(4.W))
-        val mcif2noc_axi_aw_awaddr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+        val bdma2mcif_wr_req_valid = Input(Bool())        /* data valid */
+        val bdma2mcif_wr_req_ready = Output(Bool())        /* data return handshake */
+        val bdma2mcif_wr_req_pd = Input(UInt(515.W)) /* pkt_id_width=1 pkt_widths=78,514  */
 
-        val mcif2noc_axi_w_wvalid = Output(Bool())
-        val mcif2noc_axi_w_wready = Input(Bool())
-        val mcif2noc_axi_w_wdata = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
-        val mcif2noc_axi_w_wstrb = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_STRB.W))
-        val mcif2noc_axi_w_wlast = Output(Bool())
+        val cdp2mcif_wr_req_valid = Input(Bool())        /* data valid */
+        val cdp2mcif_wr_req_ready = Output(Bool())        /* data return handshake */
+        val cdp2mcif_wr_req_pd = Input(UInt(515.W)) /* pkt_id_width=1 pkt_widths=78,514  */
+
+        val pdp2mcif_wr_req_valid = Input(Bool())        /* data valid */
+        val pdp2mcif_wr_req_ready = Output(Bool())        /* data return handshake */
+        val pdp2mcif_wr_req_pd = Input(UInt(515.W)) /* pkt_id_width=1 pkt_widths=78,514  */
+
+        val rbk2mcif_wr_req_valid = Input(Bool())        /* data valid */
+        val rbk2mcif_wr_req_ready = Output(Bool())        /* data return handshake */
+        val rbk2mcif_wr_req_pd = Input(UInt(515.W)) /* pkt_id_width=1 pkt_widths=78,514  */
+
+        val sdp2mcif_wr_req_valid = Input(Bool())        /* data valid */
+        val sdp2mcif_wr_req_ready = Output(Bool())        /* data return handshake */
+        val sdp2mcif_wr_req_pd = Input(UInt(515.W)) /* pkt_id_width=1 pkt_widths=78,514  */
+
+        val mcif2bdma_wr_rsp_complete = Output(Bool())
+        val mcif2cdp_wr_rsp_complete = Output(Bool())
+        val mcif2pdp_wr_rsp_complete = Output(Bool())
+        val mcif2rbk_wr_rsp_complete = Output(Bool())
+        val mcif2sdp_wr_rsp_complete = Output(Bool())
 
         //noc2mcif
         val noc2mcif_axi_b_bvalid = Input(Bool())
         val noc2mcif_axi_b_bready = Output(Bool())
         val noc2mcif_axi_b_bid = Input(UInt(8.W))
 
-        //WDMA_NAME
+        val pwrbus_ram_pd = Input(UInt(32.W))
 
-        //reg2dp
         val reg2dp_wr_os_cnt = Input(UInt(8.W))
-        })
-    withClock(io.nvdla_core_clk){
-}}  
-
+        val reg2dp_wr_weight_bdma = Input(UInt(8.W))
+        val reg2dp_wr_weight_cdp = Input(UInt(8.W))
+        val reg2dp_wr_weight_pdp = Input(UInt(8.W))
+        val reg2dp_wr_weight_rbk = Input(UInt(8.W))
+        val reg2dp_wr_weight_sdp = Input(UInt(8.W))
+    })
+}
