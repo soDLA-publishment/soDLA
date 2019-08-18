@@ -13,7 +13,7 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
         val reg_rd_data = Output(UInt(32.W))
         val reg.offset = Input(UInt(12.W))
         val reg_wr_data = Input(UInt(32.W))
-        val reg_wr_en = Input(Bool())
+        val reg.wr_en = Input(Bool())
 
         // Writable register flop/trigger outputs
         val bdma_done_mask0 = Output(Bool())
@@ -95,10 +95,10 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
 withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_glb_s_intr_mask_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_intr_set_0_wren = (io.reg.offset === "h8".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_intr_status_0_wren = (io.reg.offset === "hc".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_nvdla_hw_version_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg_wr_en
+    val nvdla_glb_s_intr_mask_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
+    val nvdla_glb_s_intr_set_0_wren = (io.reg.offset === "h8".asUInt(32.W))&io.reg.wr_en
+    val nvdla_glb_s_intr_status_0_wren = (io.reg.offset === "hc".asUInt(32.W))&io.reg.wr_en
+    val nvdla_glb_s_nvdla_hw_version_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 
     val major = "h31".asUInt(8.W)
     val minor = "h3030".asUInt(16.W)

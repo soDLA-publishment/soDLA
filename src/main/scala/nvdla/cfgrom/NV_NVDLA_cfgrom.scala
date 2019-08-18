@@ -47,14 +47,14 @@
 // ////////////////////////////////////////////////////////////////////////
 //     val reg.offset = Wire(UInt(24.W))
 //     val reg_wr_data = Wire(UInt(32.W))
-//     val reg_wr_en = Wire(Bool())
+//     val reg.wr_en = Wire(Bool())
 
 //     val u_NV_NVDLA_CFGROM_rom = Module(new NV_NVDLA_CFGROM_rom)
 
 //     u_NV_NVDLA_CFGROM_rom.io.nvdla_core_clk := io.nvdla_core_clk
 //     u_NV_NVDLA_CFGROM_rom.io.reg.offset := reg.offset(11, 0)
 //     u_NV_NVDLA_CFGROM_rom.io.reg_wr_data := reg_wr_data
-//     u_NV_NVDLA_CFGROM_rom.io.reg_wr_en := reg_wr_en
+//     u_NV_NVDLA_CFGROM_rom.io.reg.wr_en := reg.wr_en
 //     val reg_rd_data = u_NV_NVDLA_CFGROM_rom.io.reg_rd_data 
 
 // ////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@
 
 //     reg.offset := Cat(req_addr, "b0".asUInt(2.W))
 //     reg_wr_data := req_wdat
-//     reg_wr_en := req_pvld & req_write
+//     reg.wr_en := req_pvld & req_write
 //     val reg_rd_en = req_pvld & ~req_write
 
 //     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat) /* PKT_nvdla_xx2csb_resp_dla_xx2csb_rd_erpt_ID  */ 
@@ -106,10 +106,10 @@
 //     when(reg_rd_en){
 //         cfgrom2csb_resp_pd_out := csb_rresp_pd_w
 //     }
-//     .elsewhen(reg_wr_en & req_nposted){
+//     .elsewhen(reg.wr_en & req_nposted){
 //         cfgrom2csb_resp_pd_out := csb_wresp_pd_w
 //     }
-//     cfgrom2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
+//     cfgrom2csb_resp_valid_out := (reg.wr_en & req_nposted) | reg_rd_en
 
 //     io.cfgrom2csb_resp_pd := cfgrom2csb_resp_pd_out
 //     io.cfgrom2csb_resp_valid := cfgrom2csb_resp_valid_out

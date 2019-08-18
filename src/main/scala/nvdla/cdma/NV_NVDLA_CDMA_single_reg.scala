@@ -13,7 +13,7 @@
 //         val reg_rd_data = Output(UInt(32.W))
 //         val reg.offset = Input(UInt(12.W))
 
-//         val reg_wr_en = Input(Bool())
+//         val reg.wr_en = Input(Bool())
 //         val reg_wr_data = Input(UInt(32.W))
 
 //         // Writable register flop/trigger outputs
@@ -49,10 +49,10 @@
 // //             │ ─┤ ─┤       │ ─┤ ─┤         
 // //             └──┴──┘       └──┴──┘ 
 // // ///// Address decode
-//     val nvdla_cdma_s_arbiter_0_wren = (io.reg.offset === "h8".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_cdma_s_cbuf_flush_status_0_wren = (io.reg.offset === "hc".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_cdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_cdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg_wr_en
+//     val nvdla_cdma_s_arbiter_0_wren = (io.reg.offset === "h8".asUInt(32.W))&io.reg.wr_en
+//     val nvdla_cdma_s_cbuf_flush_status_0_wren = (io.reg.offset === "hc".asUInt(32.W))&io.reg.wr_en
+//     val nvdla_cdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
+//     val nvdla_cdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 
 //     val nvdla_cdma_s_arbiter_0_out = Cat("b0".asUInt(12.W), io.arb_wmb, "b0".asUInt(15.W), io.producer)
 //     val nvdla_cdma_s_cbuf_flush_status_0_out = Cat("b0".asUInt(31.W), io.flush_done)

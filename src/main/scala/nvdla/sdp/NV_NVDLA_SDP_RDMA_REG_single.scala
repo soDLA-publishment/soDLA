@@ -14,7 +14,7 @@
 //         val reg.offset = Input(UInt(12.W))
 
 //         val reg_wr_data = Input(UInt(32.W))
-//         val reg_wr_en = Input(Bool())
+//         val reg.wr_en = Input(Bool())
 
 //         // producer, consumer, status
 //         val producer = Output(Bool())
@@ -47,8 +47,8 @@
 //     withClock(io.nvdla_core_clk){
 //     // Address decode
 
-//     val nvdla_sdp_rdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_sdp_rdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg_wr_en
+//     val nvdla_sdp_rdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
+//     val nvdla_sdp_rdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 
 //     // Output mux
    

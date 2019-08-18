@@ -13,7 +13,7 @@ class NV_NVDLA_PDP_RDMA_REG_single extends Module {
         val reg_rd_data = Output(UInt(32.W))
         val reg.offset = Input(UInt(12.W))
 
-        val reg_wr_en = Input(Bool())
+        val reg.wr_en = Input(Bool())
         val reg_wr_data = Input(UInt(32.W))
 
         // Writable register flop/trigger outputs
@@ -46,8 +46,8 @@ class NV_NVDLA_PDP_RDMA_REG_single extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 // ///// Address decode
-    val nvdla_pdp_rdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg_wr_en
-    val nvdla_pdp_rdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg_wr_en
+    val nvdla_pdp_rdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
+    val nvdla_pdp_rdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 
 // ///// Output mux  
     io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 

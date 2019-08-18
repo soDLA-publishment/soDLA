@@ -12,7 +12,7 @@
 //         val reg_rd_data = Output(UInt(32.W))
 //         val reg.offset = Input(UInt(12.W))
 //         val reg_wr_data = Input(UInt(32.W))
-//         val reg_wr_en = Input(Bool())
+//         val reg.wr_en = Input(Bool())
 //     }) 
 // withClock(io.nvdla_core_clk){
 

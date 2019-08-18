@@ -112,7 +112,7 @@
 //     //Instance single register group
 //     val dp2reg_consumer = RegInit(false.B)
 //     val s_reg_wr_data = Wire(UInt(32.W))
-//     val s_reg_wr_en = Wire(Bool())
+//     val s_reg.wr_en = Wire(Bool())
 //     val dp2reg_status_0 = Wire(UInt(2.W))
 //     val dp2reg_status_1 = Wire(UInt(2.W))
 //     val reg.offset = Wire(UInt(24.W))
@@ -123,7 +123,7 @@
 //     val s_reg_rd_data               = u_single_reg.io.reg_rd_data
 //     u_single_reg.io.reg.offset      := reg.offset(11,0)
 //     u_single_reg.io.reg_wr_data     := s_reg_wr_data
-//     u_single_reg.io.reg_wr_en       := s_reg_wr_en
+//     u_single_reg.io.reg.wr_en       := s_reg.wr_en
 //     val reg2dp_producer             = u_single_reg.io.producer
 //     u_single_reg.io.consumer        := dp2reg_consumer
 //     u_single_reg.io.status_0        := dp2reg_status_0
@@ -133,7 +133,7 @@
 //     //Instance two duplicated register groups
 
 //     val d0_reg_wr_data = Wire(UInt(32.W))
-//     val d0_reg_wr_en = Wire(Bool())
+//     val d0_reg.wr_en = Wire(Bool())
 //     val reg2dp_d0_op_en = RegInit(false.B)
 //     val dp2reg_d0_brdma_stall = RegInit(0.U(32.W))
 //     val dp2reg_d0_erdma_stall = RegInit(0.U(32.W))
@@ -149,7 +149,7 @@
 //     val d0_reg_rd_data              = u_dual_reg_d0.io.reg_rd_data
 //     u_dual_reg_d0.io.reg.offset     := reg.offset(11,0)
 //     u_dual_reg_d0.io.reg_wr_data    := d0_reg_wr_data
-//     u_dual_reg_d0.io.reg_wr_en      := d0_reg_wr_en
+//     u_dual_reg_d0.io.reg.wr_en      := d0_reg.wr_en
 //     val reg2dp_d0_bn_base_addr_high = u_dual_reg_d0.io.bn_base_addr_high
 //     val reg2dp_d0_bn_base_addr_low  = u_dual_reg_d0.io.bn_base_addr_low
 //     val reg2dp_d0_bn_batch_stride   = u_dual_reg_d0.io.bn_batch_stride
@@ -207,7 +207,7 @@
 
 
 //     val d1_reg_wr_data = Wire(UInt(32.W))
-//     val d1_reg_wr_en = Wire(Bool())
+//     val d1_reg.wr_en = Wire(Bool())
 //     val reg2dp_d1_op_en = RegInit(false.B)
 //     val dp2reg_d1_brdma_stall = RegInit(0.U(32.W))
 //     val dp2reg_d1_erdma_stall = RegInit(0.U(32.W))
@@ -223,7 +223,7 @@
 //     val d1_reg_rd_data                  = u_dual_reg_d1.io.reg_rd_data
 //     u_dual_reg_d1.io.reg.offset         := reg.offset(11,0)
 //     u_dual_reg_d1.io.reg_wr_data        := d1_reg_wr_data
-//     u_dual_reg_d1.io.reg_wr_en          := d1_reg_wr_en
+//     u_dual_reg_d1.io.reg.wr_en          := d1_reg.wr_en
 //     val reg2dp_d1_bn_base_addr_high     = u_dual_reg_d1.io.bn_base_addr_high
 //     val reg2dp_d1_bn_base_addr_low      = u_dual_reg_d1.io.bn_base_addr_low
 //     val reg2dp_d1_bn_batch_stride       = u_dual_reg_d1.io.bn_batch_stride
@@ -326,14 +326,14 @@
 //     //                                                                    //
 //     ////////////////////////////////////////////////////////////////////////
 //     //EACH subunit has 4KB address space 
-//     val reg_wr_en = Wire(Bool())
+//     val reg.wr_en = Wire(Bool())
 //     val select_s = Mux(reg.offset(11,0) < "h0008".asUInt(32.W), true.B, false.B)
 //     val select_d0 = (reg.offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === false.B)
 //     val select_d1 = (reg.offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === true.B)
 
-//     s_reg_wr_en := reg_wr_en & select_s
-//     d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
-//     d1_reg_wr_en := reg_wr_en & select_d1 & !reg2dp_d1_op_en
+//     s_reg.wr_en := reg.wr_en & select_s
+//     d0_reg.wr_en := reg.wr_en & select_d0 & !reg2dp_d0_op_en
+//     d1_reg.wr_en := reg.wr_en & select_d1 & !reg2dp_d1_op_en
 
 //     s_reg_wr_data  := reg_wr_data;
 //     d0_reg_wr_data := reg_wr_data;
@@ -370,7 +370,7 @@
 //     //Address in CSB master is word aligned while address in regfile is byte aligned.
 //     reg.offset  := Cat(req_addr, 0.U(2.W))
 //     reg_wr_data := req_wdat
-//     reg_wr_en   := req_pvld & req_write
+//     reg.wr_en   := req_pvld & req_write
 //     val reg_rd_en = req_pvld & ~req_write
 
 //     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
@@ -389,10 +389,10 @@
 //     when(reg_rd_en){
 //         sdp_rdma2csb_resp_pd_out := csb_rresp_pd_w
 //     }
-//     .elsewhen(reg_wr_en & req_nposted){
+//     .elsewhen(reg.wr_en & req_nposted){
 //         sdp_rdma2csb_resp_pd_out := csb_wresp_pd_w
 //     }
-//     sdp_rdma2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
+//     sdp_rdma2csb_resp_valid_out := (reg.wr_en & req_nposted) | reg_rd_en
 
 //     io.sdp_rdma2csb_resp_pd := sdp_rdma2csb_resp_pd_out
 //     io.sdp_rdma2csb_resp_valid := sdp_rdma2csb_resp_valid_out

@@ -13,7 +13,7 @@
 //         val reg_rd_data = Output(UInt(32.W))
 //         val reg.offset = Input(UInt(12.W))
 
-//         val reg_wr_en = Input(Bool())
+//         val reg.wr_en = Input(Bool())
 //         val reg_wr_data = Input(UInt(32.W))
 
 //         // Writable register flop/trigger outputs
@@ -47,8 +47,8 @@
 // //             └──┴──┘       └──┴──┘ 
 // withClock(io.nvdla_core_clk){
 // // ///// Address decode
-//     val nvdla_cdp_rdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg_wr_en
-//     val nvdla_cdp_rdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg_wr_en
+//     val nvdla_cdp_rdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
+//     val nvdla_cdp_rdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 //     val nvdla_cdp_rdma_s_pointer_0_out = Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
 //     val nvdla_cdp_rdma_s_status_0_out = Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 
