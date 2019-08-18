@@ -112,7 +112,7 @@ class NV_NVDLA_SDP_REG_dual extends Module{
 
     //Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(
     //nvdla_sdp_d_cvt_offset_0_out  
     "hc0".asUInt(32.W)  -> io.field.cvt_offset,

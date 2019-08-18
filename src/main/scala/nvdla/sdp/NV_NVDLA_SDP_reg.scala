@@ -166,7 +166,7 @@
 //     val u_single_reg = Module(new NV_NVDLA_SDP_REG_single)
 
 //     u_single_reg.io.nvdla_core_clk  := io.nvdla_core_clk
-//     val s_reg_rd_data               = u_single_reg.io.reg_rd_data
+//     val s_reg.rd_data               = u_single_reg.io.reg.rd_data
 //     u_single_reg.io.reg.offset      := s_reg.offset(11,0)
 //     u_single_reg.io.reg_wr_data     := s_reg_wr_data
 //     u_single_reg.io.reg.wr_en       := s_reg.wr_en
@@ -220,7 +220,7 @@
 
 //     val u_dual_reg_d0 = Module(new NV_NVDLA_SDP_REG_dual)
 //     u_dual_reg_d0.io.nvdla_core_clk := io.nvdla_core_clk
-//     val d0_reg_rd_data = u_dual_reg_d0.io.reg_rd_data
+//     val d0_reg.rd_data = u_dual_reg_d0.io.reg.rd_data
 //     u_dual_reg_d0.io.reg.offset := d0_reg.offset(11,0)
 //     u_dual_reg_d0.io.reg_wr_data := d0_reg_wr_data
 //     u_dual_reg_d0.io.reg.wr_en := d0_reg.wr_en
@@ -324,7 +324,7 @@
 
 //     val u_dual_reg_d1 = Module(new NV_NVDLA_SDP_REG_dual)
 //     u_dual_reg_d1.io.nvdla_core_clk := io.nvdla_core_clk
-//     val d1_reg_rd_data = u_dual_reg_d1.io.reg_rd_data
+//     val d1_reg.rd_data = u_dual_reg_d1.io.reg.rd_data
 //     u_dual_reg_d1.io.reg.offset := d1_reg.offset(11,0)
 //     u_dual_reg_d1.io.reg_wr_data := d1_reg_wr_data
 //     u_dual_reg_d1.io.reg.wr_en := d1_reg.wr_en
@@ -481,9 +481,9 @@
 //     d0_reg_wr_data := reg_wr_data;
 //     d1_reg_wr_data := reg_wr_data;
 
-//     val reg_rd_data =  (Fill(32, select_s) & s_reg_rd_data) |
-//                         (Fill(32, select_d0) & d0_reg_rd_data) |
-//                         (Fill(32, select_d1) & d1_reg_rd_data)
+//     val reg.rd_data =  (Fill(32, select_s) & s_reg.rd_data) |
+//                         (Fill(32, select_d0) & d0_reg.rd_data) |
+//                         (Fill(32, select_d1) & d1_reg.rd_data)
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //                                                                    //
@@ -516,7 +516,7 @@
 //     val reg_rd_en = req_pvld & ~req_write
 
 //     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
-//     val csb_rresp_rdat = reg_rd_data
+//     val csb_rresp_rdat = reg.rd_data
 //     val csb_rresp_error = false.B
 //     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat)
 

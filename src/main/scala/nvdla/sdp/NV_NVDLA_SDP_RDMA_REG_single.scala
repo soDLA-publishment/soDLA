@@ -10,7 +10,7 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         // Register control interface
-//         val reg_rd_data = Output(UInt(32.W))
+//         val reg.rd_data = Output(UInt(32.W))
 //         val reg.offset = Input(UInt(12.W))
 
 //         val reg_wr_data = Input(UInt(32.W))
@@ -52,7 +52,7 @@
 
 //     // Output mux
    
-//     io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+//     io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
 //     Seq(  
 //     //nvdla_sdp_rdma_s_pointer_0_out    
 //     "h4".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),

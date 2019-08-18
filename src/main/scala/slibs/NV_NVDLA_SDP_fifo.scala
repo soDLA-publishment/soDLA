@@ -3,7 +3,7 @@
 // import chisel3._
 // import chisel3.experimental._
 
-// class NV_NVDLA_SDP_fifo(depth: Int, width: Int, reg_wr_data: Boolean, reg_rd_data: Boolean) extends RawModule {
+// class NV_NVDLA_SDP_fifo(depth: Int, width: Int, reg_wr_data: Boolean, reg.rd_data: Boolean) extends RawModule {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val clk = Input(Clock())

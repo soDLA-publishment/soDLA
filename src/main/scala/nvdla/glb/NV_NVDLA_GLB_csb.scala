@@ -136,11 +136,11 @@
 //     // RESPONSE
 //     // ========
 //     // flow=valid 
-//     val reg_rd_data = Wire(UInt(32.W))
+//     val reg.rd_data = Wire(UInt(32.W))
 
 
 //     val rsp_rd_vld  = req_vld & ~req_write;
-//     val rsp_rd_rdat = Fill(32, rsp_rd_vld) & reg_rd_data;
+//     val rsp_rd_rdat = Fill(32, rsp_rd_vld) & reg.rd_data;
 //     val rsp_rd_error  = false.B
 
 //     val rsp_wr_vld  = req_vld & req_write & req_nposted;
@@ -170,7 +170,7 @@
 //     u_reg.io.reg.offset := reg.offset
 //     u_reg.io.reg_wr_data := reg_wr_data
 //     u_reg.io.reg.wr_en := reg.wr_en
-//     reg_rd_data := u_reg.io.reg_rd_data
+//     reg.rd_data := u_reg.io.reg.rd_data
 
 //     //bdma
 //     if(conf.NVDLA_BDMA_ENABLE){

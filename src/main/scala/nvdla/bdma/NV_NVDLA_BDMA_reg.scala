@@ -10,7 +10,7 @@ class NV_NVDLA_BDMA_reg extends Module{
         val nvdla_core_clk = Input(Clock())
 
         //Register control interface
-        val reg_rd_data = Output(UInt(32.W))
+        val reg.rd_data = Output(UInt(32.W))
         val reg.offset = Input(UInt(12.W))
         val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
         val reg.wr_en = Input(Bool())
@@ -98,7 +98,7 @@ class NV_NVDLA_BDMA_reg extends Module{
     io.nvdla_bdma_cfg_op_0_en_trigger := nvdla_bdma_cfg_op_0_wren
 
     //Output mux
-    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(  
     //nvdla_bdma_cfg_cmd_0_out    
     "h14".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.nvdla_bdma_cfg_cmd_0_dst_ram_type, io.nvdla_bdma_cfg_cmd_0_src_ram_type),

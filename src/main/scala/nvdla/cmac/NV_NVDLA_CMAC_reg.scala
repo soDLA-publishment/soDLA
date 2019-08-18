@@ -61,7 +61,7 @@ withClock(io.nvdla_core_clk){
     u_single_reg.io.reg.offset := reg.offset
     u_single_reg.io.reg.wr_data := reg_wr_data 
     u_single_reg.io.reg.wr_en := s_reg.wr_en
-    val s_reg_rd_data = u_single_reg.io.reg.rd_data
+    val s_reg.rd_data = u_single_reg.io.reg.rd_data
     u_single_reg.io.consumer := dp2reg_consumer
     u_single_reg.io.status_0 := dp2reg_status_0
     u_single_reg.io.status_1 := dp2reg_status_1 
@@ -76,7 +76,7 @@ withClock(io.nvdla_core_clk){
     u_dual_reg_d0.io.reg.offset := reg.offset
     u_dual_reg_d0.io.reg.wr_data := reg_wr_data
     u_dual_reg_d0.io.reg.wr_en := d0_reg.wr_en
-    val d0_reg_rd_data = u_dual_reg_d0.io.reg.rd_data
+    val d0_reg.rd_data = u_dual_reg_d0.io.reg.rd_data
     u_dual_reg_d0.io.op_en := reg2dp_d0_op_en
     val reg2dp_d0_field = u_dual_reg_d0.io.field
     val reg2dp_d0_op_en_trigger = u_dual_reg_d0.io.op_en_trigger
@@ -89,7 +89,7 @@ withClock(io.nvdla_core_clk){
     u_dual_reg_d1.io.reg.offset := reg.offset
     u_dual_reg_d1.io.reg.wr_data := reg_wr_data
     u_dual_reg_d1.io.reg.wr_en := d1_reg.wr_en
-    val d1_reg_rd_data = u_dual_reg_d1.io.reg.rd_data
+    val d1_reg.rd_data = u_dual_reg_d1.io.reg.rd_data
     u_dual_reg_d1.io.op_en := reg2dp_d1_op_en 
     val reg2dp_d1_field = u_dual_reg_d1.io.field
     val reg2dp_d1_op_en_trigger = u_dual_reg_d1.io.op_en_trigger
@@ -150,9 +150,9 @@ withClock(io.nvdla_core_clk){
     d0_reg.wr_en := reg.wr_en & select_d0 & !reg2dp_d0_op_en
     d1_reg.wr_en := reg.wr_en & select_d1 & !reg2dp_d1_op_en
 
-    val reg_rd_data = (Fill(32, select_s) & s_reg_rd_data)|
-                      (Fill(32, select_d0) & d0_reg_rd_data)|
-                      (Fill(32, select_d1)& d1_reg_rd_data)
+    val reg.rd_data = (Fill(32, select_s) & s_reg.rd_data)|
+                      (Fill(32, select_d0) & d0_reg.rd_data)|
+                      (Fill(32, select_d1)& d1_reg.rd_data)
 
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
@@ -185,7 +185,7 @@ withClock(io.nvdla_core_clk){
     val reg_rd_en = req_pvld & ~req_write
 
     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
-    val csb_rresp_rdat = reg_rd_data
+    val csb_rresp_rdat = reg.rd_data
     val csb_rresp_error = false.B
     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat)
 

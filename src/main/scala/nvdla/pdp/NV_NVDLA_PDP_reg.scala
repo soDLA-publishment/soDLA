@@ -121,7 +121,7 @@
 //     u_single_reg.io.consumer := dp2reg_consumer
 //     u_single_reg.io.status_0 := dp2reg_status_0
 //     u_single_reg.io.status_1 := dp2reg_status_1 
-//     val s_reg_rd_data = u_single_reg.io.reg_rd_data
+//     val s_reg.rd_data = u_single_reg.io.reg.rd_data
 //     val reg2dp_producer = u_single_reg.io.producer
 
 //     //Instance two duplicated register groups
@@ -187,7 +187,7 @@
 //     val reg2dp_d0_src_base_addr_low = u_dual_reg_d0.io.src_base_addr_low
 //     val reg2dp_d0_src_line_stride = u_dual_reg_d0.io.src_line_stride 
 //     val reg2dp_d0_src_surface_stride = u_dual_reg_d0.io.src_surface_stride 
-//     val d0_reg_rd_data = u_dual_reg_d0.io.reg_rd_data
+//     val d0_reg.rd_data = u_dual_reg_d0.io.reg.rd_data
                         
 //     val d1_reg.wr_en = Wire(Bool())
 //     val dp2reg_d1_inf_input_num = RegInit("b0".asUInt(32.W))
@@ -251,7 +251,7 @@
 //     val reg2dp_d1_src_base_addr_low = u_dual_reg_d1.io.src_base_addr_low
 //     val reg2dp_d1_src_line_stride = u_dual_reg_d1.io.src_line_stride 
 //     val reg2dp_d1_src_surface_stride = u_dual_reg_d1.io.src_surface_stride 
-//     val d1_reg_rd_data = u_dual_reg_d1.io.reg_rd_data
+//     val d1_reg.rd_data = u_dual_reg_d1.io.reg.rd_data
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //                                                                    //
@@ -315,9 +315,9 @@
 //     d0_reg.wr_en := reg.wr_en & select_d0 & !reg2dp_d0_op_en
 //     d1_reg.wr_en := reg.wr_en & select_d1 & !reg2dp_d1_op_en
 
-//     val reg_rd_data = (Fill(32, select_s) & s_reg_rd_data)|
-//                         (Fill(32, select_d0) & d0_reg_rd_data)|
-//                         (Fill(32, select_d1)& d1_reg_rd_data)
+//     val reg.rd_data = (Fill(32, select_s) & s_reg.rd_data)|
+//                         (Fill(32, select_d0) & d0_reg.rd_data)|
+//                         (Fill(32, select_d1)& d1_reg.rd_data)
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //                                                                    //
@@ -350,7 +350,7 @@
 //     val reg_rd_en = req_pvld & ~req_write
 
 //     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
-//     val csb_rresp_rdat = reg_rd_data
+//     val csb_rresp_rdat = reg.rd_data
 //     val csb_rresp_error = false.B
 //     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat)
 

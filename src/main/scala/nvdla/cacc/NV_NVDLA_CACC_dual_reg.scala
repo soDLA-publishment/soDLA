@@ -61,7 +61,7 @@ class NV_NVDLA_CACC_dual_reg extends Module{
 
     //Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq( 
     //nvdla_cacc_d_batch_number_0_out     
     "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.field.batches),

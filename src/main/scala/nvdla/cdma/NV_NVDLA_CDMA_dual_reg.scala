@@ -112,7 +112,7 @@ class NV_NVDLA_CDMA_dual_reg extends Module{
 
     //Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(      
         //nvdla_cdma_d_bank_0_out
         "hbc".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.weight_bank, "b0".asUInt(11.W), io.field.data_bank),

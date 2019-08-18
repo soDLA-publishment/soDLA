@@ -98,7 +98,7 @@ class NV_NVDLA_PDP_REG_dual extends Module {
 
     // Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(      
     //nvdla_pdp_d_cya_0_out
     "h9c".asUInt(32.W)  -> io.field.cya,

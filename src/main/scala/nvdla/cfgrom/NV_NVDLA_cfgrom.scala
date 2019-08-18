@@ -55,7 +55,7 @@
 //     u_NV_NVDLA_CFGROM_rom.io.reg.offset := reg.offset(11, 0)
 //     u_NV_NVDLA_CFGROM_rom.io.reg_wr_data := reg_wr_data
 //     u_NV_NVDLA_CFGROM_rom.io.reg.wr_en := reg.wr_en
-//     val reg_rd_data = u_NV_NVDLA_CFGROM_rom.io.reg_rd_data 
+//     val reg.rd_data = u_NV_NVDLA_CFGROM_rom.io.reg.rd_data 
 
 // ////////////////////////////////////////////////////////////////////////
 // //                                                                    //
@@ -95,7 +95,7 @@
 //     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat) /* PKT_nvdla_xx2csb_resp_dla_xx2csb_rd_erpt_ID  */ 
 //     val csb_wresp_pd_w = Cat(true.B, csb_wresp_error, csb_wresp_rdat) /* PKT_nvdla_xx2csb_resp_dla_xx2csb_wr_erpt_ID  */
 
-//     csb_rresp_rdat := reg_rd_data
+//     csb_rresp_rdat := reg.rd_data
 //     csb_rresp_error := false.B
 //     csb_wresp_rdat := Fill(32, false.B) 
 //     csb_wresp_error := false.B
