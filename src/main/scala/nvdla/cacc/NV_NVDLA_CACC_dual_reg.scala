@@ -10,27 +10,12 @@ class NV_NVDLA_CACC_dual_reg extends Module{
         val nvdla_core_clk = Input(Clock())
 
         //Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
-        val reg_wr_en = Input(Bool())
+        val reg = new reg_control_if
 
         //Writable register flop/trigger outputs
-        val batches = Output(UInt(5.W))
-        val clip_truncate = Output(UInt(5.W))
-        val cya = Output(UInt(32.W))
-        val dataout_addr = Output(UInt(32.W))
-        val line_packed = Output(Bool())
-        val surf_packed = Output(Bool())
-        val dataout_height = Output(UInt(13.W))
-        val dataout_width = Output(UInt(13.W))
-        val dataout_channel = Output(UInt(13.W))
-        val line_stride = Output(UInt(24.W))
-        val conv_mode = Output(Bool())
-        val proc_precision = Output(UInt(2.W))
-        val op_en_trigger = Output(Bool())
-        val surf_stride = Output(UInt(24.W))
 
+        val field = new cacc_dual_reg_flop_outputs
+        val op_en_trigger = Output(Bool())
         //Read-only register inputs
         val op_en = Input(Bool())  
         val sat_count = Input(UInt(32.W))  
@@ -79,29 +64,29 @@ class NV_NVDLA_CACC_dual_reg extends Module{
     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
     Seq( 
     //nvdla_cacc_d_batch_number_0_out     
-    "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.batches),
+    "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.field.batches),
     //nvdla_cacc_d_clip_cfg_0_out
-    "h2c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.clip_truncate),
+    "h2c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.field.clip_truncate),
     //nvdla_cacc_d_cya_0_out
-    "h34".asUInt(32.W)  -> io.cya,
+    "h34".asUInt(32.W)  -> io.field.cya,
     //nvdla_cacc_d_dataout_addr_0_out
-    "h18".asUInt(32.W)  -> io.dataout_addr,
+    "h18".asUInt(32.W)  -> io.field.dataout_addr,
     //nvdla_cacc_d_dataout_map_0_out
-    "h28".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.surf_packed, "b0".asUInt(15.W), io.line_packed),
+    "h28".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.field.surf_packed, "b0".asUInt(15.W), io.line_packed),
     //nvdla_cacc_d_dataout_size_0_0_out
-    "h10".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.dataout_height, "b0".asUInt(3.W), io.dataout_width),
+    "h10".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.field.dataout_height, "b0".asUInt(3.W), io.dataout_width),
     //nvdla_cacc_d_dataout_size_1_0_out
-    "h14".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.dataout_channel),
+    "h14".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.dataout_channel),
     //nvdla_cacc_d_line_stride_0_out
-    "h20".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.line_stride),
+    "h20".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.field.line_stride),
     //nvdla_cacc_d_misc_cfg_0_out
-    "h0c".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.proc_precision, "b0".asUInt(11.W), io.conv_mode),
+    "h0c".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.field.proc_precision, "b0".asUInt(11.W), io.conv_mode),
     //nvdla_cacc_d_op_enable_0_out
-    "h08".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.op_en),
+    "h08".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.op_en),
     //nvdla_cacc_d_out_saturation_0_out
-    "h30".asUInt(32.W)  -> io.sat_count,
+    "h30".asUInt(32.W)  -> io.field.sat_count,
     //nvdla_cacc_d_surf_stride_0_out
-    "h24".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.surf_stride)                                                                         
+    "h24".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.field.surf_stride)                                                                         
     ))
 
     //Register flop declarations

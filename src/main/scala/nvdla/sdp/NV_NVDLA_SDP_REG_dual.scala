@@ -10,84 +10,11 @@ class NV_NVDLA_SDP_REG_dual extends Module{
         val nvdla_core_clk = Input(Clock())
 
         //Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
-        val reg_wr_en = Input(Bool())
+        val reg = new reg_control_if
 
         //Writable register flop/trigger outputs
-        val cvt_offset = Output(UInt(32.W))
-        val cvt_scale = Output(UInt(16.W))
-        val cvt_shift = Output(UInt(6.W))
-        val channel = Output(UInt(13.W))
-        val height = Output(UInt(13.W))
-        val width_a = Output(UInt(13.W))
-        val out_precision = Output(UInt(2.W))
-        val proc_precision = Output(UInt(2.W))
-
-        val bn_alu_shift_value = Output(UInt(6.W))
-        val bn_alu_src = Output(Bool())      
-        val bn_alu_operand = Output(UInt(16.W))
-        val bn_alu_algo = Output(UInt(2.W))
-        val bn_alu_bypass = Output(Bool())
-        val bn_bypass = Output(Bool())
-        val bn_mul_bypass = Output(Bool())
-        val bn_mul_prelu = Output(Bool())
-        val bn_relu_bypass = Output(Bool())
-        val bn_mul_shift_value = Output(UInt(8.W))
-        val bn_mul_src = Output(Bool())
-        val bn_mul_operand = Output(UInt(16.W))
-
-        val bs_alu_shift_value = Output(UInt(6.W))
-        val bs_alu_src = Output(Bool())      
-        val bs_alu_operand = Output(UInt(16.W))
-        val bs_alu_algo = Output(UInt(2.W))
-        val bs_alu_bypass = Output(Bool())
-        val bs_bypass = Output(Bool())
-        val bs_mul_bypass = Output(Bool())
-        val bs_mul_prelu = Output(Bool())
-        val bs_relu_bypass = Output(Bool())
-        val bs_mul_shift_value = Output(UInt(8.W))
-        val bs_mul_src = Output(Bool())
-        val bs_mul_operand = Output(UInt(16.W))
-
-        val ew_alu_cvt_bypass = Output(Bool())
-        val ew_alu_src = Output(Bool())
-        val ew_alu_cvt_offset = Output(UInt(32.W))
-        val ew_alu_cvt_scale = Output(UInt(16.W))
-        val ew_alu_cvt_truncate = Output(UInt(6.W))
-        val ew_alu_operand = Output(UInt(32.W))
-        val ew_alu_algo = Output(UInt(2.W))
-        val ew_alu_bypass = Output(Bool())
-        val ew_bypass = Output(Bool())
-        val ew_lut_bypass = Output(Bool())
-        val ew_mul_bypass = Output(Bool())
-        val ew_mul_prelu = Output(Bool())
-        val ew_mul_cvt_bypass = Output(Bool())
-        val ew_mul_src = Output(Bool())
-        val ew_mul_cvt_offset = Output(UInt(32.W))
-        val ew_mul_cvt_scale = Output(UInt(16.W))
-        val ew_mul_cvt_truncate = Output(UInt(6.W))
-        val ew_mul_operand = Output(UInt(32.W))
-        val ew_truncate = Output(UInt(10.W))
-
-        val dst_base_addr_high = Output(UInt(32.W))
-        val dst_base_addr_low = Output(UInt(32.W))
-        val dst_batch_stride = Output(UInt(32.W))
-        val dst_ram_type = Output(Bool())
-
-        val dst_line_stride = Output(UInt(32.W))
-        val dst_surface_stride = Output(UInt(32.W))
-        val batch_number = Output(UInt(5.W))
-        val flying_mode = Output(Bool())
-        val nan_to_zero = Output(Bool())
-        val output_dst = Output(Bool())
-        val winograd = Output(Bool())
+        val field = new sdp_reg_dual_flop_outputs
         val op_en_trigger = Output(Bool())
-        val perf_dma_en = Output(Bool())
-        val perf_lut_en = Output(Bool())
-        val perf_nan_inf_count_en = Output(Bool())
-        val perf_sat_en = Output(Bool())
 
         //Read-only register inputs
         val op_en = Input(Bool())
@@ -188,103 +115,103 @@ class NV_NVDLA_SDP_REG_dual extends Module{
     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
     Seq(
     //nvdla_sdp_d_cvt_offset_0_out  
-    "hc0".asUInt(32.W)  -> io.cvt_offset,
+    "hc0".asUInt(32.W)  -> io.field.cvt_offset,
     //nvdla_sdp_d_cvt_scale_0_out
-    "hc4".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.cvt_scale),
+    "hc4".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.cvt_scale),
     //nvdla_sdp_d_cvt_shift_0_out
-    "hc8".asUInt(32.W)  -> Cat("b0".asUInt(26.W), io.cvt_shift),
+    "hc8".asUInt(32.W)  -> Cat("b0".asUInt(26.W), io.field.cvt_shift),
     //nvdla_sdp_d_data_cube_channel_0_out
-    "h44".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.channel),
+    "h44".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.channel),
     //nvdla_sdp_d_data_cube_height_0_out
-    "h40".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.height),
+    "h40".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.height),
     //nvdla_sdp_d_data_cube_width_0_out
-    "h3c".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.width_a),
+    "h3c".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.width_a),
     //nvdla_sdp_d_data_format_0_out
-    "hbc".asUInt(32.W)  -> Cat("b0".asUInt(28.W), io.out_precision, io.proc_precision),
+    "hbc".asUInt(32.W)  -> Cat("b0".asUInt(28.W), io.field.out_precision, io.field.proc_precision),
     //nvdla_sdp_d_dp_bn_alu_cfg_0_out
-    "h70".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.bn_alu_shift_value, "b0".asUInt(7.W), io.bn_alu_src),
+    "h70".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.field.bn_alu_shift_value, "b0".asUInt(7.W), io.field.bn_alu_src),
     //nvdla_sdp_d_dp_bn_alu_src_value_0_out
-    "h74".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.bn_alu_operand),
+    "h74".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.bn_alu_operand),
     //nvdla_sdp_d_dp_bn_cfg_0_out
-    "h6c".asUInt(32.W)  -> Cat("b0".asUInt(25.W), io.bn_relu_bypass, io.bn_mul_prelu, io.bn_mul_bypass, io.bn_alu_algo, io.bn_alu_bypass, io.bn_bypass),
+    "h6c".asUInt(32.W)  -> Cat("b0".asUInt(25.W), io.field.bn_relu_bypass, io.field.bn_mul_prelu, io.field.bn_mul_bypass, io.field.bn_alu_algo, io.field.bn_alu_bypass, io.field.bn_bypass),
     //nvdla_sdp_d_dp_bn_mul_cfg_0_out
-    "h78".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.bn_mul_shift_value, "b0".asUInt(7.W), io.bn_mul_src),
+    "h78".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.bn_mul_shift_value, "b0".asUInt(7.W), io.field.bn_mul_src),
     //nvdla_sdp_d_dp_bn_mul_src_value_0_out
-    "h7c".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.bn_mul_operand),
+    "h7c".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.bn_mul_operand),
     //nvdla_sdp_d_dp_bs_alu_cfg_0_out
-    "h5c".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.bs_alu_shift_value, "b0".asUInt(7.W), io.bs_alu_src),
+    "h5c".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.field.bs_alu_shift_value, "b0".asUInt(7.W), io.field.bs_alu_src),
     //nvdla_sdp_d_dp_bs_alu_src_value_0_out 
-    "h60".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.bs_alu_operand), 
+    "h60".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.bs_alu_operand), 
     //nvdla_sdp_d_dp_bs_cfg_0_out
-    "h58".asUInt(32.W)  -> Cat("b0".asUInt(25.W), io.bs_relu_bypass, io.bs_mul_prelu, io.bs_mul_bypass, io.bs_alu_algo, io.bs_alu_bypass, io.bs_bypass),
+    "h58".asUInt(32.W)  -> Cat("b0".asUInt(25.W), io.field.bs_relu_bypass, io.field.bs_mul_prelu, io.field.bs_mul_bypass, io.field.bs_alu_algo, io.field.bs_alu_bypass, io.field.bs_bypass),
     //nvdla_sdp_d_dp_bs_mul_cfg_0_out 
-    "h64".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.bs_mul_shift_value, "b0".asUInt(7.W), io.bs_mul_src), 
+    "h64".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.bs_mul_shift_value, "b0".asUInt(7.W), io.field.bs_mul_src), 
     //nvdla_sdp_d_dp_bs_mul_src_value_0_out
-    "h68".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.bs_mul_operand),
+    "h68".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.bs_mul_operand),
     //nvdla_sdp_d_dp_ew_alu_cfg_0_out
-    "h84".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.ew_alu_cvt_bypass, io.ew_alu_src), 
+    "h84".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.field.ew_alu_cvt_bypass, io.field.ew_alu_src), 
     //nvdla_sdp_d_dp_ew_alu_cvt_offset_value_0_out
-    "h8c".asUInt(32.W)  -> io.ew_alu_cvt_offset, 
+    "h8c".asUInt(32.W)  -> io.field.ew_alu_cvt_offset, 
     //nvdla_sdp_d_dp_ew_alu_cvt_scale_value_0_out
-    "h90".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.ew_alu_cvt_scale), 
+    "h90".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.ew_alu_cvt_scale), 
     //nvdla_sdp_d_dp_ew_alu_cvt_truncate_value_0_out
-    "h94".asUInt(32.W)  -> Cat("b0".asUInt(26.W), io.ew_alu_cvt_truncate),
+    "h94".asUInt(32.W)  -> Cat("b0".asUInt(26.W), io.field.ew_alu_cvt_truncate),
     //nvdla_sdp_d_dp_ew_alu_src_value_0_out 
-    "h88".asUInt(32.W)  -> io.ew_alu_operand, 
+    "h88".asUInt(32.W)  -> io.field.ew_alu_operand, 
     //nvdla_sdp_d_dp_ew_cfg_0_out
-    "h80".asUInt(32.W)  -> Cat("b0".asUInt(25.W), io.ew_lut_bypass, io.ew_mul_prelu, io.ew_mul_bypass, io.ew_alu_algo, io.ew_alu_bypass, io.ew_bypass),
+    "h80".asUInt(32.W)  -> Cat("b0".asUInt(25.W), io.field.ew_lut_bypass, io.field.ew_mul_prelu, io.field.ew_mul_bypass, io.field.ew_alu_algo, io.field.ew_alu_bypass, io.field.ew_bypass),
     //nvdla_sdp_d_dp_ew_mul_cfg_0_out
-    "h98".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.ew_mul_cvt_bypass, io.ew_mul_src),
+    "h98".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.field.ew_mul_cvt_bypass, io.field.ew_mul_src),
     //nvdla_sdp_d_dp_ew_mul_cvt_offset_value_0_out
-    "ha0".asUInt(32.W)  -> io.ew_mul_cvt_offset,
+    "ha0".asUInt(32.W)  -> io.field.ew_mul_cvt_offset,
     //nvdla_sdp_d_dp_ew_mul_cvt_scale_value_0_out
-    "ha4".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.ew_mul_cvt_scale),
+    "ha4".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.ew_mul_cvt_scale),
     //nvdla_sdp_d_dp_ew_mul_cvt_truncate_value_0_out
-    "ha8".asUInt(32.W)  -> Cat("b0".asUInt(26.W), io.ew_mul_cvt_truncate),
+    "ha8".asUInt(32.W)  -> Cat("b0".asUInt(26.W), io.field.ew_mul_cvt_truncate),
     //nvdla_sdp_d_dp_ew_mul_src_value_0_out
-    "h9c".asUInt(32.W)  -> io.ew_mul_operand,
+    "h9c".asUInt(32.W)  -> io.field.ew_mul_operand,
     //nvdla_sdp_d_dp_ew_truncate_value_0_out
-    "hac".asUInt(32.W)  -> Cat("b0".asUInt(22.W), io.ew_truncate),
+    "hac".asUInt(32.W)  -> Cat("b0".asUInt(22.W), io.field.ew_truncate),
     //nvdla_sdp_d_dst_base_addr_high_0_out
-    "h4c".asUInt(32.W)  -> io.dst_base_addr_high,
+    "h4c".asUInt(32.W)  -> io.field.dst_base_addr_high,
     //nvdla_sdp_d_dst_base_addr_low_0_out
-    "h48".asUInt(32.W)  -> io.dst_base_addr_low,
+    "h48".asUInt(32.W)  -> io.field.dst_base_addr_low,
     //nvdla_sdp_d_dst_batch_stride_0_out
-    "hb8".asUInt(32.W)  -> io.dst_batch_stride,
+    "hb8".asUInt(32.W)  -> io.field.dst_batch_stride,
     //nvdla_sdp_d_dst_dma_cfg_0_out
-    "hb4".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.dst_ram_type),
+    "hb4".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.dst_ram_type),
     //nvdla_sdp_d_dst_line_stride_0_out
-    "h50".asUInt(32.W)  -> io.dst_line_stride,
+    "h50".asUInt(32.W)  -> io.field.dst_line_stride,
     //nvdla_sdp_d_dst_surface_stride_0_out
-    "h54".asUInt(32.W)  -> io.dst_surface_stride, 
+    "h54".asUInt(32.W)  -> io.field.dst_surface_stride, 
     //nvdla_sdp_d_feature_mode_cfg_0_out                                                                             
-    "hb0".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.batch_number, "b0".asUInt(4.W), io.nan_to_zero, io.winograd, io.output_dst, io.flying_mode),
+    "hb0".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.batch_number, "b0".asUInt(4.W), io.field.nan_to_zero, io.field.winograd, io.field.output_dst, io.field.flying_mode),
     //nvdla_sdp_d_op_enable_0_out                                                                              
-    "h38".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.op_en), 
+    "h38".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.op_en), 
     //nvdla_sdp_d_perf_enable_0_out                                                                             
-    "hdc".asUInt(32.W)  -> Cat("b0".asUInt(28.W), io.perf_nan_inf_count_en, io.perf_sat_en, io.perf_lut_en, io.perf_dma_en),                                                                           
+    "hdc".asUInt(32.W)  -> Cat("b0".asUInt(28.W), io.field.perf_nan_inf_count_en, io.field.perf_sat_en, io.field.perf_lut_en, io.field.perf_dma_en),                                                                           
     //nvdla_sdp_d_perf_lut_hybrid_0_out
-    "hf0".asUInt(32.W)  -> io.lut_hybrid,
+    "hf0".asUInt(32.W)  -> io.field.lut_hybrid,
     //nvdla_sdp_d_perf_lut_le_hit_0_out                                                                              
-    "hf4".asUInt(32.W)  -> io.lut_le_hit, 
+    "hf4".asUInt(32.W)  -> io.field.lut_le_hit, 
     //nvdla_sdp_d_perf_lut_lo_hit_0_out                                                                             
-    "hf8".asUInt(32.W)  -> io.lut_lo_hit,
+    "hf8".asUInt(32.W)  -> io.field.lut_lo_hit,
     //nvdla_sdp_d_perf_lut_oflow_0_out                                                                              
-    "he8".asUInt(32.W)  -> io.lut_oflow, 
+    "he8".asUInt(32.W)  -> io.field.lut_oflow, 
     //nvdla_sdp_d_perf_lut_uflow_0_out                                                                             
-    "he4".asUInt(32.W)  -> io.lut_uflow, 
+    "he4".asUInt(32.W)  -> io.field.lut_uflow, 
     //nvdla_sdp_d_perf_out_saturation_0_out                                                                             
-    "hec".asUInt(32.W)  -> io.out_saturation,
+    "hec".asUInt(32.W)  -> io.field.out_saturation,
     //nvdla_sdp_d_perf_wdma_write_stall_0_out                                                                              
-    "he0".asUInt(32.W)  -> io.wdma_stall,  
+    "he0".asUInt(32.W)  -> io.field.wdma_stall,  
     //nvdla_sdp_d_status_0_out                                                                            
-    "hcc".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.status_unequal), 
+    "hcc".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.status_unequal), 
     //nvdla_sdp_d_status_inf_input_num_0_out                                                                             
-    "hd4".asUInt(32.W)  -> io.status_inf_input_num, 
+    "hd4".asUInt(32.W)  -> io.field.status_inf_input_num, 
     //nvdla_sdp_d_status_nan_input_num_0_out                                                                             
-    "hd0".asUInt(32.W)  -> io.status_nan_input_num, 
+    "hd0".asUInt(32.W)  -> io.field.status_nan_input_num, 
     //nvdla_sdp_d_status_nan_output_num_0_out                                                                             
-    "hd8".asUInt(32.W)  -> io.status_nan_output_num                                                                              
+    "hd8".asUInt(32.W)  -> io.field.status_nan_output_num                                                                              
 
     ))
 

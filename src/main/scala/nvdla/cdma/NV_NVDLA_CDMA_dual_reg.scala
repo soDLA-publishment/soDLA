@@ -10,82 +10,12 @@ class NV_NVDLA_CDMA_dual_reg extends Module{
         val nvdla_core_clk = Input(Clock())
 
         //Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
-        val reg_wr_en = Input(Bool())
+        val reg = new reg_control_if
 
         //Writable register flop/trigger outputs
-        val data_bank = Output(UInt(5.W))
-        val weight_bank = Output(UInt(5.W))
-        val batches = Output(UInt(5.W))
-        val batch_stride = Output(UInt(32.W))
-        val conv_x_stride = Output(UInt(3.W))
-        val conv_y_stride = Output(UInt(3.W))
-        val cvt_en = Output(Bool())
-        val cvt_truncate = Output(UInt(6.W))
-        val cvt_offset = Output(UInt(16.W))
-        val cvt_scale = Output(UInt(16.W))
-        val cya = Output(UInt(32.W))
-        val datain_addr_high_0 = Output(UInt(32.W))
-        val datain_addr_high_1 = Output(UInt(32.W))
-        val datain_addr_low_0 = Output(UInt(32.W))
-        val datain_addr_low_1 = Output(UInt(32.W))
-        val line_packed = Output(Bool())
-        val surf_packed = Output(Bool())
-        val datain_ram_type = Output(Bool())
-        val datain_format = Output(Bool())
-        val pixel_format = Output(UInt(6.W))
-        val pixel_mapping = Output(Bool())
-        val pixel_sign_override = Output(Bool())
-        val datain_height = Output(UInt(13.W))
-        val datain_width = Output(UInt(13.W))
-        val datain_channel = Output(UInt(13.W))
-        val datain_height_ext = Output(UInt(13.W))
-        val datain_width_ext = Output(UInt(13.W))
-        val entries = Output(UInt(14.W))
-        val grains = Output(UInt(12.W))
-        val line_stride = Output(UInt(32.W))
-        val uv_line_stride = Output(UInt(32.W))
-        val mean_format = Output(Bool())
-        val mean_gu = Output(UInt(16.W))
-        val mean_ry = Output(UInt(16.W))
-        val mean_ax = Output(UInt(16.W))
-        val mean_bv = Output(UInt(16.W))
-        val conv_mode = Output(Bool())
-        val data_reuse = Output(Bool())
-        val in_precision = Output(UInt(2.W))
-        val proc_precision = Output(UInt(2.W))
-        val skip_data_rls = Output(Bool())
-        val skip_weight_rls = Output(Bool())
-        val weight_reuse = Output(Bool())
-        val nan_to_zero = Output(Bool())
+
+        val field = new cdma_dual_reg_flop_outputs
         val op_en_trigger = Output(Bool())
-        val dma_en = Output(Bool())
-        val pixel_x_offset = Output(UInt(5.W))
-        val pixel_y_offset = Output(UInt(3.W))
-        val rsv_per_line = Output(UInt(10.W))
-        val rsv_per_uv_line = Output(UInt(10.W))
-        val rsv_height = Output(UInt(3.W))
-        val rsv_y_index = Output(UInt(5.W))
-        val surf_stride = Output(UInt(32.W))
-        val weight_addr_high = Output(UInt(32.W))
-        val weight_addr_low = Output(UInt(32.W))
-        val weight_bytes = Output(UInt(32.W))
-        val weight_format = Output(Bool())
-        val weight_ram_type = Output(Bool())
-        val byte_per_kernel = Output(UInt(18.W))
-        val weight_kernel = Output(UInt(13.W))
-        val wgs_addr_high = Output(UInt(32.W))
-        val wgs_addr_low = Output(UInt(32.W))
-        val wmb_addr_high = Output(UInt(32.W))
-        val wmb_addr_low = Output(UInt(32.W))
-        val wmb_bytes = Output(UInt(28.W))
-        val pad_bottom = Output(UInt(6.W))
-        val pad_left = Output(UInt(5.W))
-        val pad_right = Output(UInt(6.W))
-        val pad_top = Output(UInt(5.W))
-        val pad_value = Output(UInt(16.W))
 
         //Read-only register inputs
         val inf_data_num = Input(UInt(32.W))
@@ -185,115 +115,115 @@ class NV_NVDLA_CDMA_dual_reg extends Module{
     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
     Seq(      
         //nvdla_cdma_d_bank_0_out
-        "hbc".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.weight_bank, "b0".asUInt(11.W), io.data_bank),
+        "hbc".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.weight_bank, "b0".asUInt(11.W), io.field.data_bank),
         //nvdla_cdma_d_batch_number_0_out
-        "h58".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.batches),
+        "h58".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.field.batches),
         //nvdla_cdma_d_batch_stride_0_out
-        "h5c".asUInt(32.W)  -> io.batch_stride,
+        "h5c".asUInt(32.W)  -> io.field.batch_stride,
         //nvdla_cdma_d_conv_stride_0_out
-        "hb0".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.conv_y_stride, "b0".asUInt(13.W), io.conv_x_stride),
+        "hb0".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.conv_y_stride, "b0".asUInt(13.W), io.field.conv_x_stride),
         //nvdla_cdma_d_cvt_cfg_0_out
-        "ha4".asUInt(32.W)  -> Cat("b0".asUInt(22.W), io.cvt_truncate,"b0".asUInt(3.W), io.cvt_en),
+        "ha4".asUInt(32.W)  -> Cat("b0".asUInt(22.W), io.field.cvt_truncate,"b0".asUInt(3.W), io.field.cvt_en),
         //nvdla_cdma_d_cvt_offset_0_out
-        "ha8".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.cvt_offset),
+        "ha8".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.cvt_offset),
         //nvdla_cdma_d_cvt_scale_0_out
-        "hac".asUInt(32.W)  ->  Cat("b0".asUInt(16.W), io.cvt_scale),
+        "hac".asUInt(32.W)  ->  Cat("b0".asUInt(16.W), io.field.cvt_scale),
         //nvdla_cdma_d_cya_0_out
-        "he8".asUInt(32.W)  -> io.cya,
+        "he8".asUInt(32.W)  -> io.field.cya,
         //nvdla_cdma_d_dain_addr_high_0_0_out
-        "h30".asUInt(32.W)  -> io.datain_addr_high_0,
+        "h30".asUInt(32.W)  -> io.field.datain_addr_high_0,
         //nvdla_cdma_d_dain_addr_high_1_0_out
-        "h38".asUInt(32.W)  -> io.datain_addr_high_1,
+        "h38".asUInt(32.W)  -> io.field.datain_addr_high_1,
         //nvdla_cdma_d_dain_addr_low_0_0_out
-        "h34".asUInt(32.W)  -> io.datain_addr_low_0,
+        "h34".asUInt(32.W)  -> io.field.datain_addr_low_0,
         //nvdla_cdma_d_dain_addr_low_1_0_out
-        "h3c".asUInt(32.W)  -> io.datain_addr_low_1,
+        "h3c".asUInt(32.W)  -> io.field.datain_addr_low_1,
         //nvdla_cdma_d_dain_map_0_out
-        "h4c".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.surf_packed, "b0".asUInt(15.W), io.line_packed),
+        "h4c".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.field.surf_packed, "b0".asUInt(15.W), io.field.line_packed),
         //nvdla_cdma_d_dain_ram_type_0_out
-        "h2c".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.datain_ram_type),
+        "h2c".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.datain_ram_type),
         //nvdla_cdma_d_datain_format_0_out
-        "h18".asUInt(32.W)  -> Cat( "b0".asUInt(11.W), io.pixel_sign_override, "b0".asUInt(3.W), io.pixel_mapping, "b0".asUInt(2.W), io.pixel_format, "b0".asUInt(7.W), io.datain_format),
+        "h18".asUInt(32.W)  -> Cat( "b0".asUInt(11.W), io.field.pixel_sign_override, "b0".asUInt(3.W), io.field.pixel_mapping, "b0".asUInt(2.W), io.pixel_format, "b0".asUInt(7.W), io.datain_format),
         //nvdla_cdma_d_datain_size_0_0_out
-        "h1c".asUInt(32.W)  -> Cat( "b0".asUInt(3.W), io.datain_height, "b0".asUInt(3.W), io.datain_width),
+        "h1c".asUInt(32.W)  -> Cat( "b0".asUInt(3.W), io.field.datain_height, "b0".asUInt(3.W), io.field.datain_width),
         //nvdla_cdma_d_datain_size_1_0_out
-        "h20".asUInt(32.W)  -> Cat( "b0".asUInt(19.W), io.datain_channel),
+        "h20".asUInt(32.W)  -> Cat( "b0".asUInt(19.W), io.field.datain_channel),
         //nvdla_cdma_d_datain_size_ext_0_0_out
-        "h24".asUInt(32.W)  -> Cat( "b0".asUInt(3.W), io.datain_height_ext, "b0".asUInt(3.W), io.datain_width_ext),
+        "h24".asUInt(32.W)  -> Cat( "b0".asUInt(3.W), io.field.datain_height_ext, "b0".asUInt(3.W), io.field.datain_width_ext),
         //nvdla_cdma_d_entry_per_slice_0_out
-        "h60".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.entries),
+        "h60".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.field.entries),
         //nvdla_cdma_d_fetch_grain_0_out
-        "h64".asUInt(32.W)  -> Cat("b0".asUInt(20.W), io.grains),
+        "h64".asUInt(32.W)  -> Cat("b0".asUInt(20.W), io.field.grains),
         //nvdla_cdma_d_inf_input_data_num_0_out 
-        "hcc".asUInt(32.W)  -> io.inf_data_num,
+        "hcc".asUInt(32.W)  -> io.field.inf_data_num,
         //nvdla_cdma_d_inf_input_weight_num_0_out
-        "hd0".asUInt(32.W)  -> io.inf_weight_num,
+        "hd0".asUInt(32.W)  -> io.field.inf_weight_num,
         //nvdla_cdma_d_line_stride_0_out
-        "h40".asUInt(32.W)  -> io.line_stride,
+        "h40".asUInt(32.W)  -> io.field.line_stride,
         //nvdla_cdma_d_line_uv_stride_0_out
-        "h44".asUInt(32.W)  -> io.uv_line_stride,
+        "h44".asUInt(32.W)  -> io.field.uv_line_stride,
         //nvdla_cdma_d_mean_format_0_out
-        "h98".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.mean_format),
+        "h98".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.field.mean_format),
         //nvdla_cdma_d_mean_global_0_0_out
-        "h9c".asUInt(32.W)  -> Cat( io.mean_gu, io.mean_ry),
+        "h9c".asUInt(32.W)  -> Cat( io.field.mean_gu, io.field.mean_ry),
         //nvdla_cdma_d_mean_global_1_0_out 
-        "ha0".asUInt(32.W)  -> Cat( io.mean_ax, io.mean_bv),
+        "ha0".asUInt(32.W)  -> Cat( io.field.mean_ax, io.field.mean_bv),
         //nvdla_cdma_d_misc_cfg_0_out
-        "h14".asUInt(32.W)  -> Cat( "b0".asUInt(3.W), io.skip_weight_rls, "b0".asUInt(3.W), io.skip_data_rls, "b0".asUInt(3.W), io.weight_reuse, "b0".asUInt(3.W), io.data_reuse, "b0".asUInt(2.W), io.proc_precision, "b0".asUInt(2.W), io.in_precision, "b0".asUInt(7.W), io.conv_mode),
+        "h14".asUInt(32.W)  -> Cat( "b0".asUInt(3.W), io.field.skip_weight_rls, "b0".asUInt(3.W), io.field.skip_data_rls, "b0".asUInt(3.W), io.field.weight_reuse, "b0".asUInt(3.W), io.field.data_reuse, "b0".asUInt(2.W), io.field.proc_precision, "b0".asUInt(2.W), io.field.in_precision, "b0".asUInt(7.W), io.field.conv_mode),
         //nvdla_cdma_d_nan_flush_to_zero_0_out
-        "hc0".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.nan_to_zero),
+        "hc0".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.field.nan_to_zero),
         //nvdla_cdma_d_nan_input_data_num_0_out
-        "hc4".asUInt(32.W)  -> io.nan_data_num,
+        "hc4".asUInt(32.W)  -> io.field.nan_data_num,
         //nvdla_cdma_d_nan_input_weight_num_0_out
-        "hc8".asUInt(32.W)  -> io.nan_weight_num,
+        "hc8".asUInt(32.W)  -> io.field.nan_weight_num,
         //nvdla_cdma_d_op_enable_0_out
-        "h10".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.op_en),
+        "h10".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.field.op_en),
         //nvdla_cdma_d_perf_dat_read_latency_0_out
-        "he0".asUInt(32.W)  -> io.dat_rd_latency,
+        "he0".asUInt(32.W)  -> io.field.dat_rd_latency,
         //nvdla_cdma_d_perf_dat_read_stall_0_out
-        "hd8".asUInt(32.W)  -> io.dat_rd_stall,
+        "hd8".asUInt(32.W)  -> io.field.dat_rd_stall,
         //nvdla_cdma_d_perf_enable_0_out
-        "hd4".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.dma_en),
+        "hd4".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.field.dma_en),
         //nvdla_cdma_d_perf_wt_read_latency_0_out 
-        "he4".asUInt(32.W)  -> io.wt_rd_latency,
+        "he4".asUInt(32.W)  -> io.field.wt_rd_latency,
         //nvdla_cdma_d_perf_wt_read_stall_0_out
-        "hdc".asUInt(32.W)  -> io.wt_rd_stall,
+        "hdc".asUInt(32.W)  -> io.field.wt_rd_stall,
         //nvdla_cdma_d_pixel_offset_0_out
-        "h28".asUInt(32.W)  -> Cat( "b0".asUInt(13.W), io.pixel_y_offset, "b0".asUInt(11.W), io.pixel_x_offset),
+        "h28".asUInt(32.W)  -> Cat( "b0".asUInt(13.W), io.field.pixel_y_offset, "b0".asUInt(11.W), io.field.pixel_x_offset),
         //nvdla_cdma_d_reserved_x_cfg_0_out
-        "h50".asUInt(32.W)  -> Cat( "b0".asUInt(6.W), io.rsv_per_uv_line, "b0".asUInt(6.W), io.rsv_per_line),
+        "h50".asUInt(32.W)  -> Cat( "b0".asUInt(6.W), io.field.rsv_per_uv_line, "b0".asUInt(6.W), io.field.rsv_per_line),
         //nvdla_cdma_d_reserved_y_cfg_0_out
-        "h54".asUInt(32.W)  -> Cat( "b0".asUInt(11.W), io.rsv_y_index, "b0".asUInt(13.W), io.rsv_height),
+        "h54".asUInt(32.W)  -> Cat( "b0".asUInt(11.W), io.field.rsv_y_index, "b0".asUInt(13.W), io.field.rsv_height),
         //nvdla_cdma_d_surf_stride_0_out
-        "h48".asUInt(32.W)  -> io.surf_stride,
+        "h48".asUInt(32.W)  -> io.field.surf_stride,
         //nvdla_cdma_d_weight_addr_high_0_out
-        "h78".asUInt(32.W)  -> io.weight_addr_high,
+        "h78".asUInt(32.W)  -> io.field.weight_addr_high,
         //nvdla_cdma_d_weight_addr_low_0_out
-        "h7c".asUInt(32.W)  -> io.weight_addr_low,
+        "h7c".asUInt(32.W)  -> io.field.weight_addr_low,
         //nvdla_cdma_d_weight_bytes_0_out
-        "h80".asUInt(32.W)  -> io.weight_bytes,
+        "h80".asUInt(32.W)  -> io.field.weight_bytes,
         //nvdla_cdma_d_weight_format_0_out
-        "h68".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.weight_format),
+        "h68".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.field.weight_format),
         //nvdla_cdma_d_weight_ram_type_0_out
-        "h74".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.weight_ram_type),
+        "h74".asUInt(32.W)  -> Cat( "b0".asUInt(31.W), io.field.weight_ram_type),
         //nvdla_cdma_d_weight_size_0_0_out
-        "h6c".asUInt(32.W)  -> Cat( "b0".asUInt(14.W), io.byte_per_kernel),
+        "h6c".asUInt(32.W)  -> Cat( "b0".asUInt(14.W), io.field.byte_per_kernel),
         //nvdla_cdma_d_weight_size_1_0_out
-        "h70".asUInt(32.W)  -> Cat( "b0".asUInt(19.W), io.weight_kernel),
+        "h70".asUInt(32.W)  -> Cat( "b0".asUInt(19.W), io.field.weight_kernel),
         //nvdla_cdma_d_wgs_addr_high_0_out
-        "h84".asUInt(32.W)  -> io.wgs_addr_high,
+        "h84".asUInt(32.W)  -> io.field.wgs_addr_high,
         //nvdla_cdma_d_wgs_addr_low_0_out
-        "h88".asUInt(32.W)  -> io.wgs_addr_low,
+        "h88".asUInt(32.W)  -> io.field.wgs_addr_low,
         //nvdla_cdma_d_wmb_addr_high_0_out
-        "h8c".asUInt(32.W)  -> io.wmb_addr_high,
+        "h8c".asUInt(32.W)  -> io.field.wmb_addr_high,
         //nvdla_cdma_d_wmb_addr_low_0_out
-        "h90".asUInt(32.W)  -> io.wmb_addr_low,
+        "h90".asUInt(32.W)  -> io.field.wmb_addr_low,
         //nvdla_cdma_d_wmb_bytes_0_out
-        "h94".asUInt(32.W)  -> Cat( "b0".asUInt(4.W), io.wmb_bytes),
+        "h94".asUInt(32.W)  -> Cat( "b0".asUInt(4.W), io.field.wmb_bytes),
         //nvdla_cdma_d_zero_padding_0_out
-        "hb4".asUInt(32.W)  -> Cat( "b0".asUInt(2.W), io.pad_bottom, "b0".asUInt(3.W), io.pad_top, "b0".asUInt(2.W), io.pad_right, "b0".asUInt(3.W), io.pad_left),
+        "hb4".asUInt(32.W)  -> Cat( "b0".asUInt(2.W), io.field.pad_bottom, "b0".asUInt(3.W), io.field.pad_top, "b0".asUInt(2.W), io.field.pad_right, "b0".asUInt(3.W), io.field.pad_left),
         //nvdla_cdma_d_zero_padding_value_0_out
-        "hb8".asUInt(32.W)  -> Cat( "b0".asUInt(16.W), io.pad_value)
+        "hb8".asUInt(32.W)  -> Cat( "b0".asUInt(16.W), io.field.pad_value)
                                                     
    ))
 

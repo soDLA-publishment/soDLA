@@ -10,58 +10,11 @@ class NV_NVDLA_PDP_REG_dual extends Module {
         val nvdla_core_clk = Input(Clock())
 
         // Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))
-        val reg_wr_en = Input(Bool())
+        val reg = new reg_control_if
 
         // Writable register flop/trigger outputs
-        val cya = Output(UInt(32.W))
-        val cube_in_channel = Output(UInt(13.W))
-        val cube_in_height = Output(UInt(13.W))
-        val cube_in_width = Output(UInt(13.W))
-        val cube_out_channel = Output(UInt(13.W))
-        val cube_out_height = Output(UInt(13.W))
-        val cube_out_width = Output(UInt(13.W))
-        val input_data = Output(UInt(2.W))
-        val dst_base_addr_high = Output(UInt(32.W))
-        val dst_base_addr_low = Output(UInt(32.W))
-        val dst_line_stride = Output(UInt(32.W))
-        val dst_ram_type = Output(Bool())
-        val dst_surface_stride = Output(UInt(32.W))
-        val nan_to_zero = Output(Bool())
-        val flying_mode = Output(Bool())
-        val pooling_method = Output(UInt(2.W))
-        val split_num = Output(UInt(8.W))
+        val field = new pdp_reg_dual_flop_outputs
         val op_en_trigger = Output(Bool())
-        val partial_width_in_first = Output(UInt(10.W))
-        val partial_width_in_last = Output(UInt(10.W))
-        val partial_width_in_mid = Output(UInt(10.W))
-        val partial_width_out_first = Output(UInt(10.W))
-        val partial_width_out_last = Output(UInt(10.W))
-        val partial_width_out_mid = Output(UInt(10.W))
-        val dma_en = Output(Bool())
-        val kernel_height = Output(UInt(4.W))
-        val kernel_stride_height = Output(UInt(4.W))
-        val kernel_stride_width = Output(UInt(4.W))
-        val kernel_width = Output(UInt(4.W))
-        val pad_bottom = Output(UInt(3.W))
-        val pad_left = Output(UInt(3.W))
-        val pad_right = Output(UInt(3.W))
-        val pad_top = Output(UInt(3.W))
-        val pad_value_1x = Output(UInt(19.W))
-        val pad_value_2x = Output(UInt(19.W))
-        val pad_value_3x = Output(UInt(19.W))
-        val pad_value_4x = Output(UInt(19.W))
-        val pad_value_5x = Output(UInt(19.W))
-        val pad_value_6x = Output(UInt(19.W))
-        val pad_value_7x = Output(UInt(19.W))
-        val recip_kernel_height = Output(UInt(17.W))
-        val recip_kernel_width = Output(UInt(17.W))
-        val src_base_addr_high = Output(UInt(32.W))
-        val src_base_addr_low = Output(UInt(32.W))
-        val src_line_stride = Output(UInt(32.W))
-        val src_surface_stride = Output(UInt(32.W))
 
         // Read-only register input
         val inf_input_num = Input(UInt(32.W))
@@ -133,12 +86,13 @@ class NV_NVDLA_PDP_REG_dual extends Module {
     val nvdla_pdp_d_src_line_stride_0_wren = (io.reg_offset === "h68".asUInt(32.W)) & io.reg_wr_en
     val nvdla_pdp_d_src_surface_stride_0_wren = (io.reg_offset === "h6c".asUInt(32.W)) & io.reg_wr_en
 
-    val nvdla_pdp_d_nan_flush_to_zero_0_out = Cat("b0".asUInt(31.W), io.nan_to_zero)
-    val nvdla_pdp_d_nan_input_num_0_out = io.nan_input_num
-    val nvdla_pdp_d_nan_output_num_0_out = io.nan_output_num
-    val nvdla_pdp_d_operation_mode_cfg_0_out = Cat("b0".asUInt(16.W), io.split_num, "b0".asUInt(3.W), io.flying_mode, "b0".asUInt(2.W), io.pooling_method)
-    val nvdla_pdp_d_op_enable_0_out =  Cat("b0".asUInt(31.W), io.op_en)
-    val nvdla_pdp_d_partial_width_in_0_out =  Cat("b0".asUInt(2.W), io.partial_width_in_mid, io.partial_width_in_last, io.partial_width_in_first)
+    //Yifeng Du updated on Aug 17, 2019
+    // val nvdla_pdp_d_nan_flush_to_zero_0_out = 
+    // val nvdla_pdp_d_nan_input_num_0_out = 
+    // val nvdla_pdp_d_nan_output_num_0_out = 
+    // val nvdla_pdp_d_operation_mode_cfg_0_out = 
+    // val nvdla_pdp_d_op_enable_0_out =  
+    // val nvdla_pdp_d_partial_width_in_0_out =  
 
     io.op_en_trigger := nvdla_pdp_d_op_enable_0_wren
 
@@ -147,75 +101,81 @@ class NV_NVDLA_PDP_REG_dual extends Module {
     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
     Seq(      
     //nvdla_pdp_d_cya_0_out
-    "h9c".asUInt(32.W)  -> io.cya,
+    "h9c".asUInt(32.W)  -> io.field.cya,
     //nvdla_pdp_d_data_cube_in_channel_0_out
-    "h14".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.cube_in_channel),
+    "h14".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.cube_in_channel),
     //nvdla_pdp_d_data_cube_in_height_0_out
-    "h10".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.cube_in_height),
+    "h10".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.cube_in_height),
     //nvdla_pdp_d_data_cube_in_width_0_out
-    "h0c".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.cube_in_width),
+    "h0c".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.cube_in_width),
     //nvdla_pdp_d_data_cube_out_channel_0_out
-    "h20".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.cube_out_channel),
+    "h20".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.cube_out_channel),
     //nvdla_pdp_d_data_cube_out_height_0_out 
-    "h1c".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.cube_out_height),
+    "h1c".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.cube_out_height),
     //nvdla_pdp_d_data_cube_out_width_0_out
-    "h18".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.cube_out_width),
+    "h18".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.cube_out_width),
     //nvdla_pdp_d_data_format_0_out
-    "h84".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.input_data),
+    "h84".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.field.input_data),
     //nvdla_pdp_d_dst_base_addr_high_0_out
-    "h74".asUInt(32.W)  -> io.dst_base_addr_high,
+    "h74".asUInt(32.W)  -> io.field.dst_base_addr_high,
     //nvdla_pdp_d_dst_base_addr_low_0_out
-    "h70".asUInt(32.W)  -> io.dst_base_addr_low,
+    "h70".asUInt(32.W)  -> io.field.dst_base_addr_low,
     //nvdla_pdp_d_dst_line_stride_0_out
-    "h78".asUInt(32.W)  -> io.dst_line_stride,
+    "h78".asUInt(32.W)  -> io.field.dst_line_stride,
     //nvdla_pdp_d_dst_ram_cfg_0_out 
-    "h80".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.dst_ram_type),
+    "h80".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.dst_ram_type),
     //nvdla_pdp_d_dst_surface_stride_0_out
-    "h7c".asUInt(32.W)  -> io.dst_surface_stride,
+    "h7c".asUInt(32.W)  -> io.field.dst_surface_stride,
     //nvdla_pdp_d_inf_input_num_0_out
-    "h88".asUInt(32.W)  -> io.inf_input_num,
-    "h28".asUInt(32.W)  -> nvdla_pdp_d_nan_flush_to_zero_0_out,
-    "h8c".asUInt(32.W)  -> nvdla_pdp_d_nan_input_num_0_out,
-    "h90".asUInt(32.W)  -> nvdla_pdp_d_nan_output_num_0_out,
-    "h24".asUInt(32.W)  -> nvdla_pdp_d_operation_mode_cfg_0_out,
-    "h08".asUInt(32.W)  -> nvdla_pdp_d_op_enable_0_out,
-    "h2c".asUInt(32.W)  -> nvdla_pdp_d_partial_width_in_0_out,
+    "h88".asUInt(32.W)  -> io.field.inf_input_num,
+    //nvdla_pdp_d_nan_flush_to_zero_0_out
+    "h28".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.nan_to_zero),
+    //nvdla_pdp_d_nan_input_num_0_out
+    "h8c".asUInt(32.W)  -> io.field.nan_input_num,
+    //nvdla_pdp_d_nan_output_num_0_out
+    "h90".asUInt(32.W)  -> io.field.nan_output_num,
+    //nvdla_pdp_d_operation_mode_cfg_0_out
+    "h24".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.split_num, "b0".asUInt(3.W), io.field.flying_mode, "b0".asUInt(2.W), io.field.pooling_method),
+    //nvdla_pdp_d_op_enable_0_out
+    "h08".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.op_en),
+    //nvdla_pdp_d_partial_width_in_0_out
+    "h2c".asUInt(32.W)  -> Cat("b0".asUInt(2.W), io.field.partial_width_in_mid, io.field.partial_width_in_last, io.field.partial_width_in_first),
     //nvdla_pdp_d_partial_width_out_0_out
-    "h30".asUInt(32.W)  -> Cat("b0".asUInt(2.W), io.partial_width_out_mid, io.partial_width_out_last, io.partial_width_out_first),
+    "h30".asUInt(32.W)  -> Cat("b0".asUInt(2.W), io.field.partial_width_out_mid, io.field.partial_width_out_last, io.field.partial_width_out_first),
     //nvdla_pdp_d_perf_enable_0_out
-    "h94".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.dma_en),
+    "h94".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.dma_en),
     //nvdla_pdp_d_perf_write_stall_0_out
-    "h98".asUInt(32.W)  -> io.perf_write_stall,
+    "h98".asUInt(32.W)  -> io.field.perf_write_stall,
     //nvdla_pdp_d_pooling_kernel_cfg_0_out
-    "h34".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.kernel_stride_height, io.kernel_stride_width, "b0".asUInt(4.W), io.kernel_height, "b0".asUInt(4.W), io.kernel_width),
+    "h34".asUInt(32.W)  -> Cat("b0".asUInt(8.W), io.field.kernel_stride_height, io.field.kernel_stride_width, "b0".asUInt(4.W), io.field.kernel_height, "b0".asUInt(4.W), io.field.kernel_width),
     //nvdla_pdp_d_pooling_padding_cfg_0_out
-    "h40".asUInt(32.W)  -> Cat("b0".asUInt(17.W), io.pad_bottom, false.B, io.pad_right, false.B, io.pad_top, false.B, io.pad_left),
+    "h40".asUInt(32.W)  -> Cat("b0".asUInt(17.W), io.field.pad_bottom, false.B, io.field.pad_right, false.B, io.field.pad_top, false.B, io.field.pad_left),
     //nvdla_pdp_d_pooling_padding_value_1_cfg_0_out
-    "h44".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.pad_value_1x),
+    "h44".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.pad_value_1x),
     //nvdla_pdp_d_pooling_padding_value_2_cfg_0_out
-    "h48".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.pad_value_2x),
+    "h48".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.pad_value_2x),
     //nvdla_pdp_d_pooling_padding_value_3_cfg_0_out
-    "h4c".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.pad_value_3x),
+    "h4c".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.pad_value_3x),
     //nvdla_pdp_d_pooling_padding_value_4_cfg_0_out 
-    "h50".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.pad_value_4x),
+    "h50".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.pad_value_4x),
     //nvdla_pdp_d_pooling_padding_value_5_cfg_0_out
-    "h54".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.pad_value_5x),
+    "h54".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.pad_value_5x),
     //nvdla_pdp_d_pooling_padding_value_6_cfg_0_out
-    "h58".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.pad_value_6x),
+    "h58".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.pad_value_6x),
     //nvdla_pdp_d_pooling_padding_value_7_cfg_0_out 
-    "h5c".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.pad_value_7x),
+    "h5c".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.pad_value_7x),
     //nvdla_pdp_d_recip_kernel_height_0_out
-    "h3c".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.recip_kernel_height),
+    "h3c".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.field.recip_kernel_height),
     //nvdla_pdp_d_recip_kernel_width_0_out
-    "h38".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.recip_kernel_width),
+    "h38".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.field.recip_kernel_width),
     //nvdla_pdp_d_src_base_addr_high_0_out
-    "h64".asUInt(32.W)  -> io.src_base_addr_high,
+    "h64".asUInt(32.W)  -> io.field.src_base_addr_high,
     //nvdla_pdp_d_src_base_addr_low_0_out
-    "h60".asUInt(32.W)  -> io.src_base_addr_low ,
+    "h60".asUInt(32.W)  -> io.field.src_base_addr_low ,
     //nvdla_pdp_d_src_line_stride_0_out
-    "h68".asUInt(32.W)  -> io.src_line_stride,
+    "h68".asUInt(32.W)  -> io.field.src_line_stride,
     //nvdla_pdp_d_src_surface_stride_0_out
-    "h6c".asUInt(32.W)  -> io.src_surface_stride
+    "h6c".asUInt(32.W)  -> io.field.src_surface_stride
     ))
 
     // Register flop declaration

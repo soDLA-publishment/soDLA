@@ -10,32 +10,12 @@ class NV_NVDLA_PDP_RDMA_REG_dual extends Module {
         val nvdla_core_clk = Input(Clock())
 
         // Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))
-        val reg_wr_en = Input(Bool())
+        val reg = new reg_control_if
 
         // Writable register flop/trigger outputs
-        val cya = Output(UInt(32.W))
-        val cube_in_channel = Output(UInt(13.W))
-        val cube_in_height = Output(UInt(13.W))
-        val cube_in_width = Output(UInt(13.W))
-        val input_data = Output(UInt(2.W))
-        val flying_mode = Output(Bool())
-        val split_num = Output(UInt(8.W))
+        
+        val field = new pdp_rdma_reg_dual_flop_outputs
         val op_en_trigger = Output(Bool())
-        val partial_width_in_first = Output(UInt(10.W))
-        val partial_width_in_last = Output(UInt(10.W))
-        val partial_width_in_mid = Output(UInt(10.W))
-        val dma_en = Output(Bool())
-        val kernel_stride_width = Output(UInt(4.W))
-        val kernel_width = Output(UInt(4.W))
-        val pad_width = Output(UInt(4.W))
-        val src_base_addr_high = Output(UInt(32.W))
-        val src_base_addr_low = Output(UInt(32.W))
-        val src_line_stride = Output(UInt(32.W))
-        val src_ram_type = Output(Bool())
-        val src_surface_stride = Output(UInt(32.W))
 
         // Read-only register input
         val op_en = Input(Bool())

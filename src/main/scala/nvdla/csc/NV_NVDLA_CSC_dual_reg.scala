@@ -13,7 +13,7 @@ class NV_NVDLA_CSC_dual_reg extends Module{
         val reg = new reg_control_if
 
         //Writable register flop/trigger outputs
-        val field = new csc_reg_flop_outputs
+        val field = new csc_dual_reg_flop_outputs
         val op_en_trigger = Output(Bool())
 
         //Read-only register inputs
@@ -75,55 +75,55 @@ class NV_NVDLA_CSC_dual_reg extends Module{
     io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(  
     //nvdla_csc_d_atomics_0_out    
-    "h44".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.atomics),
+    "h44".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.atomics),
     //nvdla_csc_d_bank_0_out
-    "h5c".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.weight_bank, "b0".asUInt(11.W), io.data_bank),
+    "h5c".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.weight_bank, "b0".asUInt(11.W), io.field.data_bank),
     //nvdla_csc_d_batch_number_0_out
-    "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.batches),
+    "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.field.batches),
     //nvdla_csc_d_conv_stride_ext_0_out
-    "h4c".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.conv_y_stride_ext, "b0".asUInt(13.W), io.conv_x_stride_ext),
+    "h4c".asUInt(32.W)  -> Cat("b0".asUInt(13.W), io.field.conv_y_stride_ext, "b0".asUInt(13.W), io.field.conv_x_stride_ext),
     //nvdla_csc_d_cya_0_out
     "h64".asUInt(32.W)  -> io.cya,
     //nvdla_csc_d_datain_format_0_out
-    "h10".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.datain_format),
+    "h10".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.datain_format),
     //nvdla_csc_d_datain_size_ext_0_0_out
-    "h14".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.datain_height_ext, "b0".asUInt(3.W), io.datain_width_ext),
+    "h14".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.field.datain_height_ext, "b0".asUInt(3.W), io.field.datain_width_ext),
     //nvdla_csc_d_datain_size_ext_1_0_out
-    "h18".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.datain_channel_ext),
+    "h18".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.datain_channel_ext),
     //nvdla_csc_d_dataout_size_0_0_out
-    "h3c".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.dataout_height, "b0".asUInt(3.W), io.dataout_width),
+    "h3c".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.field.dataout_height, "b0".asUInt(3.W), io.field.dataout_width),
     //nvdla_csc_d_dataout_size_1_0_out 
-    "h40".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.dataout_channel),
+    "h40".asUInt(32.W)  -> Cat("b0".asUInt(19.W), io.field.dataout_channel),
     //nvdla_csc_d_dilation_ext_0_out
-    "h50".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.y_dilation_ext, "b0".asUInt(11.W), io.x_dilation_ext),
+    "h50".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.y_dilation_ext, "b0".asUInt(11.W), io.field.x_dilation_ext),
     //nvdla_csc_d_entry_per_slice_0_out
-    "h24".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.entries),
+    "h24".asUInt(32.W)  -> Cat("b0".asUInt(18.W), io.field.entries),
     //nvdla_csc_d_misc_cfg_0_out
-    "h0c".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.skip_weight_rls, "b0".asUInt(3.W), io.skip_data_rls, 
-                                "b0".asUInt(3.W), io.weight_reuse, "b0".asUInt(3.W), io.data_reuse, "b0".asUInt(2.W), 
-                                io.proc_precision, "b0".asUInt(2.W), io.in_precision, "b0".asUInt(7.W), io.conv_mode), 
+    "h0c".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.field.skip_weight_rls, "b0".asUInt(3.W), io.field.skip_data_rls, 
+                                "b0".asUInt(3.W), io.field.weight_reuse, "b0".asUInt(3.W), io.field.data_reuse, "b0".asUInt(2.W), 
+                                io.field.proc_precision, "b0".asUInt(2.W), io.field.in_precision, "b0".asUInt(7.W), io.field.conv_mode), 
     //nvdla_csc_d_op_enable_0_out
-    "h08".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.op_en), 
+    "h08".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.op_en), 
     //nvdla_csc_d_post_y_extension_0_out
-    "h20".asUInt(32.W)  -> Cat( "b0".asUInt(30.W), io.y_extension), 
+    "h20".asUInt(32.W)  -> Cat( "b0".asUInt(30.W), io.field.y_extension), 
     //nvdla_csc_d_pra_cfg_0_out
-    "h60".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.pra_truncate), 
+    "h60".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.field.pra_truncate), 
     //nvdla_csc_d_release_0_out
-    "h48".asUInt(32.W)  -> Cat("b0".asUInt(20.W), io.rls_slices), 
+    "h48".asUInt(32.W)  -> Cat("b0".asUInt(20.W), io.field.rls_slices), 
     //nvdla_csc_d_weight_bytes_0_out 
-    "h34".asUInt(32.W)  -> io.weight_bytes, 
+    "h34".asUInt(32.W)  -> io.field.weight_bytes, 
     //nvdla_csc_d_weight_format_0_out
-    "h28".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.weight_format), 
+    "h28".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.field.weight_format), 
     //nvdla_csc_d_weight_size_ext_0_0_out
-    "h2c".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.weight_height_ext, "b0".asUInt(11.W), io.weight_width_ext), 
+    "h2c".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.weight_height_ext, "b0".asUInt(11.W), io.field.weight_width_ext), 
     //nvdla_csc_d_weight_size_ext_1_0_out
-    "h30".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.weight_kernel, "b0".asUInt(3.W), io.weight_channel_ext), 
+    "h30".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.field.weight_kernel, "b0".asUInt(3.W), io.field.weight_channel_ext), 
     //nvdla_csc_d_wmb_bytes_0_out
-    "h38".asUInt(32.W)  -> Cat("b0".asUInt(4.W), io.wmb_bytes, "b0".asUInt(7.W)), 
+    "h38".asUInt(32.W)  -> Cat("b0".asUInt(4.W), io.field.wmb_bytes, "b0".asUInt(7.W)), 
     //nvdla_csc_d_zero_padding_0_out
-    "h54".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.pad_top, "b0".asUInt(11.W), io.pad_left),
+    "h54".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.pad_top, "b0".asUInt(11.W), io.field.pad_left),
     //nvdla_csc_d_zero_padding_value_0_out
-    "h58".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.pad_value)                                                                                    
+    "h58".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.field.pad_value)                                                                                    
     ))
 
     //Register flop declarations
