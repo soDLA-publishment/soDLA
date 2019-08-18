@@ -104,8 +104,8 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     val in_wt_data = u_rt_in.io.in_wt_data         //|< i )
     val in_wt_sel = u_rt_in.io.in_wt_sel                //|> w
 
-    val out_pvld = ShiftRegister(in_dat_pvld, conf.MAC_PD_LATENCY)
-    val out_pd = ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY, in_dat_pvld)
+    val out_pvld = withClock(io.nvdla_core_clk){ShiftRegister(in_dat_pvld, conf.MAC_PD_LATENCY)}
+    val out_pd = withClock(io.nvdla_core_clk){ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY, in_dat_pvld)}
         
     //==========================================================
     // input shadow and active pipeline
