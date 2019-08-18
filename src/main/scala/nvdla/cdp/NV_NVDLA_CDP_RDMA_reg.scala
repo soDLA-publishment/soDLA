@@ -65,7 +65,7 @@
 
 //     //Instance single register group
 //     val dp2reg_consumer = RegInit(false.B)
-//     val reg_offset= Wire(UInt(12.W))
+//     val reg.offset= Wire(UInt(12.W))
 //     val reg_wr_data = Wire(UInt(32.W))
 //     val s_reg_wr_en = Wire(Bool())
 //     val dp2reg_status_0 = Wire(UInt(2.W))
@@ -73,7 +73,7 @@
 
 //     val u_single_reg = Module(new NV_NVDLA_CDP_RDMA_REG_single)
 
-//     u_single_reg.io.reg_offset := reg_offset
+//     u_single_reg.io.reg.offset := reg.offset
 //     u_single_reg.io.reg_wr_data := reg_wr_data
 //     u_single_reg.io.reg_wr_en := s_reg_wr_en
 //     u_single_reg.io.nvdla_core_clk := io.nvdla_core_clk
@@ -88,7 +88,7 @@
 //     val reg2dp_d0_op_en = RegInit(false.B)
 
 //     val u_dual_reg_d0 = Module(new NV_NVDLA_CDP_RDMA_REG_dual)
-//     u_dual_reg_d0.io.reg_offset := reg_offset
+//     u_dual_reg_d0.io.reg.offset := reg.offset
 //     u_dual_reg_d0.io.reg_wr_data := reg_wr_data
 //     u_dual_reg_d0.io.reg_wr_en := d0_reg_wr_en
 //     u_dual_reg_d0.io.nvdla_core_clk := io.nvdla_core_clk
@@ -112,7 +112,7 @@
 //     val reg2dp_d1_op_en = RegInit(false.B)
 
 //     val u_dual_reg_d1 = Module(new NV_NVDLA_CDP_RDMA_REG_dual)
-//     u_dual_reg_d1.io.reg_offset := reg_offset
+//     u_dual_reg_d1.io.reg.offset := reg.offset
 //     u_dual_reg_d1.io.reg_wr_data := reg_wr_data
 //     u_dual_reg_d1.io.reg_wr_en := d1_reg_wr_en
 //     u_dual_reg_d1.io.nvdla_core_clk := io.nvdla_core_clk
@@ -186,9 +186,9 @@
 //     ////////////////////////////////////////////////////////////////////////
 //     //EACH subunit has 4KB address space 
 //     val reg_wr_en = Wire(Bool())
-//     val select_s = Mux(reg_offset(11,0) < "h0008".asUInt(32.W), true.B, false.B)
-//     val select_d0 = (reg_offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === false.B)
-//     val select_d1 = (reg_offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === true.B)
+//     val select_s = Mux(reg.offset(11,0) < "h0008".asUInt(32.W), true.B, false.B)
+//     val select_d0 = (reg.offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === false.B)
+//     val select_d1 = (reg.offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === true.B)
 
 //     s_reg_wr_en := reg_wr_en & select_s
 //     d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
@@ -223,7 +223,7 @@
 //     io.csb2cdp_rdma_req_prdy := true.B
 
 //     //Address in CSB master is word aligned while address in regfile is byte aligned.
-//     reg_offset := Cat(req_addr, "b0".asUInt(2.W))
+//     reg.offset := Cat(req_addr, "b0".asUInt(2.W))
 //     reg_wr_data := req_wdat
 //     reg_wr_en := req_pvld & req_write
 //     val reg_rd_en = req_pvld & ~req_write

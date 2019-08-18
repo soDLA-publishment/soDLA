@@ -44,24 +44,24 @@ class NV_NVDLA_CACC_dual_reg extends Module{
     withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_cacc_d_batch_number_0_wren = (io.reg_offset === "h1c".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_clip_cfg_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_cya_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_dataout_addr_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_dataout_map_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_dataout_size_0_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_dataout_size_1_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_line_stride_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_misc_cfg_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_op_enable_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_out_saturation_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en  
-    val nvdla_cacc_d_surf_stride_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_batch_number_0_wren = (io.reg.offset === "h1c".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_clip_cfg_0_wren = (io.reg.offset === "h2c".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_cya_0_wren = (io.reg.offset === "h34".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_addr_0_wren = (io.reg.offset === "h18".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_map_0_wren = (io.reg.offset === "h28".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_size_0_0_wren = (io.reg.offset === "h10".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_dataout_size_1_0_wren = (io.reg.offset === "h14".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_line_stride_0_wren = (io.reg.offset === "h20".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_misc_cfg_0_wren = (io.reg.offset === "h0c".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_op_enable_0_wren = (io.reg.offset === "h08".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_out_saturation_0_wren = (io.reg.offset === "h30".asUInt(32.W)) & io.reg_wr_en  
+    val nvdla_cacc_d_surf_stride_0_wren = (io.reg.offset === "h24".asUInt(32.W)) & io.reg_wr_en  
 
     io.op_en_trigger := nvdla_cacc_d_op_enable_0_wren
 
     //Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq( 
     //nvdla_cacc_d_batch_number_0_out     
     "h1c".asUInt(32.W)  -> Cat("b0".asUInt(27.W), io.field.batches),

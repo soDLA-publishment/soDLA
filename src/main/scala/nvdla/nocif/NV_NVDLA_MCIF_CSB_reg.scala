@@ -13,7 +13,7 @@
 
 //         // Register control interface
 //         val reg_rd_data = Output(UInt(32.W))
-//         val reg_offset = Input(UInt(12.W))
+//         val reg.offset = Input(UInt(12.W))
 //         val reg_wr_data = Input(UInt(32.W))
 //         val reg_wr_en = Input(Bool())
 
@@ -69,13 +69,13 @@
 // withClock(io.nvdla_core_clk){
 
 //     // Address decode
-//     val nvdla_mcif_cfg_outstanding_cnt_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en ;   
-//     val nvdla_mcif_cfg_rd_weight_0_0_wren = (io.reg_offset === "h00".asUInt(32.W)) & io.reg_wr_en ;   
-//     val nvdla_mcif_cfg_rd_weight_1_0_wren = (io.reg_offset === "h04".asUInt(32.W)) & io.reg_wr_en ;   
-//     val nvdla_mcif_cfg_rd_weight_2_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en ;   
-//     val nvdla_mcif_cfg_wr_weight_0_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en ;   
-//     val nvdla_mcif_cfg_wr_weight_1_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en ;   
-//     val nvdla_mcif_status_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en ;   
+//     val nvdla_mcif_cfg_outstanding_cnt_0_wren = (io.reg.offset === "h14".asUInt(32.W)) & io.reg_wr_en ;   
+//     val nvdla_mcif_cfg_rd_weight_0_0_wren = (io.reg.offset === "h00".asUInt(32.W)) & io.reg_wr_en ;   
+//     val nvdla_mcif_cfg_rd_weight_1_0_wren = (io.reg.offset === "h04".asUInt(32.W)) & io.reg_wr_en ;   
+//     val nvdla_mcif_cfg_rd_weight_2_0_wren = (io.reg.offset === "h08".asUInt(32.W)) & io.reg_wr_en ;   
+//     val nvdla_mcif_cfg_wr_weight_0_0_wren = (io.reg.offset === "h0c".asUInt(32.W)) & io.reg_wr_en ;   
+//     val nvdla_mcif_cfg_wr_weight_1_0_wren = (io.reg.offset === "h10".asUInt(32.W)) & io.reg_wr_en ;   
+//     val nvdla_mcif_status_0_wren = (io.reg.offset === "h18".asUInt(32.W)) & io.reg_wr_en ;   
 
 //     val nvdla_mcif_cfg_outstanding_cnt_0_out = Cat("b0".asUInt(16.W), io.wr_os_cnt, io.rd_os_cnt)
 //     val nvdla_mcif_cfg_rd_weight_0_0_out = Cat(io.rd_weight_cdp, io.rd_weight_pdp, io.rd_weight_sdp, io.rd_weight_bdma)
@@ -87,7 +87,7 @@
 
 //     // Output mux
 
-//     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+//     io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
 //     Seq(      
 //     "h14".asUInt(32.W)  -> nvdla_mcif_cfg_outstanding_cnt_0_out,
 //     "h00".asUInt(32.W)  -> nvdla_mcif_cfg_rd_weight_0_0_out,

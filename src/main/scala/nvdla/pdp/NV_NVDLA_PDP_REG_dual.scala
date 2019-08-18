@@ -47,44 +47,44 @@ class NV_NVDLA_PDP_REG_dual extends Module {
     withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_pdp_d_cya_0_wren = (io.reg_offset === "h9c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_data_cube_in_channel_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_data_cube_in_height_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_data_cube_in_width_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_data_cube_out_channel_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_data_cube_out_height_0_wren = (io.reg_offset === "h1c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_data_cube_out_width_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_data_format_0_wren = (io.reg_offset === "h84".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_dst_base_addr_high_0_wren = (io.reg_offset === "h74".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_dst_base_addr_low_0_wren = (io.reg_offset === "h70".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_dst_line_stride_0_wren = (io.reg_offset === "h78".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_dst_ram_cfg_0_wren = (io.reg_offset === "h80".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_dst_surface_stride_0_wren = (io.reg_offset === "h7c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_inf_input_num_0_wren = (io.reg_offset === "h88".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_nan_flush_to_zero_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_nan_input_num_0_wren = (io.reg_offset === "h8c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_nan_output_num_0_wren = (io.reg_offset === "h90".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_operation_mode_cfg_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_op_enable_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_partial_width_in_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_partial_width_out_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_perf_enable_0_wren = (io.reg_offset === "h94".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_perf_write_stall_0_wren = (io.reg_offset === "h98".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_kernel_cfg_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_cfg_0_wren = (io.reg_offset === "h40".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_value_1_cfg_0_wren = (io.reg_offset === "h44".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_value_2_cfg_0_wren = (io.reg_offset === "h48".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_value_3_cfg_0_wren = (io.reg_offset === "h4c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_value_4_cfg_0_wren = (io.reg_offset === "h50".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_value_5_cfg_0_wren = (io.reg_offset === "h54".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_value_6_cfg_0_wren = (io.reg_offset === "h58".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_pooling_padding_value_7_cfg_0_wren = (io.reg_offset === "h5c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_recip_kernel_height_0_wren = (io.reg_offset === "h3c".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_recip_kernel_width_0_wren = (io.reg_offset === "h38".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_src_base_addr_high_0_wren = (io.reg_offset === "h64".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_src_base_addr_low_0_wren = (io.reg_offset === "h60".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_src_line_stride_0_wren = (io.reg_offset === "h68".asUInt(32.W)) & io.reg_wr_en
-    val nvdla_pdp_d_src_surface_stride_0_wren = (io.reg_offset === "h6c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_cya_0_wren = (io.reg.offset === "h9c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_data_cube_in_channel_0_wren = (io.reg.offset === "h14".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_data_cube_in_height_0_wren = (io.reg.offset === "h10".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_data_cube_in_width_0_wren = (io.reg.offset === "h0c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_data_cube_out_channel_0_wren = (io.reg.offset === "h20".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_data_cube_out_height_0_wren = (io.reg.offset === "h1c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_data_cube_out_width_0_wren = (io.reg.offset === "h18".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_data_format_0_wren = (io.reg.offset === "h84".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_dst_base_addr_high_0_wren = (io.reg.offset === "h74".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_dst_base_addr_low_0_wren = (io.reg.offset === "h70".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_dst_line_stride_0_wren = (io.reg.offset === "h78".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_dst_ram_cfg_0_wren = (io.reg.offset === "h80".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_dst_surface_stride_0_wren = (io.reg.offset === "h7c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_inf_input_num_0_wren = (io.reg.offset === "h88".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_nan_flush_to_zero_0_wren = (io.reg.offset === "h28".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_nan_input_num_0_wren = (io.reg.offset === "h8c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_nan_output_num_0_wren = (io.reg.offset === "h90".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_operation_mode_cfg_0_wren = (io.reg.offset === "h24".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_op_enable_0_wren = (io.reg.offset === "h08".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_partial_width_in_0_wren = (io.reg.offset === "h2c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_partial_width_out_0_wren = (io.reg.offset === "h30".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_perf_enable_0_wren = (io.reg.offset === "h94".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_perf_write_stall_0_wren = (io.reg.offset === "h98".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_kernel_cfg_0_wren = (io.reg.offset === "h34".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_cfg_0_wren = (io.reg.offset === "h40".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_value_1_cfg_0_wren = (io.reg.offset === "h44".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_value_2_cfg_0_wren = (io.reg.offset === "h48".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_value_3_cfg_0_wren = (io.reg.offset === "h4c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_value_4_cfg_0_wren = (io.reg.offset === "h50".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_value_5_cfg_0_wren = (io.reg.offset === "h54".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_value_6_cfg_0_wren = (io.reg.offset === "h58".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_pooling_padding_value_7_cfg_0_wren = (io.reg.offset === "h5c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_recip_kernel_height_0_wren = (io.reg.offset === "h3c".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_recip_kernel_width_0_wren = (io.reg.offset === "h38".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_src_base_addr_high_0_wren = (io.reg.offset === "h64".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_src_base_addr_low_0_wren = (io.reg.offset === "h60".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_src_line_stride_0_wren = (io.reg.offset === "h68".asUInt(32.W)) & io.reg_wr_en
+    val nvdla_pdp_d_src_surface_stride_0_wren = (io.reg.offset === "h6c".asUInt(32.W)) & io.reg_wr_en
 
     //Yifeng Du updated on Aug 17, 2019
     // val nvdla_pdp_d_nan_flush_to_zero_0_out = 
@@ -98,7 +98,7 @@ class NV_NVDLA_PDP_REG_dual extends Module {
 
     // Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(      
     //nvdla_pdp_d_cya_0_out
     "h9c".asUInt(32.W)  -> io.field.cya,

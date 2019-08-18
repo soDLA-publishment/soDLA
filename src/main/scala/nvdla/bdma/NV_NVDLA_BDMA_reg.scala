@@ -11,7 +11,7 @@ class NV_NVDLA_BDMA_reg extends Module{
 
         //Register control interface
         val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
+        val reg.offset = Input(UInt(12.W))
         val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
         val reg_wr_en = Input(Bool())
 
@@ -71,34 +71,34 @@ class NV_NVDLA_BDMA_reg extends Module{
     withClock(io.nvdla_core_clk){
 
     // Address decode
-    val  nvdla_bdma_cfg_cmd_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_dst_addr_high_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en
-    val  nvdla_bdma_cfg_dst_addr_low_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_dst_line_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_dst_surf_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_launch0_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_launch1_0_wren = (io.reg_offset === "h38".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_line_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_line_repeat_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_op_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_src_addr_high_0_wren = (io.reg_offset === "h04".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_src_addr_low_0_wren = (io.reg_offset === "h00".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_src_line_0_wren = (io.reg_offset === "h1c".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_src_surf_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_status_0_wren = (io.reg_offset === "h3c".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_cfg_surf_repeat_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_status_0_wren = (io.reg_offset === "h40".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_status_grp0_read_stall_0_wren = (io.reg_offset === "h44".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_status_grp0_write_stall_0_wren = (io.reg_offset === "h48".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_status_grp1_read_stall_0_wren = (io.reg_offset === "h4c".asUInt(32.W)) & io.reg_wr_en 
-    val  nvdla_bdma_status_grp1_write_stall_0_wren = (io.reg_offset === "h50".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_cmd_0_wren = (io.reg.offset === "h14".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_dst_addr_high_0_wren = (io.reg.offset === "h0c".asUInt(32.W)) & io.reg_wr_en
+    val  nvdla_bdma_cfg_dst_addr_low_0_wren = (io.reg.offset === "h08".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_dst_line_0_wren = (io.reg.offset === "h20".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_dst_surf_0_wren = (io.reg.offset === "h2c".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_launch0_0_wren = (io.reg.offset === "h34".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_launch1_0_wren = (io.reg.offset === "h38".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_line_0_wren = (io.reg.offset === "h10".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_line_repeat_0_wren = (io.reg.offset === "h18".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_op_0_wren = (io.reg.offset === "h30".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_src_addr_high_0_wren = (io.reg.offset === "h04".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_src_addr_low_0_wren = (io.reg.offset === "h00".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_src_line_0_wren = (io.reg.offset === "h1c".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_src_surf_0_wren = (io.reg.offset === "h28".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_status_0_wren = (io.reg.offset === "h3c".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_cfg_surf_repeat_0_wren = (io.reg.offset === "h24".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_status_0_wren = (io.reg.offset === "h40".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_status_grp0_read_stall_0_wren = (io.reg.offset === "h44".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_status_grp0_write_stall_0_wren = (io.reg.offset === "h48".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_status_grp1_read_stall_0_wren = (io.reg.offset === "h4c".asUInt(32.W)) & io.reg_wr_en 
+    val  nvdla_bdma_status_grp1_write_stall_0_wren = (io.reg.offset === "h50".asUInt(32.W)) & io.reg_wr_en 
 
     io.nvdla_bdma_cfg_launch0_0_grp0_launch_trigger := nvdla_bdma_cfg_launch0_0_wren
     io.nvdla_bdma_cfg_launch1_0_grp1_launch_trigger := nvdla_bdma_cfg_launch1_0_wren
     io.nvdla_bdma_cfg_op_0_en_trigger := nvdla_bdma_cfg_op_0_wren
 
     //Output mux
-    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(  
     //nvdla_bdma_cfg_cmd_0_out    
     "h14".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.nvdla_bdma_cfg_cmd_0_dst_ram_type, io.nvdla_bdma_cfg_cmd_0_src_ram_type),

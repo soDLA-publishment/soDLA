@@ -11,7 +11,7 @@
 
 //         // Register control interface
 //         val reg_rd_data = Output(UInt(32.W))
-//         val reg_offset = Input(UInt(12.W))
+//         val reg.offset = Input(UInt(12.W))
 //         val reg_wr_data = Input(UInt(32.W))
 //         val reg_wr_en = Input(Bool())
 
@@ -57,21 +57,21 @@
 //     withClock(io.nvdla_core_clk){
 
 //     // Address decode
-//     val nvdla_cdp_rdma_d_cya_0_wren = (io.reg_offset === "h40".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_data_cube_channel_0_wren = (io.reg_offset === "h14".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_data_cube_height_0_wren = (io.reg_offset === "h10".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_data_cube_width_0_wren = (io.reg_offset === "h0c".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_data_format_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_operation_mode_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_op_enable_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_perf_enable_0_wren = (io.reg_offset === "h38".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_perf_read_stall_0_wren = (io.reg_offset === "h3c".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_src_base_addr_high_0_wren = (io.reg_offset === "h1c".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_src_base_addr_low_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_src_compression_en_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_src_dma_cfg_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_src_line_stride_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en 
-//     val nvdla_cdp_rdma_d_src_surface_stride_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_cya_0_wren = (io.reg.offset === "h40".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_data_cube_channel_0_wren = (io.reg.offset === "h14".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_data_cube_height_0_wren = (io.reg.offset === "h10".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_data_cube_width_0_wren = (io.reg.offset === "h0c".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_data_format_0_wren = (io.reg.offset === "h34".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_operation_mode_0_wren = (io.reg.offset === "h30".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_op_enable_0_wren = (io.reg.offset === "h08".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_perf_enable_0_wren = (io.reg.offset === "h38".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_perf_read_stall_0_wren = (io.reg.offset === "h3c".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_src_base_addr_high_0_wren = (io.reg.offset === "h1c".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_src_base_addr_low_0_wren = (io.reg.offset === "h18".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_src_compression_en_0_wren = (io.reg.offset === "h2c".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_src_dma_cfg_0_wren = (io.reg.offset === "h28".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_src_line_stride_0_wren = (io.reg.offset === "h20".asUInt(32.W)) & io.reg_wr_en 
+//     val nvdla_cdp_rdma_d_src_surface_stride_0_wren = (io.reg.offset === "h24".asUInt(32.W)) & io.reg_wr_en 
     
 //     val operation_mode = "h0".asUInt(2.W)
 //     val src_compression_en = "h0".asUInt(1.W)
@@ -80,7 +80,7 @@
 
 //     // Output mux
 
-//     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+//     io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
 //     Seq( 
 //     //nvdla_cdp_rdma_d_cya_0_out     
 //     "h40".asUInt(32.W)  -> io.cya,

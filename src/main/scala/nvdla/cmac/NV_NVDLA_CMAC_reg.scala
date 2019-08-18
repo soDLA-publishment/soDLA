@@ -51,14 +51,14 @@ withClock(io.nvdla_core_clk){
     val dp2reg_status_0 = Wire(Bool())
     val dp2reg_status_1 = Wire(Bool())
 
-    val reg_offset = Wire(UInt(12.W))
+    val reg.offset = Wire(UInt(12.W))
     val reg_wr_data = Wire(UInt(32.W))
     val s_reg_wr_en = Wire(Bool())
 
     val u_single_reg = Module(new NV_NVDLA_CMAC_REG_single)
 
     u_single_reg.io.nvdla_core_clk := io.nvdla_core_clk
-    u_single_reg.io.reg.offset := reg_offset
+    u_single_reg.io.reg.offset := reg.offset
     u_single_reg.io.reg.wr_data := reg_wr_data 
     u_single_reg.io.reg.wr_en := s_reg_wr_en
     val s_reg_rd_data = u_single_reg.io.reg.rd_data
@@ -73,7 +73,7 @@ withClock(io.nvdla_core_clk){
 
     val u_dual_reg_d0 = Module(new NV_NVDLA_CMAC_REG_dual)
     u_dual_reg_d0.io.nvdla_core_clk := io.nvdla_core_clk
-    u_dual_reg_d0.io.reg.offset := reg_offset
+    u_dual_reg_d0.io.reg.offset := reg.offset
     u_dual_reg_d0.io.reg.wr_data := reg_wr_data
     u_dual_reg_d0.io.reg.wr_en := d0_reg_wr_en
     val d0_reg_rd_data = u_dual_reg_d0.io.reg.rd_data
@@ -86,7 +86,7 @@ withClock(io.nvdla_core_clk){
 
     val u_dual_reg_d1 = Module(new NV_NVDLA_CMAC_REG_dual)
     u_dual_reg_d1.io.nvdla_core_clk := io.nvdla_core_clk
-    u_dual_reg_d1.io.reg.offset := reg_offset
+    u_dual_reg_d1.io.reg.offset := reg.offset
     u_dual_reg_d1.io.reg.wr_data := reg_wr_data
     u_dual_reg_d1.io.reg.wr_en := d1_reg_wr_en
     val d1_reg_rd_data = u_dual_reg_d1.io.reg.rd_data
@@ -142,9 +142,9 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////////////////////////////
     //EACH subunit has 4KB address space 
     val reg_wr_en = Wire(Bool())
-    val select_s = Mux(reg_offset(11,0) < "h0008".asUInt(32.W), true.B, false.B)
-    val select_d0 = (reg_offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === false.B)
-    val select_d1 = (reg_offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === true.B)
+    val select_s = Mux(reg.offset(11,0) < "h0008".asUInt(32.W), true.B, false.B)
+    val select_d0 = (reg.offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === false.B)
+    val select_d1 = (reg.offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === true.B)
 
     s_reg_wr_en := reg_wr_en & select_s
     d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
@@ -179,7 +179,7 @@ withClock(io.nvdla_core_clk){
     io.csb2cmac_a.req.ready := true.B
 
     //Address in CSB master is word aligned while address in regfile is byte aligned.
-    reg_offset := Cat(req_addr, "b0".asUInt(2.W))
+    reg.offset := Cat(req_addr, "b0".asUInt(2.W))
     reg_wr_data := req_wdat
     reg_wr_en := req_pvld & req_write
     val reg_rd_en = req_pvld & ~req_write

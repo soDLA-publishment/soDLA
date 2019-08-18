@@ -11,7 +11,7 @@ class NV_NVDLA_SDP_REG_single extends Module{
 
         //Register control interface
         val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
+        val reg.offset = Input(UInt(12.W))
         val reg_wr_data = Input(UInt(32.W))//(UNUSED_DEC)
         val reg_wr_en = Input(Bool())
 
@@ -73,27 +73,27 @@ class NV_NVDLA_SDP_REG_single extends Module{
     withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_sdp_s_lut_access_cfg_0_wren = (io.reg_offset === "h08".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_access_data_0_wren = (io.reg_offset ===  "h0c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_cfg_0_wren = (io.reg_offset ===  "h10".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_info_0_wren = (io.reg_offset ===  "h14".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_le_end_0_wren = (io.reg_offset === "h1c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_le_slope_scale_0_wren = (io.reg_offset === "h28".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_le_slope_shift_0_wren = (io.reg_offset === "h2c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_le_start_0_wren = (io.reg_offset === "h18".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_lo_end_0_wren = (io.reg_offset === "h24".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_lo_slope_scale_0_wren = (io.reg_offset === "h30".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_lo_slope_shift_0_wren = (io.reg_offset === "h34".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_lut_lo_start_0_wren = (io.reg_offset === "h20".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_pointer_0_wren = (io.reg_offset === "h04".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
-    val nvdla_sdp_s_status_0_wren = (io.reg_offset === "h00".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_access_cfg_0_wren = (io.reg.offset === "h08".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_access_data_0_wren = (io.reg.offset ===  "h0c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_cfg_0_wren = (io.reg.offset ===  "h10".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_info_0_wren = (io.reg.offset ===  "h14".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_le_end_0_wren = (io.reg.offset === "h1c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_le_slope_scale_0_wren = (io.reg.offset === "h28".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_le_slope_shift_0_wren = (io.reg.offset === "h2c".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_le_start_0_wren = (io.reg.offset === "h18".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_lo_end_0_wren = (io.reg.offset === "h24".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_lo_slope_scale_0_wren = (io.reg.offset === "h30".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_lo_slope_shift_0_wren = (io.reg.offset === "h34".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_lut_lo_start_0_wren = (io.reg.offset === "h20".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_pointer_0_wren = (io.reg.offset === "h04".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
+    val nvdla_sdp_s_status_0_wren = (io.reg.offset === "h00".asUInt(32.W)) & io.reg_wr_en ;  //spyglass disable UnloadedNet-ML //(W528)
 
     io.lut_addr_trigger := nvdla_sdp_s_lut_access_cfg_0_wren
     io.lut_data_trigger := nvdla_sdp_s_lut_access_data_0_wren
 
     //Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(      
     //nvdla_sdp_s_lut_access_cfg_0_out
     "h08".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.lut_access_type, io.lut_table_id, "b0".asUInt(6.W), io.lut_addr),

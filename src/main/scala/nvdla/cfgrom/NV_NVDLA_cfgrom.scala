@@ -45,14 +45,14 @@
 // withClock(io.nvdla_core_clk) { 
     
 // ////////////////////////////////////////////////////////////////////////
-//     val reg_offset = Wire(UInt(24.W))
+//     val reg.offset = Wire(UInt(24.W))
 //     val reg_wr_data = Wire(UInt(32.W))
 //     val reg_wr_en = Wire(Bool())
 
 //     val u_NV_NVDLA_CFGROM_rom = Module(new NV_NVDLA_CFGROM_rom)
 
 //     u_NV_NVDLA_CFGROM_rom.io.nvdla_core_clk := io.nvdla_core_clk
-//     u_NV_NVDLA_CFGROM_rom.io.reg_offset := reg_offset(11, 0)
+//     u_NV_NVDLA_CFGROM_rom.io.reg.offset := reg.offset(11, 0)
 //     u_NV_NVDLA_CFGROM_rom.io.reg_wr_data := reg_wr_data
 //     u_NV_NVDLA_CFGROM_rom.io.reg_wr_en := reg_wr_en
 //     val reg_rd_data = u_NV_NVDLA_CFGROM_rom.io.reg_rd_data 
@@ -87,7 +87,7 @@
 //     val csb_wresp_error = Wire(Bool())
 //     val csb_wresp_rdat = Wire(UInt(32.W))
 
-//     reg_offset := Cat(req_addr, "b0".asUInt(2.W))
+//     reg.offset := Cat(req_addr, "b0".asUInt(2.W))
 //     reg_wr_data := req_wdat
 //     reg_wr_en := req_pvld & req_write
 //     val reg_rd_en = req_pvld & ~req_write

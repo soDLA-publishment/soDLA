@@ -11,7 +11,7 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
 
         // Register control interface
         val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
+        val reg.offset = Input(UInt(12.W))
         val reg_wr_data = Input(UInt(32.W))
         val reg_wr_en = Input(Bool())
 
@@ -95,10 +95,10 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
 withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_glb_s_intr_mask_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_intr_set_0_wren = (io.reg_offset === "h8".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_intr_status_0_wren = (io.reg_offset === "hc".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_nvdla_hw_version_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
+    val nvdla_glb_s_intr_mask_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg_wr_en
+    val nvdla_glb_s_intr_set_0_wren = (io.reg.offset === "h8".asUInt(32.W))&io.reg_wr_en
+    val nvdla_glb_s_intr_status_0_wren = (io.reg.offset === "hc".asUInt(32.W))&io.reg_wr_en
+    val nvdla_glb_s_nvdla_hw_version_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg_wr_en
 
     val major = "h31".asUInt(8.W)
     val minor = "h3030".asUInt(16.W)
@@ -108,7 +108,7 @@ withClock(io.nvdla_core_clk){
               
     //Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(  
     //nvdla_glb_s_intr_mask_0_out    
     "h4".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_mask1, io.cacc_done_mask0, 
@@ -118,7 +118,7 @@ withClock(io.nvdla_core_clk){
                               io.pdp_done_mask1, io.pdp_done_mask0, io.cdp_done_mask1, 
                               io.cdp_done_mask0, io.sdp_done_mask1, io.sdp_done_mask0),
     //nvdla_glb_s_intr_set_0_out
-    "h8".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_set1, io.reg_offset, 
+    "h8".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_set1, io.reg.offset, 
                               io.cdma_wt_done_set1, io.cdma_wt_done_set0, io.cdma_dat_done_set1, 
                               io.cdma_dat_done_set0, "b0".asUInt(6.W), io.rubik_done_set1, 
                               io.rubik_done_set0, io.bdma_done_set1, io.bdma_done_set0, 
