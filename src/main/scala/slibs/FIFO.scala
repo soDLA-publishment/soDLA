@@ -4,8 +4,6 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// //NV_NVDLA_CSC_SG_WT_fifo
-// //NV_NVDLA_CSC_SG_DAT_fifo
 
 // class NV_NVDLA_fifo(depth: Int, width: Int, wr_empty_port: Boolean, 
 //                     wr_idle_port: Boolean, rd_idle_port: Boolean
@@ -138,12 +136,24 @@
 
 //     val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}   // read address this cycle
 //     val ram_we = wr_pushing && (wr_count > 0.U || !rd_popping)      // note: write occurs next cycle
-//     val ram_iwe = !wr_busy_in && io.wr_req
     
-
 //     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
 //     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
+//     if(ram_type == 1){
+//         val ram_iwe = !wr_busy_in && io.wr_req
+//         val ram = Module(new nv_flopram(depth, width))
+//         ram.io.clk := clk_mgated
+//         ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+//         ram.io.wa := wr_adr_p
+//         ram.io.we := ram_we
+//         ram.io.di := wr_data_in
+//         ram.io.ra := Mux(wr_count === 0.U, depth.U, rd_adr)
+//         ram.io.iwe := ram_iwe
+//         rd_pd_p := ram.io.dout
+//     }
+
 //     if(ram_type == 2){
+//         val ram_iwe = !wr_busy_in && io.wr_req
 //         val ram = Module(new nv_flopram_internal_wr_reg(depth, width))
 //         ram.io.clk := io.clk
 //         ram.io.clk_mgated := clk_mgated
@@ -156,7 +166,6 @@
 //         rd_pd_p := ram.io.dout
 //     }
 
-//     }
 //     if(ram_type == 4){
 //         val ram = Module(new nv_ram_rwsp(depth, width))
 //         ram.io.clk := io.clk
@@ -169,6 +178,8 @@
 //         ram.io.ore := ore
 //         rd_pd_p = ram.io.dout
 //     }
+
+
 
 //     val rd_adr_next_popping = rd_adr + 1.U
 //     when(rd_popping){
@@ -187,11 +198,6 @@
 
 //     val rd_req_p = withClock(clk_mgated){RegInit(false.B)} // data out of fifo is valid
 
-
-
-
-
-
 //     rd_popping := io.rd_req && io.rd_ready
 //     val rd_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))}
 //     val rd_count_next_rd_popping = Mux(rd_pushing, rd_count, rd_count-1.U)
@@ -209,7 +215,6 @@
 
 //     val rd_idle = !rd_pvld_int && !rd_pushing && rd_count_p === 0.U
 
-
 //     //
 //     // Write-Side Idle Calculation
 //     //
@@ -218,9 +223,14 @@
 //         io.wr_idle := !wr_pvld_in && rd_idle && !wr_pushing && wr_count === 0.U
 //     }
 
+    
+//     // Master Clock Gating (SLCG) Enables
+//     //
+
 //     clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || 
 //                          (wr_req_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
-//                          (rd_pushing || rd_popping || (io.rd_req && io.rd_ready)) || (wr_pushing))
+//                          (rd_pushing || rd_popping || (io.rd_req && io.rd_ready)) || 
+//                          (wr_pushing))
 
 //     wr_limit_muxed := "d0".asUInt(log2Ceil(depth+1).W)
 
