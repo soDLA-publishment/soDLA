@@ -72,7 +72,7 @@
 
 //     //Output mux
 
-//     io.reg_rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+//     io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
 //     Seq(  
 //     //nvdla_csc_d_atomics_0_out    
 //     "h44".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.atomics),

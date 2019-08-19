@@ -44,22 +44,51 @@
 // // ///// Address decode
 //     val nvdla_pdp_rdma_s_pointer_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
 //     val nvdla_pdp_rdma_s_status_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
+        // Read-only register inputs
+        val consumer = Input(Bool())
+        val status_0 = Input(UInt(2.W))
+        val status_1 = Input(UInt(2.W))       
+    })
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │          
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘ 
+// ///// Address decode
+    val nvdla_pdp_rdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
+    val nvdla_pdp_rdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 
-// // ///// Output mux  
-//     io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
-//     Seq(  
-//     //nvdla_pdp_rdma_s_pointer_0_out    
-//     "h4".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),
-//     //nvdla_pdp_rdma_s_status_0_out
-//     "h0".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
-//     ))
+// ///// Output mux  
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
+    Seq(  
+    //nvdla_pdp_rdma_s_pointer_0_out    
+    "h4".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),
+    //nvdla_pdp_rdma_s_status_0_out
+    "h0".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
+    ))
 
-// // ///// Register flop declarations
-//     val producer_out = RegInit(false.B)
+// ///// Register flop declarations
+    val producer_out = RegInit(false.B)
 
-//     when(nvdla_pdp_rdma_s_pointer_0_wren){
-//         producer_out:= io.reg_wr_data(0)
-//     }
+    when(nvdla_pdp_rdma_s_pointer_0_wren){
+        producer_out:= io.reg.wr_data(0)
+    }
         
 //     io.producer := producer_out
     

@@ -10,10 +10,10 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
         val nvdla_core_clk = Input(Clock())
 
         // Register control interface
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))
-        val reg_wr_en = Input(Bool())
+        val reg.rd_data = Output(UInt(32.W))
+        val reg.offset = Input(UInt(12.W))
+        val reg.wr_data = Input(UInt(32.W))
+        val reg.wr_en = Input(Bool())
 
         // Writable register flop/trigger outputs
         val bdma_done_mask0 = Output(Bool())
@@ -95,10 +95,10 @@ class NV_NVDLA_GLB_CSB_reg extends Module {
 withClock(io.nvdla_core_clk){
 
     // Address decode
-    val nvdla_glb_s_intr_mask_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_intr_set_0_wren = (io.reg_offset === "h8".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_intr_status_0_wren = (io.reg_offset === "hc".asUInt(32.W))&io.reg_wr_en
-    val nvdla_glb_s_nvdla_hw_version_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
+    val nvdla_glb_s_intr_mask_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
+    val nvdla_glb_s_intr_set_0_wren = (io.reg.offset === "h8".asUInt(32.W))&io.reg.wr_en
+    val nvdla_glb_s_intr_status_0_wren = (io.reg.offset === "hc".asUInt(32.W))&io.reg.wr_en
+    val nvdla_glb_s_nvdla_hw_version_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 
     val major = "h31".asUInt(8.W)
     val minor = "h3030".asUInt(16.W)
@@ -108,7 +108,7 @@ withClock(io.nvdla_core_clk){
               
     //Output mux
 
-    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(  
     //nvdla_glb_s_intr_mask_0_out    
     "h4".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_mask1, io.cacc_done_mask0, 
@@ -118,7 +118,7 @@ withClock(io.nvdla_core_clk){
                               io.pdp_done_mask1, io.pdp_done_mask0, io.cdp_done_mask1, 
                               io.cdp_done_mask0, io.sdp_done_mask1, io.sdp_done_mask0),
     //nvdla_glb_s_intr_set_0_out
-    "h8".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_set1, io.reg_offset, 
+    "h8".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_set1, io.reg.offset, 
                               io.cdma_wt_done_set1, io.cdma_wt_done_set0, io.cdma_dat_done_set1, 
                               io.cdma_dat_done_set0, "b0".asUInt(6.W), io.rubik_done_set1, 
                               io.rubik_done_set0, io.bdma_done_set1, io.bdma_done_set0, 
@@ -155,22 +155,22 @@ withClock(io.nvdla_core_clk){
     val sdp_done_mask1_out = RegInit(false.B)
 
     when(nvdla_glb_s_intr_mask_0_wren){
-        bdma_done_mask0_out := io.reg_wr_data(6)
-        bdma_done_mask1_out := io.reg_wr_data(7)
-        cacc_done_mask0_out := io.reg_wr_data(20)
-        cacc_done_mask1_out := io.reg_wr_data(21)
-        cdma_dat_done_mask0_out := io.reg_wr_data(16)
-        cdma_dat_done_mask1_out := io.reg_wr_data(17)
-        cdma_wt_done_mask0_out := io.reg_wr_data(18)
-        cdma_wt_done_mask1_out := io.reg_wr_data(19)
-        cdp_done_mask0_out := io.reg_wr_data(2)
-        cdp_done_mask1_out := io.reg_wr_data(3)
-        pdp_done_mask0_out := io.reg_wr_data(4)
-        pdp_done_mask1_out := io.reg_wr_data(5)
-        rubik_done_mask0_out := io.reg_wr_data(8)
-        rubik_done_mask1_out := io.reg_wr_data(9)
-        sdp_done_mask0_out := io.reg_wr_data(0)
-        sdp_done_mask1_out := io.reg_wr_data(1)       
+        bdma_done_mask0_out := io.reg.wr_data(6)
+        bdma_done_mask1_out := io.reg.wr_data(7)
+        cacc_done_mask0_out := io.reg.wr_data(20)
+        cacc_done_mask1_out := io.reg.wr_data(21)
+        cdma_dat_done_mask0_out := io.reg.wr_data(16)
+        cdma_dat_done_mask1_out := io.reg.wr_data(17)
+        cdma_wt_done_mask0_out := io.reg.wr_data(18)
+        cdma_wt_done_mask1_out := io.reg.wr_data(19)
+        cdp_done_mask0_out := io.reg.wr_data(2)
+        cdp_done_mask1_out := io.reg.wr_data(3)
+        pdp_done_mask0_out := io.reg.wr_data(4)
+        pdp_done_mask1_out := io.reg.wr_data(5)
+        rubik_done_mask0_out := io.reg.wr_data(8)
+        rubik_done_mask1_out := io.reg.wr_data(9)
+        sdp_done_mask0_out := io.reg.wr_data(0)
+        sdp_done_mask1_out := io.reg.wr_data(1)       
     }  
 
     io.bdma_done_mask0 := bdma_done_mask0_out

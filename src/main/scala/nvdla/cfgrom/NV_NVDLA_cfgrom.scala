@@ -45,17 +45,17 @@
 // withClock(io.nvdla_core_clk) { 
     
 // ////////////////////////////////////////////////////////////////////////
-//     val reg_offset = Wire(UInt(24.W))
-//     val reg_wr_data = Wire(UInt(32.W))
-//     val reg_wr_en = Wire(Bool())
+//     val reg.offset = Wire(UInt(24.W))
+//     val reg.wr_data = Wire(UInt(32.W))
+//     val reg.wr_en = Wire(Bool())
 
 //     val u_NV_NVDLA_CFGROM_rom = Module(new NV_NVDLA_CFGROM_rom)
 
 //     u_NV_NVDLA_CFGROM_rom.io.nvdla_core_clk := io.nvdla_core_clk
-//     u_NV_NVDLA_CFGROM_rom.io.reg_offset := reg_offset(11, 0)
-//     u_NV_NVDLA_CFGROM_rom.io.reg_wr_data := reg_wr_data
-//     u_NV_NVDLA_CFGROM_rom.io.reg_wr_en := reg_wr_en
-//     val reg_rd_data = u_NV_NVDLA_CFGROM_rom.io.reg_rd_data 
+//     u_NV_NVDLA_CFGROM_rom.io.reg.offset := reg.offset(11, 0)
+//     u_NV_NVDLA_CFGROM_rom.io.reg.wr_data := reg.wr_data
+//     u_NV_NVDLA_CFGROM_rom.io.reg.wr_en := reg.wr_en
+//     val reg.rd_data = u_NV_NVDLA_CFGROM_rom.io.reg.rd_data 
 
 // ////////////////////////////////////////////////////////////////////////
 // //                                                                    //
@@ -87,15 +87,15 @@
 //     val csb_wresp_error = Wire(Bool())
 //     val csb_wresp_rdat = Wire(UInt(32.W))
 
-//     reg_offset := Cat(req_addr, "b0".asUInt(2.W))
-//     reg_wr_data := req_wdat
-//     reg_wr_en := req_pvld & req_write
+//     reg.offset := Cat(req_addr, "b0".asUInt(2.W))
+//     reg.wr_data := req_wdat
+//     reg.wr_en := req_pvld & req_write
 //     val reg_rd_en = req_pvld & ~req_write
 
 //     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat) /* PKT_nvdla_xx2csb_resp_dla_xx2csb_rd_erpt_ID  */ 
 //     val csb_wresp_pd_w = Cat(true.B, csb_wresp_error, csb_wresp_rdat) /* PKT_nvdla_xx2csb_resp_dla_xx2csb_wr_erpt_ID  */
 
-//     csb_rresp_rdat := reg_rd_data
+//     csb_rresp_rdat := reg.rd_data
 //     csb_rresp_error := false.B
 //     csb_wresp_rdat := Fill(32, false.B) 
 //     csb_wresp_error := false.B
@@ -106,10 +106,10 @@
 //     when(reg_rd_en){
 //         cfgrom2csb_resp_pd_out := csb_rresp_pd_w
 //     }
-//     .elsewhen(reg_wr_en & req_nposted){
+//     .elsewhen(reg.wr_en & req_nposted){
 //         cfgrom2csb_resp_pd_out := csb_wresp_pd_w
 //     }
-//     cfgrom2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
+//     cfgrom2csb_resp_valid_out := (reg.wr_en & req_nposted) | reg_rd_en
 
 //     io.cfgrom2csb_resp_pd := cfgrom2csb_resp_pd_out
 //     io.cfgrom2csb_resp_valid := cfgrom2csb_resp_valid_out

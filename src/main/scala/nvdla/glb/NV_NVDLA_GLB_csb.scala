@@ -136,11 +136,11 @@
 //     // RESPONSE
 //     // ========
 //     // flow=valid 
-//     val reg_rd_data = Wire(UInt(32.W))
+//     val reg.rd_data = Wire(UInt(32.W))
 
 
 //     val rsp_rd_vld  = req_vld & ~req_write;
-//     val rsp_rd_rdat = Fill(32, rsp_rd_vld) & reg_rd_data;
+//     val rsp_rd_rdat = Fill(32, rsp_rd_vld) & reg.rd_data;
 //     val rsp_rd_error  = false.B
 
 //     val rsp_wr_vld  = req_vld & req_write & req_nposted;
@@ -159,18 +159,18 @@
 //                  (Fill(33, rsp_rd_vld)&rsp_rd_pd)|(Fill(33, rsp_wr_vld)&rsp_wr_pd))
 //     io.glb2csb_resp_valid := RegNext(rsp_vld, false.B)
 //     io.glb2csb_resp_pd := RegEnable(rsp_pd, rsp_vld)
-//     val reg_offset = Cat(req_addr(9, 0), "b0".asUInt(2.W))
-//     val reg_wr_en = req_vld & req_write
-//     val reg_wr_data = io.req_wdat
+//     val reg.offset = Cat(req_addr(9, 0), "b0".asUInt(2.W))
+//     val reg.wr_en = req_vld & req_write
+//     val reg.wr_data = io.req_wdat
 
 //     val u_reg = Module(new NV_NVDLA_GLB_CSB_reg)
 
 //     u_reg.io.nvdla_core_clk := io.nvdla_core_clk
 
-//     u_reg.io.reg_offset := reg_offset
-//     u_reg.io.reg_wr_data := reg_wr_data
-//     u_reg.io.reg_wr_en := reg_wr_en
-//     reg_rd_data := u_reg.io.reg_rd_data
+//     u_reg.io.reg.offset := reg.offset
+//     u_reg.io.reg.wr_data := reg.wr_data
+//     u_reg.io.reg.wr_en := reg.wr_en
+//     reg.rd_data := u_reg.io.reg.rd_data
 
 //     //bdma
 //     if(conf.NVDLA_BDMA_ENABLE){

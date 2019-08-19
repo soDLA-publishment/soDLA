@@ -153,9 +153,9 @@
 // withClock(io.nvdla_core_clk){
 
 //     //Instance single register group
-//     val s_reg_offset = Wire(UInt(24.W))
-//     val s_reg_wr_data = Wire(UInt(32.W))
-//     val s_reg_wr_en = Wire(Bool())
+//     val s_reg.offset = Wire(UInt(24.W))
+//     val s_reg.wr_data = Wire(UInt(32.W))
+//     val s_reg.wr_en = Wire(Bool())
 //     val dp2reg_lut_data = Wire(UInt(16.W))
 
 //     val dp2reg_consumer = RegInit(false.B)  
@@ -166,10 +166,10 @@
 //     val u_single_reg = Module(new NV_NVDLA_SDP_REG_single)
 
 //     u_single_reg.io.nvdla_core_clk  := io.nvdla_core_clk
-//     val s_reg_rd_data               = u_single_reg.io.reg_rd_data
-//     u_single_reg.io.reg_offset      := s_reg_offset(11,0)
-//     u_single_reg.io.reg_wr_data     := s_reg_wr_data
-//     u_single_reg.io.reg_wr_en       := s_reg_wr_en
+//     val s_reg.rd_data               = u_single_reg.io.reg.rd_data
+//     u_single_reg.io.reg.offset      := s_reg.offset(11,0)
+//     u_single_reg.io.reg.wr_data     := s_reg.wr_data
+//     u_single_reg.io.reg.wr_en       := s_reg.wr_en
 //     val reg2dp_lut_access_type      = u_single_reg.io.lut_access_type
 //     val reg2dp_lut_addr             = u_single_reg.io.lut_addr
 //     val reg2dp_lut_addr_trigger     = u_single_reg.io.lut_addr_trigger
@@ -202,9 +202,9 @@
 
 //     //Instance two duplicated register groups
 //     //reg d0   
-//     val d0_reg_offset = Wire(UInt(24.W))
-//     val d0_reg_wr_data = Wire(UInt(32.W))
-//     val d0_reg_wr_en = Wire(Bool())
+//     val d0_reg.offset = Wire(UInt(24.W))
+//     val d0_reg.wr_data = Wire(UInt(32.W))
+//     val d0_reg.wr_en = Wire(Bool())
 //     val reg2dp_d0_op_en = RegInit(false.B)
 //     val dp2reg_d0_lut_hybrid = RegInit(0.U(32.W))
 //     val dp2reg_d0_lut_le_hit = RegInit(0.U(32.W))
@@ -220,10 +220,10 @@
 
 //     val u_dual_reg_d0 = Module(new NV_NVDLA_SDP_REG_dual)
 //     u_dual_reg_d0.io.nvdla_core_clk := io.nvdla_core_clk
-//     val d0_reg_rd_data = u_dual_reg_d0.io.reg_rd_data
-//     u_dual_reg_d0.io.reg_offset := d0_reg_offset(11,0)
-//     u_dual_reg_d0.io.reg_wr_data := d0_reg_wr_data
-//     u_dual_reg_d0.io.reg_wr_en := d0_reg_wr_en
+//     val d0_reg.rd_data = u_dual_reg_d0.io.reg.rd_data
+//     u_dual_reg_d0.io.reg.offset := d0_reg.offset(11,0)
+//     u_dual_reg_d0.io.reg.wr_data := d0_reg.wr_data
+//     u_dual_reg_d0.io.reg.wr_en := d0_reg.wr_en
 //     val reg2dp_d0_cvt_offset = u_dual_reg_d0.io.cvt_offset
 //     val reg2dp_d0_cvt_scale = u_dual_reg_d0.io.cvt_scale
 //     val reg2dp_d0_cvt_shift = u_dual_reg_d0.io.cvt_shift
@@ -306,9 +306,9 @@
 
 
 //     //reg d1   
-//     val d1_reg_offset = Wire(UInt(24.W))
-//     val d1_reg_wr_data = Wire(UInt(32.W))
-//     val d1_reg_wr_en = Wire(Bool())
+//     val d1_reg.offset = Wire(UInt(24.W))
+//     val d1_reg.wr_data = Wire(UInt(32.W))
+//     val d1_reg.wr_en = Wire(Bool())
 //     val reg2dp_d1_op_en = RegInit(false.B)
 //     val dp2reg_d1_lut_hybrid = RegInit(0.U(32.W))
 //     val dp2reg_d1_lut_le_hit = RegInit(0.U(32.W))
@@ -324,10 +324,10 @@
 
 //     val u_dual_reg_d1 = Module(new NV_NVDLA_SDP_REG_dual)
 //     u_dual_reg_d1.io.nvdla_core_clk := io.nvdla_core_clk
-//     val d1_reg_rd_data = u_dual_reg_d1.io.reg_rd_data
-//     u_dual_reg_d1.io.reg_offset := d1_reg_offset(11,0)
-//     u_dual_reg_d1.io.reg_wr_data := d1_reg_wr_data
-//     u_dual_reg_d1.io.reg_wr_en := d1_reg_wr_en
+//     val d1_reg.rd_data = u_dual_reg_d1.io.reg.rd_data
+//     u_dual_reg_d1.io.reg.offset := d1_reg.offset(11,0)
+//     u_dual_reg_d1.io.reg.wr_data := d1_reg.wr_data
+//     u_dual_reg_d1.io.reg.wr_en := d1_reg.wr_en
 //     val reg2dp_d1_cvt_offset = u_dual_reg_d1.io.cvt_offset
 //     val reg2dp_d1_cvt_scale = u_dual_reg_d1.io.cvt_scale
 //     val reg2dp_d1_cvt_shift = u_dual_reg_d1.io.cvt_shift
@@ -437,13 +437,13 @@
 //     //                                                                    //
 //     ////////////////////////////////////////////////////////////////////////
 //     val reg2dp_op_en_reg = RegInit(0.U(3.W))
-//     val reg_wr_data = Wire(UInt(32.W))
+//     val reg.wr_data = Wire(UInt(32.W))
 
-//     val reg2dp_d0_op_en_w = Mux(!reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), 
+//     val reg2dp_d0_op_en_w = Mux(!reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg.wr_data(0), 
 //                             Mux(io.dp2reg_done && dp2reg_consumer === false.B, false.B, reg2dp_d0_op_en))
 //     reg2dp_d0_op_en := reg2dp_d0_op_en_w
 
-//     val reg2dp_d1_op_en_w = Mux(!reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), 
+//     val reg2dp_d1_op_en_w = Mux(!reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg.wr_data(0), 
 //                             Mux(io.dp2reg_done && dp2reg_consumer === true.B, false.B, reg2dp_d1_op_en))
 //     reg2dp_d1_op_en := reg2dp_d1_op_en_w
 
@@ -463,27 +463,27 @@
 //     //                                                                    //
 //     ////////////////////////////////////////////////////////////////////////
 //     //EACH subunit has 4KB address space 
-//     val reg_offset = Wire(UInt(24.W))
-//     val select_s = Mux(reg_offset(11,0) < "h038".asUInt(32.W), true.B, false.B)
-//     val select_d0 = (reg_offset(11,0) >= "h038".asUInt(32.W)) & (reg2dp_producer === false.B)
-//     val select_d1 = (reg_offset(11,0) >= "h038".asUInt(32.W)) & (reg2dp_producer === true.B)
+//     val reg.offset = Wire(UInt(24.W))
+//     val select_s = Mux(reg.offset(11,0) < "h038".asUInt(32.W), true.B, false.B)
+//     val select_d0 = (reg.offset(11,0) >= "h038".asUInt(32.W)) & (reg2dp_producer === false.B)
+//     val select_d1 = (reg.offset(11,0) >= "h038".asUInt(32.W)) & (reg2dp_producer === true.B)
 
-//     val reg_wr_en = Wire(Bool())
-//     s_reg_wr_en := reg_wr_en & select_s
-//     d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
-//     d1_reg_wr_en := reg_wr_en & select_d1 & !reg2dp_d1_op_en
+//     val reg.wr_en = Wire(Bool())
+//     s_reg.wr_en := reg.wr_en & select_s
+//     d0_reg.wr_en := reg.wr_en & select_d0 & !reg2dp_d0_op_en
+//     d1_reg.wr_en := reg.wr_en & select_d1 & !reg2dp_d1_op_en
 
-//     s_reg_offset := reg_offset
-//     d0_reg_offset := reg_offset
-//     d1_reg_offset := reg_offset
+//     s_reg.offset := reg.offset
+//     d0_reg.offset := reg.offset
+//     d1_reg.offset := reg.offset
 
-//     s_reg_wr_data  := reg_wr_data;
-//     d0_reg_wr_data := reg_wr_data;
-//     d1_reg_wr_data := reg_wr_data;
+//     s_reg.wr_data  := reg.wr_data;
+//     d0_reg.wr_data := reg.wr_data;
+//     d1_reg.wr_data := reg.wr_data;
 
-//     val reg_rd_data =  (Fill(32, select_s) & s_reg_rd_data) |
-//                         (Fill(32, select_d0) & d0_reg_rd_data) |
-//                         (Fill(32, select_d1) & d1_reg_rd_data)
+//     val reg.rd_data =  (Fill(32, select_s) & s_reg.rd_data) |
+//                         (Fill(32, select_d0) & d0_reg.rd_data) |
+//                         (Fill(32, select_d1) & d1_reg.rd_data)
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //                                                                    //
@@ -510,13 +510,13 @@
 //     io.csb2sdp_req_prdy := true.B
 
 //     //Address in CSB master is word aligned while address in regfile is byte aligned.
-//     reg_offset  := Cat(req_addr, 0.U(2.W))
-//     reg_wr_data := req_wdat
-//     reg_wr_en   := req_pvld & req_write
+//     reg.offset  := Cat(req_addr, 0.U(2.W))
+//     reg.wr_data := req_wdat
+//     reg.wr_en   := req_pvld & req_write
 //     val reg_rd_en = req_pvld & ~req_write
 
 //     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
-//     val csb_rresp_rdat = reg_rd_data
+//     val csb_rresp_rdat = reg.rd_data
 //     val csb_rresp_error = false.B
 //     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat)
 
@@ -531,10 +531,10 @@
 //     when(reg_rd_en){
 //         sdp2csb_resp_pd_out := csb_rresp_pd_w
 //     }
-//     .elsewhen(reg_wr_en & req_nposted){
+//     .elsewhen(reg.wr_en & req_nposted){
 //         sdp2csb_resp_pd_out := csb_wresp_pd_w
 //     }
-//     sdp2csb_resp_valid_out := (reg_wr_en & req_nposted) | reg_rd_en
+//     sdp2csb_resp_valid_out := (reg.wr_en & req_nposted) | reg_rd_en
 
 //     io.sdp2csb_resp_pd := sdp2csb_resp_pd_out
 //     io.sdp2csb_resp_valid := sdp2csb_resp_valid_out
@@ -621,7 +621,7 @@
 //     // USER logic can be put here:
 
 // // ifndef ___ARNVDLA_VH_INC_
-// //assign reg2dp_lut_data = reg_wr_data[::range(15)];
+// //assign reg2dp_lut_data = reg.wr_data[::range(15)];
 //     io.reg2dp_interrupt_ptr := dp2reg_consumer
 
 // //===================================================
@@ -631,7 +631,7 @@
 //     val lut_int_addr_trigger = RegInit(false.B) 
 //     lut_int_addr_trigger := reg2dp_lut_addr_trigger
 
-//     val lut_int_data_rd_trigger = reg_rd_en & (Cat(0.U(20.W), reg_offset(11,0)) === "h00c".asUInt(32.W))
+//     val lut_int_data_rd_trigger = reg_rd_en & (Cat(0.U(20.W), reg.offset(11,0)) === "h00c".asUInt(32.W))
 //     val lut_int_data_wr_trigger = RegInit(false.B)
 //     lut_int_data_wr_trigger := reg2dp_lut_data_trigger
 
@@ -659,7 +659,7 @@
 
 //     val reg2dp_lut_int_data_out = Reg(UInt(16.W))
 //     when(reg2dp_lut_data_trigger){
-//         reg2dp_lut_int_data_out := s_reg_wr_data
+//         reg2dp_lut_int_data_out := s_reg.wr_data
 //     }
 //     io.reg2dp_lut_int_data := reg2dp_lut_int_data_out
 //     dp2reg_lut_data := io.dp2reg_lut_int_data

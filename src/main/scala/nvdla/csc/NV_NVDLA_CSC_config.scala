@@ -180,7 +180,7 @@ class cscConfiguration extends cbufConfiguration{
 
 }
 
-class csc_reg_flop_outputs extends Bundle{
+class csc_dual_reg_flop_outputs extends Bundle{
     val atomics = Output(UInt(21.W))
     val data_bank = Output(UInt(5.W))
     val weight_bank = Output(UInt(5.W))
