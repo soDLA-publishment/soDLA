@@ -43,32 +43,16 @@
 //         val accu2sc_credit_size = Input(UInt(3.W))
 
 //         //csb
-//         val csb2csc_req_pvld = Input(Bool())    /* data valid */
-//         val csb2csc_req_prdy = Output(Bool())   /* data return handshake */
-//         val csb2csc_req_pd = Input(UInt(63.W))
-//         val csc2csb_resp_valid = Output(Bool())
-//         val csc2csb_resp_pd = Output(UInt(34.W))    /* pkt_id_width=1 pkt_widths=33,33  */
+//         val csb2csc = new csb2dp_if
 
-//         //cbuf_dat
-//         val sc2buf_dat_rd_en = Output(Bool())
-//         val sc2buf_dat_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-//         val sc2buf_dat_rd_valid = Input(Bool())
-//         val sc2buf_dat_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
-//         val sc2buf_dat_rd_shift = Output(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
-//         val sc2buf_dat_rd_next1_en = Output(Bool())
-//         val sc2buf_dat_rd_next1_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
+//         //cbuf_dat & wt
+//         val sc2buf_dat = Flipped(new buf2csc_data_rd_if)
+//         val sc2buf_wt = Flipped(new buf2csc_data_wt_if)
 
-//         //cbuf_wt
-//         val sc2buf_wt_rd_en = Output(Bool())
-//         val sc2buf_wt_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-//         val sc2buf_wt_rd_valid = Input(Bool())
-//         val sc2buf_wt_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
-
-//         //mac_dat
+//         //mac_dat & wt
 //         val sc2mac_dat_a = ValidIO(new csc2cmac_data_if)    /* data valid */
 //         val sc2mac_dat_b = ValidIO(new csc2cmac_data_if)    /* data valid */
 
-//         //mac_wt
 //         val sc2mac_wt_a = ValidIO(new csc2cmac_wt_if)    /* data valid */
 //         val sc2mac_wt_b = ValidIO(new csc2cmac_wt_if)    /* data valid */
 

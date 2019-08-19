@@ -1,48 +1,47 @@
-package nvdla
+// package nvdla
 
-import chisel3._
-import chisel3.experimental._
-import chisel3.util._
+// import chisel3._
+// import chisel3.experimental._
+// import chisel3.util._
 
-class NV_NVDLA_PDP_RDMA_REG_dual extends Module {
-    val io = IO(new Bundle {
-        // clk
-        val nvdla_core_clk = Input(Clock())
+// class NV_NVDLA_PDP_RDMA_REG_dual extends Module {
+//     val io = IO(new Bundle {
+//         // clk
+//         val nvdla_core_clk = Input(Clock())
 
-        // Register control interface
-        val reg = new reg_control_if
+//         // Register control interface
+//         val reg = new reg_control_if
 
-        // Writable register flop/trigger outputs
-        
-        val field = new pdp_rdma_reg_dual_flop_outputs
-        val op_en_trigger = Output(Bool())
+//         // Writable register flop/trigger outputs
+//         val field = new pdp_rdma_reg_flop_outputs
+//         val op_en_trigger = Output(Bool())
 
-        // Read-only register input
-        val op_en = Input(Bool())
-        val perf_read_stall = Input(UInt(32.W))
-    })
-//     
-//          ┌─┐       ┌─┐
-//       ┌──┘ ┴───────┘ ┴──┐
-//       │                 │
-//       │       ───       │
-//       │  ─┬┘       └┬─  │
-//       │                 │
-//       │       ─┴─       │
-//       │                 │
-//       └───┐         ┌───┘
-//           │         │
-//           │         │
-//           │         │
-//           │         └──────────────┐
-//           │                        │
-//           │                        ├─┐
-//           │                        ┌─┘    
-//           │                        │
-//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-//             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘ 
-    withClock(io.nvdla_core_clk){
+//         // Read-only register input
+//         val op_en = Input(Bool())
+//         val perf_read_stall = Input(UInt(32.W))
+//     })
+// //     
+// //          ┌─┐       ┌─┐
+// //       ┌──┘ ┴───────┘ ┴──┐
+// //       │                 │
+// //       │       ───       │
+// //       │  ─┬┘       └┬─  │
+// //       │                 │
+// //       │       ─┴─       │
+// //       │                 │
+// //       └───┐         ┌───┘
+// //           │         │
+// //           │         │
+// //           │         │
+// //           │         └──────────────┐
+// //           │                        │
+// //           │                        ├─┐
+// //           │                        ┌─┘    
+// //           │                        │
+// //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+// //             │ ─┤ ─┤       │ ─┤ ─┤         
+// //             └──┴──┘       └──┴──┘ 
+//     withClock(io.nvdla_core_clk){
 
     // Address decode
     val nvdla_pdp_rdma_d_cya_0_wren = (io.reg.offset === "h4c".asUInt(32.W)) & io.reg.wr_en
@@ -64,9 +63,10 @@ class NV_NVDLA_PDP_RDMA_REG_dual extends Module {
     val nvdla_pdp_rdma_d_src_ram_cfg_0_wren = (io.reg.offset === "h2c".asUInt(32.W)) & io.reg.wr_en
     val nvdla_pdp_rdma_d_src_surface_stride_0_wren = (io.reg.offset === "h28".asUInt(32.W)) & io.reg.wr_en
 
-    io.op_en_trigger := nvdla_pdp_rdma_d_op_enable_0_wren
 
-    // Output mux
+//     io.op_en_trigger := nvdla_pdp_rdma_d_op_enable_0_wren
+
+//     // Output mux
 
     io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(      
@@ -108,8 +108,7 @@ class NV_NVDLA_PDP_RDMA_REG_dual extends Module {
     "h28".asUInt(32.W)  -> io.src_surface_stride
     ))
 
-    // Register flop declarations
-
+//     // Register flop declarations
     // Register: NVDLA_PDP_RDMA_D_CYA_0    Field: cya
     io.cya := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_cya_0_wren)
     // Register: NVDLA_PDP_RDMA_D_DATA_CUBE_IN_CHANNEL_0    Field: cube_in_channel
@@ -149,4 +148,5 @@ class NV_NVDLA_PDP_RDMA_REG_dual extends Module {
     // Register: NVDLA_PDP_RDMA_D_SRC_SURFACE_STRIDE_0    Field: src_surface_stride
     io.src_surface_stride := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_pdp_rdma_d_src_surface_stride_0_wren)
 
-}}
+
+// }}

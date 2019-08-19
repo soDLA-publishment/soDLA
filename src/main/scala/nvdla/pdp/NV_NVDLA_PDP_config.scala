@@ -29,6 +29,9 @@ class pdpConfiguration extends sdpConfiguration
 }
 
 class pdp_rdma_reg_dual_flop_outputs extends Bundle{
+=======
+
+class pdp_rdma_reg_flop_outputs extends Bundle{
         val cya = Output(UInt(32.W))
         val cube_in_channel = Output(UInt(13.W))
         val cube_in_height = Output(UInt(13.W))
@@ -96,4 +99,5 @@ class pdp_reg_dual_flop_outputs extends Bundle{
         val src_base_addr_low = Output(UInt(32.W))
         val src_line_stride = Output(UInt(32.W))
         val src_surface_stride = Output(UInt(32.W))
+=======
 }
