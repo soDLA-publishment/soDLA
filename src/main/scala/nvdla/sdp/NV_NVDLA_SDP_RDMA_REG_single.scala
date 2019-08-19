@@ -10,11 +10,7 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         // Register control interface
-//         val reg.rd_data = Output(UInt(32.W))
-//         val reg.offset = Input(UInt(12.W))
-
-//         val reg.wr_data = Input(UInt(32.W))
-//         val reg.wr_en = Input(Bool())
+//         val reg = new reg_control_if
 
 //         // producer, consumer, status
 //         val producer = Output(Bool())
