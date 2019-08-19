@@ -1,20 +1,49 @@
-package nvdla
+// package nvdla
 
-import chisel3._
-import chisel3.experimental._
-import chisel3.util._
+// import chisel3._
+// import chisel3.experimental._
+// import chisel3.util._
 
-class NV_NVDLA_PDP_RDMA_REG_single extends Module {
-    val io = IO(new Bundle {
-        // clk
-        val nvdla_core_clk = Input(Clock())
+// class NV_NVDLA_PDP_RDMA_REG_single extends Module {
+//     val io = IO(new Bundle {
+//         // clk
+//         val nvdla_core_clk = Input(Clock())
 
-        // Register control interface
-        val reg = new reg_control_if
+//         // Register control interface
+//         val reg = new reg_control_if
 
-        // Writable register flop/trigger outputs
-        val producer = Output(Bool())
+//         // Writable register flop/trigger outputs
+//         val producer = Output(Bool())
 
+//         // Read-only register inputs
+//         val consumer = Input(Bool())
+//         val status_0 = Input(UInt(2.W))
+//         val status_1 = Input(UInt(2.W))       
+//     })
+// //     
+// //          ┌─┐       ┌─┐
+// //       ┌──┘ ┴───────┘ ┴──┐
+// //       │                 │
+// //       │       ───       │          
+// //       │  ─┬┘       └┬─  │
+// //       │                 │
+// //       │       ─┴─       │
+// //       │                 │
+// //       └───┐         ┌───┘
+// //           │         │
+// //           │         │
+// //           │         │
+// //           │         └──────────────┐
+// //           │                        │
+// //           │                        ├─┐
+// //           │                        ┌─┘    
+// //           │                        │
+// //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+// //             │ ─┤ ─┤       │ ─┤ ─┤         
+// //             └──┴──┘       └──┴──┘ 
+// // ///// Address decode
+//     val nvdla_pdp_rdma_s_pointer_0_wren = (io.reg_offset === "h4".asUInt(32.W))&io.reg_wr_en
+//     val nvdla_pdp_rdma_s_status_0_wren = (io.reg_offset === "h0".asUInt(32.W))&io.reg_wr_en
         // Read-only register inputs
         val consumer = Input(Bool())
         val status_0 = Input(UInt(2.W))
@@ -61,7 +90,7 @@ class NV_NVDLA_PDP_RDMA_REG_single extends Module {
         producer_out:= io.reg.wr_data(0)
     }
         
-    io.producer := producer_out
+//     io.producer := producer_out
     
-}
+// }
 
