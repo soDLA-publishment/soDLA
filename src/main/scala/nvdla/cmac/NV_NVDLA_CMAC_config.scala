@@ -34,7 +34,7 @@ class cmac_core_actv(implicit val conf: nvdlaConfig) extends Bundle{
     val data = Output(UInt(conf.CMAC_BPE.W))
 }
 
-class cmac_reg_flop_outputs extends Bundle{
+class cmac_reg_dual_flop_outputs extends Bundle{
     val conv_mode = Output(Bool())
     val proc_precision = Output(UInt(2.W))
 }

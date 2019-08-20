@@ -12,21 +12,16 @@ class cdma2buf_wr_if(implicit val conf: nvdlaConfig) extends Bundle{
     val data = Output(Vec(conf.CBUF_WR_PORT_NUMBER, UInt(conf.CBUF_WR_PORT_WIDTH.W)))
 }
 
-
-class buf2csc_data_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
-    val valid = Output(Bool())
-    val data = Output(UInt(conf.CBUF_RD_PORT_WIDTH.W))
-    val en = Input(Bool())
-    val addr = Input(UInt(conf.CBUF_ADDR_WIDTH.W))
-    val shift = Input(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
-    val next1_en = Input(Bool())
-    val next1_addr = Input(UInt(conf.CBUF_ADDR_WIDTH.W))
+class sc2buf_data_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
+    val addr = ValidIO(UInt(conf.CBUF_ADDR_WIDTH.W))
+    val next1_addr = ValidIO(UInt(conf.CBUF_ADDR_WIDTH.W))
+    val shift = Output(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
+    val data = Flipped(ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
 }
 
-class buf2csc_wt_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
-    val data = ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W))
-    val en = Input(Bool())
-    val addr = Input(UInt(conf.CBUF_ADDR_WIDTH.W))
+class sc2buf_wt_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{ 
+    val addr = ValidIO(UInt(conf.CBUF_ADDR_WIDTH.W))
+    val data = Flipped(ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
 }
 
 // flow valid

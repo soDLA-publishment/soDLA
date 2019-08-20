@@ -4,17 +4,12 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// //6/28/2019 redpanda3 update
-// //prevent java heap space
 // class NV_NVDLA_CSC_dlIO(implicit conf: nvdlaConfig) extends Bundle{
-
 //     val nvdla_core_clk = Input(Clock())
 //     val nvdla_core_ng_clk = Input(Clock())
 
-//     val sg2dl_pvld = Input(Bool()) /* data valid */
-//     val sg2dl_pd = Input(UInt(31.W))
+//     val sg2dl = Flipped(new csc_sg2dl_if) /* data valid */
 //     val sc_state = Input(UInt(2.W))
-//     val sg2dl_reuse_rls = Input(Bool())
 
 //     val sc2cdma_dat_pending_req = Input(Bool())
 
@@ -26,15 +21,7 @@
 //     val sc2cdma_dat_entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
 //     val sc2cdma_dat_slices = Output(UInt(14.W))
 
-//     val sc2buf_dat_rd_en = Output(Bool())    /* data valid */
-//     val sc2buf_dat_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-
-//     val sc2buf_dat_rd_valid = Input(Bool())      /* data valid */
-//     val sc2buf_dat_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
-//     val sc2buf_dat_rd_shift = Output(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
-//     val sc2buf_dat_rd_next1_en = Output(Bool())
-//     val sc2buf_dat_rd_next1_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-
+//     val sc2buf_dat_rd = new sc2buf_data_rd_if
 //     val sc2mac_dat_a = ValidIO(new csc2cmac_data_if)              /* data valid */
 //     val sc2mac_dat_b = ValidIO(new csc2cmac_data_if)             /* data valid */
 
@@ -346,25 +333,24 @@
 // //////////////////////////////////////////////////////////////
 // ///// generate data read sequence                        /////
 // //////////////////////////////////////////////////////////////
-// //: my $total_depth = CSC_DL_PIPELINE_ADDITION + CSC_DL_PRA_LATENCY;
-// //: my $wg_depth = CSC_DL_PIPELINE_ADDITION;
+// val total_depth = conf.CSC_DL_PIPELINE_ADDITION + conf.CSC_DL_PRA_LATENCY
 // val dl_in_pvld_d =  Wire(Bool()) +: 
-//                     Seq.fill(conf.CSC_DL_PIPELINE_ADDITION + conf.CSC_DL_PRA_LATENCY)(RegInit(false.B))
+//                     Seq.fill(total_depth)(RegInit(false.B))
 // val dl_in_pd_d = Wire(UInt(31.W)) +: 
-//                  Seq.fill(conf.CSC_DL_PIPELINE_ADDITION + conf.CSC_DL_PRA_LATENCY)(RegInit("b0".asUInt(31.W)))
+//                  Seq.fill(total_depth)(RegInit("b0".asUInt(31.W)))
 
 // dl_in_pvld_d(0) := io.sg2dl_pvld
 // dl_in_pd_d(0) := io.sg2dl_pd
 
-// for(t <- 0 to conf.CSC_DL_PIPELINE_ADDITION + conf.CSC_DL_PRA_LATENCY-1){
+// for(t <- 0 to total_depth-1){
 //     dl_in_pvld_d(t+1) := dl_in_pvld_d(t)
 //     when(dl_in_pvld_d(t)){
 //         dl_in_pd_d(t+1) := dl_in_pd_d(t)
 //     }
 // }
 
-// val dl_in_pvld = dl_in_pvld_d(conf.CSC_DL_PIPELINE_ADDITION + conf.CSC_DL_PRA_LATENCY)
-// val dl_in_pd = dl_in_pvld_d(conf.CSC_DL_PIPELINE_ADDITION + conf.CSC_DL_PRA_LATENCY)
+// val dl_in_pvld = dl_in_pvld_d(total_depth)
+// val dl_in_pd = dl_in_pvld_d(total_depth)
 
 // //: my $pipe_depth = 4;
 // val dl_pvld_d =  Wire(Bool()) +: 
@@ -407,12 +393,11 @@
 // val dat_exec_valid = Wire(Bool())
 // val batch_cnt = RegInit("b0".asUInt(5.W))
 
-// val batch_cnt_w = Mux(layer_st, "b0".asUInt(5.W), 
-//                   Mux(is_batch_end, "b0".asUInt(5.W),
-//                   batch_cnt + 1.U))
-// is_batch_end := batch_cnt === batch_cmp
+// batch_cnt := Mux(layer_st, "b0".asUInt(5.W), 
+//              Mux(is_batch_end, "b0".asUInt(5.W),
+//              batch_cnt + 1.U))
 
-// batch_cnt := batch_cnt_w 
+// is_batch_end := batch_cnt === batch_cmp
 
 // ////////////////////////// sub height up counter //////////////////////////
 // val sub_h_cnt = RegInit("b0".asUInt(2.W))

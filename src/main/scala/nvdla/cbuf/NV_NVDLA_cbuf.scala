@@ -18,8 +18,8 @@ class NV_NVDLA_cbuf(useRealClock:Boolean = true)(implicit val conf: nvdlaConfig)
     val cdma2buf_wr = Flipped(new cdma2buf_wr_if)
 
     //sc2buf
-    val sc2buf_dat_rd = new buf2csc_data_rd_if
-    val sc2buf_wt_rd = new buf2csc_wt_rd_if
+    val sc2buf_dat_rd = Flipped(new sc2buf_data_rd_if)
+    val sc2buf_wt_rd = Flipped(new sc2buf_wt_rd_if)
 
   })
 
@@ -145,19 +145,19 @@ class cbufImpl{
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
             if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.en)&&(io.sc2buf_dat_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)
+                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.addr.valid)&&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)
             }
             if(conf.CBUF_BANK_RAM_CASE==1){
-                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.en)&&(io.sc2buf_dat_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr(0)=== k.U)
-                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.en&io.sc2buf_dat_rd.next1_en)&&(io.sc2buf_dat_rd.next1_addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr(0)=== k.U)
+                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.addr.valid)&&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr.bits(0)=== k.U)
+                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.addr.valid&io.sc2buf_dat_rd.next1_addr.valid)&&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr.bits(0)=== k.U)
             }
             if(conf.CBUF_BANK_RAM_CASE==3){
-                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.en)&&(io.sc2buf_dat_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr(0)=== (k/2).U)
-                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.en&io.sc2buf_dat_rd.next1_en)&&(io.sc2buf_dat_rd.next1_addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr(0)=== (k/2).U)
+                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.addr.valid)&&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr.bits(0)=== (k/2).U)
+                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.addr.valid&io.sc2buf_dat_rd.next1_addr.valid)&&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr.bits(0)=== (k/2).U)
             }   
             if(conf.CBUF_BANK_RAM_CASE==5){
-                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.en)&&(io.sc2buf_dat_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr(0)=== (k/4).U)
-                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.en&io.sc2buf_dat_rd.next1_en)&&(io.sc2buf_dat_rd.next1_addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr(0)=== (k/4).U)
+                bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.addr.valid)&&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr.bits(0)=== (k/4).U)
+                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.addr.valid&io.sc2buf_dat_rd.next1_addr.valid)&&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr.bits(0)=== (k/4).U)
             }
         }       
     }
@@ -171,11 +171,11 @@ class cbufImpl{
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
             if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-                bank_ram_data_rd_addr(j)(k)(0) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(0))&(io.sc2buf_dat_rd.addr(conf.CBUF_RAM_DEPTH_BITS-1, 0))
+                bank_ram_data_rd_addr(j)(k)(0) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(0))&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_RAM_DEPTH_BITS-1, 0))
             }
             if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-                bank_ram_data_rd_addr(j)(k)(0) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(0))&(io.sc2buf_dat_rd.addr(conf.CBUF_RAM_DEPTH_BITS, 1))
-                bank_ram_data_rd_addr(j)(k)(1) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(1))&(io.sc2buf_dat_rd.next1_addr(conf.CBUF_RAM_DEPTH_BITS, 1))
+                bank_ram_data_rd_addr(j)(k)(0) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(0))&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_RAM_DEPTH_BITS, 1))
+                bank_ram_data_rd_addr(j)(k)(1) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(1))&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_RAM_DEPTH_BITS, 1))
             }       
         }
     }
@@ -208,7 +208,7 @@ class cbufImpl{
     }
 
 //get sc data read valid
-    io.sc2buf_dat_rd.valid := ShiftRegister(bank_ram_data_rd_valid.asUInt.orR, 4)
+    io.sc2buf_dat_rd.data.valid := ShiftRegister(bank_ram_data_rd_valid.asUInt.orR, 4)
     
     val bank_ram_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, UInt(conf.CBUF_RAM_WIDTH.W))))
 
@@ -290,7 +290,7 @@ class cbufImpl{
             l4group_data_rd_data := l3group_data_rd_data(0)(0)|l3group_data_rd_data(1)(0)                    
         }
     
-        io.sc2buf_dat_rd.data := l4group_data_rd_data
+        io.sc2buf_dat_rd.data.bits := l4group_data_rd_data
     }
     if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
         val l1group_data_rd_data = RegNext(bank_data_rd_data)//first pipe
@@ -318,7 +318,7 @@ class cbufImpl{
             l4group_data_rd_data(1) := l3group_data_rd_data(0)(1)|l3group_data_rd_data(1)(1)         
         }
 
-        io.sc2buf_dat_rd.data := RegNext((Cat(l4group_data_rd_data(1), l4group_data_rd_data(0)) >> Cat(sc2buf_dat_rd_shift_5T, "b0".asUInt(3.W)))(conf.CBUF_RD_PORT_WIDTH-1, 0))
+        io.sc2buf_dat_rd.data.bits := RegNext((Cat(l4group_data_rd_data(1), l4group_data_rd_data(0)) >> Cat(sc2buf_dat_rd_shift_5T, "b0".asUInt(3.W)))(conf.CBUF_RD_PORT_WIDTH-1, 0))
     }
 
     /////////////////////step3: read weight handle
@@ -329,16 +329,16 @@ class cbufImpl{
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
             if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.en)&&(io.sc2buf_wt_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)
+                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.addr.valid)&&(io.sc2buf_wt_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)
             }
             if(conf.CBUF_BANK_RAM_CASE==1){
-                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.en)&&(io.sc2buf_wt_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_wt_rd.addr(0)=== k.U)
+                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.addr.valid)&&(io.sc2buf_wt_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_wt_rd.addr.bits(0)=== k.U)
             }
             if(conf.CBUF_BANK_RAM_CASE==3){
-                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.en)&&(io.sc2buf_wt_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_wt_rd.addr(0)=== (k/2).U)
+                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.addr.valid)&&(io.sc2buf_wt_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_wt_rd.addr.bits(0)=== (k/2).U)
             }   
             if(conf.CBUF_BANK_RAM_CASE==5){
-                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.en)&&(io.sc2buf_wt_rd.addr(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_wt_rd.addr(0)=== (k/4).U)
+                bank_ram_wt_rd_en(j)(k) := (io.sc2buf_wt_rd.addr.valid)&&(io.sc2buf_wt_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_wt_rd.addr.bits(0)=== (k/4).U)
             }
         }       
     } 
@@ -349,10 +349,10 @@ class cbufImpl{
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
             if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-                bank_ram_wt_rd_addr(j)(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(j)(k))&(io.sc2buf_wt_rd.addr(conf.CBUF_RAM_DEPTH_BITS-1, 0))
+                bank_ram_wt_rd_addr(j)(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(j)(k))&(io.sc2buf_wt_rd.addr.bits(conf.CBUF_RAM_DEPTH_BITS-1, 0))
             }
             if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-                bank_ram_wt_rd_addr(j)(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(j)(k))&(io.sc2buf_wt_rd.addr(conf.CBUF_RAM_DEPTH_BITS, 1))
+                bank_ram_wt_rd_addr(j)(k) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(j)(k))&(io.sc2buf_wt_rd.addr.bits(conf.CBUF_RAM_DEPTH_BITS, 1))
             }
         }       
     }

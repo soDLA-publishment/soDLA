@@ -180,7 +180,13 @@ class cscConfiguration extends cbufConfiguration{
 
 }
 
+class csc_sg2dl_if extends Bundle{
+    val pd = Valid(UInt(32.W)) 
+    val reuse_rls = Output(Bool())
+}
+
 class csc_dual_reg_flop_outputs extends Bundle{
+
     val atomics = Output(UInt(21.W))
     val data_bank = Output(UInt(5.W))
     val weight_bank = Output(UInt(5.W))
@@ -218,6 +224,7 @@ class csc_dual_reg_flop_outputs extends Bundle{
     val pad_left = Output(UInt(5.W))
     val pad_top = Output(UInt(5.W))
     val pad_value = Output(UInt(16.W))
+
 }
 
 

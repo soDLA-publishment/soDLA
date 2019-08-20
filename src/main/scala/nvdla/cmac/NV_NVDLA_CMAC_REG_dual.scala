@@ -13,7 +13,7 @@ class NV_NVDLA_CMAC_REG_dual extends Module {
         val reg = new reg_control_if
 
         // Writable register flop/trigger outputs
-        val field = new cmac_reg_flop_outputs
+        val field = new cmac_reg_dual_flop_outputs
         val op_en_trigger = Output(Bool())
 
         // Read-only register input
