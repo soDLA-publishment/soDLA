@@ -40,6 +40,6 @@ class NV_NVDLA_MCIF_WRITE_IG_arb (implicit conf:nocifConfiguration) extends Modu
         val reg2dp_wr_weight_sdp = Input(UInt(8.W))
         })
 
-        withClock(io.nvdla_core_clk){
-        }
+    withClock(io.nvdla_core_clk){
+    }
 }
