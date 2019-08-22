@@ -38,6 +38,7 @@
 //         val cdma2sc_dat_updt = Input(Bool())    
 //         val cdma2sc_dat_slices = Input(UInt(14.W))
 //         val cdma2sc_dat_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+
 //         val sc2cdma_dat_pending_req = Output(Bool())   //send sg pending to cdma
 //         val cdma2sc_dat_pending_ack = Input(Bool())   //cdma ask sg to clr pending
 
@@ -46,19 +47,17 @@
 //         val cdma2sc_wt_kernels = Input(UInt(14.W))
 //         val cdma2sc_wt_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
 //         val cdma2sc_wmb_entries = Input(UInt(9.W))
+
 //         val sc2cdma_wt_pending_req = Output(Bool())   //send wt pending to cdma
 //         val cdma2sc_wt_pending_ack = Input(Bool())  //cdma ask sg to clr pending
 
 //         val sc_state = Output(UInt(2.W))
 
 //         //to dl
-//         val sg2dl_pvld = Output(Bool())
-//         val sg2dl_pd = Output(UInt(31.W))
-//         val sg2dl_reuse_rls = Output(Bool())
+//         val sg2dl = new csc_sg2dl_if
+
 //         //to wl
-//         val sg2wl_pvld = Output(Bool())
-//         val sg2wl_pd = Output(UInt(18.W))
-//         val sg2wl_reuse_rls = Output(Bool())
+//         val sg2wl = new csc_sg2wl_if
 
 //         //cacc to sc
 //         val accu2sc_credit_vld = Input(Bool())

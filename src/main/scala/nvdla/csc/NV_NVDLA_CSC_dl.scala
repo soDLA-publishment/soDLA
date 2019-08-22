@@ -8,20 +8,15 @@
 //     val nvdla_core_clk = Input(Clock())
 //     val nvdla_core_ng_clk = Input(Clock())
 
-//     val sg2dl = Flipped(new csc_sg2dl_if) /* data valid */
 //     val sc_state = Input(UInt(2.W))
-
+//     val sg2dl = Flipped(new csc_sg2dl_if) /* data valid */
 //     val sc2cdma_dat_pending_req = Input(Bool())
 
-//     val cdma2sc_dat_updt = Input(Bool())    /* data valid */
-//     val cdma2sc_dat_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-//     val cdma2sc_dat_slices = Input(UInt(14.W))
-
-//     val sc2cdma_dat_updt = Output(Bool())    /* data valid */
-//     val sc2cdma_dat_entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-//     val sc2cdma_dat_slices = Output(UInt(14.W))
+//     val cdma2sc_dat_updt = Flipped(ValidIO(new updt_entry_slices_if))
+//     val sc2cdma_dat_updt = ValidIO(new updt_entry_slices_if)
 
 //     val sc2buf_dat_rd = new sc2buf_data_rd_if
+
 //     val sc2mac_dat_a = ValidIO(new csc2cmac_data_if)              /* data valid */
 //     val sc2mac_dat_b = ValidIO(new csc2cmac_data_if)             /* data valid */
 
@@ -55,29 +50,25 @@
 
 // class NV_NVDLA_CSC_dl(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new NV_NVDLA_CSC_dlIO)
-//     //     
-//     //          ┌─┐       ┌─┐
-//     //       ┌──┘ ┴───────┘ ┴──┐
-//     //       │                 │
-//     //       │       ───       │          
-//     //       │  ─┬┘       └┬─  │
-//     //       │                 │
-//     //       │       ─┴─       │
-//     //       │                 │
-//     //       └───┐         ┌───┘
-//     //           │         │
-//     //           │         │
-//     //           │         │
-//     //           │         └──────────────┐
-//     //           │                        │
-//     //           │                        ├─┐
-//     //           │                        ┌─┘    
-//     //           │                        │
-//     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-//     //             │ ─┤ ─┤       │ ─┤ ─┤         
-//     //             └──┴──┘       └──┴──┘  
+// /////////////////////////////////////////////////////////////////////////////////////////////
+// // Pipeline of Weight loader, for both compressed weight and uncompressed weight
+// //
+// //                      input_package
+// //                           |                     
+// //                      data request               
+// //                           |                     
+// //                      conv_buffer                
+// //                           |                     
+// //                      feature data---> data relase
+// //                        |     |                  
+// //                      REG    PRA                 
+// //                        |     |                  
+// //                        REGISTER                 
+// //                           |                     
+// //                          MAC                    
+// //
+// /////////////////////////////////////////////////////////////////////////////////////////////
 // withClock(io.nvdla_core_clk){
-
 // //////////////////////////////////////////////////////////////
 // ///// status from sequence generator                     /////
 // //////////////////////////////////////////////////////////////
@@ -92,14 +83,11 @@
 // //////////////////////////////////////////////////////////////
 // val layer_st = io.reg2dp_op_en & is_sg_idle
 // val is_pixel = io.reg2dp_datain_format === 1.U
-// val is_winograd = false.B
 // val is_conv = io.reg2dp_conv_mode === 0.U
 // val is_img = is_conv & is_pixel
 // val data_bank_w = io.reg2dp_data_bank + 1.U
-// val data_batch_w = 1.U
-// val batch_cmp_w = 0.U 
-// val is_int8 = (io.reg2dp_proc_precision === 0.U)
-// val is_fp16 = (io.reg2dp_proc_precision === 2.U)
+// val data_batch_w = 1.U(6.W)
+// val batch_cmp_w = 0.U(5.W) 
 // val datain_width_w = io.reg2dp_datain_width_ext +& 1.U
 // val datain_width_cmp_w = io.reg2dp_datain_width_ext
 // val datain_height_cmp_w = io.reg2dp_datain_height_ext
@@ -132,7 +120,6 @@
 // val x_dilate_w = Mux(is_img, 1.U, io.reg2dp_x_dilation_ext +& 1.U) 
 // val y_dilate_w = Mux(is_img, 1.U, io.reg2dp_y_dilation_ext +& 1.U) 
 
-// //reg2dp_entries means entry per slice
 // val layer_st_d1 = RegInit(false.B)
 // val data_batch = RegInit(Fill(6, false.B))
 // val rls_slices = RegInit(Fill(14, false.B))
@@ -146,6 +133,7 @@
 // val h_bias_1_stride = RegInit(Fill(12, false.B))
 // val slice_left = RegInit(Fill(14, false.B))
 
+// //reg2dp_entries means entry per slice
 // val entries_single_w = (io.reg2dp_entries +& 1.U)(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
 // val entries_batch_w = (entries_single_w * data_batch_w)(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
 // val entries_w = entries_single_w(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
@@ -198,7 +186,6 @@
 
 // val last_slices = RegInit(Fill(14, false.B)) 
 // val last_entries = RegInit(Fill(conf.CBUF_ADDR_WIDTH, false.B))
-
 // val pra_precision = RegInit(Fill(8, false.B))
 
 // layer_st_d1 := layer_st
@@ -263,7 +250,7 @@
 // ////////////////////////////////////////////////////////////////////////
 // //  SLCG control signal                                               //
 // ////////////////////////////////////////////////////////////////////////
-// io.slcg_wg_en := ShiftRegister(io.reg2dp_op_en & is_winograd, 3, false.B)
+// io.slcg_wg_en := false.B
 
 // /////////////////////////////////////////////////////////////
 // ///// cbuf status management                             /////
@@ -304,10 +291,10 @@
 // val dat_entry_end_w = Mux(cbuf_reset, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), Mux(is_dat_entry_end_wrap,  dat_entry_end_inc_wrap, dat_entry_end_inc))
 
 // //////////////////////////////////// registers and assertions ////////////////////////////////////
-// when(io.cdma2sc_dat_updt|dat_rls|cbuf_reset){ dat_slice_avl := dat_slice_avl_w }
-// when(io.cdma2sc_dat_updt|dat_rls|cbuf_reset){ dat_entry_avl := dat_entry_avl_w }
+// when(io.cdma2sc_dat_updt.valid|dat_rls|cbuf_reset){ dat_slice_avl := dat_slice_avl_w }
+// when(io.cdma2sc_dat_updt.valid|dat_rls|cbuf_reset){ dat_entry_avl := dat_entry_avl_w }
 // when(dat_rls|cbuf_reset){ dat_entry_st := dat_entry_st_w }
-// when(io.cdma2sc_dat_updt|cbuf_reset){ dat_entry_end := dat_entry_end_w }
+// when(io.cdma2sc_dat_updt.valid|cbuf_reset){ dat_entry_end := dat_entry_end_w }
 // //================  Non-SLCG clock domain end ================//
 
 // //////////////////////////////////////////////////////////////
@@ -316,15 +303,15 @@
 // val dat_rsp_pvld = Wire(Bool())
 // val dat_rsp_rls = Wire(Bool())
 // val sub_rls = (dat_rsp_pvld & dat_rsp_rls)
-// val reuse_rls = io.sg2dl_reuse_rls
+// val reuse_rls = io.sg2dl.reuse_rls
 
 // dat_rls := (reuse_rls & last_slices.orR) | (sub_rls & rls_slices.orR)
 // sc2cdma_dat_slices_w := Mux(sub_rls, rls_slices, last_slices)
 // sc2cdma_dat_entries_w := Mux(sub_rls, rls_entries, last_entries)
 
-// io.sc2cdma_dat_updt := RegNext(dat_rls, false.B)
-// io.sc2cdma_dat_slices := RegEnable(sc2cdma_dat_slices_w, "b0".asUInt(14.W), dat_rls)
-// io.sc2cdma_dat_entries := RegEnable(sc2cdma_dat_entries_w, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), dat_rls)
+// io.sc2cdma_dat_updt.valid := RegNext(dat_rls, false.B)
+// io.sc2cdma_dat_updt.bits.slices := RegEnable(sc2cdma_dat_slices_w, "b0".asUInt(14.W), dat_rls)
+// io.sc2cdma_dat_updt.bits.entries := RegEnable(sc2cdma_dat_entries_w, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), dat_rls)
 
 // //////////////////////////////////////////////////////////////
 // ///// input sg2dl package                                 /////
@@ -339,8 +326,8 @@
 // val dl_in_pd_d = Wire(UInt(31.W)) +: 
 //                  Seq.fill(total_depth)(RegInit("b0".asUInt(31.W)))
 
-// dl_in_pvld_d(0) := io.sg2dl_pvld
-// dl_in_pd_d(0) := io.sg2dl_pd
+// dl_in_pvld_d(0) := io.sg2dl.pd.valid
+// dl_in_pd_d(0) := io.sg2dl.pd.bits
 
 // for(t <- 0 to total_depth-1){
 //     dl_in_pvld_d(t+1) := dl_in_pvld_d(t)
@@ -742,9 +729,6 @@
 // val dat_req_sub_h_3_addr_en = layer_st | ((dat_req_valid_d1 | dat_req_dummy_d1) & (dat_req_sub_h_d1 === "h3".asUInt(2.W)))
 
 // //CBUF_NO_SUPPORT_READ_JUMPING
-// io.sc2buf_dat_rd_next1_en := false.B
-// val sc2buf_dat_rd_next1_en_w = false.B
-// io.sc2buf_dat_rd_shift := Fill(conf.CBUF_RD_DATA_SHIFT_WIDTH, false.B)
 
 // val sc2buf_dat_rd_addr_w = Mux(sc2buf_dat_rd_next1_en_w, dat_req_addr_minus1_real, dat_req_addr_w)
 // val sc2buf_dat_rd_next1_addr_w = Mux(sc2buf_dat_rd_next1_en_w, dat_req_addr_w, Fill(conf.CBUF_ADDR_WIDTH, false.B))
@@ -1226,42 +1210,20 @@
 // //////////////////////////////////////////////////////////////
 // ///// registers for retiming                             /////
 // //////////////////////////////////////////////////////////////
-// val dl_out_pvld_d1 = RegInit(false.B)
-// val sc2mac_dat_a_pvld_out = RegInit(false.B)
-// val sc2mac_dat_b_pvld_out = RegInit(false.B)
-// val sc2mac_dat_a_pd_out = RegInit("b0".asUInt(9.W))
-// val sc2mac_dat_b_pd_out = RegInit("b0".asUInt(9.W))
-// val sc2mac_dat_a_mask_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
-// val sc2mac_dat_b_mask_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
-// val sc2mac_dat_a_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-// val sc2mac_dat_b_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-
+// val dl_out_pvld_d1 = RegNext(dl_out_pvld, false.B)
 // val sc2mac_dat_pd_w = Mux(~dl_out_pvld, "b0".asUInt(9.W), dl_out_flag)
 
-// dl_out_pvld_d1 := dl_out_pvld
-// sc2mac_dat_a_pvld_out := dl_out_pvld
-// sc2mac_dat_b_pvld_out := dl_out_pvld
-// when(dl_out_pvld | dl_out_pvld_d1){
-//     sc2mac_dat_a_pd_out := sc2mac_dat_pd_w
-//     sc2mac_dat_b_pd_out := sc2mac_dat_pd_w
-//     sc2mac_dat_a_mask_out := dl_out_mask
-//     sc2mac_dat_b_mask_out := dl_out_mask
-// }
+// io.sc2mac_dat_a.valid := RegNext(dl_out_pvld, false.B)
+// io.sc2mac_dat_b.valid := RegNext(dl_out_pvld, false.B)
+// io.sc2mac_dat_a.bits.pd := RegEnable(sc2mac_dat_pd_w, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
+// io.sc2mac_dat_b.bits.pd := RegEnable(sc2mac_dat_pd_w, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
+// io.sc2mac_dat_a.bits.mask := RegEnable(dl_out_mask, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
+// io.sc2mac_dat_b.bits.mask := RegEnable(dl_out_mask, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
 // for(i <- 0 to conf.CSC_ATOMC-1){
-//     when(dl_out_mask(i)){
-//         sc2mac_dat_a_data_out(i) := dl_out_data(i)
-//         sc2mac_dat_b_data_out(i) := dl_out_data(i)
-//     }
-// }
+//     io.sc2mac_dat_a.bits.data(i) := RegEnable(dl_out_data(i), dl_out_mask(i))
+//     io.sc2mac_dat_b.bits.data(i) := RegEnable(dl_out_data(i), dl_out_mask(i))
 
-// io.sc2mac_dat_a.valid := sc2mac_dat_a_pvld_out
-// io.sc2mac_dat_b.valid := sc2mac_dat_a_pvld_out
-// io.sc2mac_dat_a.bits.pd := sc2mac_dat_a_pd_out
-// io.sc2mac_dat_b.bits.pd := sc2mac_dat_a_pd_out
-// io.sc2mac_dat_a.bits.mask := sc2mac_dat_a_mask_out
-// io.sc2mac_dat_b.bits.mask := sc2mac_dat_b_mask_out
-// io.sc2mac_dat_a.bits.data := sc2mac_dat_a_data_out
-// io.sc2mac_dat_b.bits.data := sc2mac_dat_b_data_out
+// }
 
 // }}
 

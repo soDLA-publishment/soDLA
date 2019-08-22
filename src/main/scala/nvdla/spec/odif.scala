@@ -14,8 +14,6 @@ class cdma2buf_wr_if(implicit val conf: nvdlaConfig) extends Bundle{
 
 class sc2buf_data_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
     val addr = ValidIO(UInt(conf.CBUF_ADDR_WIDTH.W))
-    val next1_addr = ValidIO(UInt(conf.CBUF_ADDR_WIDTH.W))
-    val shift = Output(UInt(conf.CBUF_RD_DATA_SHIFT_WIDTH.W))
     val data = Flipped(ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
 }
 
@@ -123,6 +121,12 @@ class cdma2sc_if(implicit val conf: nvdlaConfig) extends Bundle{
     val size = Output(UInt(conf.NVDLA_DMA_WR_SIZE.W))
     val data = Output(UInt(conf.NVDLA_MEMIF_WIDTH.W))
     val mask = Output(UInt(conf.NVDLA_DMA_MASK_BIT.W))
+}
+
+
+class updt_entry_slices_if extends Bundle{
+    val entries = Output(Bool())
+    val slices = Output(Bool())
 }
 
 

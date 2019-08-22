@@ -75,7 +75,7 @@ class cbufImpl{
     val bank_ram_wr_en_d1 = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(false.B)))))      
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){          
-            bank_ram_wr_en_d1(j)(k) := bank_ram_wr_en_d0(j)(k).reduce(_|_)//OR-reduce from vector to bool                    
+            bank_ram_wr_en_d1(j)(k) := bank_ram_wr_en_d0(j)(k).reduce(_|_)                 
         }
     }
     
@@ -136,11 +136,7 @@ class cbufImpl{
 
 //////////////////////step2: read data handle
 //decode read data address to sram.
-    val bank_ram_data_rd_en =  if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4))
-                               Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(1, Bool())))) 
-                               else 
-                               Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(2, Bool()))))
-
+    val bank_ram_data_rd_en = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(1, Bool()))))                    
 
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
@@ -149,24 +145,18 @@ class cbufImpl{
             }
             if(conf.CBUF_BANK_RAM_CASE==1){
                 bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.addr.valid)&&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr.bits(0)=== k.U)
-                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.addr.valid&io.sc2buf_dat_rd.next1_addr.valid)&&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr.bits(0)=== k.U)
             }
             if(conf.CBUF_BANK_RAM_CASE==3){
                 bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.addr.valid)&&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr.bits(0)=== (k/2).U)
-                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.addr.valid&io.sc2buf_dat_rd.next1_addr.valid)&&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr.bits(0)=== (k/2).U)
             }   
             if(conf.CBUF_BANK_RAM_CASE==5){
                 bank_ram_data_rd_en(j)(k)(0) := (io.sc2buf_dat_rd.addr.valid)&&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.addr.bits(0)=== (k/4).U)
-                bank_ram_data_rd_en(j)(k)(1) := (io.sc2buf_dat_rd.addr.valid&io.sc2buf_dat_rd.next1_addr.valid)&&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_BANK_SLICE_max,conf.CBUF_BANK_SLICE_min)=== j.U)&&(io.sc2buf_dat_rd.next1_addr.bits(0)=== (k/4).U)
             }
         }       
     }
 
 //get sram data read address
-    val bank_ram_data_rd_addr = if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4))
-                                Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(1, UInt(conf.CBUF_RAM_DEPTH_BITS.W)))))
-                                else
-                                Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(2, UInt(conf.CBUF_RAM_DEPTH_BITS.W)))))
+    val bank_ram_data_rd_addr = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(1, UInt(conf.CBUF_RAM_DEPTH_BITS.W)))))
 
     for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
         for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
@@ -175,37 +165,17 @@ class cbufImpl{
             }
             if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
                 bank_ram_data_rd_addr(j)(k)(0) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(0))&(io.sc2buf_dat_rd.addr.bits(conf.CBUF_RAM_DEPTH_BITS, 1))
-                bank_ram_data_rd_addr(j)(k)(1) := Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(j)(k)(1))&(io.sc2buf_dat_rd.next1_addr.bits(conf.CBUF_RAM_DEPTH_BITS, 1))
             }       
         }
     }
 
 //add flop for sram data read en
 //get sram data read valid.
-    var bank_ram_data_rd_en_d1 = if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4))
-                                 RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(1)(false.B)))))))
-                                 else
-                                 RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(2)(false.B)))))))
+    var bank_ram_data_rd_en_d1 = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(1)(false.B)))))))
+    var bank_ram_data_rd_valid = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(1)(false.B)))))))
 
-    var bank_ram_data_rd_valid = if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4))
-                                 RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(1)(false.B)))))))
-                                 else
-                                 RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(VecInit(Seq.fill(2)(false.B)))))))
-
-    for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
-        for(k <- 0 to conf.CBUF_RAM_PER_BANK-1){
-            if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-                bank_ram_data_rd_en_d1(j)(k)(0) := bank_ram_data_rd_en(j)(k)(0)
-                bank_ram_data_rd_valid(j)(k)(0) := bank_ram_data_rd_en_d1(j)(k)(0)
-            }
-            if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-                for(i <- 0 to 1){
-                    bank_ram_data_rd_en_d1(j)(k)(i) := bank_ram_data_rd_en(j)(k)(i)
-                    bank_ram_data_rd_valid(j)(k)(i) := bank_ram_data_rd_en_d1(j)(k)(i)
-                }
-            }       
-        }
-    }
+    bank_ram_data_rd_en_d1 := bank_ram_data_rd_en
+    bank_ram_data_rd_valid := bank_ram_data_rd_en_d1
 
 //get sc data read valid
     io.sc2buf_dat_rd.data.valid := ShiftRegister(bank_ram_data_rd_valid.asUInt.orR, 4)
@@ -213,11 +183,7 @@ class cbufImpl{
     val bank_ram_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, UInt(conf.CBUF_RAM_WIDTH.W))))
 
 //get sc data read bank output data. 
-    val bank_data_rd_data = if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4))
-                            Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(1 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))
-                            else
-                            Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(2 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))
-
+    val bank_data_rd_data = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(1 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))
 
     if(conf.CBUF_BANK_RAM_CASE==0){
         for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
@@ -225,10 +191,10 @@ class cbufImpl{
         }          
     }
     if(conf.CBUF_BANK_RAM_CASE==1){
-        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){for(i <- 0 to 1){
-            bank_data_rd_data(j)(i) := ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(0)(i)))|
-                                        ((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(1)(i))) 
-        }}          
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd_data(j)(0) := ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(0)(0)))|
+                                        ((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(1)(0))) 
+        }          
     }
     if(conf.CBUF_BANK_RAM_CASE==2){
         for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
@@ -237,12 +203,12 @@ class cbufImpl{
         }          
     }
     if(conf.CBUF_BANK_RAM_CASE==3){   
-        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){for(i <- 0 to 1){
-            bank_data_rd_data(j)(i) := (Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(3)(i))), 
-                                        ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(2)(i))))
-                                        |Cat(((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(1)(i))), 
-                                        ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(0)(i)))))  
-        }}          
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd_data(j)(0) := (Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(3)(0))), 
+                                        ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(2)(0))))
+                                        |Cat(((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(1)(0))), 
+                                        ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(0)(0)))))  
+        }        
     }
     if(conf.CBUF_BANK_RAM_CASE==4){
         for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
@@ -253,73 +219,44 @@ class cbufImpl{
         }          
     }
     if(conf.CBUF_BANK_RAM_CASE==5){   
-        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){for(i <- 0 to 1){
-            bank_data_rd_data(j)(i) := (Cat(((bank_ram_rd_data(j)(7))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(7)(i))),
-                                         ((bank_ram_rd_data(j)(6))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(6)(i))), 
-                                         ((bank_ram_rd_data(j)(5))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(5)(i))), 
-                                         ((bank_ram_rd_data(j)(4))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(4)(i))))
-                                         |Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(3)(i))), 
-                                         ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(2)(i))), 
-                                         ((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(1)(i))), 
-                                         ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(0)(i))))) 
-        }}          
+        for(j <- 0 to conf.CBUF_BANK_NUMBER-1){
+            bank_data_rd_data(j)(0) := (Cat(((bank_ram_rd_data(j)(7))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(7)(0))),
+                                         ((bank_ram_rd_data(j)(6))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(6)(0))), 
+                                         ((bank_ram_rd_data(j)(5))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(5)(0))), 
+                                         ((bank_ram_rd_data(j)(4))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(4)(0))))
+                                         |Cat(((bank_ram_rd_data(j)(3))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(3)(0))), 
+                                         ((bank_ram_rd_data(j)(2))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(2)(0))), 
+                                         ((bank_ram_rd_data(j)(1))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(1)(0))), 
+                                         ((bank_ram_rd_data(j)(0))&Fill(conf.CBUF_RAM_WIDTH, bank_ram_data_rd_valid(j)(0)(0))))) 
+        }         
     }
 
-    val sc2buf_dat_rd_shift_5T = ShiftRegister(io.sc2buf_dat_rd.shift, 5)
     
 // pipe solution. for timing concern, 4 level pipe.
-    if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){
-        val l1group_data_rd_data = RegNext(bank_data_rd_data)//first pipe
-
-        val l2group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, Vec(1 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))//second pipe      
-        for(i <- 0 to conf.CBUF_BANK_NUMBER/4-1){
-            l2group_data_rd_data(i)(0) := l1group_data_rd_data(i*4)(0)|l1group_data_rd_data(i*4+1)(0)|l1group_data_rd_data(i*4+2)(0)|l1group_data_rd_data(i*4+3)(0)           
-        }
-
-        val l3group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, Vec(1 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))//third pipe            
-        for(i <- 0 to conf.CBUF_BANK_NUMBER/16-1){
-            l3group_data_rd_data(i)(0) := l2group_data_rd_data(i*4)(0)|l2group_data_rd_data(i*4+1)(0)|l2group_data_rd_data(i*4+2)(0)|l2group_data_rd_data(i*4+3)(0)
-                        
-        }
-
-        val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W))//fourth pipe
-        if(conf.CBUF_BANK_NUMBER==16){     
-            l4group_data_rd_data := l3group_data_rd_data(0)(0)            
-        } 
-        if(conf.CBUF_BANK_NUMBER==32){
-            l4group_data_rd_data := l3group_data_rd_data(0)(0)|l3group_data_rd_data(1)(0)                    
-        }
     
-        io.sc2buf_dat_rd.data.bits := l4group_data_rd_data
+    val l1group_data_rd_data = RegNext(bank_data_rd_data)//first pipe
+
+    val l2group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, Vec(1 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))//second pipe      
+    for(i <- 0 to conf.CBUF_BANK_NUMBER/4-1){
+        l2group_data_rd_data(i)(0) := l1group_data_rd_data(i*4)(0)|l1group_data_rd_data(i*4+1)(0)|l1group_data_rd_data(i*4+2)(0)|l1group_data_rd_data(i*4+3)(0)           
     }
-    if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-        val l1group_data_rd_data = RegNext(bank_data_rd_data)//first pipe
 
-        val l2group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/4, Vec(2 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))//second pipe      
-        for(i <- 0 to conf.CBUF_BANK_NUMBER/4-1){
-            l2group_data_rd_data(i)(0) := l1group_data_rd_data(i*4)(0)|l1group_data_rd_data(i*4+1)(0)|l1group_data_rd_data(i*4+2)(0)|l1group_data_rd_data(i*4+3)(0)
-            l2group_data_rd_data(i)(1) := l1group_data_rd_data(i*4)(1)|l1group_data_rd_data(i*4+1)(1)|l1group_data_rd_data(i*4+2)(1)|l1group_data_rd_data(i*4+3)(1)           
-        }
-
-        val l3group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, Vec(2 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))//third pipe            
-        for(i <- 0 to conf.CBUF_BANK_NUMBER/16-1){
-            l3group_data_rd_data(i)(0) := l2group_data_rd_data(i*4)(0)|l2group_data_rd_data(i*4+1)(0)|l2group_data_rd_data(i*4+2)(0)|l2group_data_rd_data(i*4+3)(0)
-            l3group_data_rd_data(i)(1) := l2group_data_rd_data(i*4)(1)|l2group_data_rd_data(i*4+1)(1)|l2group_data_rd_data(i*4+2)(1)|l2group_data_rd_data(i*4+3)(1)          
-        }
-
-        val l4group_data_rd_data = Reg(Vec(2, UInt(conf.CBUF_RD_PORT_WIDTH.W)))//fourth pipe
-        if(conf.CBUF_BANK_NUMBER==16){     
-            l4group_data_rd_data(0) := l3group_data_rd_data(0)(0)
-            l4group_data_rd_data(1) := l3group_data_rd_data(0)(1)          
-        } 
-
-        if(conf.CBUF_BANK_NUMBER==32){
-            l4group_data_rd_data(0) := l3group_data_rd_data(0)(0)|l3group_data_rd_data(1)(0)
-            l4group_data_rd_data(1) := l3group_data_rd_data(0)(1)|l3group_data_rd_data(1)(1)         
-        }
-
-        io.sc2buf_dat_rd.data.bits := RegNext((Cat(l4group_data_rd_data(1), l4group_data_rd_data(0)) >> Cat(sc2buf_dat_rd_shift_5T, "b0".asUInt(3.W)))(conf.CBUF_RD_PORT_WIDTH-1, 0))
+    val l3group_data_rd_data = Reg(Vec(conf.CBUF_BANK_NUMBER/16, Vec(1 ,UInt(conf.CBUF_RD_PORT_WIDTH.W))))//third pipe            
+    for(i <- 0 to conf.CBUF_BANK_NUMBER/16-1){
+        l3group_data_rd_data(i)(0) := l2group_data_rd_data(i*4)(0)|l2group_data_rd_data(i*4+1)(0)|l2group_data_rd_data(i*4+2)(0)|l2group_data_rd_data(i*4+3)(0)
+                    
     }
+
+    val l4group_data_rd_data = Reg(UInt(conf.CBUF_RD_PORT_WIDTH.W))//fourth pipe
+    if(conf.CBUF_BANK_NUMBER==16){     
+        l4group_data_rd_data := l3group_data_rd_data(0)(0)            
+    } 
+    if(conf.CBUF_BANK_NUMBER==32){
+        l4group_data_rd_data := l3group_data_rd_data(0)(0)|l3group_data_rd_data(1)(0)                    
+    }
+
+    io.sc2buf_dat_rd.data.bits := l4group_data_rd_data
+    
 
     /////////////////////step3: read weight handle
     //decode read weight address to sram.
@@ -443,27 +380,15 @@ class cbufImpl{
     // add 1 pipe for sram read control signal.
     val bank_ram_rd_en_d1 = RegInit(VecInit(Seq.fill(conf.CBUF_BANK_NUMBER)(VecInit(Seq.fill(conf.CBUF_RAM_PER_BANK)(false.B)))))
     val bank_ram_rd_addr_d1 = Reg(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, UInt(conf.CBUF_RAM_DEPTH_BITS.W))))
+       
+    for(i<- 0 to conf.CBUF_BANK_NUMBER-1){
+        for(j<- 0 to conf.CBUF_RAM_PER_BANK-1){
+            bank_ram_rd_en_d1(i)(j) := bank_ram_data_rd_en(i)(j)(0)|bank_ram_wt_rd_en(i)(j)
+            bank_ram_rd_addr_d1(i)(j) := (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(i)(j)(0))&bank_ram_data_rd_addr(i)(j)(0))|
+                                         (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(i)(j))&bank_ram_wt_rd_addr(i)(j))
+        }
+    }       
 
-    if((conf.CBUF_BANK_RAM_CASE==0)||(conf.CBUF_BANK_RAM_CASE==2)||(conf.CBUF_BANK_RAM_CASE==4)){        
-        for(i<- 0 to conf.CBUF_BANK_NUMBER-1){
-            for(j<- 0 to conf.CBUF_RAM_PER_BANK-1){
-                bank_ram_rd_en_d1(i)(j) := bank_ram_data_rd_en(i)(j)(0)|bank_ram_wt_rd_en(i)(j)
-                bank_ram_rd_addr_d1(i)(j) := (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(i)(j)(0))&bank_ram_data_rd_addr(i)(j)(0))|
-                                         (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(i)(j))&bank_ram_wt_rd_addr(i)(j))
-            }
-        }       
-    }
-    if((conf.CBUF_BANK_RAM_CASE==1)||(conf.CBUF_BANK_RAM_CASE==3)||(conf.CBUF_BANK_RAM_CASE==5)){
-        for(i<- 0 to conf.CBUF_BANK_NUMBER-1){
-            for(j<- 0 to conf.CBUF_RAM_PER_BANK-1){
-                bank_ram_rd_en_d1(i)(j) := bank_ram_data_rd_en(i)(j)(0)|bank_ram_data_rd_en(i)(j)(1)|bank_ram_wt_rd_en(i)(j)
-                bank_ram_rd_addr_d1(i)(j) := (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(i)(j)(0))&bank_ram_data_rd_addr(i)(j)(0))|
-                                         (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_data_rd_en(i)(j)(1))&bank_ram_data_rd_addr(i)(j)(1))|
-                                         (Fill(conf.CBUF_RAM_DEPTH_BITS, bank_ram_wt_rd_en(i)(j))&bank_ram_wt_rd_addr(i)(j))
-            }
-        }       
-    }
-      
     //instance SRAM
     val u_cbuf_ram_bank_ram = Array.fill(conf.CBUF_BANK_NUMBER){Array.fill(conf.CBUF_RAM_PER_BANK){Module(new nv_ram_rws(conf.CBUF_RAM_DEPTH, conf.CBUF_RAM_WIDTH))}}
      

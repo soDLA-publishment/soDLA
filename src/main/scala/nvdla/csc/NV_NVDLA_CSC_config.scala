@@ -181,9 +181,15 @@ class cscConfiguration extends cbufConfiguration{
 }
 
 class csc_sg2dl_if extends Bundle{
-    val pd = Valid(UInt(32.W)) 
+    val pd = ValidIO(UInt(31.W)) 
     val reuse_rls = Output(Bool())
 }
+
+class csc_sg2wl_if extends Bundle{
+    val pd = ValidIO(UInt(18.W)) 
+    val reuse_rls = Output(Bool())
+}
+
 
 class csc_dual_reg_flop_outputs extends Bundle{
 
