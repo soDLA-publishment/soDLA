@@ -60,7 +60,7 @@ withClock(io.nvdla_core_clk){
     val inp_acc = io.inp_pvld & io.inp_prdy
 
     val data_mask = Cat(Fill(4-conf.NVDLA_DMA_MASK_BIT, false.B), io.inp_data)
-    val data_size = data_mask(0) + data_mask(1) + data_mask(2) + data_mask(3)
+    val data_size = data_mask(0) +& data_mask(1) +& data_mask(2) +& data_mask(3)
     val pack_cnt = RegInit("b0".asUInt(2.W))
     val pack_cnt_nxt = pack_cnt + data_size
     when(inp_acc){
@@ -75,10 +75,7 @@ withClock(io.nvdla_core_clk){
 
     val pack_mask = RegInit("b0".asUInt(4.W))
     when(inp_acc & is_pack_last){
-        pack_mask := Mux(pack_cnt_nxt === 4.U, "hf".asUInt(4.W),
-                     Mux(pack_cnt_nxt === 3.U, "h7".asUInt(4.W),
-                     Mux(pack_cnt_nxt === 2.U, "h3".asUInt(4.W),
-                     pack_cnt_nxt)))
+        pack_mask := 1.U << pack_cnt_nxt - 1.U
     }
 
     val pack_seq = Reg(Vec(RATIO, UInt(conf.AM_DW.W)))

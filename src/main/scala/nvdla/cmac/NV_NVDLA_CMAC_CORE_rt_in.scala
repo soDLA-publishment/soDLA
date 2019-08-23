@@ -9,25 +9,25 @@ class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: 
         val nvdla_core_clk = Input(Clock())
 
         // sc2mac dat&wt
-        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val sc2mac_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val sc2mac_dat_pd = Input(UInt(9.W))
         val sc2mac_dat_pvld = Input(Bool())
 
-        val sc2mac_wt_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val sc2mac_wt_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val sc2mac_wt_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val sc2mac_wt_sel = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
         val sc2mac_wt_pvld = Input(Bool())
         
         // in dat&wt 
-        val in_dat_data = Output(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val in_dat_data = Output(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val in_dat_mask = Output(Vec(conf.CMAC_ATOMC, Bool()))
         val in_dat_pd = Output(UInt(9.W))
         val in_dat_pvld = Output(Bool())
         val in_dat_stripe_st = Output(Bool())
         val in_dat_stripe_end = Output(Bool())
 
-        val in_wt_data = Output(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val in_wt_data = Output(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val in_wt_mask = Output(Vec(conf.CMAC_ATOMC, Bool()))
         val in_wt_sel = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
         val in_wt_pvld = Output(Bool())
@@ -61,7 +61,7 @@ class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: 
 
     // retiming init
 
-    val in_rt_dat_data_d = retiming(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)), conf.CMAC_IN_RT_LATENCY)
+    val in_rt_dat_data_d = retiming(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)), conf.CMAC_IN_RT_LATENCY)
     val in_rt_dat_mask_d = Wire(Vec(conf.CMAC_ATOMC, Bool())) +: 
                             Seq.fill(conf.CMAC_IN_RT_LATENCY)(RegInit(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))) 
     val in_rt_dat_pvld_d = Wire(Bool()) +: 
@@ -70,7 +70,7 @@ class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: 
                             Seq.fill(conf.CMAC_IN_RT_LATENCY)(RegInit("b0".asUInt(9.W)))
 
 
-    val in_rt_wt_data_d = retiming(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)), conf.CMAC_IN_RT_LATENCY)
+    val in_rt_wt_data_d = retiming(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)), conf.CMAC_IN_RT_LATENCY)
     val in_rt_wt_mask_d = Wire(Vec(conf.CMAC_ATOMC, Bool())) +: 
                             Seq.fill(conf.CMAC_IN_RT_LATENCY)(RegInit(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))) 
     val in_rt_wt_pvld_d = Wire(Bool()) +: 

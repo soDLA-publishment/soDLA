@@ -485,15 +485,13 @@ class NV_NVDLA_cdma(implicit val conf: cdmaConfiguration) extends Module {
     //==========================================================
     //-------------- SLCG for weight DMA --------------//
     //==========================================================
-    val u_slcg_wt = Module(new NV_NVDLA_CDMA_slcg)
+    val u_slcg_wt = Module(new NV_NVDLA_slcg(1, false))
 
     u_slcg_wt.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_wt.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_wt.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_wt.io.slcg_en_src_0 := slcg_op_en(0)
-    u_slcg_wt.io.slcg_en_src_1 := true.B
-    u_slcg_wt.io.slcg_en_src_2 := true.B
+    u_slcg_wt.io.slcg_en(0) := slcg_op_en(0)
     u_slcg_wt.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
     nvdla_op_gated_clk_wt := u_slcg_wt.io.nvdla_core_gated_clk  
@@ -579,15 +577,15 @@ class NV_NVDLA_cdma(implicit val conf: cdmaConfiguration) extends Module {
     //==========================================================
     //-------------- SLCG for DC DMA --------------//
     //==========================================================
-    val u_slcg_dc = Module(new NV_NVDLA_CDMA_slcg)
+    val u_slcg_dc = Module(new NV_NVDLA_slcg(3, false))
 
     u_slcg_dc.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_dc.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_dc.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_dc.io.slcg_en_src_0 := slcg_op_en(1)
-    u_slcg_dc.io.slcg_en_src_1 := slcg_wg_gate_dc
-    u_slcg_dc.io.slcg_en_src_2 := slcg_img_gate_dc
+    u_slcg_dc.io.slcg_en(0) := slcg_op_en(1)
+    u_slcg_dc.io.slcg_en(1) := slcg_wg_gate_dc
+    u_slcg_dc.io.slcg_en(2) := slcg_img_gate_dc
 
     u_slcg_dc.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
@@ -706,15 +704,15 @@ class NV_NVDLA_cdma(implicit val conf: cdmaConfiguration) extends Module {
     //==========================================================
     //-------------- SLCG for IMG DMA --------------//
     //==========================================================
-    val u_slcg_img = Module(new NV_NVDLA_CDMA_slcg)
+    val u_slcg_img = Module(new NV_NVDLA_slcg(3, false))
 
     u_slcg_img.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_img.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_img.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_img.io.slcg_en_src_0 := slcg_op_en(3)
-    u_slcg_img.io.slcg_en_src_1 := slcg_dc_gate_img
-    u_slcg_img.io.slcg_en_src_2 := slcg_wg_gate_img
+    u_slcg_img.io.slcg_en(0) := slcg_op_en(3)
+    u_slcg_img.io.slcg_en(1) := slcg_dc_gate_img
+    u_slcg_img.io.slcg_en(2) := slcg_wg_gate_img
 
     u_slcg_img.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
@@ -776,15 +774,13 @@ class NV_NVDLA_cdma(implicit val conf: cdmaConfiguration) extends Module {
     //==========================================================
     //-------------- SLCG for MUX  --------------//
     //==========================================================
-    val u_slcg_mux = Module(new NV_NVDLA_CDMA_slcg)
+    val u_slcg_mux = Module(new NV_NVDLA_slcg(1, false))
 
     u_slcg_mux.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_mux.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_mux.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_mux.io.slcg_en_src_0 := slcg_op_en(4)
-    u_slcg_mux.io.slcg_en_src_1 := true.B
-    u_slcg_mux.io.slcg_en_src_2 := true.B
+    u_slcg_mux.io.slcg_en(0) := slcg_op_en(4)
 
     u_slcg_mux.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
@@ -843,15 +839,13 @@ class NV_NVDLA_cdma(implicit val conf: cdmaConfiguration) extends Module {
     //-------------- SLCG for CVT  --------------//
     //==========================================================
 
-    val u_slcg_cvt = Module(new NV_NVDLA_CDMA_slcg)
+    val u_slcg_cvt = Module(new NV_NVDLA_slcg(1, false))
 
     u_slcg_cvt.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_cvt.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_cvt.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_cvt.io.slcg_en_src_0 := slcg_op_en(5)
-    u_slcg_cvt.io.slcg_en_src_1 := true.B
-    u_slcg_cvt.io.slcg_en_src_2 := true.B
+    u_slcg_cvt.io.slcg_en(0) := slcg_op_en(5)
 
     u_slcg_cvt.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
@@ -861,15 +855,14 @@ class NV_NVDLA_cdma(implicit val conf: cdmaConfiguration) extends Module {
     //-------------- SLCG for CVT HLS CELL  --------------//
     //==========================================================
 
-    val u_slcg_hls = Module(new NV_NVDLA_CDMA_slcg)
+    val u_slcg_hls = Module(new NV_NVDLA_slcg(2, false))
 
     u_slcg_hls.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_hls.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_hls.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_hls.io.slcg_en_src_0 := slcg_op_en(6)
-    u_slcg_hls.io.slcg_en_src_1 := slcg_hls_en
-    u_slcg_hls.io.slcg_en_src_2 := true.B
+    u_slcg_hls.io.slcg_en(0) := slcg_op_en(6)
+    u_slcg_hls.io.slcg_en(1) := slcg_hls_en
 
     u_slcg_hls.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
@@ -913,15 +906,13 @@ class NV_NVDLA_cdma(implicit val conf: cdmaConfiguration) extends Module {
     //-------------- SLCG for shared buffer  --------------//
     //==========================================================
 
-    val u_slcg_buffer = Module(new NV_NVDLA_CDMA_slcg)
+    val u_slcg_buffer = Module(new NV_NVDLA_slcg(1, false))
 
     u_slcg_buffer.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_buffer.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_buffer.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_buffer.io.slcg_en_src_0 := slcg_op_en(7)
-    u_slcg_buffer.io.slcg_en_src_1 := true.B
-    u_slcg_buffer.io.slcg_en_src_2 := true.B
+    u_slcg_buffer.io.slcg_en(0) := slcg_op_en(7)
 
     u_slcg_buffer.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 

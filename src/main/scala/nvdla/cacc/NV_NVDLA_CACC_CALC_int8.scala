@@ -15,17 +15,17 @@ class NV_NVDLA_CACC_CALC_int8 extends Module {
 
         //input
         val cfg_truncate = Input(UInt(5.W))
-        val in_data = Input(SInt(22.W))
-        val in_op = Input(SInt(34.W))
+        val in_data = Input(UInt(22.W))
+        val in_op = Input(UInt(34.W))
         val in_op_valid = Input(Bool())   
         val in_sel = Input(Bool())
         val in_valid = Input(Bool())    
 
         //output
-        val out_final_data = Output(SInt(32.W))
+        val out_final_data = Output(UInt(32.W))
         val out_final_sat = Output(Bool())
         val out_final_valid = Output(Bool())
-        val out_partial_data = Output(SInt(34.W))
+        val out_partial_data = Output(UInt(34.W))
         val out_partial_valid = Output(Bool())
     })
 
@@ -61,7 +61,7 @@ withClock(io.nvdla_core_clk){
     i_sat_vld := io.in_valid
     when(io.in_valid){
         i_sat_sel := io.in_sel
-        i_sum_pd := (io.in_data +& Mux(io.in_op_valid, io.in_op, 0.asSInt(34.W))).asUInt
+        i_sum_pd := (io.in_data.asSInt +& Mux(io.in_op_valid, io.in_op, 0.asUInt(34.W)).asSInt).asUInt
     } 
 
     //====================
@@ -80,7 +80,7 @@ withClock(io.nvdla_core_clk){
     }
 
     val i_sat_pd = Cat(i_sat_sign, i_sat_bits)
-    val i_partial_result = i_sat_pd.asSInt
+    val i_partial_result = i_sat_pd
 
     //====================
     // narrow down to 32bit, and need rounding and saturation 
@@ -101,7 +101,7 @@ withClock(io.nvdla_core_clk){
     val i_pos_pd = i_sft_pd(31, 0) + i_point5
     val i_tru_pd = i_pos_pd
 
-    val i_final_result = Mux(i_sft_need_sat, i_sft_max, i_tru_pd).asSInt
+    val i_final_result = Mux(i_sft_need_sat, i_sft_max, i_tru_pd)
 
     val i_partial_vld = i_sat_vld & ~i_sat_sel
     val i_final_vld = i_sat_vld&i_sat_sel

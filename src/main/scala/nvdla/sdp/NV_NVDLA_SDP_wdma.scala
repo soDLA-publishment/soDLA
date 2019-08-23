@@ -95,13 +95,13 @@ withClock(io.nvdla_core_clk){
     }
 
     //=======================================
-    val u_gate = Module(new NV_NVDLA_SDP_WDMA_gate)
+    val u_gate = Module(new NV_NVDLA_slcg(1, false))
     u_gate.io.nvdla_core_clk := io.nvdla_core_clk
-    u_gate.io.reg2dp_wdma_slcg_op_en := io.reg2dp_wdma_slcg_op_en
+    u_gate.io.slcg_en(0) := io.reg2dp_wdma_slcg_op_en
     u_gate.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync
     u_gate.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_gate.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating
-    val nvdla_gated_clk = u_gate.io.nvdla_gated_clk 
+    val nvdla_gated_clk = u_gate.io.nvdla_core_gated_clk 
 
     val cmd2dat_spt_prdy = Wire(Bool())
     val cmd2dat_dma_prdy = Wire(Bool())

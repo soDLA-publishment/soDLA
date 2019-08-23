@@ -35,13 +35,13 @@ class NV_NVDLA_partition_a(implicit val conf: cdmaConfiguration) extends Module 
         val mac_a2accu_pvld = Input(Bool())  /* data valid */ 
         val mac_a2accu_mode = Input(Bool())
         val mac_a2accu_mask = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))  
-        val mac_a2accu_data = Input(Vec(conf.CMAC_ATOMK_HALF, SInt(conf.CACC_IN_WIDTH.W)))  /* data valid */
+        val mac_a2accu_data = Input(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CACC_IN_WIDTH.W)))  /* data valid */
         val mac_a2accu_pd = Input(UInt(9.W))  /* data return handshake */
 
         val mac_b2accu_pvld = Input(Bool())  /* data valid */ 
         val mac_b2accu_mode = Input(Bool())
         val mac_b2accu_mask = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))  
-        val mac_b2accu_data = Input(Vec(conf.CMAC_ATOMK_HALF, SInt(conf.CACC_IN_WIDTH.W)))  /* data valid */
+        val mac_b2accu_data = Input(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CACC_IN_WIDTH.W)))  /* data valid */
         val mac_b2accu_pd = Input(UInt(9.W))  /* data return handshake */
 
         val pwrbus_ram_pd = Input(UInt(32.W))

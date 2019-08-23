@@ -56,6 +56,7 @@ withClock(io.nvdla_core_clk){
     val inp_acc = io.inp_pvld & io.inp_prdy
 
     val pack_cnt = RegInit("b0".asUInt(4.W))
+    val pack_seg = Reg(Vec(RATIO, UInt(IW.W)))
     when(inp_acc){
         when(is_pack_last){
             pack_cnt := 0.U
@@ -63,18 +64,15 @@ withClock(io.nvdla_core_clk){
         .otherwise{
             pack_cnt := pack_cnt + 1.U
         }
-    }
-    is_pack_last := pack_cnt === (RATIO-1).U
 
-    val pack_seg = Reg(Vec(RATIO, UInt(IW.W)))
-    when(inp_acc){
         for(i <- 0 to RATIO-1){
             when(pack_cnt === i.U){
                 pack_seg(i) := io.inp_data
             }
         }
     }
-
+    
+    is_pack_last := pack_cnt === (RATIO-1).U
     io.out_data := pack_seg.asUInt
 
 }}

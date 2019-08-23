@@ -74,23 +74,23 @@ class NV_NVDLA_partition_c(implicit val conf: cdmaConfiguration) extends Module 
         //mac_dat
         val sc2mac_dat_a_pvld = Output(Bool())
         val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_dat_a_pd = Output(UInt(9.W))
 
         val sc2mac_dat_b_pvld = Output(Bool())
         val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_dat_b_pd = Output(UInt(9.W))   
 
         //mac_wt
         val sc2mac_wt_a_pvld = Output(Bool())
         val sc2mac_wt_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_wt_a_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
 
         val sc2mac_wt_b_pvld = Output(Bool())
         val sc2mac_wt_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_wt_b_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
 
            

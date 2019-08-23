@@ -22,17 +22,17 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
 
         val sc2mac_dat_pvld = Input(Bool())  /* data valid */
         val sc2mac_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, SInt(conf.CMAC_BPE.W)))
+        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val sc2mac_dat_pd = Input(UInt(9.W))
 
         val sc2mac_wt_pvld = Input(Bool())
         val sc2mac_wt_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, SInt(conf.CMAC_BPE.W)))
+        val sc2mac_wt_data = Input(Vec(conf.CMAC_INPUT_NUM, UInt(conf.CMAC_BPE.W)))
         val sc2mac_wt_sel = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
 
         val mac2accu_pvld = Output(Bool()) /* data valid */
         val mac2accu_mask = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, SInt(conf.CMAC_RESULT_WIDTH.W)))
+        val mac2accu_data = Output(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
         val mac2accu_pd = Output(UInt(9.W))
 
         val mac2accu_mode = Output(Bool())
@@ -104,8 +104,8 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     val in_wt_data = u_rt_in.io.in_wt_data         //|< i )
     val in_wt_sel = u_rt_in.io.in_wt_sel                //|> w
 
-    val out_pvld = ShiftRegister(in_dat_pvld, conf.MAC_PD_LATENCY)
-    val out_pd = ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY, in_dat_pvld)
+    val out_pvld = withClock(io.nvdla_core_clk){ShiftRegister(in_dat_pvld, conf.MAC_PD_LATENCY)}
+    val out_pd = withClock(io.nvdla_core_clk){ShiftRegister(in_dat_pd, conf.MAC_PD_LATENCY, in_dat_pvld)}
         
     //==========================================================
     // input shadow and active pipeline
@@ -138,7 +138,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     // MAC CELLs
     //==========================================================
     val u_mac = Array.fill(conf.CMAC_ATOMK_HALF){Module(new NV_NVDLA_CMAC_CORE_mac(useRealClock = true))}
-    val out_data = Wire(Vec(conf.CMAC_ATOMK_HALF, SInt(conf.CMAC_RESULT_WIDTH.W)))
+    val out_data = Wire(Vec(conf.CMAC_ATOMK_HALF, UInt(conf.CMAC_RESULT_WIDTH.W)))
     val out_mask = Wire(Vec(conf.CMAC_ATOMK_HALF, Bool()))
 
     for(i<- 0 to conf.CMAC_ATOMK_HALF-1){
@@ -179,7 +179,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
     //==========================================================
     // SLCG groups
     //==========================================================
-    val u_slcg_op = Array.fill(conf.CMAC_ATOMK_HALF+3){Module(new NV_NVDLA_slcg)}
+    val u_slcg_op = Array.fill(conf.CMAC_ATOMK_HALF+3){Module(new NV_NVDLA_slcg(1, false))}
 
     for(i<- 0 to conf.CMAC_ATOMK_HALF+2){
 
@@ -187,7 +187,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: cmacConfiguration) extends Module {
         u_slcg_op(i).io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
         u_slcg_op(i).io.nvdla_core_clk := io.nvdla_core_clk
 
-        u_slcg_op(i).io.slcg_en := io.slcg_op_en(i)
+        u_slcg_op(i).io.slcg_en(0) := io.slcg_op_en(i)
         u_slcg_op(i).io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
         nvdla_op_gated_clk(i) := u_slcg_op(i).io.nvdla_core_gated_clk                                                                                               

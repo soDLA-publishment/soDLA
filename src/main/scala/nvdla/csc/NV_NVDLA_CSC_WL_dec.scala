@@ -10,14 +10,14 @@ class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
         //clock
         val nvdla_core_clk = Input(Clock())    
         //input 
-        val input_data = Input(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val input_data = Input(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val input_mask = Input(Vec(conf.CSC_ATOMC, Bool()))
         val input_mask_en = Input(UInt(10.W))
         val input_pipe_valid = Input(Bool())
         val input_sel = Input(Vec(conf.CSC_ATOMK, Bool()))
 
         //output
-        val output_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val output_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val output_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
         val output_pvld = Output(Bool())
         val output_sel = Output(Vec(conf.CSC_ATOMK, Bool()))    
@@ -68,7 +68,7 @@ withClock(io.nvdla_core_clk){
 
     ////////////////////////////////// phase I: registers //////////////////////////////////
     val valid_d1 = RegInit(false.B)
-    val data_d1 = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val data_d1 = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
     val mask_d1 = Reg(Vec(conf.CSC_ATOMC, Bool()))
     val sel_d1 = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK)(false.B)))
     val vec_sum_d1 = RegInit(MixedVecInit((0 to conf.CSC_ATOMC-1) map { i => Fill(log2Ceil(i+2), false.B) }))
@@ -88,10 +88,10 @@ withClock(io.nvdla_core_clk){
     }  
 
     ////////////////////////////////// phase II: mux //////////////////////////////////
-    val vec_data = Wire(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val vec_data = Wire(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 
     for(j <- 0 to conf.CSC_ATOMC-1){
-        vec_data(j) := MuxLookup(vec_sum_d1(j), 0.asSInt(conf.CSC_BPE.W),            
+        vec_data(j) := MuxLookup(vec_sum_d1(j), 0.asUInt(conf.CSC_BPE.W),            
         (0 to j) map { i => (i+1).U -> data_d1(i) }
         )
     }     
@@ -99,7 +99,7 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////// phase II: registers //////////////////////////////////
     val valid_d2 = RegInit(false.B)
     val sel_d2 = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK)(false.B)))
-    val vec_data_d2 = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val vec_data_d2 = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 
     valid_d2 := valid_d1
     when(valid_d1){
@@ -111,7 +111,7 @@ withClock(io.nvdla_core_clk){
                 vec_data_d2(i) := vec_data(i)
             }
             .otherwise{
-                vec_data_d2(i) := 0.asSInt(conf.CSC_BPE.W)
+                vec_data_d2(i) := 0.asUInt(conf.CSC_BPE.W)
             }
                 
         }
@@ -128,7 +128,7 @@ withClock(io.nvdla_core_clk){
     val valid_d3 = RegInit(false.B)
     val mask_d3 = Reg(Vec(conf.CSC_ATOMC, Bool()))
     val sel_d3 = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK)(false.B)))
-    val vec_data_d3 = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val vec_data_d3 = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 
     valid_d3 := valid_d2
     when(valid_d2){

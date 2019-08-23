@@ -13,27 +13,27 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
         val nvdla_core_clk = Input(Clock())
 
         //input_dat
-        val in_dat_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val in_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val in_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val in_dat_pvld = Input(Bool())
         val in_dat_stripe_st = Input(Bool())
         val in_dat_stripe_end = Input(Bool())
 
         //input_wt
-        val in_wt_data = Input(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+        val in_wt_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
         val in_wt_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
         val in_wt_pvld = Input(Bool())
         val in_wt_sel = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
 
         // atomk, atomc, data
-        val dat_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W))))
+        val dat_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
         val dat_actv_nz = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))
         val dat_actv_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))
         val dat_pre_stripe_st = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
         val dat_pre_stripe_end = Output(Vec(conf.CMAC_ATOMK_HALF,Bool()))
 
         // atomk, atomc, data
-        val wt_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W))))   
+        val wt_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))   
         val wt_actv_nz = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))
         val wt_actv_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))                  
     })
@@ -69,7 +69,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
 //==========================================================   
     // wt
     val wt_pre_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))
-    val wt_pre_data = Reg(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+    val wt_pre_data = Reg(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
     val wt_pre_sel = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
 
     when(io.in_wt_pvld){
@@ -86,7 +86,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
 
     //dat
     val dat_pre_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))
-    val dat_pre_data = Reg(Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W)))
+    val dat_pre_data = Reg(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
     val dat_pre_pvld = RegInit(false.B) 
     val dat_pre_stripe_st_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
     val dat_pre_stripe_end_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
@@ -114,7 +114,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
     val wt_sd_pvld = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
     val wt_sd_pvld_w = Wire(Vec(conf.CMAC_ATOMK_HALF,Bool()))
     val wt_sd_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
-    val wt_sd_data = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W))))
+    val wt_sd_data = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
     val dat_actv_stripe_end = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
         
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
@@ -141,7 +141,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
     val wt_actv_pvld_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
     val wt_actv_pvld_w = Wire(Vec(conf.CMAC_ATOMK_HALF,Bool()))
     val wt_actv_nz_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
-    val wt_actv_data_out = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W))))
+    val wt_actv_data_out = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
         
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
         wt_actv_pvld_w(i) := Mux(dat_pre_stripe_st_out(i), wt_sd_pvld(i), Mux(dat_actv_stripe_end(i), false.B, wt_actv_vld(i)))
@@ -162,7 +162,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
 // dat:pre --> actv
 //==========================================================  
 
-    val dat_actv_data_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, conf.CMAC_TYPE(conf.CMAC_BPE.W))))
+    val dat_actv_data_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
     val dat_actv_nz_reg = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
     val dat_actv_pvld_reg = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
 

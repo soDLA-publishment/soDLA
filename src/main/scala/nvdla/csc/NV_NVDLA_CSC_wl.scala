@@ -41,8 +41,8 @@ class NV_NVDLA_CSC_wlIO(implicit conf: cscConfiguration) extends Bundle{
     val sc2mac_wt_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
     val sc2mac_wt_a_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
     val sc2mac_wt_b_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
-    val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
-    val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))     
+    val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
+    val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))     
 
     val reg2dp_op_en = Input(Bool())
     val reg2dp_in_precision = Input(UInt(2.W))
@@ -640,7 +640,6 @@ withClock(io.nvdla_core_clk){
     val wt_req_wt_rls_entries_d1 = RegInit("b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
 
 
-
     sc2buf_wt_rd_en_out := wt_req_valid
     when(wt_req_valid){
         sc2buf_wt_rd_addr_out := wt_req_addr_out
@@ -775,12 +774,12 @@ withClock(io.nvdla_core_clk){
     }
 
     //////////////////////////////////// generate bytes for decoding ////////////////////////////////////
-    val dec_input_data = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(0.asSInt(conf.CSC_BPE.W))))
+    val dec_input_data = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(0.asUInt(conf.CSC_BPE.W))))
 
     val wt_rsp_data = (wt_data_input_sft | wt_data_remain_masked)
     when(wt_rsp_pipe_pvld){
         for(i <- 0 to conf.CSC_ATOMC-1){
-            dec_input_data(i) := wt_rsp_data(i*conf.CSC_BPE+conf.CSC_BPE-1, i*conf.CSC_BPE).asSInt
+            dec_input_data(i) := wt_rsp_data(i*conf.CSC_BPE+conf.CSC_BPE-1, i*conf.CSC_BPE).asUInt
         }
     }
 
@@ -832,8 +831,8 @@ withClock(io.nvdla_core_clk){
     val sc2mac_wt_b_mask_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
     val sc2mac_wt_a_sel_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK_HF)(false.B)))
     val sc2mac_wt_b_sel_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK_HF)(false.B)))
-    val sc2mac_wt_a_data_out = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
-    val sc2mac_wt_b_data_out = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))   
+    val sc2mac_wt_a_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
+    val sc2mac_wt_b_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))   
 
     val sc2mac_out_a_sel_w = Fill(conf.CSC_ATOMK_HF, sc2mac_out_pvld) & Cat(sc2mac_out_sel.asUInt)(conf.CSC_ATOMK_HF-1, 0)
     val sc2mac_out_b_sel_w = Fill(conf.CSC_ATOMK_HF, sc2mac_out_pvld) & Cat(sc2mac_out_sel.asUInt)(conf.CSC_ATOMK-1, conf.CSC_ATOMK_HF)

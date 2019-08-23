@@ -20,6 +20,7 @@ class NV_NVDLA_SDP_RDMA_gate extends Module {
         val nvdla_gated_clk = Output(Clock())
 
     })
+  withClock(io.nvdla_core_clk){
 
     val rdma_enable = RegInit(false.B)
     rdma_enable := !io.rdma_disable
@@ -34,7 +35,7 @@ class NV_NVDLA_SDP_RDMA_gate extends Module {
     nvdla_core_clk_slcg_0.io.clk_en := nvdla_core_clk_slcg_0_en
     io.nvdla_gated_clk := nvdla_core_clk_slcg_0.io.clk_gated
 
-}
+}}
 
 object NV_NVDLA_SDP_RDMA_gateDriver extends App {
   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_gate())

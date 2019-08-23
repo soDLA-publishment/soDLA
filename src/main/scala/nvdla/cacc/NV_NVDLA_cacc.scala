@@ -22,13 +22,13 @@ class NV_NVDLA_cacc(implicit conf: caccConfiguration) extends Module {
         val mac_a2accu_pvld = Input(Bool())
         val mac_a2accu_mode = Input(Bool())
         val mac_a2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-        val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, SInt(conf.CACC_IN_WIDTH.W)))
+        val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_a2accu_pd = Input(UInt(9.W))
 
         val mac_b2accu_pvld = Input(Bool())
         val mac_b2accu_mode = Input(Bool())
         val mac_b2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-        val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, SInt(conf.CACC_IN_WIDTH.W)))
+        val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_b2accu_pd = Input(UInt(9.W))
 
         //sdp
@@ -92,7 +92,7 @@ withReset(!io.nvdla_core_rstn){
     val dbuf_wr_addr = Wire(UInt(conf.CACC_DBUF_AWIDTH.W))
     val dbuf_wr_data = Wire(UInt(conf.CACC_ABUF_WIDTH.W))
     val dbuf_wr_en = Wire(Bool())
-    val dlv_data = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_FINAL_WIDTH.W)))
+    val dlv_data = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
     val dlv_mask = Wire(Bool())
     val dlv_pd = Wire(UInt(2.W))
     val dlv_valid = Wire(Bool())
@@ -282,7 +282,7 @@ withReset(!io.nvdla_core_rstn){
     // SLCG groups
     //==========================================================
 
-    val u_slcg_op = Array.fill(3){Module(new NV_NVDLA_slcg)}
+    val u_slcg_op = Array.fill(3){Module(new NV_NVDLA_slcg(1, false))}
 
     for(i<- 0 to 2){
 
@@ -290,19 +290,19 @@ withReset(!io.nvdla_core_rstn){
         u_slcg_op(i).io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
         u_slcg_op(i).io.nvdla_core_clk := io.nvdla_core_clk
 
-        u_slcg_op(i).io.slcg_en:= slcg_op_en(i)
+        u_slcg_op(i).io.slcg_en(0):= slcg_op_en(i)
         u_slcg_op(i).io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
         nvdla_op_gated_clk(i) := u_slcg_op(i).io.nvdla_core_gated_clk                                                                                               
     }
 
-    val u_slcg_cell_0 = Module(new NV_NVDLA_slcg)
+    val u_slcg_cell_0 = Module(new NV_NVDLA_slcg(1, false))
 
     u_slcg_cell_0.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync 
     u_slcg_cell_0.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
     u_slcg_cell_0.io.nvdla_core_clk := io.nvdla_core_clk
 
-    u_slcg_cell_0.io.slcg_en := slcg_op_en(3) | slcg_cell_en
+    u_slcg_cell_0.io.slcg_en(0) := slcg_op_en(3) | slcg_cell_en
     u_slcg_cell_0.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
     nvdla_cell_gated_clk := u_slcg_cell_0.io.nvdla_core_gated_clk  

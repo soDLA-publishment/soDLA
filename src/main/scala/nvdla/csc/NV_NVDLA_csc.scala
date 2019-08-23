@@ -67,23 +67,23 @@ class NV_NVDLA_csc(implicit val conf: cscConfiguration) extends Module {
         //mac_dat
         val sc2mac_dat_a_pvld = Output(Bool())
         val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_dat_a_pd = Output(UInt(9.W))
 
         val sc2mac_dat_b_pvld = Output(Bool())
         val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_dat_b_pd = Output(UInt(9.W))   
 
         //mac_wt
         val sc2mac_wt_a_pvld = Output(Bool())
         val sc2mac_wt_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_wt_a_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
 
         val sc2mac_wt_b_pvld = Output(Bool())
         val sc2mac_wt_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+        val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
         val sc2mac_wt_b_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
 
         //pwrbus
@@ -385,7 +385,7 @@ withReset(!io.nvdla_core_rstn){
     // SLCG groups
     //==========================================================
 
-    val u_slcg_op = Array.fill(3){Module(new NV_NVDLA_slcg)}
+    val u_slcg_op = Array.fill(3){Module(new NV_NVDLA_slcg(1, false))}
 
     for(i<- 0 to 2){
 
@@ -393,7 +393,7 @@ withReset(!io.nvdla_core_rstn){
         u_slcg_op(i).io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
         u_slcg_op(i).io.nvdla_core_clk := io.nvdla_core_clk
 
-        u_slcg_op(i).io.slcg_en := slcg_op_en(i)
+        u_slcg_op(i).io.slcg_en(0) := slcg_op_en(i)
         u_slcg_op(i).io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating 
 
         nvdla_op_gated_clk(i) := u_slcg_op(i).io.nvdla_core_gated_clk                                                                                               

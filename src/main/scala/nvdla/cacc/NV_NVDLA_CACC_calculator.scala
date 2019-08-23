@@ -22,7 +22,7 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
         //dlv buf
         val dlv_valid = Output(Bool())
         val dlv_mask = Output(Bool()) 
-        val dlv_data = Output(Vec(conf.CACC_ATOMK, SInt(conf.CACC_FINAL_WIDTH.W)))
+        val dlv_data = Output(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
         val dlv_pd = Output(UInt(2.W))  
 
         //control
@@ -36,12 +36,12 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
         val cfg_truncate = Input(UInt(5.W))
 
         //mac2cacc
-        val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, SInt(conf.CACC_IN_WIDTH.W)))
+        val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_a2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
         val mac_a2accu_mode = Input(Bool())
         val mac_a2accu_pvld = Input(Bool())
 
-        val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, SInt(conf.CACC_IN_WIDTH.W)))
+        val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_b2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
         val mac_b2accu_mode = Input(Bool())
         val mac_b2accu_pvld = Input(Bool())
@@ -75,11 +75,8 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
 
 withClock(io.nvdla_core_clk){             
     // unpack abuffer read data
-    val abuf_in_data = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_PARSUM_WIDTH.W)))
-    for(i <- 0 to conf.CACC_ATOMK-1){
-        abuf_in_data(i) := io.abuf_rd_data(conf.CACC_PARSUM_WIDTH*(i+1)-1, conf.CACC_PARSUM_WIDTH*i).asSInt
-    }
-
+    val abuf_in_data = VecInit((0 to conf.CACC_ATOMK-1) 
+                        map { i => io.abuf_rd_data(conf.CACC_PARSUM_WIDTH*(i+1)-1, conf.CACC_PARSUM_WIDTH*i)})
     //1T delay, the same T with data/mask
     val accu_ctrl_pd_d1 = RegEnable(io.accu_ctrl_pd, "b0".asUInt(13.W), io.accu_ctrl_valid)
     val calc_valid_in = (io.mac_b2accu_pvld | io.mac_a2accu_pvld)
@@ -94,14 +91,11 @@ withClock(io.nvdla_core_clk){
     val calc_layer_end = accu_ctrl_pd_d1(11)
     val calc_dlv_elem_mask = accu_ctrl_pd_d1(12)
 
-    val calc_elem = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_IN_WIDTH.W)))
+    val calc_elem = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_IN_WIDTH.W)))
+    val calc_in_mask = Wire(Vec(conf.CACC_ATOMK, Bool()))
     for(i <- 0 to conf.CACC_ATOMK/2-1){
         calc_elem(i) := io.mac_a2accu_data(i)
         calc_elem(i + conf.CACC_ATOMK/2) := io.mac_b2accu_data(i)
-    }
-    
-    val calc_in_mask = Wire(Vec(conf.CACC_ATOMK, Bool()))
-    for(i <- 0 to conf.CACC_ATOMK/2-1){
         calc_in_mask(i) := io.mac_a2accu_mask(i)
         calc_in_mask(i + conf.CACC_ATOMK/2) := io.mac_b2accu_mask(i)
     }
@@ -119,8 +113,8 @@ withClock(io.nvdla_core_clk){
     val calc_fout_sat = Wire(Vec(conf.CACC_ATOMK, Bool()))
     val calc_pout_vld = Wire(Vec(conf.CACC_ATOMK, Bool()))
     val calc_fout_vld = Wire(Vec(conf.CACC_ATOMK, Bool()))
-    val calc_pout_sum = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_PARSUM_WIDTH.W)))
-    val calc_fout_sum = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_FINAL_WIDTH.W)))
+    val calc_pout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
+    val calc_fout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
 
     val u_cell_int8 = Array.fill(conf.CACC_ATOMK){Module(new NV_NVDLA_CACC_CALC_int8)}
 
@@ -188,22 +182,22 @@ withClock(io.nvdla_core_clk){
     val calc_layer_end_out = calc_layer_end_d(conf.CACC_CELL_FINAL_LATENCY)
 
     // Gather of accumulator result   
-    val calc_pout = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_PARSUM_WIDTH.W)))
+    val calc_pout = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
     for (i <- 0 to conf.CACC_ATOMK-1){
         when(calc_pout_vld(i)){
             calc_pout(i) := calc_pout_sum(i)
         }
         .otherwise{
-            calc_pout(i) := 0.S
+            calc_pout(i) := 0.U
         }
     }
-    val calc_fout = Wire(Vec(conf.CACC_ATOMK, SInt(conf.CACC_FINAL_WIDTH.W)))
+    val calc_fout = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
     for (i <- 0 to conf.CACC_ATOMK-1){
         when(calc_fout_vld(i)){
             calc_fout(i) := calc_fout_sum(i)
         }
         .otherwise{
-            calc_fout(i) := 0.S
+            calc_fout(i) := 0.U
         }
     }  
 

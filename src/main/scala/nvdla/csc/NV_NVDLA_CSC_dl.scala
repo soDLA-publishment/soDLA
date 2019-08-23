@@ -38,12 +38,12 @@ class NV_NVDLA_CSC_dlIO(implicit conf: cscConfiguration) extends Bundle{
 
     val sc2mac_dat_a_pvld = Output(Bool())              /* data valid */
     val sc2mac_dat_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-    val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val sc2mac_dat_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
     val sc2mac_dat_a_pd = Output(UInt(9.W))
 
     val sc2mac_dat_b_pvld = Output(Bool())              /* data valid */
     val sc2mac_dat_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-    val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+    val sc2mac_dat_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
     val sc2mac_dat_b_pd = Output(UInt(9.W))
 
     val reg2dp_op_en = Input(Bool())
@@ -1105,9 +1105,9 @@ if(conf.NVDLA_CC_ATOMC_DIV_ATOMK==4){
                        dat_rsp_l0c0)))))))
 }
 //transform from uint to vec of sint
-val dat_rsp_conv = Wire(Vec(conf.CBUF_ENTRY_BITS/conf.CSC_BPE, SInt(conf.CSC_BPE.W)))
+val dat_rsp_conv = Wire(Vec(conf.CBUF_ENTRY_BITS/conf.CSC_BPE, UInt(conf.CSC_BPE.W)))
 for(i <- 0 to conf.CBUF_ENTRY_BITS/conf.CSC_BPE - 1){
-    dat_rsp_conv(i) := dat_rsp_conv_8b(i*conf.CSC_BPE + conf.CSC_BPE - 1, i*conf.CSC_BPE).asSInt
+    dat_rsp_conv(i) := dat_rsp_conv_8b(i*conf.CSC_BPE + conf.CSC_BPE - 1, i*conf.CSC_BPE)
 }
 
 //////////////// data for image ////////////////
@@ -1135,10 +1135,10 @@ val dat_rsp_img_8b = Mux(~is_img_d1(32), 0.U,
                      Mux(sub_h_total_g8 === "h2".asUInt(3.W), Cat(dat_rsp_l1_sft(conf.CSC_HALF_ENTRY_BITS - 1, 0), dat_rsp_l0_sft_d1(conf.CSC_HALF_ENTRY_BITS - 1, 0)),
                      dat_rsp_l0_sft(conf.CBUF_ENTRY_BITS-1, 0))))
                      
-//transform from uint to vec of sint
-val dat_rsp_img = Wire(Vec(conf.CBUF_ENTRY_BITS/conf.CSC_BPE, SInt(conf.CSC_BPE.W)))
+//transform from uint to vec of uint
+val dat_rsp_img = Wire(Vec(conf.CBUF_ENTRY_BITS/conf.CSC_BPE, UInt(conf.CSC_BPE.W)))
 for(i <- 0 to conf.CBUF_ENTRY_BITS/conf.CSC_BPE - 1){
-    dat_rsp_img(i) := dat_rsp_img_8b(i*conf.CSC_BPE + conf.CSC_BPE - 1, i*conf.CSC_BPE).asSInt
+    dat_rsp_img(i) := dat_rsp_img_8b(i*conf.CSC_BPE + conf.CSC_BPE - 1, i*conf.CSC_BPE)
 }
 
 val dat_rsp_sft_d1_en = dat_rsp_l0_pvld & (sub_h_total_g9 =/= "h1".asUInt(3.W));
@@ -1188,7 +1188,7 @@ val dat_rsp_p0_vld_w = dat_rsp_pvld
 val dat_out_pvld = RegInit(false.B)
 val dat_out_flag = RegInit("b0".asUInt(9.W))
 val dat_out_bypass_mask = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
-val dat_out_bypass_data = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+val dat_out_bypass_data = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 
 val dat_out_pvld_l = Wire(Bool()) +: 
                      Seq.fill(conf.CSC_DL_PRA_LATENCY)(RegInit(false.B))
@@ -1225,7 +1225,7 @@ for(i <- 0 to conf.CSC_ATOMC-1){
     }
 }
 //TODO winograd
-val dat_out_wg_data = VecInit(Seq.fill(conf.CSC_ATOMC)(0.asSInt(conf.CSC_BPE.W)))
+val dat_out_wg_data = VecInit(Seq.fill(conf.CSC_ATOMC)(0.asUInt(conf.CSC_BPE.W)))
 val dat_out_wg_mask = VecInit(Seq.fill(conf.CSC_ATOMC)(false.B))
 
 //////////////////////////////////////////////////////////////
@@ -1234,7 +1234,7 @@ val dat_out_wg_mask = VecInit(Seq.fill(conf.CSC_ATOMC)(false.B))
 val dl_out_pvld = RegInit(false.B)
 val dl_out_mask = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
 val dl_out_flag = RegInit("b0".asUInt(9.W))
-val dl_out_data = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+val dl_out_data = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 
 val dat_out_data = dat_out_bypass_data
 val dat_out_mask = Mux(~dat_out_pvld, VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)), 
@@ -1256,8 +1256,8 @@ val sc2mac_dat_a_pd_out = RegInit("b0".asUInt(9.W))
 val sc2mac_dat_b_pd_out = RegInit("b0".asUInt(9.W))
 val sc2mac_dat_a_mask_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
 val sc2mac_dat_b_mask_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
-val sc2mac_dat_a_data_out = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
-val sc2mac_dat_b_data_out = Reg(Vec(conf.CSC_ATOMC, SInt(conf.CSC_BPE.W)))
+val sc2mac_dat_a_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
+val sc2mac_dat_b_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 
 val sc2mac_dat_pd_w = Mux(~dl_out_pvld, "b0".asUInt(9.W), dl_out_flag)
 

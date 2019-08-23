@@ -9,16 +9,21 @@ class NV_NVDLA_CDP_DP_mul(implicit val conf: cdpConfiguration) extends Module {
     val pINB_BW = 16
     val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
-        val intp2mul_pd = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
-        val sync2mul_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE).W))
-        val mul2ocvt_pd = Output(UInt((conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE+16)).W))
+
         val intp2mul_pvld = Input(Bool())
-        val mul2ocvt_prdy = Input(Bool())
-        val reg2dp_mul_bypass = Input(Bool())
-        val sync2mul_pvld = Input(Bool())
         val intp2mul_prdy = Output(Bool())
-        val mul2ocvt_pvld = Output(Bool())
+        val intp2mul_pd = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
+
+        val sync2mul_pvld = Input(Bool())
         val sync2mul_prdy = Output(Bool())
+        val sync2mul_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE).W))
+        
+        val mul2ocvt_pvld = Output(Bool())
+        val mul2ocvt_prdy = Input(Bool())
+        val mul2ocvt_pd = Output(UInt((conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE+16)).W))
+
+        val reg2dp_mul_bypass = Input(Bool())
+        
     })
 
 withClock(io.nvdla_core_clk){
@@ -40,7 +45,7 @@ withClock(io.nvdla_core_clk){
     val mul_bypass_en = RegInit(false.B)
     mul_bypass_en := io.reg2dp_mul_bypass === 1.U
 
-//interlock two path data 
+    //interlock two path data 
     val mul_in_rdy = Wire(Bool())
     io.intp2mul_prdy := Mux(mul_bypass_en, mul2ocvt_prdy_f, mul_in_rdy) & io.sync2mul_pvld
     io.sync2mul_prdy := Mux(mul_bypass_en, mul2ocvt_prdy_f, mul_in_rdy) & io.intp2mul_pvld
@@ -50,18 +55,9 @@ withClock(io.nvdla_core_clk){
     mul_in_rdy := mul_rdy.asUInt.andR
 
     val mul_vld = VecInit((0 until conf.NVDLA_CDP_THROUGHPUT) map {i => mul_in_vld & mul_in_rdy})
-
-    val mul_inb_pd = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(16.W)))
-    for(i <- 0 until conf.NVDLA_CDP_THROUGHPUT){
-        mul_inb_pd(i) := io.intp2mul_pd(i)(15,0)
-    }
-
-    val mul_ina_pd = VecInit(
-        (0 until conf.NVDLA_CDP_THROUGHPUT) map 
-        {i => io.sync2mul_pd(
-            (i + 1) * conf.NVDLA_CDP_ICVTO_BWPE - 1, 
-            i * conf.NVDLA_CDP_ICVTO_BWPE
-            )})
+    val mul_inb_pd = VecInit((0 until conf.NVDLA_CDP_THROUGHPUT) map {i => io.intp2mul_pd(i)})
+    val mul_ina_pd = VecInit((0 until conf.NVDLA_CDP_THROUGHPUT) map
+        {i => io.sync2mul_pd((i + 1) * conf.NVDLA_CDP_ICVTO_BWPE - 1, i * conf.NVDLA_CDP_ICVTO_BWPE)})
 
     val mul_unit_vld = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
     val mul_unit_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
@@ -112,26 +108,9 @@ withClock(io.nvdla_core_clk){
         Cat(mul_unit_pd(7),mul_unit_pd(6),mul_unit_pd(5),mul_unit_pd(4),mul_unit_pd(3),mul_unit_pd(2),mul_unit_pd(1), mul_unit_pd(0))
         )
 
-//output select
+    //output select
 
     mul2ocvt_pvld_f := Mux(mul_bypass_en, (io.sync2mul_pvld & io.intp2mul_pvld), (mul_unit_vld.asUInt.andR))
-
-//  ///////////////////////////////////////////
-//  
-//  //: my $k = NVDLA_CDP_THROUGHPUT*(NVDLA_CDP_ICVTO_BWPE+16);
-//  //: &eperl::pipe(" -wid $k -is -do mul2ocvt_pd -vo mul2ocvt_pvld -ri mul2ocvt_prdy -di mul2ocvt_pd_f -vi mul2ocvt_pvld_f -ro mul2ocvt_prdy_f ");
-//  
-///////////////////////////////////////////
-
-    // val pipe_p2 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE+16)))
-    // pipe_p2.io.clk := io.nvdla_core_clk
-    // pipe_p2.io.vi := mul2ocvt_pvld_f
-    // val mul2ocvt_prdy_f = pipe_p2.io.ro
-    // pipe_p2.io.di := mul2ocvt_pd_f
-    // io.mul2ocvt_pvld := pipe_p2.io.vo
-    // pipe_p2.io.ri := io.mul2ocvt_prdy
-    // io.mul2ocvt_pd := pipe_p2.io.dout
-
 
 }}
 
