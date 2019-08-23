@@ -109,7 +109,7 @@ withClock(io.nvdla_core_clk){
 //cvt sub-unit data in
     val cdp_cvtin_input_pd = VecInit(
         (0 until conf.NVDLA_CDP_THROUGHPUT) map {
-            i => io.cdp_rdma2dp_pd(conf.NVDLA_CDP_BWPE*conf.NVDLA_CDP_THROUGHPUT+conf.NVDLA_CDP_BWPE-1, conf.NVDLA_CDP_BWPE*conf.NVDLA_CDP_THROUGHPUT)
+            i => io.cdp_rdma2dp_pd(conf.NVDLA_CDP_BWPE*i+conf.NVDLA_CDP_BWPE-1, conf.NVDLA_CDP_BWPE*i)
         })
 
     val reg2dp_datin_offset_use = RegInit(0.U(16.W))
