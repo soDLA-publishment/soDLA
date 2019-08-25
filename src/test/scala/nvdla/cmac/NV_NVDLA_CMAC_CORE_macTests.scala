@@ -29,13 +29,13 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
       dat_nz(i) = rnd.nextBoolean()
       dat_pvld(i) = rnd.nextBoolean()
 
-      poke(c.io.wt_actv_data(i), wt(i))
-      poke(c.io.wt_actv_nz(i), wt_nz(i))
-      poke(c.io.wt_actv_pvld(i), wt_pvld(i))
+      poke(c.io.wt_actv(i).bits.data, wt(i))
+      poke(c.io.wt_actv(i).bits.nz, wt_nz(i))
+      poke(c.io.wt_actv(i).valid, wt_pvld(i))
 
-      poke(c.io.dat_actv_data(i), dat(i))
-      poke(c.io.dat_actv_nz(i), dat_nz(i))
-      poke(c.io.dat_actv_pvld(i), dat_pvld(i))
+      poke(c.io.dat_actv(i).bits.data, dat(i))
+      poke(c.io.dat_actv(i).bits.nz, dat_nz(i))
+      poke(c.io.dat_actv(i).valid, dat_pvld(i))
 
       if(wt_nz(i)&wt_pvld(i)&dat_nz(i)&dat_pvld(i)){
            mout(i) = wt(i)*dat(i)
@@ -50,8 +50,8 @@ class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTes
     step(conf.CMAC_OUT_RETIMING)
 
     if(wt_pvld(0)&dat_pvld(0)){
-      expect(c.io.mac_out_data, sum_out)
-      expect(c.io.mac_out_pvld, wt_pvld(0)&dat_pvld(0))
+      expect(c.io.mac_out.bits, sum_out)
+      expect(c.io.mac_out.valid, wt_pvld(0)&dat_pvld(0))
     }
   }
 }
@@ -62,6 +62,7 @@ class NV_NVDLA_CMAC_CORE_macTester extends ChiselFlatSpec {
   backends foreach {backend =>
     it should s"correctly perform mac logic $backend" in {
       implicit val conf: cmacConfiguration = new cmacConfiguration
+      implicit val nvconf: nvdlaConfig = new nvdlaConfig
       Driver(() => new NV_NVDLA_CMAC_CORE_mac())(c => new NV_NVDLA_CMAC_CORE_macTests(c)) should be (true)
     }
   }
