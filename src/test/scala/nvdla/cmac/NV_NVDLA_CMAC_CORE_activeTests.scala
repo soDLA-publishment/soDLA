@@ -34,7 +34,7 @@ class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekP
     poke(c.io.in_dat_stripe_end, in_dat_stripe_end)    
 
     //assign data, mask
-    for (i <- 0 to conf.CMAC_ATOMC-1){
+    for (i <- 0 until conf.CMAC_ATOMC){
 
       in_dat_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       in_dat_mask(i) = rnd.nextBoolean()
@@ -51,7 +51,7 @@ class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekP
     }
 
     //assign wt sel
-    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
+    for(i <- 0 until conf.CMAC_ATOMK_HALF){
 
       in_wt_sel(i) = rnd.nextBoolean()
 
@@ -61,17 +61,21 @@ class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekP
 
     step(2)
 
+    //check stripe st/end
+    expect(c.io.in_dat_stripe_st, in_dat_stripe_st)
+    expect(c.io.in_dat_stripe_end, in_dat_stripe_end)
+
     //check dat valid
-    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-        for(j <- 0 to conf.CMAC_ATOMC-1){
+    for(i <- 0 until conf.CMAC_ATOMK_HALF){
+        for(j <- 0 until conf.CMAC_ATOMC){
           expect(c.io.dat_actv(i)(j).valid, in_dat_pvld)
       }
     }
 
     //check that dat pack
     if(in_dat_pvld){
-      for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-          for(j <- 0 to conf.CMAC_ATOMC-1){
+      for(i <- 0 until conf.CMAC_ATOMK_HALF){
+          for(j <- 0 until conf.CMAC_ATOMC){
             expect(c.io.dat_actv(i)(j).bits.nz, in_dat_mask(j))
             if(in_dat_mask(j)){
               expect(c.io.dat_actv(i)(j).bits.data, in_dat_data(j))
