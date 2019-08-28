@@ -13,12 +13,7 @@
 //         val nvdla_core_clk = Input(Clock())      
 
 //         //csb2cdma
-//         val csb2cdma_req_pd = Input(UInt(63.W))
-//         val csb2cdma_req_pvld = Input(Bool())
-//         val csb2cdma_req_prdy = Output(Bool())
-        
-//         val cdma2csb_resp_pd = Output(UInt(34.W))
-//         val cdma2csb_resp_valid = Output(Bool())
+//         val csb2csc = new csb2dp_if
 
 //         //reg2dp
 //         val dp2reg_dat_flush_done = Input(Bool())
@@ -417,73 +412,13 @@
 //     // GENERATE ACCESS LOGIC TO EACH REGISTER GROUP                       //
 //     //                                                                    //
 //     ////////////////////////////////////////////////////////////////////////
-//     //EACH subunit has 4KB address space 
-//     val reg.wr_en = Wire(Bool())
-//     val select_s = Mux(reg.offset(11,0) < "h0010".asUInt(32.W), true.B, false.B)
-//     val select_d0 = (reg.offset(11,0) >= "h0010".asUInt(32.W)) & (reg2dp_producer === false.B)
-//     val select_d1 = (reg.offset(11,0) >= "h0010".asUInt(32.W)) & (reg2dp_producer === true.B)
-
-//     s_reg.wr_en := reg.wr_en & select_s
-//     d0_reg.wr_en := reg.wr_en & select_d0 & !reg2dp_d0_op_en
-//     d1_reg.wr_en := reg.wr_en & select_d1 & !reg2dp_d1_op_en
-
-//     val reg.rd_data = (Fill(32, select_s) & s_reg.rd_data)|
-//                         (Fill(32, select_d0) & d0_reg.rd_data)|
-//                         (Fill(32, select_d1)& d1_reg.rd_data)
-
-//     ////////////////////////////////////////////////////////////////////////
-//     //                                                                    //
-//     // GENERATE CSB TO REGISTER CONNECTION LOGIC                          //
-//     //                                                                    //
-//     ////////////////////////////////////////////////////////////////////////
-//     val req_pvld = RegInit(false.B)
-//     val req_pd = RegInit("b0".asUInt(63.W))
-
-//     req_pvld := io.csb2cdma_req_pvld
-//     when(io.csb2cdma_req_pvld){
-//         req_pd := io.csb2cdma_req_pd
-//     }
-
-//     // PKT_UNPACK_WIRE( csb2xx_16m_be_lvl ,  req_ ,  req_pd ) 
-//     val req_addr = req_pd(21, 0)
-//     val req_wdat = req_pd(53, 22)
-//     val req_write = req_pd(54)
-//     val req_nposted = req_pd(55)
-//     val req_srcpriv = req_pd(56)
-//     val req_wrbe = req_pd(60, 57)
-//     val req_level = req_pd(62, 61)
-
-//     io.csb2cdma_req_prdy := true.B
-
-//     //Address in CSB master is word aligned while address in regfile is byte aligned.
-//     reg.offset := Cat(req_addr, "b0".asUInt(2.W))
-//     reg.wr_data := req_wdat
-//     reg.wr_en := req_pvld & req_write
-//     val reg_rd_en = req_pvld & ~req_write
-
-//     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
-//     val csb_rresp_rdat = reg.rd_data
-//     val csb_rresp_error = false.B
-//     val csb_rresp_pd_w = Cat(false.B, csb_rresp_error, csb_rresp_rdat)
-
-//     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_wr_erpt ,  csb_wresp_ ,  csb_wresp_pd_w 
-//     val csb_wresp_rdat = "b0".asUInt(32.W)
-//     val csb_wresp_error = false.B
-//     val csb_wresp_pd_w = Cat(true.B, csb_wresp_error, csb_wresp_rdat)
-
-//     val cdma2csb_resp_pd_out = RegInit("b0".asUInt(34.W))
-//     val cdma2csb_resp_valid_out = RegInit(false.B)
-
-//     when(reg_rd_en){
-//         cdma2csb_resp_pd_out := csb_rresp_pd_w
-//     }
-//     .elsewhen(reg.wr_en & req_nposted){
-//         cdma2csb_resp_pd_out := csb_wresp_pd_w
-//     }
-//     cdma2csb_resp_valid_out := (reg.wr_en & req_nposted) | reg_rd_en
-
-//     io.cdma2csb_resp_pd := cdma2csb_resp_pd_out
-//     io.cdma2csb_resp_valid := cdma2csb_resp_valid_out 
+//     val csb_logic = Module(new NV_NVDLA_CSB_LOGIC)
+//     csb_logic.io.clk := io.nvdla_core_clk
+//     csb_logic.io.csb2dp <> io.csb2csc
+//     reg_offset := csb_logic.io.reg.offset
+//     reg_wr_en := csb_logic.io.reg.wr_en
+//     reg_wr_data := csb_logic.io.reg.wr_data
+//     csb_logic.io.reg.rd_data := reg_rd_data
 
 //     ////////////////////////////////////////////////////////////////////////
 //     //                                                                    //

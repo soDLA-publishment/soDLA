@@ -53,13 +53,8 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     val u_rt_in = Module(new NV_NVDLA_CMAC_CORE_rt_in(useRealClock = true))
 
     u_rt_in.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF)
-    u_rt_in.io.sc2mac_dat <> io.sc2mac_dat              //|< i
-    u_rt_in.io.sc2mac_wt <> io.sc2mac_wt                //|< i
-
-    val in_dat = u_rt_in.io.in_dat
-    val in_dat_stripe_st = u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_st_FIELD)            //|> w
-    val in_dat_stripe_end = u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)             //|> w
-    val in_wt = u_rt_in.io.in_wt                    //|> w
+    u_rt_in.io.sc2mac_dat <> io.sc2mac_dat          
+    u_rt_in.io.sc2mac_wt <> io.sc2mac_wt               
         
     //==========================================================
     // input shadow and active pipeline
@@ -67,12 +62,10 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     val u_active = Module(new NV_NVDLA_CMAC_CORE_active(useRealClock = true))
 
     u_active.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+1)
-    u_active.io.in_dat_pvld := in_dat.valid                   //|< w
-    u_active.io.in_dat_mask := in_dat.bits.mask            //|< w
-    u_active.io.in_dat_data := in_dat.bits.data     //|< i )  
-    u_active.io.in_dat_stripe_end := in_dat_stripe_end             //|< w
-    u_active.io.in_dat_stripe_st := in_dat_stripe_st              //|< w
-    u_active.io.in_wt <> in_wt                    //|< w
+    u_active.io.in_dat <> u_rt_in.io.in_dat
+    u_active.io.in_dat_stripe_end := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_st_FIELD)                 //|< w
+    u_active.io.in_dat_stripe_st := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)               //|< w
+    u_active.io.in_wt <> u_rt_in.io.in_wt                     
 
     //==========================================================
     // MAC CELLs

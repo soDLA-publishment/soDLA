@@ -34,25 +34,15 @@
 //         val slcg_img_gate_dc = Output(Bool())
 //         val slcg_img_gate_wg = Output(Bool())
 
-//         val pixel_planar0_bundle_limit = Output(UInt(4.W))
-//         val pixel_planar0_bundle_limit_1st = Output(UInt(4.W))
-//         val pixel_planar0_byte_sft = Output(UInt(conf.ATMMBW.W))
-//         val pixel_planar0_lp_burst = Output(UInt(4.W))
-//         val pixel_planar0_lp_vld = Output(Bool())
-//         val pixel_planar0_rp_burst = Output(UInt(4.W))
-//         val pixel_planar0_rp_vld = Output(Bool())
-//         val pixel_planar0_sft = Output(UInt(3.W))
-//         val pixel_planar0_width_burst = Output(UInt(14.W))
-
-//         val pixel_planar1_bundle_limit = Output(UInt(5.W))
-//         val pixel_planar1_bundle_limit_1st = Output(UInt(5.W))
-//         val pixel_planar1_byte_sft = Output(UInt(conf.ATMMBW.W)) 
-//         val pixel_planar1_lp_burst = Output(UInt(3.W))
-//         val pixel_planar1_lp_vld = Output(Bool())
-//         val pixel_planar1_rp_burst = Output(UInt(3.W))
-//         val pixel_planar1_rp_vld = Output(Bool())
-//         val pixel_planar1_sft = Output(UInt(3.W))
-//         val pixel_planar1_width_burst = Output(UInt(14.W))
+//         val pixel_planar_bundle_limit = Output(Vec(2, UInt(4.W)))
+//         val pixel_planar_bundle_limit_1st = Output(Vec(2, UInt(4.W)))
+//         val pixel_planar_byte_sft = Output(Vec(2, UInt(conf.ATMMBW.W)))
+//         val pixel_planar_lp_burst = Output(Vec(2, UInt(4.W)))
+//         val pixel_planar_lp_vld = Output(Vec(2, Bool()))
+//         val pixel_planar_rp_burst = Output(Vec(2, UInt(4.W)))
+//         val pixel_planar_rp_vld = Output(Vec(2, Bool()))
+//         val pixel_planar_sft = Output(Vec(2, UInt(3.W)))
+//         val pixel_planar_width_burst = Output(Vec(2, UInt(14.W)))
 
 //         //reg2dp
 //         val reg2dp_op_en = Input(Bool())
@@ -129,7 +119,6 @@
 // ////////////////////////////////////////////////////////////////////////
 // //  FSM output signals                                                //
 // ////////////////////////////////////////////////////////////////////////
-//     val img2status_state_out = RegInit(false.B)
 //     val is_running_d1 = RegInit(false.B)
 
 //     val is_idle = (cur_state === sIdle);
@@ -138,14 +127,10 @@
 //     val is_done = (cur_state === sDone)
 
 //     io.layer_st := img_en & is_idle
-//     val img2status_state_w = nxt_state
 //     val is_first_running = io.is_running & !is_running_d1
 
-//     img2status_state_out := img2status_state_w
 //     is_running_d1 := io.is_running
-
-//     io.img2status_state := img2status_state_out
-
+//     io.img2status_state := RegNext(nxt_state, false.B)
 // ////////////////////////////////////////////////////////////////////////
 // //  registers to keep last layer status                               //
 // ////////////////////////////////////////////////////////////////////////

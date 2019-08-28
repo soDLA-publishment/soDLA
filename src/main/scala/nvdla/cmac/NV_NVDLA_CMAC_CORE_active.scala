@@ -12,10 +12,8 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
         //clock
         val nvdla_core_clk = Input(Clock())
 
-        //  input_dat
-        val in_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
-        val in_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val in_dat_pvld = Input(Bool())
+        // input_dat
+        val in_dat = Flipped(ValidIO(new csc2cmac_wt_if))  /* data valid */
         val in_dat_stripe_st = Input(Bool())
         val in_dat_stripe_end = Input(Bool())
 
@@ -82,12 +80,12 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
     val dat_pre_stripe_st_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
     val dat_pre_stripe_end_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
 
-    dat_pre_pvld := io.in_dat_pvld
-    when(io.in_dat_pvld){
-        dat_pre_nz := io.in_dat_mask
+    dat_pre_pvld := io.in_dat.valid
+    when(io.in_dat.valid){
+        dat_pre_nz := io.in_dat.bits.mask
         for(i <- 0 to conf.CMAC_ATOMC-1){
-            when(io.in_dat_mask(i)){
-                dat_pre_data(i):=io.in_dat_data(i)
+            when(io.in_dat.bits.mask(i)){
+                dat_pre_data(i):=io.in_dat.bits.data(i)
             }
         } 
         for(i <- 0 to conf.CMAC_ATOMK_HALF-1){

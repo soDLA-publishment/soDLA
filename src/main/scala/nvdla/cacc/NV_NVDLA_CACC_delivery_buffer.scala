@@ -29,8 +29,9 @@
 //         val dbuf_wr_addr = Input(UInt(conf.CACC_DBUF_AWIDTH.W))
 //         val dbuf_wr_data = Input(UInt(conf.CACC_DBUF_WIDTH.W))
 
-//         val dbuf_rd_en = Input(Bool())
+        
 //         val dbuf_rd_layer_end = Input(Bool())
+//         val dbuf_rd_en = Input(Bool())
 //         val dbuf_rd_ready = Output(Bool())
 //         val dbuf_rd_addr = Input(UInt(conf.CACC_ABUF_AWIDTH.W))
 

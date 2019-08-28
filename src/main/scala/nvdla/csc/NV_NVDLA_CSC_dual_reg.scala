@@ -105,7 +105,7 @@ class NV_NVDLA_CSC_dual_reg extends Module{
     //nvdla_csc_d_op_enable_0_out
     "h08".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.op_en), 
     //nvdla_csc_d_post_y_extension_0_out
-    "h20".asUInt(32.W)  -> Cat( "b0".asUInt(30.W), io.field.y_extension), 
+    "h20".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.field.y_extension), 
     //nvdla_csc_d_pra_cfg_0_out
     "h60".asUInt(32.W)  -> Cat("b0".asUInt(30.W), io.field.pra_truncate), 
     //nvdla_csc_d_release_0_out

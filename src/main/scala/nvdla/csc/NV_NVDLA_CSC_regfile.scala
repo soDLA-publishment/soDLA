@@ -19,7 +19,6 @@ class NV_NVDLA_CSC_regfile(implicit val conf: nvdlaConfig) extends Module {
         val reg2dp_field = new csc_dual_reg_flop_outputs
         val dp2reg_done = Input(Bool()) 
         
-
         //slave cg op
         val slcg_op_en = Output(UInt(4.W))
     })
@@ -49,8 +48,8 @@ withClock(io.nvdla_core_clk){
 
     //Instance single register group
     val dp2reg_consumer = RegInit(false.B)
-    val dp2reg_status_0 = Wire(Bool())
-    val dp2reg_status_1 = Wire(Bool())
+    val dp2reg_status_0 = Wire(UInt(2.W))
+    val dp2reg_status_1 = Wire(UInt(2.W))
 
     val reg_offset = Wire(UInt(12.W))
     val reg_wr_data = Wire(UInt(32.W))
