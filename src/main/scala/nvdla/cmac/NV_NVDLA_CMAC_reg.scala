@@ -48,8 +48,8 @@ withClock(io.nvdla_core_clk){
 
     //Instance single register group
     val dp2reg_consumer = RegInit(false.B)
-    val dp2reg_status_0 = Wire(Bool())
-    val dp2reg_status_1 = Wire(Bool())
+    val dp2reg_status_0 = Wire(UInt(2.W))
+    val dp2reg_status_1 = Wire(UInt(2.W))
 
     val reg_offset = Wire(UInt(12.W))
     val reg_wr_data = Wire(UInt(32.W))

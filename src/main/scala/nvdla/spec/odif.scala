@@ -124,10 +124,27 @@ class cdma2sc_if(implicit val conf: nvdlaConfig) extends Bundle{
 }
 
 
-class updt_entry_slices_if extends Bundle{
-    val entries = Output(Bool())
-    val slices = Output(Bool())
+class updt_entries_slices_if extends Bundle{
+    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val slices = Output(UInt(14.W))
 }
+
+class updt_entries_kernels_if extends Bundle{
+    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val kernels = Output(UInt(14.W))
+}
+
+class nvdla_wr_if(depth:Int, width:Int) extends Bundle{
+    val addr = ValidIO(UInt(depth.W))
+    val data = Output((UInt(width.W)))
+}
+
+class nvdla_rd_if(depth:Int, width:Int) extends Bundle{
+    val addr = ValidIO(UInt(depth.W))
+    val data = Input((UInt(width.W)))
+}
+
+
 
 
 

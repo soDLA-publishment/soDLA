@@ -1,4 +1,3 @@
-//TODO: need to repair
 //package nvdla
 //
 //import chisel3._

@@ -8,6 +8,7 @@
 //     val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 //         val nvdla_core_clk_orig = Input(Clock())
+
 //         val dp2lut_X_entry = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(10.W)))
 //         val dp2lut_Xinfo = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(18.W)))
 //         val dp2lut_Y_entry = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(10.W)))

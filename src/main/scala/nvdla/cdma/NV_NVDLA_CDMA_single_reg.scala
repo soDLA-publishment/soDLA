@@ -10,11 +10,7 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         // Register control interface
-//         val reg.rd_data = Output(UInt(32.W))
-//         val reg.offset = Input(UInt(12.W))
-
-//         val reg.wr_en = Input(Bool())
-//         val reg.wr_data = Input(UInt(32.W))
+//         val reg = new reg_control_if
 
 //         // Writable register flop/trigger outputs
 //         val producer = Output(Bool())
@@ -54,18 +50,17 @@
 //     val nvdla_cdma_s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W))&io.reg.wr_en
 //     val nvdla_cdma_s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W))&io.reg.wr_en
 
-//     val nvdla_cdma_s_arbiter_0_out = Cat("b0".asUInt(12.W), io.arb_wmb, "b0".asUInt(15.W), io.producer)
-//     val nvdla_cdma_s_cbuf_flush_status_0_out = Cat("b0".asUInt(31.W), io.flush_done)
-//     val nvdla_cdma_s_pointer_0_out = Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
-//     val nvdla_cdma_s_status_0_out = Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
-
 // // ///// Output mux  
 //     io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
-//     Seq(      
-//     "h8".asUInt(32.W)  -> nvdla_cdma_s_arbiter_0_out,
-//     "hc".asUInt(32.W)  -> nvdla_cdma_s_cbuf_flush_status_0_out,
-//     "h4".asUInt(32.W)  -> nvdla_cdma_s_pointer_0_out,
-//     "h0".asUInt(32.W)  -> nvdla_cdma_s_status_0_out
+//     Seq(  
+//     //nvdla_cdma_s_arbiter_0_out    
+//     "h8".asUInt(32.W)  -> Cat("b0".asUInt(12.W), io.arb_wmb, "b0".asUInt(15.W), io.producer),
+//     //nvdla_cdma_s_cbuf_flush_status_0_out
+//     "hc".asUInt(32.W)  -> Cat("b0".asUInt(31.W), io.flush_done),
+//     //nvdla_cdma_s_pointer_0_out
+//     "h4".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),
+//     //nvdla_cdma_s_status_0_out
+//     "h0".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
 //     ))
 
 // // ///// Register flop declarations    

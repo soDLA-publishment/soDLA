@@ -190,6 +190,12 @@ class csc_sg2wl_if extends Bundle{
     val reuse_rls = Output(Bool())
 }
 
+class csc_wl_dec_if extends Bundle{
+    val mask = Output(Vec(conf.CSC_ATOMC, Bool()))
+    val data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
+    val sel = Output(Vec(conf.CSC_ATOMK, Bool()))
+}
+
 
 class csc_dual_reg_flop_outputs extends Bundle{
 

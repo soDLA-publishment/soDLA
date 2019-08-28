@@ -10,12 +10,8 @@
 //         //clk
 //         val nvdla_core_clk = Input(Clock())
 
-//         val bdma2mcif_rd_req = DecoupledIO(UInt(79.W))
-//         val bdma2cvif_rd_req = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(79.W))) else None 
-
-//         val ld2st_wr_pvld = Output(Bool())  /* data valid */
-//         val ld2st_wr_prdy = Input(Bool())   /* data return handshake */ 
-//         val ld2st_wr_pd = Output(UInt(161.W))
+//         val bdma2mcif_rd_req_pd = DecoupledIO(UInt(79.W))
+//         val bdma2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(79.W))) else None 
 
 //         //&Ports /^obs_bus/;
 //         val reg2dp_cmd_dst_ram_type = Input(Bool())
@@ -34,15 +30,15 @@
 //         val reg2dp_src_surf_stride = Input(UInt(27.W))
 //         val reg2dp_surf_repeat_number = Input(UInt(24.W))
 
+//         val ld2st_wr_idle = Input(Bool())
+//         val ld2st_wr_pd = DecoupledIO(UInt(161.W))
+//         val st2ld_load_idle = Input(Bool())
+
 //         val csb2ld_vld = Input(Bool())
 //         val csb2ld_rdy = Output(Bool())
-
 //         val ld2csb_grp0_dma_stall_inc = Output(Bool())
 //         val ld2csb_grp1_dma_stall_inc = Output(Bool())
-
-//         val ld2csb_idle = Output(Bool())        
-//         val ld2st_wr_idle = Input(Bool())
-//         val st2ld_load_idle = Input(Bool())
+//         val ld2csb_idle = Output(Bool())    
 
 //         val ld2gate_slcg_en = Output(Bool())
 //     })
@@ -95,9 +91,9 @@
 //     val tran_valid = RegInit(false.B)
 //     val reg_cmd_src_ram_type = RegInit(false.B)
 
-//     io.csb2ld_rdy := io.ld2st_wr_prdy & cmd_ready & load_cmd_en
-//     io.ld2st_wr_pvld := io.csb2ld_vld & cmd_ready & load_cmd_en
-//     val cmd_valid = io.csb2ld_vld & io.ld2st_wr_prdy & load_cmd_en
+//     io.csb2ld_rdy := io.ld2st_wr_pd.ready & cmd_ready & load_cmd_en
+//     io.ld2st_wr_pd.valid := io.csb2ld_vld & cmd_ready & load_cmd_en
+//     val cmd_valid = io.csb2ld_vld & io.ld2st_wr_pd.ready & load_cmd_en
 //     cmd_ready := (!tran_valid) | (tran_accept & is_cube_end)
 
 //     when(cmd_ready){
@@ -159,7 +155,7 @@
 
 //     // PKT_PACK_WIRE( bdma_ld2st , ld2st_ , ld2st_wr_pd )
 
-//     io.ld2st_wr_pd := Cat(ld2st_surf_repeat_number, ld2st_surf_stride, ld2st_line_repeat_number,
+//     io.ld2st_wr_pd.bits := Cat(ld2st_surf_repeat_number, ld2st_surf_stride, ld2st_line_repeat_number,
 //                          ld2st_line_stride, ld2st_cmd_interrupt_ptr, ld2st_cmd_interrupt, 
 //                          ld2st_cmd_dst_ram_type, ld2st_cmd_src_ram_type, ld2st_line_size,
 //                          ld2st_addr)
@@ -268,9 +264,9 @@
 //     val mc_int_rd_req_valid_d0 = mc_int_rd_req_valid;
 //     mc_int_rd_req_ready := mc_int_rd_req_ready_d0;
 //     val mc_int_rd_req_pd_d0 = mc_int_rd_req_pd
-//     io.bdma2mcif_rd_req.valid := mc_int_rd_req_valid_d0;
-//     mc_int_rd_req_ready_d0 := io.bdma2mcif_rd_req.ready;
-//     io.bdma2mcif_rd_req := mc_int_rd_req_pd_d0;
+//     io.bdma2mcif_rd_req_pd.valid := mc_int_rd_req_valid_d0;
+//     mc_int_rd_req_ready_d0 := io.bdma2mcif_rd_req_pd.ready;
+//     io.bdma2mcif_rd_req_pd.bits := mc_int_rd_req_pd_d0;
 
 //     val cv_int_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Wire(Bool())) else None 
 //     val cv_int_rd_req_ready_d0 = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Wire(Bool())) else None 
@@ -296,9 +292,9 @@
 //     val cv_int_rd_req_pd_d0 = cv_int_rd_req_pd;
 
 //     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         io.bdma2cvif_rd_req_valid.get := cv_int_rd_req_valid_d0
-//         cv_int_rd_req_ready_d0.get := io.bdma2cvif_rd_req_ready.get
-//         io.bdma2cvif_rd_req_pd.get := cv_int_rd_req_pd_d0
+//         io.bdma2cvif_rd_req_pd.get.valid := cv_int_rd_req_valid_d0
+//         cv_int_rd_req_ready_d0.get := io.bdma2cvif_rd_req_pd.get.ready
+//         io.bdma2cvif_rd_req_pd.get.bits := cv_int_rd_req_pd_d0
 //     }
 
 //     val dma_stall_inc = dma_rd_req_vld & !dma_rd_req_rdy
