@@ -33,7 +33,7 @@ class cscConfiguration extends cbufConfiguration{
     val RT_CSC2CMAC_B_LATENCY = 1
     val CSC_ENTRIES_NUM_WIDTH = 15
 
-    var CSC_WL_PIPELINE_ADDITION = 0 
+    var CSC_WL_PIPELINE_ADDITION = 0
     var CSC_DL_PIPELINE_ADDITION = 0
 
     if(CSC_WL_LATENCY >= CSC_DL_PRA_LATENCY){
@@ -52,7 +52,7 @@ class cscConfiguration extends cbufConfiguration{
     //atomC
     var CSC_WT_ELEMENTS = "h40"
     //in bytes, entry/8
-    var CSC_ENTRY_HEX = "h40"  
+    var CSC_ENTRY_HEX = "h40"
     //CSC_ENTRY_HEX/2
     var CSC_HALF_ENTRY_HEX = "h20"
     //CSC_ENTRY_HEX/4
@@ -60,7 +60,7 @@ class cscConfiguration extends cbufConfiguration{
     //CSC_ENTRY_HEX-1
     var CSC_ENTRY_MINUS1_HEX = "h3f"
     var CSC_ENTRY_HEX_MUL2 = "h80"
-    
+
     var CSC_ATOMC_HEX  = "h40"
 
 
@@ -73,9 +73,9 @@ class cscConfiguration extends cbufConfiguration{
         CSC_ENTRY_HEX = "h40"
         //CSC_ENTRY_HEX/2
         CSC_HALF_ENTRY_HEX  = "h20"
-        //CSC_ENTRY_HEX/4  
-        CSC_QUAT_ENTRY_HEX = "h10" 
-        //CSC_ENTRY_HEX-1   
+        //CSC_ENTRY_HEX/4
+        CSC_QUAT_ENTRY_HEX = "h10"
+        //CSC_ENTRY_HEX-1
         CSC_ENTRY_MINUS1_HEX = "h3f"
         CSC_ENTRY_HEX_MUL2 = "h80"
 
@@ -90,12 +90,12 @@ class cscConfiguration extends cbufConfiguration{
         CSC_ENTRY_HEX = "h20"
         //CSC_ENTRY_HEX/2
         CSC_HALF_ENTRY_HEX  = "h10"
-        //CSC_ENTRY_HEX/4  
-        CSC_QUAT_ENTRY_HEX = "h8" 
-        //CSC_ENTRY_HEX-1   
+        //CSC_ENTRY_HEX/4
+        CSC_QUAT_ENTRY_HEX = "h8"
+        //CSC_ENTRY_HEX-1
         CSC_ENTRY_MINUS1_HEX = "h1f"
         CSC_ENTRY_HEX_MUL2 = "h40"
-        
+
         CSC_ATOMC_HEX = "h20"
 
     }
@@ -108,12 +108,12 @@ class cscConfiguration extends cbufConfiguration{
         CSC_ENTRY_HEX = "h08"
         //CSC_ENTRY_HEX/2
         CSC_HALF_ENTRY_HEX  = "h04"
-        //CSC_ENTRY_HEX/4  
-        CSC_QUAT_ENTRY_HEX = "h2" 
-        //CSC_ENTRY_HEX-1   
+        //CSC_ENTRY_HEX/4
+        CSC_QUAT_ENTRY_HEX = "h2"
+        //CSC_ENTRY_HEX-1
         CSC_ENTRY_MINUS1_HEX = "h07"
         CSC_ENTRY_HEX_MUL2 = "h10"
-        
+
         CSC_ATOMC_HEX = "h08"
 
     }
@@ -164,16 +164,16 @@ class cscConfiguration extends cbufConfiguration{
 
     if(NVDLA_CC_ATOMC_DIV_ATOMK==1){
         CSC_IMG_STRIPE = CSC_ATOMK_MUL2_HEX
-        NVDLA_CC_CREDIT_SIZE = CSC_ATOMK*2  
+        NVDLA_CC_CREDIT_SIZE = CSC_ATOMK*2
     }
     else if(NVDLA_CC_ATOMC_DIV_ATOMK==2){
         CSC_IMG_STRIPE = CSC_ATOMK_MUL2_HEX
         NVDLA_CC_CREDIT_SIZE = CSC_ATOMK*2
-    } 
+    }
     else if(NVDLA_CC_ATOMC_DIV_ATOMK==4){
         CSC_IMG_STRIPE = CSC_ATOMK_MUL4_HEX
         NVDLA_CC_CREDIT_SIZE = CSC_ATOMK*4
-    } 
+    }
 
     //batch keep 1
     val CSC_BATCH_STRIPE = "h1"
@@ -181,19 +181,19 @@ class cscConfiguration extends cbufConfiguration{
 }
 
 class csc_sg2dl_if extends Bundle{
-    val pd = ValidIO(UInt(31.W)) 
+    val pd = ValidIO(UInt(31.W))
     val reuse_rls = Output(Bool())
 }
 
 class csc_sg2wl_if extends Bundle{
-    val pd = ValidIO(UInt(18.W)) 
+    val pd = ValidIO(UInt(18.W))
     val reuse_rls = Output(Bool())
 }
 
 class csc_wl_dec_if extends Bundle{
-    val mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-    val data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-    val sel = Output(Vec(conf.CSC_ATOMK, Bool()))
+//    val mask = Output(Vec(conf.CSC_ATOMC, Bool()))
+//    val data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
+//    val sel = Output(Vec(conf.CSC_ATOMK, Bool()))
 }
 
 
