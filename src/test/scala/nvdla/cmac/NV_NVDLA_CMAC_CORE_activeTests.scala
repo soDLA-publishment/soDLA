@@ -27,7 +27,7 @@ class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekP
     val in_wt_sel = Array.fill(conf.CMAC_ATOMK_HALF){false}
 
     //assign st, end, pvld
-    poke(c.io.in_dat_pvld, in_dat_pvld)
+//    poke(c.io.in_dat_pvld, in_dat_pvld)
     poke(c.io.in_wt.valid, in_wt_pvld)
 
     poke(c.io.in_dat_stripe_st, in_dat_stripe_st)
@@ -42,8 +42,8 @@ class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekP
       in_wt_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       in_wt_mask(i) = rnd.nextBoolean()
 
-      poke(c.io.in_dat_data(i), in_dat_data(i))
-      poke(c.io.in_dat_mask(i), in_dat_mask(i))
+//      poke(c.io.in_dat_data(i), in_dat_data(i))
+//      poke(c.io.in_dat_mask(i), in_dat_mask(i))
 
       poke(c.io.in_wt.bits.data(i), in_wt_data(i))
       poke(c.io.in_wt.bits.mask(i), in_wt_mask(i))

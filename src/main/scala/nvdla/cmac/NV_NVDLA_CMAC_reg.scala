@@ -6,7 +6,7 @@ import chisel3.util._
 
 //Implementation overview of ping-pong register file.
 
-class NV_NVDLA_CMAC_reg(implicit val conf: nvdlaConfig) extends Module {
+class NV_NVDLA_CMAC_reg(implicit val conf: nvdlaConfig, useRealClock:Boolean=false) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())      
@@ -44,7 +44,9 @@ class NV_NVDLA_CMAC_reg(implicit val conf: nvdlaConfig) extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
-withClock(io.nvdla_core_clk){
+    val internal_clock = if (useRealClock) io.nvdla_core_clk else clock
+
+withClock(internal_clock){
 
     //Instance single register group
     val dp2reg_consumer = RegInit(false.B)

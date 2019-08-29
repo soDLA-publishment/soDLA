@@ -17,7 +17,7 @@ class sc2buf_data_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
     val data = Flipped(ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
 }
 
-class sc2buf_wt_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{ 
+class sc2buf_wt_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
     val addr = ValidIO(UInt(conf.CBUF_ADDR_WIDTH.W))
     val data = Flipped(ValidIO(UInt(conf.CBUF_RD_PORT_WIDTH.W)))
 }
@@ -100,7 +100,7 @@ class csb2dp_if(implicit val conf: nvdlaConfig) extends Bundle{
 }
 
 class nvdla_clock_if extends Bundle{
-    val nvdla_core_clk = Output(Clock()) 
+    val nvdla_core_clk = Output(Clock())
     val dla_clk_ovr_on_sync = Output(Clock())
     val global_clk_ovr_on_sync = Output(Clock())
     val tmc2slcg_disable_clock_gating = Output(Bool())
@@ -114,7 +114,7 @@ class reg_control_if extends Bundle{
     val wr_en = Input(Bool())
 }
 
-// 
+//
 
 class cdma2sc_if(implicit val conf: nvdlaConfig) extends Bundle{
     val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
@@ -125,12 +125,12 @@ class cdma2sc_if(implicit val conf: nvdlaConfig) extends Bundle{
 
 
 class updt_entries_slices_if extends Bundle{
-    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+//    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val slices = Output(UInt(14.W))
 }
 
 class updt_entries_kernels_if extends Bundle{
-    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+//    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val kernels = Output(UInt(14.W))
 }
 
