@@ -20,16 +20,11 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nocifConfiguration) extends Modul
         val bpt2arb_req_pd = Output(UInt(conf.NVDLA_DMA_RD_IG_PW.W))
 
         val tieoff_axid = Input(UInt(4.W))
-        val tieoff_lat_fifo_depth = Input(UInt(8.W))
+        val tieoff_lat_fifo_depth = Input(UInt(9.W))
     })
 
 
-//    val in_pd_p  = Wire(UInt(conf.NVDLA_DMA_RD_REQ.W))
-//    val in_vld_p = Wire(Bool())
     val in_rdy_p = Wire(Bool())
-
-//    val in_pd   = Wire(UInt(conf.NVDLA_DMA_RD_REQ.W))
-//    val in_vld  = Wire(Bool())
     val in_rdy  = Wire(Bool())
 
     //////////////////////////////////////// pipe1
@@ -54,7 +49,6 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nocifConfiguration) extends Modul
     pipe_p2.io.ri   := in_rdy
     val in_pd   = pipe_p2.io.dout
     val in_vld  = pipe_p2.io.vo
-
 
 
     withClock(io.nvdla_core_clk) {
@@ -99,7 +93,10 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nocifConfiguration) extends Modul
         if(conf.NVDLA_MCIF_BURST_SIZE > 1) {
             val stt_offset  = in_addr(conf.NVDLA_MEMORY_ATOMIC_LOG2+conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, conf.NVDLA_MEMORY_ATOMIC_LOG2)
             val size_offset = in_size(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)
-            Cat(mon_end_offset_c, end_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)) := Cat(stt_offset, size_offset)
+//            Cat(mon_end_offset_c, end_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)) := Cat(stt_offset, size_offset)
+            mon_end_offset_c := stt_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1)
+            end_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0) := Cat(stt_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-2, 0), size_offset)
+
 
             is_single_tran := Mux((stt_offset + in_size) < conf.NVDLA_MCIF_BURST_SIZE.U , true.B, false.B)
 
@@ -146,8 +143,10 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nocifConfiguration) extends Modul
         // lat output logic
         lat_count_cnt := lat_cnt_cur
 
-        Cat(mon_lat_fifo_free_slot_c, lat_fifo_free_slot) := io.tieoff_lat_fifo_depth - lat_count_cnt
-
+//        Cat(mon_lat_fifo_free_slot_c, lat_fifo_free_slot) := io.tieoff_lat_fifo_depth - lat_count_cnt
+        val tmp = io.tieoff_lat_fifo_depth - lat_count_cnt
+        mon_lat_fifo_free_slot_c := tmp(8)
+        lat_fifo_free_slot := tmp(7,0)
         val req_enable = (!lat_fifo_stall_enable) || (Cat(0.U(6.W), slot_needed) <= lat_fifo_free_slot)
 
         //================
@@ -183,8 +182,8 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nocifConfiguration) extends Modul
             //================
             // bsp out: USER: SIZE
             //================
-            val out_inc = is_ftran & is_ltran & out_swizzle && !out_odd
-            Cat(mon_out_beats_c, beat_size) := out_size(2, 1) + out_inc
+//            val out_inc = is_ftran & is_ltran & out_swizzle && !out_odd
+//            Cat(mon_out_beats_c, beat_size) := out_size(2, 1) + out_inc
         }
 
 
