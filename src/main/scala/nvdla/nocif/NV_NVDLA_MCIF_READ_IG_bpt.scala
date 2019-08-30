@@ -3,7 +3,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nocifConfiguration) extends Module {
+class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module {
     val io = IO(new Bundle{
         //general clock
         val nvdla_core_clk = Input(Clock())
@@ -93,13 +93,11 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nocifConfiguration) extends Modul
         if(conf.NVDLA_MCIF_BURST_SIZE > 1) {
             val stt_offset  = in_addr(conf.NVDLA_MEMORY_ATOMIC_LOG2+conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, conf.NVDLA_MEMORY_ATOMIC_LOG2)
             val size_offset = in_size(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)
-//            Cat(mon_end_offset_c, end_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)) := Cat(stt_offset, size_offset)
-            mon_end_offset_c := stt_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1)
-            end_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0) := Cat(stt_offset(conf.NVDLA_MCIF_BURST_SIZE_LOG2-2, 0), size_offset)
+            val temp_result = stt_offset +& size_offset
+            mon_end_offset_c := temp_result(conf.NVDLA_MCIF_BURST_SIZE_LOG2)
+            end_offset := temp_result(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)
 
-
-            is_single_tran := Mux((stt_offset + in_size) < conf.NVDLA_MCIF_BURST_SIZE.U , true.B, false.B)
-
+            is_single_tran := (stt_offset + in_size) < conf.NVDLA_MCIF_BURST_SIZE.U
             val ftran_size_tmp = Mux(is_single_tran , size_offset ,(conf.NVDLA_MCIF_BURST_SIZE-1).U - stt_offset)
             val ltran_size_tmp = Mux(is_single_tran , 0.U, end_offset)
 

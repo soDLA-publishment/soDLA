@@ -5,7 +5,7 @@
  import chisel3.util._
 
 
- class NV_NVDLA_MCIF_READ_IG_arb(implicit conf:nocifConfiguration) extends Module {
+ class NV_NVDLA_MCIF_READ_IG_arb(implicit conf:xxifConfiguration) extends Module {
      val io = IO(new Bundle {
          //general clock
          val nvdla_core_clk = Input(Clock())
