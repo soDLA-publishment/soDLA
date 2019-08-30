@@ -3,7 +3,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_MCIF_read(implicit conf: nocifConfiguration) extends Module {
+class NV_NVDLA_MCIF_read(implicit conf: xxifConfiguration) extends Module {
     val io = IO(new Bundle{
         //general clock
         val nvdla_core_clk      = Input(Clock())
@@ -11,16 +11,7 @@ class NV_NVDLA_MCIF_read(implicit conf: nocifConfiguration) extends Module {
         val pwrbus_ram_pd       = Input(UInt(32.W))
         val reg2dp_rd_os_cnt    = Input(UInt(8.W))
 
-        val reg2dp_rd_weight_cdma_dat   = Input(UInt(8.W))
-        val reg2dp_rd_weight_cdma_wt    = Input(UInt(8.W))
-        val reg2dp_rd_weight_sdp        = Input(UInt(8.W))
-        val reg2dp_rd_weight_sdp_b      = if(conf.NVDLA_SDP_BS_ENABLE)  Some(Input(UInt(8.W))) else None
-        val reg2dp_rd_weight_sdp_n      = if(conf.NVDLA_SDP_BN_ENABLE)  Some(Input(UInt(8.W))) else None
-        val reg2dp_rd_weight_sdp_e      = if(conf.NVDLA_SDP_EW_ENABLE)  Some(Input(UInt(8.W))) else None
-        val reg2dp_rd_weight_pdp        = if(conf.NVDLA_PDP_ENABLE)     Some(Input(UInt(8.W))) else None
-        val reg2dp_rd_weight_cdp        = if(conf.NVDLA_CDP_ENABLE)     Some(Input(UInt(8.W))) else None
-        val reg2dp_rd_weight_rbk        = if(conf.NVDLA_RUBIK_ENABLE)   Some(Input(UInt(8.W))) else None
-        val reg2dp_rd_weight_bdma       = if(conf.NVDLA_BDMA_ENABLE)    Some(Input(UInt(8.W))) else None
+        val reg2dp_rw_weight = Input(Vec(conf.RDMA_NUM, UInt(8.W)))
 
         // cdma_dat-0, cdma_wt-1, sdp-2, sdp_b-3, sdp_n-4, sdp_e-5, pdp-6, cdp-7
         val rdma2mcif_rd_cdt_lat_fifo_pop   = Input(Vec(conf.RDMA_NUM, Bool()))
@@ -60,17 +51,7 @@ class NV_NVDLA_MCIF_read(implicit conf: nocifConfiguration) extends Module {
     u_ig.io.rdma2mcif_rd_req_pd            := io.rdma2mcif_rd_req_pd
 
     // regs
-    u_ig.io.reg2dp_rd_weight_cdma_dat   := io.reg2dp_rd_weight_cdma_dat
-    u_ig.io.reg2dp_rd_weight_cdma_wt    := io.reg2dp_rd_weight_cdma_wt
-    u_ig.io.reg2dp_rd_weight_sdp        := io.reg2dp_rd_weight_sdp
-    if(conf.NVDLA_SDP_BS_ENABLE)    { u_ig.io.reg2dp_rd_weight_sdp_b.get  := io.reg2dp_rd_weight_sdp_b.get}
-    if(conf.NVDLA_SDP_BN_ENABLE)    { u_ig.io.reg2dp_rd_weight_sdp_n.get  := io.reg2dp_rd_weight_sdp_n.get}
-    if(conf.NVDLA_SDP_EW_ENABLE)    { u_ig.io.reg2dp_rd_weight_sdp_e.get  := io.reg2dp_rd_weight_sdp_e.get}
-    if(conf.NVDLA_PDP_ENABLE)       { u_ig.io.reg2dp_rd_weight_pdp.get    := io.reg2dp_rd_weight_pdp.get}
-    if(conf.NVDLA_CDP_ENABLE)       { u_ig.io.reg2dp_rd_weight_cdp.get    := io.reg2dp_rd_weight_cdp.get}
-    if(conf.NVDLA_RUBIK_ENABLE)     { u_ig.io.reg2dp_rd_weight_rbk.get    := io.reg2dp_rd_weight_rbk.get}
-    if(conf.NVDLA_BDMA_ENABLE)      { u_ig.io.reg2dp_rd_weight_bdma.get   := io.reg2dp_rd_weight_bdma.get}
-
+    u_ig.io.reg2dp_rw_weight   := io.reg2dp_rw_weight
 
     u_ig.io.eg2ig_axi_vld          := eg2ig_axi_vld
     io.mcif2noc_axi_ar_arvalid     := u_ig.io.mcif2noc_axi_ar_arvalid
@@ -95,4 +76,10 @@ class NV_NVDLA_MCIF_read(implicit conf: nocifConfiguration) extends Module {
     u_eg.io.noc2mcif_axi_r_rid       := io.noc2mcif_axi_r_rid
     u_eg.io.noc2mcif_axi_r_rlast     := io.noc2mcif_axi_r_rlast
     u_eg.io.noc2mcif_axi_r_rdata     := io.noc2mcif_axi_r_rdata
+}
+
+
+object NV_NVDLA_MCIF_readDriver extends App {
+    implicit val conf: xxifConfiguration = new xxifConfiguration
+    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_read())
 }
