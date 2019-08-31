@@ -72,41 +72,38 @@ class NV_NVDLA_MCIF_READ_ig (implicit conf: xxifConfiguration) extends Module {
     if(conf.NVDLA_SDP_BS_ENABLE) {
         u_bpt(j).io.tieoff_axid := 5.U(4.W)
         u_bpt(j).io.tieoff_lat_fifo_depth := 256.U(9.W)
-        j += 1;
+        j += 1
     }
 
     if(conf.NVDLA_SDP_BN_ENABLE) {
         u_bpt(j).io.tieoff_axid := 6.U(4.W)
         u_bpt(j).io.tieoff_lat_fifo_depth := 256.U(9.W)
-        j += 1;
+        j += 1
     }
 
     if(conf.NVDLA_SDP_EW_ENABLE) {
         u_bpt(j).io.tieoff_axid := 7.U(4.W)
         u_bpt(j).io.tieoff_lat_fifo_depth := 256.U(9.W)
-        j += 1;
+        j += 1
     }
 
     if(conf.NVDLA_PDP_ENABLE) {
         u_bpt(j).io.tieoff_axid := 2.U(4.W)
         u_bpt(j).io.tieoff_lat_fifo_depth := 256.U(9.W)
-        j += 1;
+        j += 1
     }
 
     if(conf.NVDLA_CDP_ENABLE) {
         u_bpt(j).io.tieoff_axid := 2.U(4.W)
         u_bpt(j).io.tieoff_lat_fifo_depth := 256.U(9.W)
-        j += 1;
+        j += 1
     }
 
     val u_arb = Module(new NV_NVDLA_MCIF_READ_IG_arb)
     u_arb.io.nvdla_core_clk := io.nvdla_core_clk
     u_arb.io.nvdla_core_rstn := io.nvdla_core_rstn
-
     u_arb.io.reg2dp_rw_weight := io.reg2dp_rw_weight
-
-
-    u_arb.io.bpt2arb_req_valid := bpt2arb_req_pd
+    u_arb.io.bpt2arb_req_valid := bpt2arb_req_valid
     bpt2arb_req_ready := u_arb.io.bpt2arb_req_ready
     u_arb.io.bpt2arb_req_pd := bpt2arb_req_pd
 
@@ -128,4 +125,15 @@ class NV_NVDLA_MCIF_READ_ig (implicit conf: xxifConfiguration) extends Module {
     u_cvt.io.spt2cvt_req_valid := arb2spt_req_valid
     arb2spt_req_ready := u_cvt.io.spt2cvt_req_ready
     u_cvt.io.spt2cvt_req_pd := arb2spt_req_pd
+
+    u_cvt.io.mcif2noc_axi_ar_arready := io.mcif2noc_axi_ar_arready
+    io.mcif2noc_axi_ar_arvalid := u_cvt.io.mcif2noc_axi_ar_arid
+    io.mcif2noc_axi_ar_arlen := u_cvt.io.mcif2noc_axi_ar_arlen
+    io.mcif2noc_axi_ar_araddr := u_cvt.io.mcif2noc_axi_ar_araddr
+    io.mcif2noc_axi_ar_arid := u_cvt.io.mcif2noc_axi_ar_arid
+}
+
+object NV_NVDLA_MCIF_READ_igDriver extends App {
+    implicit val conf: xxifConfiguration = new xxifConfiguration
+    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_READ_ig())
 }

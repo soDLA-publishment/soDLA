@@ -9,7 +9,7 @@ class xxifConfiguration extends project_spec{
 
   val FV_RAND_WR_PAUSE = false
 
-  var RDMA_NUM = 0
+  var RDMA_NUM = 3
   if(NVDLA_SDP_BS_ENABLE) {RDMA_NUM += 1}
   if(NVDLA_SDP_BN_ENABLE) {RDMA_NUM += 1}
   if(NVDLA_SDP_EW_ENABLE) {RDMA_NUM += 1}
