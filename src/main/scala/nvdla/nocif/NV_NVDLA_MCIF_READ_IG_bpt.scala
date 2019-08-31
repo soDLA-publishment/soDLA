@@ -55,20 +55,12 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
         val out_addr = Reg(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
         val out_size = Wire(UInt(3.W))
         val out_size_tmp = Reg(UInt(3.W))
-        val beat_size = Wire(UInt(2.W))
-        val bpt2arb_accept = Wire(Bool())
 
-        val stt_offset = Wire(UInt(conf.NVDLA_MCIF_BURST_SIZE_LOG2.W))
-        val end_offset = Wire(UInt(conf.NVDLA_MCIF_BURST_SIZE_LOG2.W))
-        val mon_end_offset_c = Wire(Bool())
+        val bpt2arb_accept = Wire(Bool())
 
         val ftran_size = Wire(UInt(3.W))
         val ltran_size = Wire(UInt(3.W))
         val mtran_num = Wire(UInt(conf.NVDLA_DMA_RD_SIZE.W))
-
-
-        val is_single_tran = Wire(Bool())
-        val mon_out_beats_c = Wire(Bool())
 
         val out_odd = Wire(Bool())
         val out_swizzle = Wire(Bool())
@@ -90,14 +82,21 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
         val in_addr = in_vld_pd(conf.NVDLA_MEM_ADDRESS_WIDTH-1, 0)
         val in_size = in_vld_pd(conf.NVDLA_DMA_RD_REQ-1, conf.NVDLA_MEM_ADDRESS_WIDTH)
 
+        val is_ftran = (count_req===0.U)
+        val is_mtran = (count_req>0.U && count_req<req_num)
+        val is_ltran = (count_req===req_num)
+
         if(conf.NVDLA_MCIF_BURST_SIZE > 1) {
-            val stt_offset  = in_addr(conf.NVDLA_MEMORY_ATOMIC_LOG2+conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, conf.NVDLA_MEMORY_ATOMIC_LOG2)
+            val stt_offset = Wire(UInt(conf.NVDLA_MCIF_BURST_SIZE_LOG2.W))
+            val end_offset = Wire(UInt(conf.NVDLA_MCIF_BURST_SIZE_LOG2.W))
+
+            stt_offset  := in_addr(conf.NVDLA_MEMORY_ATOMIC_LOG2+conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, conf.NVDLA_MEMORY_ATOMIC_LOG2)
             val size_offset = in_size(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)
             val temp_result = stt_offset +& size_offset
-            mon_end_offset_c := temp_result(conf.NVDLA_MCIF_BURST_SIZE_LOG2)
+            val mon_end_offset_c = temp_result(conf.NVDLA_MCIF_BURST_SIZE_LOG2)
             end_offset := temp_result(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)
 
-            is_single_tran := (stt_offset + in_size) < conf.NVDLA_MCIF_BURST_SIZE.U
+            val is_single_tran = (stt_offset + in_size) < conf.NVDLA_MCIF_BURST_SIZE.U
             val ftran_size_tmp = Mux(is_single_tran , size_offset ,(conf.NVDLA_MCIF_BURST_SIZE-1).U - stt_offset)
             val ltran_size_tmp = Mux(is_single_tran , 0.U, end_offset)
 
@@ -105,25 +104,46 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
             ltran_size := Cat (Fill(3-conf.NVDLA_MCIF_BURST_SIZE_LOG2, 0.U), ltran_size_tmp)
 
             mtran_num := in_size - ftran_size - ltran_size - 1.U
-        } else {
-            ftran_size := 0.U(3.W)
-            ltran_size := 0.U(3.W)
-            mtran_num := in_size - 1.U
-        }
 
-        val is_ftran = (count_req===0.U)
-        val is_mtran = (count_req>0.U && count_req<req_num)
-        val is_ltran = (count_req===req_num)
-
-        if(conf.NVDLA_MCIF_BURST_SIZE > 1) {
             when(is_ftran | is_ltran){
                 slot_needed := out_size + 1.U
             } .otherwise {
                 slot_needed := conf.NVDLA_PRIMARY_MEMIF_MAX_BURST_LENGTH.U
             }
+
+            //================
+            // bsp out: swizzle
+            //================
+            out_swizzle := (stt_offset(0)===1.U)
+            out_odd := (in_size(0)===0.U)
+
+            //================
+            // tran count
+            //================
+            when(is_single_tran) {
+                req_num := 0.U
+            }.otherwise {
+                req_num := 1.U + mtran_num(14, conf.NVDLA_MCIF_BURST_SIZE_LOG2)
+            }
         } else {
+            ftran_size := 0.U(3.W)
+            ltran_size := 0.U(3.W)
+            mtran_num := in_size - 1.U
+
             slot_needed := 1.U(3.W)
+
+            //================
+            // bsp out: swizzle
+            //================
+            out_swizzle := 0.U
+            out_odd := 0.U
+
+            //================
+            // tran count
+            //================
+            req_num := in_size
         }
+
 
         val lat_fifo_stall_enable = (io.tieoff_lat_fifo_depth =/=0.U).asBool()
         lat_count_dec := io.dma2bpt_cdt_lat_fifo_pop
@@ -147,16 +167,6 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
         lat_fifo_free_slot := tmp(7,0)
         val req_enable = (!lat_fifo_stall_enable) || (Cat(0.U(6.W), slot_needed) <= lat_fifo_free_slot)
 
-        //================
-        // bsp out: swizzle
-        //================
-        if(conf.NVDLA_DMA_MASK_BIT == 2) {
-            out_swizzle := (stt_offset(0)===1.U)
-            out_odd := (in_size(0)===0.U)
-        } else {
-            out_swizzle := 0.U
-            out_odd := 0.U
-        }
 
         //================
         // bsp out: size
@@ -181,6 +191,8 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
             // bsp out: USER: SIZE
             //================
 //            val out_inc = is_ftran & is_ltran & out_swizzle && !out_odd
+//            val beat_size = Wire(UInt(2.W))
+//            val mon_out_beats_c = Wire(Bool())
 //            Cat(mon_out_beats_c, beat_size) := out_size(2, 1) + out_inc
         }
 
@@ -207,18 +219,6 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
             }
         }
 
-        //================
-        // tran count
-        //================
-        if(conf.NVDLA_MCIF_BURST_SIZE > 1) {
-            when(is_single_tran) {
-                req_num := 0.U
-            }.otherwise {
-                req_num := 1.U + mtran_num(14, conf.NVDLA_MCIF_BURST_SIZE_LOG2)
-            }
-        } else {
-            req_num := in_size
-        }
 
         val bpt2arb_addr = Mux(is_ftran, in_addr, out_addr)
         val bpt2arb_size = out_size
@@ -237,5 +237,9 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
         bpt2arb_accept := io.bpt2arb_req_valid & req_rdy
         io.bpt2arb_req_pd := Cat(bpt2arb_ftran, bpt2arb_ltran, bpt2arb_odd, bpt2arb_swizzle, bpt2arb_size, bpt2arb_addr, bpt2arb_axid)
     }
+}
 
+object NV_NVDLA_MCIF_READ_IG_bptDriver extends App {
+    implicit val conf: xxifConfiguration = new xxifConfiguration
+    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_READ_IG_bpt())
 }

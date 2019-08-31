@@ -101,7 +101,10 @@
          io.arb2spt_req_pd := pipe_out.io.dout
          io.arb2spt_req_valid := pipe_out.io.vo
          pipe_out.io.ri := io.arb2spt_req_ready
-
-
      }
+ }
+
+ object NV_NVDLA_MCIF_READ_IG_arbDriver extends App {
+     implicit val conf: xxifConfiguration = new xxifConfiguration
+     chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_READ_IG_arb())
  }

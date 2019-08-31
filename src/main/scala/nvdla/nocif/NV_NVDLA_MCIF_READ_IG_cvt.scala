@@ -27,31 +27,36 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
     })
 
     withClock(io.nvdla_core_clk){
-        val cmd_vld = io.spt2cvt_req_valid;
+        val cmd_vld = io.spt2cvt_req_valid
+        val cmd_rdy = Wire(Bool())
+        io.spt2cvt_req_ready := cmd_rdy
+
         val cmd_axid = io.spt2cvt_req_pd(3,0)
         val cmd_addr = io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+3,4)
         val cmd_size = io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+6, conf.NVDLA_MEM_ADDRESS_WIDTH+4);
+        val cmd_swizzle = io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+7)
+        val cmd_odd  =  io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+8)
+        val cmd_ltran = io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+9)
+        val cmd_ftran = io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+10)
 
         val eg2ig_axi_vld_d = RegInit(true.B)
 
-        val os_cnt = Wire(UInt(9.W))
+//        val os_cnt = Wire(UInt(9.W))
         val os_cnt_cur = RegInit(UInt(9.W), 0.U)
         val os_cnt_ext = Wire(UInt(11.W))
         val os_cnt_mod = Wire(UInt(11.W))
         val os_cnt_new = Wire(UInt(11.W))
         val os_cnt_nxt = Wire(UInt(11.W))
-
         val os_cnt_full = Wire(Bool())
 
         val axi_cmd_rdy = Wire(Bool())
-        val axi_cmd_vld = cmd_vld & !os_cnt_full
-        val cmd_rdy = axi_cmd_rdy & !os_cnt_full
-        val axi_len = cmd_size
+        val axi_cmd_vld = Wire(Bool())
+        val axi_len = Wire(UInt(2.W))
         val axi_axid = cmd_axid;
         val axi_addr = Cat(cmd_addr(conf.NVDLA_MEM_ADDRESS_WIDTH-1, conf.NVDLA_MEMORY_ATOMIC_LOG2), Fill(conf.NVDLA_MEMORY_ATOMIC_LOG2, 0.U))
         val os_inp_add_nxt = Mux(cmd_vld, (axi_len + 1.U), 0.U(3.W))
         val os_inp_sub_nxt = Mux(eg2ig_axi_vld_d,  1.U, 0.U)
-        val os_inp_nxt = os_cnt + os_inp_add_nxt - os_inp_sub_nxt
+        val os_inp_nxt = os_cnt_cur + os_inp_add_nxt - os_inp_sub_nxt
         val os_cnt_add_en = axi_cmd_vld & axi_cmd_rdy
         val os_cnt_sub_en = eg2ig_axi_vld_d
         val os_cnt_cen = os_cnt_add_en | os_cnt_sub_en
@@ -59,6 +64,8 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
         val os_cnt_sub = Mux(os_cnt_sub_en,  1.U(1.W), 0.U(1.W))
         val cfg_rd_os_cnt = io.reg2dp_rd_os_cnt
         val rd_os_cnt_ext = Cat(0.U, cfg_rd_os_cnt)
+
+
         os_cnt_full := os_inp_nxt > (rd_os_cnt_ext + 1.U);
 
         if(conf.NVDLA_PRIMARY_MEMIF_WIDTH > conf.NVDLA_MEMORY_ATOMIC_WIDTH) {
@@ -99,7 +106,7 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
 
         val os_adv = os_cnt_add =/= Cat(0.U(2.W), os_cnt_sub)
         os_cnt_ext := Cat(0.U(2.W), os_cnt_cur)
-        os_cnt_mod := os_cnt_cur + os_cnt_add - os_cnt_sub // spyglass disable W164b
+        os_cnt_mod := os_cnt_cur + os_cnt_add - os_cnt_sub
         os_cnt_new := Mux(os_adv, os_cnt_mod, os_cnt_ext)
         os_cnt_nxt := os_cnt_new
 
@@ -109,7 +116,7 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
         val opipe_axi_axid = Wire(UInt(4.W))
         val opipe_axi_len = Wire(UInt(2.W))
         val opipe_axi_pd  = Wire(UInt((conf.NVDLA_MEM_ADDRESS_WIDTH+6).W))
-        val opipe_axi_rdy = io.mcif2noc_axi_ar_arready;
+        val opipe_axi_rdy = io.mcif2noc_axi_ar_arready
         val opipe_axi_vld = Wire(Bool())
 
 
@@ -123,10 +130,10 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
         opipe_axi_vld := pipe_p1.io.vo
         pipe_p1.io.ri := opipe_axi_rdy
 
-//        Cat(opipe_axi_axid, opipe_axi_addr, opipe_axi_len) := opipe_axi_pd
         opipe_axi_axid := opipe_axi_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+5, conf.NVDLA_MEM_ADDRESS_WIDTH+2)
         opipe_axi_addr := opipe_axi_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+1, 2)
         opipe_axi_len  := opipe_axi_pd(1, 0)
+
         io.mcif2noc_axi_ar_arid    := Cat(0.U(4.W), opipe_axi_axid)
         io.mcif2noc_axi_ar_araddr  := opipe_axi_addr
         io.mcif2noc_axi_ar_arlen   := Cat(0.U(2.W), opipe_axi_len)
@@ -134,4 +141,8 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
     }
 }
 
+object NV_NVDLA_MCIF_READ_IG_cvtDriver extends App {
+    implicit val conf: xxifConfiguration = new xxifConfiguration
+    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_READ_IG_cvt())
+}
 
