@@ -36,13 +36,13 @@ class xxifConfiguration extends project_spec{
   val tieoff_axid_cdma_wt = 9
 
   var tieoff_axid_read = List(tieoff_axid_cdma_dat, tieoff_axid_cdma_wt, tieoff_axid_sdp)
-  if(NVDLA_SDP_BS_ENABLE) {tieoff_axid_read :+ tieoff_axid_sdp_b}
-  if(NVDLA_SDP_BN_ENABLE) {tieoff_axid_read :+ tieoff_axid_sdp_n}
-  if(NVDLA_SDP_EW_ENABLE) {tieoff_axid_read :+ tieoff_axid_sdp_e}
-  if(NVDLA_PDP_ENABLE)    {tieoff_axid_read :+ tieoff_axid_pdp}
-  if(NVDLA_CDP_ENABLE)    {tieoff_axid_read :+ tieoff_axid_cdp}
-  if(NVDLA_RUBIK_ENABLE)  {tieoff_axid_read :+ tieoff_axid_rbk}
-  if(NVDLA_BDMA_ENABLE)   {tieoff_axid_read :+ tieoff_axid_sdp_b}
+  if(NVDLA_SDP_BS_ENABLE) {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_sdp_b}
+  if(NVDLA_SDP_BN_ENABLE) {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_sdp_n}
+  if(NVDLA_SDP_EW_ENABLE) {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_sdp_e}
+  if(NVDLA_PDP_ENABLE)    {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_pdp}
+  if(NVDLA_CDP_ENABLE)    {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_cdp}
+  if(NVDLA_RUBIK_ENABLE)  {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_rbk}
+  if(NVDLA_BDMA_ENABLE)   {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_bdma}
 
 }
 
