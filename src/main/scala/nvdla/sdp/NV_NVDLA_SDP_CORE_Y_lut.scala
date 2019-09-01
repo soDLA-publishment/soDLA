@@ -5,20 +5,16 @@
 // import chisel3.experimental._
 
 
-// class NV_NVDLA_SDP_CORE_Y_lut(implicit val conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_SDP_CORE_Y_lut(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //     //general clock
 //     val nvdla_core_clk = Input(Clock())
 
 //     //lut2inp interface  
-//     val lut2inp_pvld = Output(Bool())   /* data valid */
-//     val lut2inp_prdy = Input(Bool())     /* data return handshake */
-//     val lut2inp_pd = Output(UInt(conf.EW_LUT_OUT_DW.W))
+//     val lut2inp_pd = DecoupleIO(UInt(conf.EW_LUT_OUT_DW.W))
 
 //     //idx2lut interface  
-//     val idx2lut_pvld = Input(Bool())   /* data valid */
-//     val idx2lut_prdy = Output(Bool())     /* data return handshake */
-//     val idx2lut_pd = Input(UInt(conf.EW_LUT_OUT_DW.W))
+//     val idx2lut_pd = Flipped(DecoupleIO(UInt(conf.EW_LUT_OUT_DW.W)))
   
 //     //reg2dp interface
 //     val reg2dp_lut_int_access_type = Input(Bool())
@@ -786,7 +782,7 @@
 
 
 // object NV_NVDLA_SDP_CORE_Y_lutDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_Y_lut)
 // }
 

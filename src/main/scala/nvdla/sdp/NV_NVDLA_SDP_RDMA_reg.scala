@@ -117,7 +117,7 @@
 //     val dp2reg_status_1 = Wire(UInt(2.W))
 //     val reg.offset = Wire(UInt(24.W))
 
-//     val u_single_reg = Module(new NV_NVDLA_SDP_RDMA_REG_single)
+//     val u_single_reg = Module(new NV_NVDLA_BASIC_REG_single)
 
 //     u_single_reg.io.nvdla_core_clk  := io.nvdla_core_clk
 //     val s_reg.rd_data               = u_single_reg.io.reg.rd_data

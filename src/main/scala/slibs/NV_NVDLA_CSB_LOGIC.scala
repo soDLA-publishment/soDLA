@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //bubble collapse
-class NV_NVDLA_CSB_LOGIC(implicit val conf: nvdlaConfig) extends Module {
+class NV_NVDLA_CSB_LOGIC extends Module {
     val io = IO(new Bundle {
 
         val clk = Input(Clock()) 

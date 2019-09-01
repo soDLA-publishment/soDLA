@@ -4,7 +4,7 @@
 // import chisel3.util._
 // import chisel3.experimental._
 
-// class NV_NVDLA_SDP_mrdma(implicit conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_SDP_mrdma(implicit conf: nvdlaConfig) extends Module {
 
 // val io = IO(new Bundle {
 //     //in clock
@@ -220,7 +220,7 @@
 // }}
 
 // object NV_NVDLA_SDP_mrdmaDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_mrdma())
 // }
 

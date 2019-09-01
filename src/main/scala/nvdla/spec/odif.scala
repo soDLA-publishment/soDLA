@@ -94,7 +94,7 @@ class nvdla_dma_wr_rsp_if(implicit val conf: nvdlaConfig) extends Bundle{
 }
 
 
-class csb2dp_if(implicit val conf: nvdlaConfig) extends Bundle{
+class csb2dp_if extends Bundle{
     val req = Flipped(DecoupledIO(UInt(63.W)))
     val resp = ValidIO(UInt(34.W))
 }
@@ -124,25 +124,27 @@ class cdma2sc_if(implicit val conf: nvdlaConfig) extends Bundle{
 }
 
 
-class updt_entries_slices_if extends Bundle{
-//    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+class updt_entries_slices_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val slices = Output(UInt(14.W))
 }
 
-class updt_entries_kernels_if extends Bundle{
-//    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+class updt_entries_kernels_if(implicit val conf: nvdlaConfig) extends Bundle{
+    val entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val kernels = Output(UInt(14.W))
 }
 
-class nvdla_wr_if(depth:Int, width:Int) extends Bundle{
-    val addr = ValidIO(UInt(depth.W))
+class nvdla_wr_if(addr_width:Int, width:Int) extends Bundle{
+    val addr = ValidIO(UInt(addr_width.W))
     val data = Output((UInt(width.W)))
 }
 
-class nvdla_rd_if(depth:Int, width:Int) extends Bundle{
-    val addr = ValidIO(UInt(depth.W))
+class nvdla_rd_if(addr_width:Int, width:Int) extends Bundle{
+    val addr = ValidIO(UInt(addr_width.W))
     val data = Input((UInt(width.W)))
 }
+
+
 
 
 

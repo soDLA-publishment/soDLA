@@ -4,16 +4,14 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_PDP_WDMA_cmd(implicit val conf: pdpConfiguration) extends Module {
+// class NV_NVDLA_PDP_WDMA_cmd(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         // clk
 //         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 
 //         // cmd rd
-//         val cmd_fifo_rd_pvld = Output(Bool())
-//         val cmd_fifo_rd_prdy = Input(Bool())
-//         val cmd_fifo_rd_pd = Output(UInt(80.W))
+//         val cmd_fifo_rd_pd = DecoupledIO(UInt(80.W))
 
 //         // config
 //         val reg2dp_cube_out_channel = Input(UInt(13.W))
@@ -27,7 +25,6 @@
 //         val reg2dp_partial_width_out_last = Input(UInt(10.W))
 //         val reg2dp_partial_width_out_mid = Input(UInt(10.W))
 //         val reg2dp_split_num = Input(UInt(8.W))
-
 
 //         // Read-only register input
 //         val op_load = Input(Bool())
@@ -393,6 +390,6 @@
 
 
 // object NV_NVDLA_PDP_WDMA_cmdDriver extends App {
-//   implicit val conf: pdpConfiguration = new pdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_WDMA_cmd())
 // }

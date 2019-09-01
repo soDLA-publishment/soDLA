@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_GLB_ic(implicit val conf: project_spec) extends Module {
+// class NV_NVDLA_GLB_ic(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         //clock
 //         val nvdla_core_clk = Input(Clock())

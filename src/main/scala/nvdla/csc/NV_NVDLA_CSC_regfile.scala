@@ -55,7 +55,7 @@ withClock(io.nvdla_core_clk){
     val reg_wr_data = Wire(UInt(32.W))
     val s_reg_wr_en = Wire(Bool())
 
-    val u_single_reg = Module(new NV_NVDLA_CSC_single_reg)
+    val u_single_reg = Module(new NV_NVDLA_BASIC_REG_single)
 
     u_single_reg.io.nvdla_core_clk := io.nvdla_core_clk
     u_single_reg.io.reg.offset := reg_offset

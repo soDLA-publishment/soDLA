@@ -6,62 +6,38 @@
 // import chisel3.iotesters.Driver
 
 
-// class NV_NVDLA_CDMA_dma_mux(implicit conf: cdmaConfiguration) extends Module {
+// class NV_NVDLA_CDMA_dma_mux(implicit conf: nvdlaConfig) extends Module {
 
 //     val io = IO(new Bundle {
 //         //nvdla core clock
 //         val nvdla_core_clk = Input(Clock())
 
 //         //dc_dat2mcif
-//         val dc_dat2mcif_rd_req_valid = Input(Bool())
-//         val dc_dat2mcif_rd_req_ready = Output(Bool())
-//         val dc_dat2mcif_rd_req_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val mcif2dc_dat_rd_rsp_valid = Output(Bool())
-//         val mcif2dc_dat_rd_rsp_ready = Input(Bool())
-//         val mcif2dc_dat_rd_rsp_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-
+//         val dc_dat2mcif_rd_req_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))
+//         val mcif2dc_dat_rd_rsp_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+        
 //         //img_dat2mcif
-//         val img_dat2mcif_rd_req_valid = Input(Bool())
-//         val img_dat2mcif_rd_req_ready = Output(Bool())
-//         val img_dat2mcif_rd_req_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val mcif2img_dat_rd_rsp_valid = Output(Bool())
-//         val mcif2img_dat_rd_rsp_ready = Input(Bool())
-//         val mcif2img_dat_rd_rsp_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))        
+//         val img_dat2mcif_rd_req_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))
+//         val mcif2img_dat_rd_rsp_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))    
 
 //         //cdma_dat2mcif
-//         val cdma_dat2mcif_rd_req_valid = Output(Bool())
-//         val cdma_dat2mcif_rd_req_ready = Input(Bool())
-//         val cdma_dat2mcif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val mcif2cdma_dat_rd_rsp_valid = Input(Bool())
-//         val mcif2cdma_dat_rd_rsp_ready = Output(Bool())
-//         val mcif2cdma_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))    
+//         val cdma_dat2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//         val mcif2cdma_dat_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))) 
 //     })
 
 //     val cvio = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(IO(new Bundle{
 
 //         //dc_dat2cvif
-//         val dc_dat2cvif_rd_req_valid = Input(Bool())
-//         val dc_dat2cvif_rd_req_ready = Output(Bool())
-//         val dc_dat2cvif_rd_req_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val cvif2dc_dat_rd_rsp_valid  = Output(Bool())
-//         val cvif2dc_dat_rd_rsp_ready = Input(Bool())
-//         val cvif2dc_dat_rd_rsp_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+//         val dc_dat2cvif_rd_req_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))
+//         val cvif2dc_dat_rd_rsp_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
             
 //         //img2cvif
-//         val img_dat2cvif_rd_req_valid = Input(Bool())
-//         val img_dat2cvif_rd_req_ready = Output(Bool())
-//         val img_dat2cvif_rd_req_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val cvif2img_dat_rd_rsp_valid  = Output(Bool())
-//         val cvif2img_dat_rd_rsp_ready = Input(Bool())
-//         val cvif2img_dat_rd_rsp_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+//         val img_dat2cvif_rd_req_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))
+//         val cvif2img_dat_rd_rsp_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))  
 
 //         //cdma_dat2cvif
-//         val cdma_dat2cvif_rd_req_valid = Output(Bool())
-//         val cdma_dat2cvif_rd_req_ready = Input(Bool())
-//         val cdma_dat2cvif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val cvif2cdma_dat_rd_rsp_valid  = Input(Bool())
-//         val cvif2cdma_dat_rd_rsp_ready = Output(Bool())
-//         val cvif2cdma_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+//         val cdma_dat2cvif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//         val cvif2cdma_dat_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))) 
 
 //     })) else None
     
@@ -87,15 +63,15 @@
 //     //         └──┴──┘       └──┴──┘ 
 // withClock(io.nvdla_core_clk){
 
-// ////////////////////////////////////////////////////////////////////////
-// // Data request channel                                               //
-// ////////////////////////////////////////////////////////////////////////
-// //////////////// MCIF interface ////////////////
-//     val mc_sel_dc_w = io.dc_dat2mcif_rd_req_valid
-//     val mc_sel_img_w = io.img_dat2mcif_rd_req_valid
-//     val req_mc_in_pvld = io.dc_dat2mcif_rd_req_valid|io.img_dat2mcif_rd_req_valid
-//     val req_mc_in_pd = (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, mc_sel_dc_w)&io.dc_dat2mcif_rd_req_pd)|
-//                        (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, mc_sel_img_w)&io.img_dat2mcif_rd_req_pd)
+//     ////////////////////////////////////////////////////////////////////////
+//     // Data request channel                                               //
+//     ////////////////////////////////////////////////////////////////////////
+//     //////////////// MCIF interface ////////////////
+//     val mc_sel_dc_w = io.dc_dat2mcif_rd_req_pd.valid
+//     val mc_sel_img_w = io.img_dat2mcif_rd_req_pd.valid
+//     val req_mc_in_pvld = io.dc_dat2mcif_rd_req_pd.valid|io.img_dat2mcif_rd_req_pd.valid
+//     val req_mc_in_pd = (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, mc_sel_dc_w)&io.dc_dat2mcif_rd_req_pd.bits)|
+//                        (Fill(conf.NVDLA_CDMA_MEM_RD_REQ, mc_sel_img_w)&io.img_dat2mcif_rd_req_pd.bits)
     
 //     val req_mc_out_prdy = Wire(Bool())
 //     val pipe_p1 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_CDMA_MEM_RD_REQ)}
@@ -107,8 +83,8 @@
 //     pipe_p1.io.ri := req_mc_out_prdy
 //     val req_mc_out_pd = pipe_p1.io.dout
 
-//     io.dc_dat2mcif_rd_req_ready := req_mc_in_prdy & io.dc_dat2mcif_rd_req_valid
-//     io.img_dat2mcif_rd_req_ready := req_mc_in_prdy & io.img_dat2mcif_rd_req_valid
+//     io.dc_dat2mcif_rd_req_pd.raedy := req_mc_in_prdy & io.dc_dat2mcif_rd_req_pd.valid
+//     io.img_dat2mcif_rd_req_pd.raedy := req_mc_in_prdy & io.img_dat2mcif_rd_req_pd.valid
 //     io.cdma_dat2mcif_rd_req_valid := req_mc_out_pvld
 //     io.cdma_dat2mcif_rd_req_pd := req_mc_out_pd
 //     req_mc_out_prdy := io.cdma_dat2mcif_rd_req_ready
@@ -201,7 +177,7 @@
 // }}
 
 // object NV_NVDLA_CDMA_dma_muxDriver extends App {
-//   implicit val conf: cdmaConfiguration = new cdmaConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_dma_mux())
 // }
 

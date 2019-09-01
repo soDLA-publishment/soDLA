@@ -41,19 +41,19 @@
 // //             └──┴──┘       └──┴──┘
 // withClock(io.nvdla_core_clk){
 
-// val u_accu_abuf_0 = Module(new nv_ram_rws(conf.CACC_ABUF_DEPTH, conf.CACC_ABUF_WIDTH))
+//     val u_accu_abuf_0 = Module(new nv_ram_rws(conf.CACC_ABUF_DEPTH, conf.CACC_ABUF_WIDTH))
 
-// u_accu_abuf_0.io.clk := io.nvdla_core_clk
-// u_accu_abuf_0.io.ra := io.abuf_rd.addr.bits
-// u_accu_abuf_0.io.re := io.abuf_rd.addr.valid
-// u_accu_abuf_0.io.we := io.abuf_wr.addr.valid
-// u_accu_abuf_0.io.wa := io.abuf_wr.addr.bits
-// u_accu_abuf_0.io.di := io.abuf_wr.data
-// val abuf_rd_raw_data = u_accu_abuf_0.io.dout
+//     u_accu_abuf_0.io.clk := io.nvdla_core_clk
+//     u_accu_abuf_0.io.ra := io.abuf_rd.addr.bits
+//     u_accu_abuf_0.io.re := io.abuf_rd.addr.valid
+//     u_accu_abuf_0.io.we := io.abuf_wr.addr.valid
+//     u_accu_abuf_0.io.wa := io.abuf_wr.addr.bits
+//     u_accu_abuf_0.io.di := io.abuf_wr.data
+//     val abuf_rd_raw_data = u_accu_abuf_0.io.dout
 
-// val abuf_rd_en_d1 = RegNext(io.abuf_rd_en, false.B)
+//     val abuf_rd_en_d1 = RegNext(io.abuf_rd.addr.valid, false.B)
 
-// io.abuf_rd.data := RegEnable(abuf_rd_raw_data, abuf_rd_en_d1)
+//     io.abuf_rd.data := RegEnable(abuf_rd_raw_data, abuf_rd_en_d1)
 
 // }}
 

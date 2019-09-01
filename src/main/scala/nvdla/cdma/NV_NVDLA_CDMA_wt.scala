@@ -6,7 +6,7 @@
 // import chisel3.iotesters.Driver
 
 
-// class NV_NVDLA_CDMA_wtIO(implicit conf: cdmaConfiguration) extends Bundle {
+// class NV_NVDLA_CDMA_wtIO(implicit conf: nvdlaConfig) extends Bundle {
 
 //     //nvdla core clock
 //     val nvdla_core_clk = Input(Clock())
@@ -929,12 +929,12 @@
 
 
 // object NV_NVDLA_CDMA_wtDriver extends App {
-//   implicit val conf: cdmaConfiguration = new cdmaConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_wt())
 // }
 
 
 // object NV_NVDLA_CDMA_WT_8ATMM_fifoDriver extends App {
-//   implicit val conf: cdmaConfiguration = new cdmaConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_WT_8ATMM_fifo(257, 8))
 // }

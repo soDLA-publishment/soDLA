@@ -6,19 +6,15 @@
 // import chisel3.iotesters.Driver
 
 
-// class NV_NVDLA_CDMA_dcIO(implicit conf: cdmaConfiguration) extends Bundle{
+// class NV_NVDLA_CDMA_dcIO(implicit conf: nvdlaConfig) extends Bundle{
 //     //clk & pwr_ram_bus
 //     val nvdla_core_clk = Input(Clock())
 //     val nvdla_core_ng_clk = Input(Clock())
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     //mcif
-//     val dc_dat2mcif_rd_req_valid = Output(Bool())
-//     val dc_dat2mcif_rd_req_ready = Input(Bool())
-//     val dc_dat2mcif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//     val mcif2dc_dat_rd_rsp_valid  = Input(Bool())
-//     val mcif2dc_dat_rd_rsp_ready = Output(Bool())
-//     val mcif2dc_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+//     val dc_dat2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//     val mcif2dc_dat_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W)))
 
 //     //cvt
 //     val dc2cvt_dat_wr_en = Output(Bool())
@@ -77,21 +73,8 @@
 // }
 
 
-// class NV_NVDLA_CDMA_dcCVIO(implicit conf: cdmaConfiguration) extends Bundle{
-//     //cvif
-//     val dc_dat2cvif_rd_req_valid = Output(Bool())
-//     val dc_dat2cvif_rd_req_ready = Input(Bool())
-//     val dc_dat2cvif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//     val cvif2dc_dat_rd_rsp_valid  = Input(Bool())
-//     val cvif2dc_dat_rd_rsp_ready = Output(Bool())
-//     val cvif2dc_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-// }
-
-
-
-// class NV_NVDLA_CDMA_dc(implicit conf: cdmaConfiguration) extends Module {
+// class NV_NVDLA_CDMA_dc(implicit conf: nvdlaConfig) extends Module {
 //     val io = IO(new NV_NVDLA_CDMA_dcIO)
-//     val cvio = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(IO(new NV_NVDLA_CDMA_dcCVIO)) else None
 // //     
 // //          ┌─┐       ┌─┐
 // //       ┌──┘ ┴───────┘ ┴──┐
@@ -1180,6 +1163,6 @@
 
 
 // object NV_NVDLA_CDMA_dcDriver extends App {
-//   implicit val conf: cdmaConfiguration = new cdmaConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_dc())
 // }

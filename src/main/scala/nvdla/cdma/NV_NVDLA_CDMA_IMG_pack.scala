@@ -6,7 +6,7 @@
 // import scala.math._
 // import chisel3.iotesters.Driver
 
-// class NV_NVDLA_CDMA_IMG_pack(implicit conf: cdmaConfiguration) extends Module {
+// class NV_NVDLA_CDMA_IMG_pack(implicit conf: nvdlaConfig) extends Module {
 
 //     val io = IO(new Bundle {
 //         //clk
@@ -772,6 +772,6 @@
 
     
 // object NV_NVDLA_CDMA_IMG_packDriver extends App {
-//   implicit val conf: cdmaConfiguration = new cdmaConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_IMG_pack())
 // }

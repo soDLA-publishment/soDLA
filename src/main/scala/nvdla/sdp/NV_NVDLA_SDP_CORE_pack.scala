@@ -5,19 +5,16 @@
 // import chisel3.util._
 // import chisel3.iotesters.Driver
 
-// class NV_NVDLA_SDP_CORE_pack(IW: Int = 512, OW: Int = 128) extends Module {
+// class NV_NVDLA_SDP_CORE_pack(IW: Int = 512, OW: Int = 128, CW: Int = 1, io_cfg_dp_8: Boolean = false) extends Module {
 //    val RATIO = IW/OW
 //    val io = IO(new Bundle {
 //         //in clock
 //         val nvdla_core_clk = Input(Clock())
 
-//         val inp_pvld = Input(Bool())
-//         val inp_prdy = Output(Bool())
-//         val inp_data = Input(UInt(IW.W))
+//         val inp = Flipped(DecoupledIO(UInt((IW+CW).W)))
+//         val out = DecoupledIO(UInt((OW+CW).W))
 
-//         val out_pvld = Output(Bool())
-//         val out_prdy = Input(Bool())
-//         val out_data = Output(UInt(OW.W))
+//         val cfg_dp_8 = if(io_cfg_dp_8) Some(Input(Bool())) else None
 
 //     })
 //     //     
@@ -59,6 +56,7 @@
 //     val inp_acc = io.inp_pvld & io.inp_prdy
 //     val out_acc = io.out_pvld & io.out_prdy
 
+//     //push data 
 //     val pack_data = Reg(UInt(IW.W))
 //     when(inp_acc){
 //         pack_data := io.inp_data
@@ -68,7 +66,6 @@
 //     pack_data_ext := pack_data
 
 //     val pack_cnt = RegInit("h0".asUInt(4.W))
-
 //     when(out_acc){
 //         when(is_pack_last){
 //             pack_cnt := "h0".asUInt(4.W)

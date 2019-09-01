@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_SDP_WDMA_dat(implicit val conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_SDP_WDMA_dat(implicit val conf: nvdlaConfig) extends Module {
 //    val io = IO(new Bundle {
 //         //in clock
 //         val nvdla_core_clk = Input(Clock())
@@ -111,7 +111,7 @@
 
  
 // object NV_NVDLA_SDP_WDMA_datDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_WDMA_dat())
 // }
 

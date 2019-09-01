@@ -6,17 +6,12 @@
 
 // //NV_NVDLA_SDP_RDMA_ig.v
 
-// class NV_NVDLA_SDP_RDMA_ig(implicit conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_SDP_RDMA_ig(implicit conf: nvdlaConfig) extends Module {
 //    val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
-//         val dma_rd_req_vld = Output(Bool())
-//         val dma_rd_req_rdy = Input(Bool())
-//         val dma_rd_req_pd = Output(UInt(conf.NVDLA_DMA_RD_REQ.W))
-        
-//         val ig2cq_pvld = Output(Bool())
-//         val ig2cq_prdy = Input(Bool())
-//         val ig2cq_pd = Output(UInt(16.W))
+//         val dma_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))
+//         val ig2cq_pd = DecoupledIO(UInt(16.W))
 
 //         val op_load = Input(Bool())
 
@@ -276,17 +271,17 @@
 //     // DMA Req : PIPE
 //     //==============
 //     // VALID: clamp when when cq is not ready
-//     io.dma_rd_req_vld := cmd_process & io.ig2cq_prdy
-//     io.dma_rd_req_pd := Cat(dma_req_size, dma_req_addr)
+//     io.dma_rd_req_pd.valid := cmd_process & io.ig2cq_prdy
+//     io.dma_rd_req_pd.bits := Cat(dma_req_size, dma_req_addr)
 
 //     // Accept
-//     cmd_accept := io.dma_rd_req_vld & io.dma_rd_req_rdy
+//     cmd_accept := io.dma_rd_req_pd.valid & io.dma_rd_req_pd.ready
 
 
 //     //==============
 //     // PERF STATISTIC
 
-//     val rdma_stall_cnt_inc = io.dma_rd_req_vld & !io.dma_rd_req_rdy
+//     val rdma_stall_cnt_inc = io.dma_rd_req_pd.valid & !io.dma_rd_req_pd.ready
 //     val rdma_stall_cnt_clr = io.op_load
 //     val rdma_stall_cnt_cen = io.reg2dp_op_en & io.reg2dp_perf_dma_en
 
@@ -314,7 +309,7 @@
 
 
 // object NV_NVDLA_SDP_RDMA_igDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_ig)
 // }
 

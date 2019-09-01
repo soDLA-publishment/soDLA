@@ -6,43 +6,31 @@
 // import chisel3.experimental._
 
 
-// class NV_NVDLA_SDP_RDMA_dmaif(implicit conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_SDP_RDMA_dmaif(implicit conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //     //general clock
 //     val nvdla_core_clk = Input(Clock())
 
 //     //mcif
-//     val sdp2mcif_rd_req_valid = Output(Bool())
-//     val sdp2mcif_rd_req_ready = Input(Bool())
-//     val sdp2mcif_rd_req_pd = Output(UInt(conf.NVDLA_DMA_RD_REQ.W))
+//     val sdp2mcif_rd_req_pd = DecoupleIO(UInt(conf.NVDLA_DMA_RD_REQ.W))
 //     val sdp2mcif_rd_cdt_lat_fifo_pop = Output(Bool())
-//     val mcif2sdp_rd_rsp_valid  = Input(Bool())
-//     val mcif2sdp_rd_rsp_ready = Output(Bool())
-//     val mcif2sdp_rd_rsp_pd = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
-
+//     val mcif2sdp_rd_rsp_pd = Flipped(DecoupleIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
+    
 //     val dma_rd_req_ram_type = Input(Bool())
-//     val dma_rd_req_vld = Input(Bool())
-//     val dma_rd_req_rdy = Output(Bool())
-//     val dma_rd_req_pd = Input(UInt(conf.NVDLA_DMA_RD_REQ.W))
-
+//     val dma_rd_req_pd = Flipped(DecoupleIO(UInt(conf.NVDLA_DMA_RD_REQ.W)))
 //     val dma_rd_rsp_ram_type = Input(Bool())
-//     val dma_rd_rsp_vld = Output(Bool())
-//     val dma_rd_rsp_rdy = Input(Bool())
-//     val dma_rd_rsp_pd = Output(UInt(conf.NVDLA_DMA_RD_RSP.W))
+//     val dma_rd_rsp_pd = DecoupleIO(UInt(conf.NVDLA_DMA_RD_RSP.W))
 //     val dma_rd_cdt_lat_fifo_pop = Input(Bool())
 
+//     val sdp2cvif_rd_req = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupleIO(UInt(conf.NVDLA_DMA_RD_REQ.W)))
+//                           else None
+//     val sdp2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool()))
+//                                        else None
+//     val cvif2sdp_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupleIO(UInt(conf.NVDLA_DMA_RD_RSP.W))))
+//                              else None
+
 //   })
 
-//   val cvio = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(IO(new Bundle{ 
-//     //cvif
-//     val sdp2cvif_rd_req_valid = Output(Bool())
-//     val sdp2cvif_rd_req_ready = Input(Bool())
-//     val sdp2cvif_rd_req_pd = Output(UInt(conf.NVDLA_DMA_RD_REQ.W))
-//     val sdp2cvif_rd_cdt_lat_fifo_pop = Output(Bool())
-//     val cvif2sdp_rd_rsp_valid  = Input(Bool())
-//     val cvif2sdp_rd_rsp_ready = Output(Bool())
-//     val cvif2sdp_rd_rsp_pd = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
-//   })
 
 // withClock(io.nvdla_core_clk){
 // //==============
@@ -55,9 +43,7 @@
 //     nv_NVDLA_SDP_RDMA_rdreq.io.reg2dp_src_ram_type := io.dma_rd_req_ram_type
 
 //     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         nv_NVDLA_SDP_RDMA_rdreq.io.cvif_rd_req_ready.get := cvio.sdp2cvif_rd_req_ready
-//         io.sdp2cvif_rd_req_pd.get := nv_NVDLA_SDP_RDMA_rdreq.io.cvif_rd_req_pd.get
-//         io.sdp2cvif_rd_req_valid.get := nv_NVDLA_SDP_RDMA_rdreq.io.cvif_rd_req_valid.get
+//         nv_NVDLA_SDP_RDMA_rdreq.io.sdp2cvif_rd_req.get.ready := io.sdp2cvif_rd_req
 //     }
 
 //     io.sdp2mcif_rd_req_pd:= nv_NVDLA_SDP_RDMA_rdreq.io.mcif_rd_req_pd
@@ -96,7 +82,7 @@
 // }}
 
 // object NV_NVDLA_SDP_RDMA_dmaifDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_dmaif())
 // }
 

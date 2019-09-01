@@ -4,29 +4,21 @@
 // import chisel3.util._
 // import chisel3.experimental._
 
-// class NV_NVDLA_SDP_wdma(implicit conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_SDP_wdma(implicit conf: nvdlaConfig) extends Module {
 
 // val io = IO(new Bundle {
 //     //in clock
-//     val nvdla_core_clk = Input(Clock())
+//     val nvdla_clock = Flipped(new nvdla_clock_if)
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     //cvif
-//     val sdp2cvif_wr_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val sdp2cvif_wr_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val sdp2cvif_wr_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_WR_REQ.W))) else None
+//     val sdp2cvif_wr_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_WR_REQ.W))) else None
 //     val cvif2sdp_wr_rsp_complete = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
 
-//     val sdp2glb_done_intr_pd = Output(UInt(2.W))
-
-//     val sdp2mcif_wr_req_valid = Output(Bool()) 
-//     val sdp2mcif_wr_req_ready = Input(Bool())  
-//     val sdp2mcif_wr_req_pd = Output(UInt(conf.NVDLA_DMA_WR_REQ.W))
+//     val sdp2mcif_wr_req_pd = DecoupledIO(UInt(conf.NVDLA_DMA_WR_REQ.W))
 //     val mcif2sdp_wr_rsp_complete = Input(Bool())  
 
-//     val sdp_dp2wdma_valid = Input(Bool())
-//     val sdp_dp2wdma_ready = Output(Bool())
-//     val sdp_dp2wdma_pd = Input(UInt(conf.DP_DOUT_DW.W))
+//     val sdp_dp2wdma_pd = Flipped(DecoupledIO(UInt(conf.DP_DOUT_DW.W)))
 
 //     val reg2dp_batch_number = Input(UInt(5.W))
 //     val reg2dp_channel = Input(UInt(13.W))
@@ -54,9 +46,7 @@
 //     val dp2reg_status_unequal = Output(Bool())
 //     val dp2reg_wdma_stall = Output(UInt(32.W))
 
-//     val dla_clk_ovr_on_sync = Input(Clock())
-//     val global_clk_ovr_on_sync = Input(Clock())
-//     val tmc2slcg_disable_clock_gating = Input(Bool())
+//     val sdp2glb_done_intr_pd = Output(UInt(2.W))
 
 // })
 
@@ -96,11 +86,8 @@
 
 //     //=======================================
 //     val u_gate = Module(new NV_NVDLA_slcg(1, false))
-//     u_gate.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_gate.io.nvdla_clock := io.nvdla_clock
 //     u_gate.io.slcg_en(0) := io.reg2dp_wdma_slcg_op_en
-//     u_gate.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync
-//     u_gate.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
-//     u_gate.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating
 //     val nvdla_gated_clk = u_gate.io.nvdla_core_gated_clk 
 
 //     val cmd2dat_spt_prdy = Wire(Bool())
@@ -204,7 +191,7 @@
 // }}
 
 // object NV_NVDLA_SDP_wdmaDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_wdma())
 // }
 

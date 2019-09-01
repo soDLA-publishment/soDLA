@@ -13,26 +13,23 @@
 //         //abuf
 //         val abuf_rd_addr = ValidIO(UInt(conf.CACC_ABUF_AWIDTH.W))
 
+//         //mac2accu
+//         val mac_a2accu_pd = Flipped(ValidIO(UInt(9.W)))
+        
+//         //accu_ctrl
+//         val accu_ctrl_pd = ValidIO(UInt(13.W))
+//         val accu_ctrl_ram_valid = Output(Bool())
+
+//         //cfg
+//         val cfg_in_en_mask = Output(Bool())
+//         val cfg_truncate = Output(UInt(5.W))
+
 //         //reg2dp
 //         val reg2dp_op_en = Input(Bool()) 
 //         val reg2dp_conv_mode = Input(Bool())
 //         val reg2dp_proc_precision = Input(UInt(2.W))
 //         val reg2dp_clip_truncate = Input(UInt(5.W))
 //         val dp2reg_done = Input(Bool())
-
-//         //mac2accu
-//         val mac_a2accu_pd = Flipped(ValidIO(UInt(9.W)))
-//         val mac_b2accu_pd = Flipped(ValidIO(UInt(9.W)))
-        
-//         //accu_ctrl
-//         val accu_ctrl_pd = Output(UInt(13.W))
-//         val accu_ctrl_ram_valid = Output(Bool())
-//         val accu_ctrl_valid = Output(Bool())
-
-//         //cfg
-//         val cfg_in_en_mask = Output(Bool())
-//         val cfg_is_wg = Output(Bool())
-//         val cfg_truncate = Output(UInt(5.W))
         
 //         //slcg
 //         val slcg_cell_en = Output(Bool())
@@ -64,8 +61,8 @@
 // //             └──┴──┘       └──┴──┘
 // withClock(io.nvdla_core_clk){
 
-// val accu_valid = RegNext(io.mac_a2accu_pvld, false.B)
-// val accu_pd = RegEnable(io.mac_a2accu_pd, "b0".asUInt(9.W), io.mac_a2accu_pvld)
+// val accu_valid = RegNext(io.mac_a2accu_pd.valid, false.B)
+// val accu_pd = RegEnable(io.mac_a2accu_pd.bits, "b0".asUInt(9.W), io.mac_a2accu_pd.valid)
 
 // //////////////////////////////////////////////////////////////
 // ///// generator input status signal                      /////
@@ -112,15 +109,14 @@
 //     cfg_winograd := is_winograd
 // }
 // io.cfg_truncate := RegEnable(io.reg2dp_clip_truncate, false.B, layer_st)
-// io.cfg_is_wg := RegEnable(is_winograd, false.B, layer_st)
 // io.cfg_in_en_mask := RegEnable(cfg_in_en_mask_w, false.B, layer_st)
 
-// io.abuf_rd_en := accu_rd_en
-// io.abuf_rd_addr := accu_addr
+// io.abuf_rd_addr.valid := accu_rd_en
+// io.abuf_rd_addr.bits := accu_addr
 
 // // regout
 
-// io.accu_ctrl_valid := RegNext(accu_valid, false.B)
+// io.accu_ctrl_pd.valid := RegNext(accu_valid, false.B)
 // io.accu_ctrl_ram_valid := RegNext(accu_ram_valid, false.B)
 // val accu_ctrl_addr = RegInit("b0".asUInt(6.W));
 // when(accu_valid){
@@ -131,7 +127,7 @@
 // val accu_ctrl_layer_end = RegEnable(accu_layer_end, false.B, accu_valid)
 // val accu_ctrl_dlv_elem_mask = RegEnable(accu_layer_end, false.B, accu_valid)
 
-// io.accu_ctrl_pd := Cat(accu_ctrl_dlv_elem_mask, accu_ctrl_layer_end, accu_ctrl_channel_end, 
+// io.accu_ctrl_pd.bits := Cat(accu_ctrl_dlv_elem_mask, accu_ctrl_layer_end, accu_ctrl_channel_end, 
 //                       accu_ctrl_stripe_end, "b1".asUInt(3.W), accu_ctrl_addr) //(8,6) digit is for reserve.
 
 

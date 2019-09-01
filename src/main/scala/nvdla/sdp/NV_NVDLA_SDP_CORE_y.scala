@@ -4,27 +4,19 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_SDP_CORE_y(implicit val conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_SDP_CORE_y(implicit val conf: nvdlaConfig) extends Module {
 //    val io = IO(new Bundle {
 
 //         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(Bool())
 //         //alu_in
-//         val ew_alu_in_vld = Input(Bool())
-//         val ew_alu_in_rdy = Output(Bool())
-//         val ew_alu_in_data = Input(UInt(conf.EW_OP_DW.W))
+//         val ew_alu_in_data = Flipped(DecoupledIO(UInt(conf.EW_OP_DW.W)))
 //         // data_in
-//         val ew_data_in_pvld = Input(Bool())
-//         val ew_data_in_prdy = Output(Bool())
-//         val ew_data_in_pd = Input(UInt(conf.EW_IN_DW.W))
+//         val ew_data_in_pd = Flipped(DecoupledIO(UInt(conf.EW_IN_DW.W)))
 //         // mul_in
-//         val ew_mul_in_vld = Input(Bool())
-//         val ew_mul_in_rdy = Output(Bool())
-//         val ew_mul_in_data = Input(UInt(conf.EW_OP_DW.W))
+//         val ew_mul_in_data = Flipped(DecoupledIO(UInt(conf.EW_OP_DW.W)))
 //         // data_out
-//         val ew_data_out_pvld = Output(Bool())
-//         val ew_data_out_prdy = Input(Bool())
-//         val ew_data_out_pd = Output(UInt(conf.EW_OUT_DW.W))
+//         val ew_data_out_pd = DecoupledIO(UInt(conf.EW_OUT_DW.W))
 //         // reg2dp
 //         val reg2dp_ew_alu_algo = Input(UInt(2.W))
 //         val reg2dp_ew_alu_bypass = Input(Bool())
@@ -364,7 +356,7 @@
 
 
 // object NV_NVDLA_SDP_CORE_yDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_y)
 // }
 

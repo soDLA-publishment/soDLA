@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_CDP_DP_MUL_unit(implicit val conf: cdpConfiguration) extends Module {
+// class NV_NVDLA_CDP_DP_MUL_unit(implicit val conf: nvdlaConfig) extends Module {
 //     val pINA_BW = 9
 //     val pINB_BW = 16
 //     val io = IO(new Bundle {
@@ -40,6 +40,6 @@
 
 
 // object NV_NVDLA_CDP_DP_MUL_unitDriver extends App {
-//     implicit val conf: cdpConfiguration = new cdpConfiguration
+//     implicit val conf: nvdlaConfig = new nvdlaConfig
 //     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_MUL_unit())
 // }

@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_SDP_HLS_Y_int_core(implicit conf: sdpConfiguration) extends Module{
+// class NV_NVDLA_SDP_HLS_Y_int_core(implicit conf: nvdlaConfig) extends Module{
 //    val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
@@ -138,6 +138,6 @@
 
 
 // object NV_NVDLA_SDP_HLS_Y_int_coreDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_core)
 // }

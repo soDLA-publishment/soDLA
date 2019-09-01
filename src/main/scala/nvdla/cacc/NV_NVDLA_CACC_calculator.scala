@@ -38,12 +38,10 @@
 //         //mac2cacc
 //         val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
 //         val mac_a2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-//         val mac_a2accu_mode = Input(Bool())
 //         val mac_a2accu_pvld = Input(Bool())
 
 //         val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
 //         val mac_b2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-//         val mac_b2accu_mode = Input(Bool())
 //         val mac_b2accu_pvld = Input(Bool())
 
 //         //reg

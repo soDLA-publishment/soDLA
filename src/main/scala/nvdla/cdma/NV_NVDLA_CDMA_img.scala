@@ -5,7 +5,7 @@
 // import chisel3.util._
 // import chisel3.iotesters.Driver
 
-// class NV_NVDLA_CDMA_img(implicit conf: cdmaConfiguration) extends Module {
+// class NV_NVDLA_CDMA_img(implicit conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         //clk
 //         val nvdla_core_clk = Input(Clock())
@@ -360,7 +360,7 @@
 
 
 // object NV_NVDLA_CDMA_imgDriver extends App {
-//   implicit val conf: cdmaConfiguration = new cdmaConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_img())
 // }
 

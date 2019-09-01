@@ -4,55 +4,30 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_sdp(implicit val conf: sdpConfiguration) extends Module {
+// class NV_NVDLA_sdp(implicit val conf: nvdlaConfig) extends Module {
 //    val io = IO(new Bundle {
 
 //         val nvdla_core_clk = Input(Clock())
 //         val nvdla_core_rstn = Input(Bool())
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 
-//         val cacc2sdp_valid = Input(Bool())
-//         val cacc2sdp_ready = Output(Bool())
-//         val cacc2sdp_pd = Input(UInt((conf.DP_IN_DW+2).W))
-//         val sdp2pdp_valid = Output(Bool())
-//         val sdp2pdp_ready = Input(Bool())
-//         val sdp2pdp_pd = Output(UInt(conf.DP_OUT_DW.W))
+//         val cacc2sdp_pd = Flipped(DecoupledIO(UInt((conf.DP_IN_DW+2).W)))
+//         val sdp2pdp_pd = DecoupledIO(UInt(conf.DP_OUT_DW.W))
 //         val sdp2glb_done_intr_pd = Output(UInt(2.W))
 
-//         val csb2sdp_rdma_req_pvld = Input(Bool())
-//         val csb2sdp_rdma_req_prdy = Output(Bool())
-//         val csb2sdp_rdma_req_pd = Input(UInt(63.W))
-//         val sdp_rdma2csb_resp_valid = Output(Bool())
-//         val sdp_rdma2csb_resp_pd = Output(UInt(34.W))
+//         val csb2sdp_rdma = new csb2dp_if
+//         val csb2sdp = new csb2dp_if
 
-//         val csb2sdp_req_pvld = Input(Bool())
-//         val csb2sdp_req_prdy = Output(Bool())
-//         val csb2sdp_req_pd = Input(UInt(63.W))
-//         val sdp2csb_resp_valid = Output(Bool())
-//         val sdp2csb_resp_pd = Output(UInt(34.W))
-
-//         val sdp_b2mcif_rd_req_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val sdp_b2mcif_rd_req_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//         val sdp_b2mcif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
+//         val sdp_b2mcif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //         val sdp_b2mcif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val mcif2sdp_b_rd_rsp_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//         val mcif2sdp_b_rd_rsp_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val mcif2sdp_b_rd_rsp_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None 
+//         val mcif2sdp_b_rd_rsp_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))) else None 
 
-//         val sdp_b2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val sdp_b2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//         val sdp_b2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
-//         val sdp_b2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val cvif2sdp_b_rd_rsp_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//         val cvif2sdp_b_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val cvif2sdp_b_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None 
+//         val sdp_b2cvif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
+//         val sdp_b2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
+//         val cvif2sdp_b_rd_rsp_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))) else None 
 
-//         val sdp_n2mcif_rd_req_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val sdp_n2mcif_rd_req_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//         val sdp_n2mcif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
+//         val sdp_n2mcif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //         val sdp_n2mcif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//         val mcif2sdp_n_rd_rsp_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//         val mcif2sdp_n_rd_rsp_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
 //         val mcif2sdp_n_rd_rsp_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None 
 
 //         val sdp_n2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
@@ -104,10 +79,6 @@
 //         val sdp2cvif_wr_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
 //         val sdp2cvif_wr_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_WR_REQ.W))) else None
 //         val cvif2sdp_wr_rsp_complete = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-
-//         val dla_clk_ovr_on_sync = Input(Clock())
-//         val global_clk_ovr_on_sync = Input(Clock())
-//         val tmc2slcg_disable_clock_gating = Input(Bool())
 
 //     })
 //     //     
@@ -466,7 +437,7 @@
 
 
 // object NV_NVDLA_sdpDriver extends App {
-//   implicit val conf: sdpConfiguration = new sdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_sdp)
 // }
 
