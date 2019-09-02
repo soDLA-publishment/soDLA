@@ -30,17 +30,29 @@ class read_ig_arb extends Module {
         gnt := Fill(10, !io.gnt_busy) & gnt_pre
         io.gnt := gnt
 
+        val wrr_gnt_arr = List( "b0000000000", 
+                                "b0000000001", "b0000000010", "b0000000100", "b0000001000", "b0000010000", 
+                                "b0000100000", "b0001000000", "b0010000000", "b0100000000", "b1000000000",
+                                )
+
+        val gnt_pre_arr = List( "b0000000001", "b0000000010", "b0000000100", "b0000001000", "b0000010000", 
+                                "b0000100000", "b0001000000", "b0010000000", "b0100000000", "b1000000000",
+                                )
         wt_left_nxt := wt_left
         when(wt_left === 0.U  | !((req.asUInt() & wrr_gnt).orR)) {
-            for(i<-0 until 10) {
-                when(i.asUInt(10.W) === wrr_gnt){
+            for(i<-0 to 10) {
+                var case_i = wrr_gnt_arr(i)
+                when(wrr_gnt_arr(i).asUInt(10.W) === wrr_gnt){
                     for(j <-i until (10+i)) {
-                        var x = (10+i)%10
+                        var x = (10+j) % 10
+                        // var gnt_tmp = gnt_pre_arr(x)
+                        // println(s"case_i==$case_i, x=$x, gnt_tmp=$gnt_tmp")
                         when(req(x)) {
-                            gnt_pre := (1<<x).asUInt(10.W)
+                            gnt_pre := gnt_pre_arr(x).asUInt(10.W)
                             wt_left_nxt := new_wt_left(x)
                         }
                     }
+                    // println("===================")
                 }
             }
         } .otherwise {
@@ -79,14 +91,23 @@ class read_eg_arb extends Module {
         gnt := gnt_pre
         io.gnt := gnt
 
+        val wrr_gnt_arr = List( "b0000000000", 
+                                "b0000000001", "b0000000010", "b0000000100", "b0000001000", "b0000010000", 
+                                "b0000100000", "b0001000000", "b0010000000", "b0100000000", "b1000000000",
+                                )
+
+        val gnt_pre_arr = List( "b0000000001", "b0000000010", "b0000000100", "b0000001000", "b0000010000", 
+                                "b0000100000", "b0001000000", "b0010000000", "b0100000000", "b1000000000",
+                                )
         wt_left_nxt := wt_left
         when(wt_left === 0.U  | !((req.asUInt() & wrr_gnt).orR)) {
-            for(i<-0 until 10) {
-                when(i.asUInt(10.W) === wrr_gnt){
+            for(i<-0 to 10) {
+                var case_i = wrr_gnt_arr(i)
+                when(wrr_gnt_arr(i).asUInt(10.W) === wrr_gnt){
                     for(j <-i until (10+i)) {
-                        var x = (10+i)%10
+                        var x = (10+j) % 10
                         when(req(x)) {
-                            gnt_pre := (1<<x).asUInt(10.W)
+                            gnt_pre := gnt_pre_arr(x).asUInt(10.W)
                             wt_left_nxt := new_wt_left(x)
                         }
                     }
