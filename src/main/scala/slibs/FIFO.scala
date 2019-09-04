@@ -7,7 +7,7 @@ import chisel3.util._
 
 class NV_NVDLA_fifo(depth: Int, width: Int,
                     ram_type: Int, 
-                    distant_wr_pvld: Boolean, distant_wr_pd: Boolean,
+                    distant_wr_req: Boolean, 
                     io_wr_empty: Boolean = false, 
                     io_wr_idle: Boolean = false, io_rd_idle: Boolean = false) extends Module {
     val io = IO(new Bundle {
@@ -148,13 +148,13 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
         val wr_reserving = Wire(Bool())
         val wr_busy_int = withClock(clk_mgated){RegInit(false.B)}  // copy for internal use
 
-        val wr_pvld_in = if(distant_wr_pvld) RegInit(false.B) else io.wr_pvld    // registered wr_pvld
-        val wr_pd_in = if(distant_wr_pvld & distant_wr_pd) Reg(UInt(width.W)) else io.wr_pd   // registered wr_pd
-        val wr_busy_in = if(distant_wr_pvld) RegInit(false.B) else wr_busy_int    // inputs being held this cycle?
+        val wr_pvld_in = if(distant_wr_req) RegInit(false.B) else io.wr_pvld    // registered wr_pvld
+        val wr_pd_in = if(distant_wr_req & (ram_type == 2)) Reg(UInt(width.W)) else io.wr_pd   // registered wr_pd
+        val wr_busy_in = if(distant_wr_req) RegInit(false.B) else wr_busy_int    // inputs being held this cycle?
         val wr_busy_next = Wire(Bool())     // fwd: fifo busy next?
 
         // factor for better timing with distant wr_pvld signal
-        if(distant_wr_pvld){
+        if(distant_wr_req){
             val wr_busy_in_next_wr_pvld_eq_1 = wr_busy_next
             val wr_busy_in_next_wr_pvld_eq_0 = (wr_pvld_in && wr_busy_next) && !wr_reserving
             val wr_busy_in_next = Mux(io.wr_pvld, wr_busy_in_next_wr_pvld_eq_1, wr_busy_in_next_wr_pvld_eq_0)
@@ -165,7 +165,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
                 wr_pvld_in := io.wr_pvld && !wr_busy_in
             }
 
-            if(distant_wr_pd){
+            if(ram_type == 2){
                 when(!wr_busy_in && io.wr_pvld){
                     wr_pd_in := io.wr_pd
                 }
@@ -239,7 +239,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
             ram.io.clk := io.clk
             ram.io.clk_mgated.get := clk_mgated
             ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-            ram.io.di := io.wr_pd
+            ram.io.di := wr_pd_in
             ram.io.iwe.get := ram_iwe
             ram.io.we := ram_we
             ram.io.wa := wr_adr
@@ -248,6 +248,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
         }
         val rd_enable = if(ram_type == 2) Some(Wire(Bool())) else None
         if(ram_type == 2){
+            //need two cycles
             val ram = Module(new nv_ram_rwsp(depth, width))
             ram.io.clk := io.clk
             ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
