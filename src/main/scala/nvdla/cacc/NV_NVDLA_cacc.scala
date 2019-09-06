@@ -19,7 +19,7 @@
 //         val mac_b2accu = Flipped(ValidIO(new cmac2cacc_if))    /* data valid */
 
 //         //sdp
-//         val cacc2sdp = ValidIO(new cacc2sdp_if)    /* data valid */
+//         val cacc2sdp = DecoupledIO(new cacc2sdp_if)    /* data valid */
 
 //         //csc
 //         val accu2sc_credit_size = ValidIO((UInt(3.W)))
@@ -51,129 +51,76 @@
 // //             └──┴──┘       └──┴──┘ 
 // withReset(!io.nvdla_core_rstn){
 
-//     val abuf_rd_addr = Wire(UInt(conf.CACC_ABUF_AWIDTH.W))
-//     val abuf_rd_data = Wire(UInt(conf.CACC_ABUF_WIDTH.W))
-//     val abuf_rd_en = Wire(Bool())
-//     val abuf_wr_addr = Wire(UInt(conf.CACC_ABUF_AWIDTH.W))
-//     val abuf_wr_data = Wire(UInt(conf.CACC_ABUF_WIDTH.W))
-//     val abuf_wr_en = Wire(Bool())
-//     val accu_ctrl_pd = Wire(UInt(13.W))
-//     val accu_ctrl_ram_valid = Wire(Bool())
-//     val accu_ctrl_valid = Wire(Bool())
-//     val cfg_in_en_mask = Wire(Bool())
-//     val cfg_is_wg = Wire(Bool())
-//     val cfg_truncate = Wire(UInt(5.W))
-//     val dbuf_rd_addr = Wire(UInt(conf.CACC_DBUF_AWIDTH.W))
-//     val dbuf_rd_en = Wire(Bool())
-//     val dbuf_rd_layer_end = Wire(Bool())
-//     val dbuf_rd_ready = Wire(Bool())
-//     val dbuf_wr_addr = Wire(UInt(conf.CACC_DBUF_AWIDTH.W))
-//     val dbuf_wr_data = Wire(UInt(conf.CACC_ABUF_WIDTH.W))
-//     val dbuf_wr_en = Wire(Bool())
-//     val dlv_data = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
-//     val dlv_mask = Wire(Bool())
-//     val dlv_pd = Wire(UInt(2.W))
-//     val dlv_valid = Wire(Bool())
-
-//     val slcg_cell_en = Wire(Bool())
-//     val wait_for_op_en = Wire(Bool())
-
 //     val nvdla_cell_gated_clk = Wire(Clock())
 //     val nvdla_op_gated_clk = Wire(Vec(3, Clock()))
-
-
-
 
 //     //==========================================================
 //     // Regfile
 //     //==========================================================
-//     val dp2reg_done = Wire(Bool())
-//     val dp2reg_sat_count = Wire(UInt(32.W))
 //     val u_regfile = Module(new NV_NVDLA_CACC_regfile)
 
 //     u_regfile.io.nvdla_core_clk := io.nvdla_core_clk  
 //     u_regfile.io.csb2cacc <> io.csb2cacc   
-//     u_regfile.io.dp2reg_done := dp2reg_done        
-//     u_regfile.io.dp2reg_sat_count := dp2reg_sat_count 
+//     u_regfile.io.dp2reg_done := u_delivery_ctrl.io.dp2reg_done       
+//     u_regfile.io.dp2reg_sat_count := u_calculator.io.dp2reg_sat_count
 //     val field = u_regfile.io.reg2dp_field  
-//     val slcg_op_en = u_regfile.io.slcg_op_en
     
 //     //==========================================================
 //     // Assembly controller
 //     //==========================================================
-
 //     val u_assembly_ctrl = Module(new NV_NVDLA_CACC_assembly_ctrl)
 
-//     u_assembly_ctrl.io.nvdla_core_clk := nvdla_op_gated_clk(0)                
+//     u_assembly_ctrl.io.nvdla_core_clk := nvdla_op_gated_clk(0) 
 
+//     u_assembly_ctrl.io.mac_a2accu_pd.valid := io.mac_a2accu.valid
+//     u_assembly_ctrl.io.mac_a2accu_pd.bits := io.mac_a2accu.bits.pd
+    
 //     u_assembly_ctrl.io.reg2dp_op_en := field.op_en     
 //     u_assembly_ctrl.io.reg2dp_conv_mode := field.conv_mode           
 //     u_assembly_ctrl.io.reg2dp_proc_precision := field.proc_precision
 //     u_assembly_ctrl.io.reg2dp_clip_truncate := field.clip_truncate
-
-//     u_assembly_ctrl.io.dp2reg_done := dp2reg_done
-//     u_assembly_ctrl.io.mac_a2accu_pd := 
-//     u_assembly_ctrl.io.mac_a2accu_pvld := io.mac_a2accu_pvld
-//     u_assembly_ctrl.io.mac_b2accu_pd := io.mac_b2accu_pd
-//     u_assembly_ctrl.io.mac_b2accu_pvld := io.mac_b2accu_pvld 
-
-//     abuf_rd_addr := u_assembly_ctrl.io.abuf_rd_addr
-//     abuf_rd_en := u_assembly_ctrl.io.abuf_rd_en
-//     accu_ctrl_pd := u_assembly_ctrl.io.accu_ctrl_pd
-//     accu_ctrl_ram_valid := u_assembly_ctrl.io.accu_ctrl_ram_valid
-//     accu_ctrl_valid := u_assembly_ctrl.io.accu_ctrl_valid
-//     cfg_in_en_mask := u_assembly_ctrl.io.cfg_in_en_mask
-//     cfg_is_wg := u_assembly_ctrl.io.cfg_is_wg
-//     cfg_truncate := u_assembly_ctrl.io.cfg_truncate
-//     slcg_cell_en := u_assembly_ctrl.io.slcg_cell_en
-//     wait_for_op_en := u_assembly_ctrl.io.wait_for_op_en
+//     u_assembly_ctrl.io.dp2reg_done := u_delivery_ctrl.io.dp2reg_done
 
 //     //==========================================================
 //     // Assembly buffer
 //     //==========================================================
-    
 //     val u_assembly_buffer = Module(new NV_NVDLA_CACC_assembly_buffer)
-
+    
 //     u_assembly_buffer.io.nvdla_core_clk := nvdla_op_gated_clk(1)
-//     u_assembly_buffer.io.abuf_rd_addr := abuf_rd_addr
+//     u_assembly_buffer.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+
+//     u_assembly_buffer.io.abuf_rd.addr.bits := u_assembly_ctrl.io.abuf_rd_addr.bits
 //     u_assembly_buffer.io.abuf_rd_en := abuf_rd_en
 //     u_assembly_buffer.io.abuf_wr_addr := abuf_wr_addr
 //     u_assembly_buffer.io.abuf_wr_data := abuf_wr_data
 //     u_assembly_buffer.io.abuf_wr_en := abuf_wr_en
-//     u_assembly_buffer.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-//     abuf_rd_data := u_assembly_buffer.io.abuf_rd_data
-
-
+    
 
 //     //==========================================================
 //     // CACC calculator
 //     //==========================================================
-
 //     val u_calculator = Module(new NV_NVDLA_CACC_calculator)
 
 //     u_calculator.io.nvdla_cell_clk := nvdla_cell_gated_clk
 //     u_calculator.io.nvdla_core_clk := nvdla_op_gated_clk(2)
-//     u_calculator.io.abuf_rd_data := abuf_rd_data
-//     u_calculator.io.accu_ctrl_pd := accu_ctrl_pd
-//     u_calculator.io.accu_ctrl_ram_valid := accu_ctrl_ram_valid
-//     u_calculator.io.accu_ctrl_valid := accu_ctrl_valid
-//     u_calculator.io.cfg_in_en_mask := cfg_in_en_mask
-//     u_calculator.io.cfg_is_wg := cfg_is_wg
-//     u_calculator.io.cfg_truncate := cfg_truncate
-//     u_calculator.io.mac_a2accu_data := io.mac_a2accu_data
-//     u_calculator.io.mac_a2accu_mask := io.mac_a2accu_mask
-//     u_calculator.io.mac_a2accu_pvld := io.mac_a2accu_pvld
-//     u_calculator.io.mac_b2accu_data := io.mac_b2accu_data
-//     u_calculator.io.mac_b2accu_mask := io.mac_b2accu_mask
-//     u_calculator.io.mac_b2accu_pvld := io.mac_b2accu_pvld
-//     abuf_wr_addr := u_calculator.io.abuf_wr_addr 
-//     abuf_wr_data := u_calculator.io.abuf_wr_data
-//     abuf_wr_en := u_calculator.io.abuf_wr_en 
-//     dlv_data := u_calculator.io.dlv_data
-//     dlv_mask := u_calculator.io.dlv_mask
-//     dlv_pd := u_calculator.io.dlv_pd 
-//     dlv_valid := u_calculator.io.dlv_valid
-//     dp2reg_sat_count := u_calculator.io.dp2reg_sat_count
+//     u_calculator.io.abuf_rd_data := u_assembly_buffer.io.abuf_rd_data
+//     u_calculator.io.accu_ctrl_pd := u_assembly_ctrl.io.accu_ctrl_pd
+//     u_calculator.io.accu_ctrl_ram_valid := u_assembly_ctrl.io.accu_ctrl_ram_valid
+//     u_calculator.io.accu_ctrl_valid := u_assembly_ctrl.io.accu_ctrl_valid
+//     u_calculator.io.cfg_in_en_mask := u_assembly_ctrl.io.cfg_in_en_mask
+//     u_calculator.io.cfg_is_wg := u_assembly_ctrl.io.cfg_is_wg
+//     u_calculator.io.cfg_truncate := u_assembly_ctrl.io.cfg_truncate
+
+//     u_calculator.io.mac_a2accu_data := io.mac_a2accu.bits.data
+//     u_calculator.io.mac_a2accu_mask := io.mac_a2accu.bits.mask
+//     u_calculator.io.mac_a2accu_pvld := io.mac_a2accu.valid
+//     u_calculator.io.mac_b2accu_data := io.mac_b2accu.bits.data
+//     u_calculator.io.mac_b2accu_mask := io.mac_b2accu.bits.mask
+//     u_calculator.io.mac_b2accu_pvld := io.mac_b2accu.valid
+
+//     u_assembly_buffer.io.abuf_wr_addr := u_calculator.io.abuf_wr_addr 
+//     u_assembly_buffer.io.abuf_wr_data := u_calculator.io.abuf_wr_data
+//     u_assembly_buffer.io.abuf_wr_en := u_calculator.io.abuf_wr_en 
 
 //     //==========================================================
 //     // Delivery controller
@@ -181,35 +128,27 @@
 
 //     val u_delivery_ctrl = Module(new NV_NVDLA_CACC_delivery_ctrl)
 
-//     u_delivery_ctrl.io.reg2dp_op_en := reg2dp_op_en
-//     u_delivery_ctrl.io.reg2dp_conv_mode := reg2dp_conv_mode
-//     u_delivery_ctrl.io.reg2dp_proc_precision := reg2dp_proc_precision
-//     u_delivery_ctrl.io.reg2dp_dataout_width := reg2dp_dataout_width
-//     u_delivery_ctrl.io.reg2dp_dataout_height := reg2dp_dataout_height
-//     u_delivery_ctrl.io.reg2dp_dataout_channel := reg2dp_dataout_channel
-//     u_delivery_ctrl.io.reg2dp_dataout_addr := reg2dp_dataout_addr(31, conf.NVDLA_MEMORY_ATOMIC_LOG2)
-//     u_delivery_ctrl.io.reg2dp_line_packed := reg2dp_line_packed
-//     u_delivery_ctrl.io.reg2dp_surf_packed := reg2dp_surf_packed
-//     u_delivery_ctrl.io.reg2dp_batches := reg2dp_batches
-//     u_delivery_ctrl.io.reg2dp_line_stride := reg2dp_line_stride
-//     u_delivery_ctrl.io.reg2dp_surf_stride := reg2dp_surf_stride
 //     u_delivery_ctrl.io.nvdla_core_clk := io.nvdla_core_clk
-//     u_delivery_ctrl.io.cacc2sdp_ready := io.cacc2sdp_ready
-//     u_delivery_ctrl.io.cacc2sdp_valid := io.cacc2sdp_valid
-//     u_delivery_ctrl.io.dbuf_rd_ready := dbuf_rd_ready
-//     u_delivery_ctrl.io.dlv_data := dlv_data
-//     u_delivery_ctrl.io.dlv_mask := dlv_mask
-//     u_delivery_ctrl.io.dlv_pd := dlv_pd
-//     u_delivery_ctrl.io.dlv_valid := dlv_valid
-//     u_delivery_ctrl.io.wait_for_op_en := wait_for_op_en
 
-//     dbuf_rd_addr := u_delivery_ctrl.io.dbuf_rd_addr
-//     dbuf_rd_en := u_delivery_ctrl.io.dbuf_rd_en
-//     dbuf_rd_layer_end := u_delivery_ctrl.io.dbuf_rd_layer_end
-//     dbuf_wr_addr := u_delivery_ctrl.io.dbuf_wr_addr
-//     dbuf_wr_data := u_delivery_ctrl.io.dbuf_wr_data
-//     dbuf_wr_en := u_delivery_ctrl.io.dbuf_wr_en
-//     dp2reg_done := u_delivery_ctrl.io.dp2reg_done
+//     u_delivery_ctrl.io.dbuf_rd_ready := dbuf_rd_ready
+//     u_delivery_ctrl.io.dlv_data := u_calculator.io.dlv_data
+//     u_delivery_ctrl.io.dlv_mask := u_calculator.io.dlv_mask
+//     u_delivery_ctrl.io.dlv_pd := u_calculator.io.dlv_pd
+//     u_delivery_ctrl.io.dlv_valid := u_calculator.io.dlv_valid
+//     u_delivery_ctrl.io.wait_for_op_en := u_assembly_ctrl.io.wait_for_op_en
+
+//     u_delivery_ctrl.io.reg2dp_op_en := field.op_en
+//     u_delivery_ctrl.io.reg2dp_conv_mode := field.conv_mode
+//     u_delivery_ctrl.io.reg2dp_proc_precision := field.proc_precision
+//     u_delivery_ctrl.io.reg2dp_dataout_width := field.dataout_width
+//     u_delivery_ctrl.io.reg2dp_dataout_height := field.dataout_height
+//     u_delivery_ctrl.io.reg2dp_dataout_channel := field.dataout_channel
+//     u_delivery_ctrl.io.reg2dp_dataout_addr := field.dataout_addr(31, conf.NVDLA_MEMORY_ATOMIC_LOG2)
+//     u_delivery_ctrl.io.reg2dp_line_packed := field.line_packed
+//     u_delivery_ctrl.io.reg2dp_surf_packed := field.surf_packed
+//     u_delivery_ctrl.io.reg2dp_batches := field.batches
+//     u_delivery_ctrl.io.reg2dp_line_stride := field.line_stride
+//     u_delivery_ctrl.io.reg2dp_surf_stride := field.surf_stride
 
 //     //==========================================================
 //     // Delivery buffer
@@ -218,17 +157,18 @@
 //     val u_delivery_buffer = Module(new NV_NVDLA_CACC_delivery_buffer)
 
 //     u_delivery_buffer.io.nvdla_core_clk := io.nvdla_core_clk
-//     u_delivery_buffer.io.cacc2sdp_ready := io.cacc2sdp_ready
+//     u_delivery_buffer.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+
+//     u_delivery_buffer.io.cacc2sdp <> io.cacc2sdp
 //     u_delivery_buffer.io.dbuf_rd_addr := dbuf_rd_addr
 //     u_delivery_buffer.io.dbuf_rd_en := dbuf_rd_en
 //     u_delivery_buffer.io.dbuf_rd_layer_end := dbuf_rd_layer_end
 //     u_delivery_buffer.io.dbuf_wr_addr := dbuf_wr_addr
 //     u_delivery_buffer.io.dbuf_wr_data := dbuf_wr_data
 //     u_delivery_buffer.io.dbuf_wr_en := dbuf_wr_en
-//     u_delivery_buffer.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+    
 //     io.cacc2glb_done_intr_pd := u_delivery_buffer.io.cacc2glb_done_intr_pd
-//     io.cacc2sdp_pd := u_delivery_buffer.io.cacc2sdp_pd
-//     io.cacc2sdp_valid := u_delivery_buffer.io.cacc2sdp_valid
+
 //     dbuf_rd_ready := u_delivery_buffer.io.dbuf_rd_ready
 //     io.accu2sc_credit_size <> u_delivery_buffer.io.accu2sc_credit_size
 
@@ -240,13 +180,13 @@
 
 //     for(i<- 0 to 2){
 //         u_slcg_op(i).io.nvdla_clock := io.nvdla_clock 
-//         u_slcg_op(i).io.slcg_en(0):= slcg_op_en(i)
+//         u_slcg_op(i).io.slcg_en(0):= u_regfile.io.slcg_op_en(i)
 //         nvdla_op_gated_clk(i) := u_slcg_op(i).io.nvdla_core_gated_clk                                                                                               
 //     }
 
 //     val u_slcg_cell_0 = Module(new NV_NVDLA_slcg(1, false))
 //     u_slcg_cell_0.io.nvdla_clock := io.nvdla_clock
-//     u_slcg_cell_0.io.slcg_en(0) := slcg_op_en(3) | slcg_cell_en
+//     u_slcg_cell_0.io.slcg_en(0) := u_regfile.io.slcg_op_en(3) | slcg_cell_en
 //     nvdla_cell_gated_clk := u_slcg_cell_0.io.nvdla_core_gated_clk  
 // }}
 

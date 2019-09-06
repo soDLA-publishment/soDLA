@@ -56,4 +56,3 @@ withClock(io.nvdla_core_clk){
     io.abuf_rd.data := RegEnable(abuf_rd_raw_data, abuf_rd_en_d1)
 
 }}
-

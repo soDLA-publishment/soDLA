@@ -6,7 +6,7 @@ import chisel3.util._
 
 //calculate accumulate data
 
-class NV_NVDLA_CACC_calculator(implicit conf: nvdlaConfig) extends Module {
+class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module {
 
     val io = IO(new Bundle {
         //clk
@@ -15,9 +15,7 @@ class NV_NVDLA_CACC_calculator(implicit conf: nvdlaConfig) extends Module {
 
         //abuf
         val abuf_rd_data = Input(UInt(conf.CACC_ABUF_WIDTH.W))
-        val abuf_wr_en = Output(Bool())
-        val abuf_wr_addr = Output(UInt(conf.CACC_ABUF_AWIDTH.W))   
-        val abuf_wr_data = Output(UInt(conf.CACC_ABUF_WIDTH.W))  
+        val abuf_wr = new nvdla_wr_if(conf.CACC_ABUF_AWIDTH, conf.CACC_ABUF_WIDTH)
     
         //dlv buf
         val dlv_valid = Output(Bool())
@@ -38,10 +36,12 @@ class NV_NVDLA_CACC_calculator(implicit conf: nvdlaConfig) extends Module {
         //mac2cacc
         val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_a2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
+        val mac_a2accu_mode = Input(Bool())
         val mac_a2accu_pvld = Input(Bool())
 
         val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_b2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
+        val mac_b2accu_mode = Input(Bool())
         val mac_b2accu_pvld = Input(Bool())
 
         //reg

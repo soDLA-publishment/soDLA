@@ -26,6 +26,7 @@ class sc2buf_wt_rd_if(implicit val conf: nvdlaConfig)  extends Bundle{
 class csc2cmac_data_if(implicit val conf: nvdlaConfig)  extends Bundle{
     val mask = Output(Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, Bool()))
     val data = Output(Vec(conf.NVDLA_MAC_ATOMIC_C_SIZE, UInt(conf.NVDLA_BPE.W)))
+    val mode = Output(Bool())
 //pd
 //   field batch_index 5
 //   field stripe_st 1
