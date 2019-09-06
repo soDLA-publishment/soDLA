@@ -90,7 +90,6 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     u_rt_out.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+2)
     u_rt_out.io.out.valid := withClock(io.nvdla_clock.nvdla_core_clk){ShiftRegister(u_rt_in.io.in_dat.valid, conf.MAC_PD_LATENCY)}     //|< w
     u_rt_out.io.out.bits.pd := withClock(io.nvdla_clock.nvdla_core_clk){ShiftRegister(u_rt_in.io.in_dat.bits.pd, conf.MAC_PD_LATENCY, u_rt_in.io.in_dat.valid)}     //|< w
-    u_rt_out.io.out.bits.mode := false.B
 
     io.dp2reg_done := u_rt_out.io.dp2reg_done                   //|> o
     io.mac2accu <> u_rt_out.io.mac2accu         //|> o )

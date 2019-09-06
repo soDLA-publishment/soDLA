@@ -88,7 +88,6 @@ class NV_NVDLA_CMAC_CORE_rt_out(useRealClock:Boolean = false)(implicit val conf:
     io.mac2accu.bits.mask := out_rt_mask_d(conf.CMAC_OUT_RT_LATENCY)
     io.mac2accu.bits.pd := out_rt_pd_d(conf.CMAC_OUT_RT_LATENCY)
     io.mac2accu.bits.data := out_rt_data_d(conf.CMAC_OUT_RT_LATENCY)
-    io.mac2accu.bits.mode := false.B
     io.dp2reg_done := dp2reg_done_d(conf.CMAC_OUT_RT_LATENCY)
   
 }

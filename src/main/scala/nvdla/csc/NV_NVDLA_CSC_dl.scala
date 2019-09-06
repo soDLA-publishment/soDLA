@@ -618,10 +618,16 @@ val w_bias_d1 = RegInit("b0".asUInt(conf.CBUF_ADDR_WIDTH.W))
 
 //channel bias, by w_in element
 val c_bias_add = Mux(~is_img_d1(8), datain_width(11, 0), "b0".asUInt(12.W))
+val c_bias_w = Mux(layer_st, 0.U, 
+               Mux(is_stripe_end & dl_channel_end, 0.U, c_bias + c_bias_add))
 val c_bias_reg_en = layer_st | (dat_exec_valid & is_stripe_end & dl_block_end)
 val c_bias_d1_reg_en = c_bias =/= c_bias_d1
 
 //height bias, by element
+val h_bias_0_w = (datain_h_cnt * h_bias_0_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
+val h_bias_1_w = (dl_h_offset * h_bias_1_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
+val h_bias_2_w = (batch_cnt * h_bias_2_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
+val h_bias_3_w = Mux(layer_st, 0.U, sub_h_cnt * h_bias_3_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
 val h_bias_reg_en = Cat(layer_st | is_img_d1(9), dat_exec_valid)
 
 //width bias, by entry in image, by element in feature data
@@ -650,19 +656,18 @@ val w_bias_reg_en = dat_exec_valid
 val dat_req_base_d1 = dat_entry_st
 
 when(c_bias_reg_en){
-    c_bias := Mux(layer_st, 0.U, 
-              Mux(is_stripe_end & dl_channel_end, 0.U, c_bias + c_bias_add))
+    c_bias := c_bias_w
 }
 when(c_bias_d1_reg_en){
     c_bias_d1 := c_bias
 }
 when(h_bias_reg_en(0)){
-    h_bias_0_d1 := (datain_h_cnt * h_bias_0_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
-    h_bias_1_d1 := (dl_h_offset * h_bias_1_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
-    h_bias_2_d1 := (batch_cnt * h_bias_2_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
+    h_bias_0_d1 := h_bias_0_w
+    h_bias_1_d1 := h_bias_1_w
+    h_bias_2_d1 := h_bias_2_w
 }
 when(h_bias_reg_en(1)){
-    h_bias_3_d1 := Mux(layer_st, 0.U, sub_h_cnt * h_bias_3_stride)(conf.CBUF_ADDR_WIDTH-1, 0)
+    h_bias_3_d1 := h_bias_3_w
 }
 when(w_bias_reg_en){
     w_bias_d1 := w_bias_w
@@ -1029,7 +1034,7 @@ if(conf.NVDLA_CC_ATOMC_DIV_ATOMK==4){
                        Mux((dat_rsp_bytes <= conf.CSC_QUAT_ENTRY_HEX.U)&(dat_rsp_sub_w === "h3".asUInt(2.W)), Cat("b0".asUInt(conf.CSC_3QUAT_ENTRY_BITS.W), dat_rsp_l0c0(conf.CSC_ENTRY_BITS-1, conf.CSC_3QUAT_ENTRY_BITS)),
                        dat_rsp_l0c0)))))))
 }
-//transform from uint to vec of sint
+//transform from uint to vec of uint
 val dat_rsp_conv = Wire(Vec(conf.CBUF_ENTRY_BITS/conf.CSC_BPE, UInt(conf.CSC_BPE.W)))
 for(i <- 0 to conf.CBUF_ENTRY_BITS/conf.CSC_BPE - 1){
     dat_rsp_conv(i) := dat_rsp_conv_8b(i*conf.CSC_BPE + conf.CSC_BPE - 1, i*conf.CSC_BPE)
@@ -1114,21 +1119,6 @@ val dat_out_flag = RegInit("b0".asUInt(9.W))
 val dat_out_bypass_mask = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
 val dat_out_bypass_data = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
 
-val dat_out_pvld_l = Wire(Bool()) +: 
-                     Seq.fill(conf.CSC_DL_PRA_LATENCY)(RegInit(false.B))
-val dat_out_flag_l = Wire(Bool()) +: 
-                     Seq.fill(conf.CSC_DL_PRA_LATENCY)(RegInit("b0".asUInt(9.W)))
-
-dat_out_pvld_l(0) := dat_rsp_pvld
-dat_out_flag_l(0) := dat_rsp_flag
-
-for(t <- 0 to conf.CSC_DL_PRA_LATENCY-1){
-    dat_out_pvld_l(t+1) := dat_out_pvld_l(t)
-    when(dat_out_pvld_l(t)){
-        dat_out_flag_l(t+1) := dat_out_flag_l(t)
-    }
-}
-
 val dat_out_pvld_w = dat_rsp_pvld
 val dat_out_flag_w = dat_rsp_flag
 
@@ -1161,6 +1151,14 @@ val dat_out_data = dat_out_bypass_data
 val dat_out_mask = Mux(~dat_out_pvld, VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)), 
                    dat_out_bypass_mask)
 
+dl_out_pvld := dat_out_pvld
+when(dat_out_pvld | dl_out_pvld){
+    dl_out_mask := dat_out_mask
+}
+when(dat_out_pvld){
+    dl_out_flag := dat_out_pvld
+}
+
 for(i <- 0 to conf.CSC_ATOMC-1){
     when(dat_out_mask(i)){
         dl_out_data(i) := dat_out_data(i)
@@ -1177,13 +1175,14 @@ io.sc2mac_dat_a.valid := RegNext(dl_out_pvld, false.B)
 io.sc2mac_dat_b.valid := RegNext(dl_out_pvld, false.B)
 io.sc2mac_dat_a.bits.pd := RegEnable(sc2mac_dat_pd_w, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
 io.sc2mac_dat_b.bits.pd := RegEnable(sc2mac_dat_pd_w, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
-io.sc2mac_dat_a.bits.mask := RegEnable(dl_out_mask, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
-io.sc2mac_dat_b.bits.mask := RegEnable(dl_out_mask, "b0".asUInt(9.W), dl_out_pvld | dl_out_pvld_d1)
+io.sc2mac_dat_a.bits.mask := RegEnable(dl_out_mask, VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)), dl_out_pvld | dl_out_pvld_d1)
+io.sc2mac_dat_b.bits.mask := RegEnable(dl_out_mask, VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)), dl_out_pvld | dl_out_pvld_d1)
 for(i <- 0 to conf.CSC_ATOMC-1){
     io.sc2mac_dat_a.bits.data(i) := RegEnable(dl_out_data(i), dl_out_mask(i))
     io.sc2mac_dat_b.bits.data(i) := RegEnable(dl_out_data(i), dl_out_mask(i))
-
 }
+
+
 
 }}
 

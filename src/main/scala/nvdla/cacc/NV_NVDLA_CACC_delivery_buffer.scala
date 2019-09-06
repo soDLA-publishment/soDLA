@@ -11,7 +11,11 @@ class NV_NVDLA_CACC_delivery_buffer(implicit conf: nvdlaConfig) extends Module {
         val nvdla_core_clk = Input(Clock())
 
         //cacc2sdp
+<<<<<<< Updated upstream
         val cacc2sdp = DecoupledIO(new cacc2sdp_if)    
+=======
+        val cacc2sdp_pd = DecoupledIO(UInt(conf.CACC_SDP_WIDTH.W))
+>>>>>>> Stashed changes
 
         //cacc2glb
         val cacc2glb_done_intr_pd = Output(UInt(2.W))
@@ -118,3 +122,7 @@ io.accu2sc_credit_size.valid := RegNext(io.cacc2sdp_pd.valid & io.cacc2sdp_pd.re
 
 
 }}
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes

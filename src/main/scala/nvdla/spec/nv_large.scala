@@ -20,7 +20,7 @@ class nv_large
   val CDP_ENABLE = true
   val RETIMING_ENABLE = false
   val MAC_ATOMIC_C_SIZE = 64 
-  val MAC_ATOMIC_K_SIZE = 8
+  val MAC_ATOMIC_K_SIZE = 32
   val MEMORY_ATOMIC_SIZE = 32
   val MAX_BATCH_SIZE = 32
   val CBUF_BANK_NUMBER = 16

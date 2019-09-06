@@ -44,7 +44,7 @@ class NV_NVDLA_CACC_CALC_int8 extends Module {
 //           │         │
 //           │         └──────────────┐
 //           │                        │
-//           │                        ├─┐         addition --> narrow down to 34 bit-->narrow down to 32 bit
+//           │                        ├─┐         
 //           │                        ┌─┘    
 //           │                        │
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         

@@ -47,7 +47,7 @@ class csc2cmac_wt_if(implicit val conf: nvdlaConfig) extends Bundle{
 class cmac2cacc_if(implicit val conf: nvdlaConfig) extends Bundle{
     val mask = Output(Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, Bool()))
     val data = Output(Vec(conf.NVDLA_MAC_ATOMIC_K_SIZE_DIV2, UInt(conf.NVDLA_MAC_RESULT_WIDTH.W)))
-    val mode = Output(Bool())
+    //val mode = Output(Bool())
 //pd
 //   field batch_index 5
 //   field stripe_st 1

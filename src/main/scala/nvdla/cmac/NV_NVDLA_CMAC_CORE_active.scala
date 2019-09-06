@@ -13,7 +13,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
         val nvdla_core_clk = Input(Clock())
 
         // input_dat
-        val in_dat = Flipped(ValidIO(new csc2cmac_wt_if))  /* data valid */
+        val in_dat = Flipped(ValidIO(new csc2cmac_data_if))  /* data valid */
         val in_dat_stripe_st = Input(Bool())
         val in_dat_stripe_end = Input(Bool())
 
