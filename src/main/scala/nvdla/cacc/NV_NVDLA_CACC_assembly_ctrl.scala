@@ -80,12 +80,8 @@ io.slcg_cell_en := ShiftRegister(io.reg2dp_op_en, 3, false.B, true.B)
 
 // get layer operation begin
 val wait_for_op_en_out = RegInit(true.B)
-<<<<<<< Updated upstream
-wait_for_op_en_out := Mux(io.dp2reg_done, true.B, Mux(io.reg2dp_op_en, false.B, wait_for_op_en_out))
-=======
 val wait_for_op_en_w = RegNext(Mux(io.dp2reg_done, true.B, Mux(io.reg2dp_op_en, false.B, wait_for_op_en_out)))
 wait_for_op_en_out := wait_for_op_en_w 
->>>>>>> Stashed changes
 io.wait_for_op_en := wait_for_op_en_out
 
 
@@ -96,12 +92,8 @@ val accu_ram_valid = RegInit(false.B)
 val accu_channel_st = RegInit(true.B)
 
 val layer_st = io.wait_for_op_en & io.reg2dp_op_en
-<<<<<<< Updated upstream
-val accu_cnt_w = Mux(layer_st | accu_stripe_end, "b0".asUInt(conf.CACC_ABUF_AWIDTH.W), accu_cnt + 1.U)
-=======
 val accu_cnt_inc = accu_cnt + 1.U
 val accu_cnt_w = Mux(layer_st | accu_stripe_end, "b0".asUInt(conf.CACC_ABUF_AWIDTH.W), accu_cnt_inc)
->>>>>>> Stashed changes
 val accu_addr = accu_cnt
 val accu_channel_st_w  = Mux(layer_st, true.B, Mux(accu_valid & accu_stripe_end, accu_channel_end, accu_channel_st))
 val accu_rd_en = accu_valid & (~accu_channel_st)

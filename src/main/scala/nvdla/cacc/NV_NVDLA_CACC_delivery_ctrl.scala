@@ -174,11 +174,11 @@ when(dlv_data_add_valid | dlv_data_sub_valid){
 ///// generate dbuf read request   
 val dbuf_rd_addr_cnt = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
 
-dlv_pop := io.dbuf_rd_en & io.dbuf_rd_ready
+dlv_pop := io.dbuf_rd_addr.valid & io.dbuf_rd_ready
 val dbuf_rd_addr_cnt_inc = dbuf_rd_addr_cnt + 1.U
 val dbuf_empty = ~(dlv_data_avl.orR)
-io.dbuf_rd.addr.valid := ~dbuf_empty
-io.dbuf_rd.addr.bits := dbuf_rd_addr_cnt
+io.dbuf_rd_addr.valid := ~dbuf_empty
+io.dbuf_rd_addr.bits := dbuf_rd_addr_cnt
 
 when(dlv_pop){
     dbuf_rd_addr_cnt := dbuf_rd_addr_cnt_inc
@@ -196,7 +196,7 @@ val dlv_end_tag1_addr = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
 
 val dlv_end_set = io.dlv_valid & dlv_stripe_end & dlv_layer_end
 val dlv_end_addr_w = dbuf_wr_addr_pre
-val dlv_end_clr = dlv_pop & (io.dbuf_rd.addr.bits === dlv_end_tag0_addr) & dlv_end_tag0_vld
+val dlv_end_clr = dlv_pop & (io.dbuf_rd_addr.bits === dlv_end_tag0_addr) & dlv_end_tag0_vld
 val dlv_end_tag0_vld_w = Mux(dlv_end_tag1_vld | dlv_end_set, true.B, Mux(dlv_end_clr, false.B, dlv_end_tag0_vld))
 val dlv_end_tag1_vld_w = Mux(dlv_end_tag0_vld | dlv_end_set, true.B, Mux(dlv_end_clr, false.B, dlv_end_tag1_vld))
 val dlv_end_tag0_en = (dlv_end_set & ~dlv_end_tag0_vld) | (dlv_end_set & dlv_end_clr) |(dlv_end_clr & dlv_end_tag1_vld);
