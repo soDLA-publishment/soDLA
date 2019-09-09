@@ -45,7 +45,7 @@
 
         
 //         val img2cvt_dat_wr_sel = if(conf.DMAIF < conf.ATMC) Some(Output(UInt(log2Ceil(conf.ATMC/conf.DMAIF).W))) 
-//                                 else None
+//                                   else None
 //         val img2cvt_dat_wr_addr =  Output(UInt(17.W))
 //         val img2cvt_dat_wr_data = Output(UInt(conf.DMAIF.W))
 //         val img2cvt_mn_wr_data = Output(UInt((conf.BNUM*16).W))
