@@ -11,23 +11,15 @@
 
 //         // dc2status
 //         val dc2status_dat_updt = Input(Bool())
-//         val dc2status_dat_entries = Input(UInt(15.W))
-//         val dc2status_dat_slices = Input(UInt(14.W))
 
 //         //img2status
 //         val img2status_dat_updt = Input(Bool())
-//         val img2status_dat_entries = Input(UInt(15.W))
-//         val img2status_dat_slices = Input(UInt(14.W))
     
 //         //sc2cdma
 //         val sc2cdma_dat_updt = Input(Bool())
-//         val sc2cdma_dat_entries = Input(UInt(15.W))
-//         val sc2cdma_dat_slices = Input(UInt(14.W))
 
 //         //cdma2cs
 //         val cdma2sc_dat_updt = Output(Bool())
-//         val cdma2sc_dat_entries = Output(UInt(15.W))
-//         val cdma2sc_dat_slices = Output(UInt(14.W))
 
 //         //status2dma
 //         val status2dma_valid_slices = Output(UInt(14.W))

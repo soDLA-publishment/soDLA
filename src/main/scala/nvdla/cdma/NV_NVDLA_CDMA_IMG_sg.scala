@@ -11,19 +11,25 @@
 //     val io = IO(new Bundle {
 //         //nvdla core clock
 //         val nvdla_core_clk = Input(Clock())
+    
+//         //pwr
+//         val pwrbus_ram_pd = Input(UInt(32.W))
+
 //         //mcif
-//         val img_dat2mcif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val img_dat2mcif_rd_req_valid = Output(Bool())
-//         val img_dat2mcif_rd_req_ready = Input(Bool())
-//         val mcif2img_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-//         val mcif2img_dat_rd_rsp_valid = Input(Bool())
-//         val mcif2img_dat_rd_rsp_ready = Output(Bool())
+//         val img_dat2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//         val mcif2img_dat_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W)))
+
+//         val img_dat2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
+//         val cvif2img_dat_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W)))) else None
+
 //         //status
 //         val img2status_dat_entries = Input(UInt(15.W))
 //         val img2status_dat_updt = Input(Bool())
+
 //         //state
 //         val is_running = Input(Bool())
 //         val layer_st = Input(Bool())
+
 //         //pixel
 //         val pixel_order = Input(UInt(11.W))
 //         val pixel_planar = Input(Bool())
@@ -43,29 +49,26 @@
 //         val pixel_planar1_rp_burst = Input(UInt(3.W))
 //         val pixel_planar1_rp_vld = Input(Bool())
 //         val pixel_planar1_width_burst = Input(UInt(14.W))
-//         //pwr
-//         val pwrbus_ram_pd = Input(UInt(32.W))
+
 //         //sg2pack
-//         val sg2pack_img_prdy = Input(Bool())
+//         val sg2pack_img_pd = DecoupledIO(UInt(11.W))
 //         val sg2pack_data_entries = Output(UInt(15.W))
 //         val sg2pack_entry_end = Output(UInt(15.W))
 //         val sg2pack_entry_mid = Output(UInt(15.W))
 //         val sg2pack_entry_st = Output(UInt(15.W))
 //         val sg2pack_height_total = Output(UInt(13.W))
-//         val sg2pack_img_pd = Output(UInt(11.W))
-//         val sg2pack_img_pvld = Output(Bool())
 //         val sg2pack_mn_enable = Output(Bool())
 //         val sg2pack_sub_h_end = Output(UInt(4.W))
 //         val sg2pack_sub_h_mid = Output(UInt(4.W))
 //         val sg2pack_sub_h_st = Output(UInt(4.W))
 //         val sg_is_done = Output(Bool())
+
 //         //status2dma
 //         val status2dma_free_entries = Input(UInt(15.W))
 //         val status2dma_fsm_switch = Input(Bool())
+
 //         //img2sbuf
-//         val img2sbuf_p0_wr_data = Output(UInt(conf.ATMM.W))
-//         val img2sbuf_p0_wr_addr = Output(UInt(8.W))
-//         val img2sbuf_p0_wr_en = Output(Bool())
+//         val img2sbuf_p0_wr = new nvdla_wr_if(17, conf.DMAIF)
 
 //         //reg2dp
 //         val reg2dp_op_en = Input(Bool())
@@ -87,15 +90,6 @@
 
 //     })
 
-//     val cvio = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(IO(new Bundle{
-//         //cvif
-//         val img_dat2cvif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val img_dat2cvif_rd_req_valid = Output(Bool())
-//         val img_dat2cvif_rd_req_ready = Input(Bool())
-//         val cvif2img_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
-//         val cvif2img_dat_rd_rsp_valid = Input(Bool())
-//         val cvif2img_dat_rd_rsp_ready = Output(Bool())
-//     })) else None
 // //     
 // //          ┌─┐       ┌─┐
 // //       ┌──┘ ┴───────┘ ┴──┐
