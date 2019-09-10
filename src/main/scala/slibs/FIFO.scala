@@ -9,7 +9,9 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
                     ram_type: Int, 
                     distant_wr_req: Boolean, 
                     io_wr_empty: Boolean = false, 
-                    io_wr_idle: Boolean = false, io_rd_idle: Boolean = false) extends Module {
+                    io_wr_idle: Boolean = false,
+                    io_wr_count: Boolean = false,
+                    io_rd_idle: Boolean = false) extends Module {
     val io = IO(new Bundle {
         //clk
         val clk = Input(Clock())
@@ -18,6 +20,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
         val wr_prdy = Output(Bool())
         val wr_pd = Input(UInt(width.W))
 
+        val wr_count =  if(io_wr_count) Some(Output(UInt(log2Ceil(depth+1).W))) else None
         val wr_empty = if(io_wr_empty) Some(Output(Bool())) else None
         val wr_idle = if(io_wr_idle) Some(Output(Bool())) else None
         
@@ -177,6 +180,9 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
 
         val wr_popping = Wire(Bool())       // fwd: write side sees pop?
         val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))} // write-side count
+        if(io_wr_count){
+            io.wr_count.get := wr_count
+        }
         val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, wr_count-1.U)
         val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count+1.U, wr_count)
         val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
