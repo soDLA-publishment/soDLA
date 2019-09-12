@@ -8,14 +8,9 @@
 //    val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
-//         val cvt_in_pvld = Input(Bool())
-//         val cvt_in_prdy = Output(Bool())
-//         val cvt_data_in = Input(UInt(32.W))
+//         val cvt_in = Flipped(DecoupledIO(UInt(32.W)))
 
-//         val cvt_out_pvld = Output(Bool())
-//         val cvt_out_prdy = Input(Bool())
-//         val cvt_data_out = Output(UInt(16.W))
-//         val cvt_sat_out = Output(Bool())
+//         val cvt_out = DecoupledIO(UInt(17.W))
 
 //         val cfg_mode_eql = Input(Bool())
 //         val cfg_offset = Input(UInt(32.W))
@@ -47,23 +42,7 @@
 //     //             └──┴──┘       └──┴──┘ 
 // withClock(io.nvdla_core_clk){
 
-//     // synoff nets
-
-//     // monitor nets
-
-//     // debug nets
-
-//     // tie high nets
-
-//     // tie low nets
-
-//     // no connect nets
-
-//     // not all bits used nets
-
-//     // todo nets
-
-//     val cvt_data_mux = Mux(io.cfg_mode_eql, 0.U, io.cvt_data_in)
+//     val cvt_data_mux = Mux(io.cfg_mode_eql, 0.U, io.cvt_in.bits)
 //     val cfg_offset_mux = Mux(io.cfg_mode_eql, 0.U, io.cfg_offset)
 //     val cfg_scale_mux = Mux(io.cfg_mode_eql, 0.U, io.cfg_scale)
 

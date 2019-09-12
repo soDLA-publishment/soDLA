@@ -42,11 +42,17 @@ class cdmaConfiguration extends caccConfiguration{
     val BNUM = NVDLA_MEMIF_WIDTH/NVDLA_BPE
     val MN_BW = NVDLA_MEMIF_WIDTH / NVDLA_BPE * 16
     val SS = log2Ceil(ATMC/ATMM)
+    var KK = log2Ceil(ATMC/DMAIF)
+    if(DMAIF < ATMC){
+        KK = 0
+    }
     val ATMM8 = ((8*NVDLA_MEMORY_ATOMIC_SIZE)/NVDLA_MAC_ATOMIC_C_SIZE)
     val CBUF_BANK_SIZE = NVDLA_CBUF_BANK_WIDTH * NVDLA_CBUF_BANK_DEPTH
     val CDMA_ADDR_ALIGN = NVDLA_MEMORY_ATOMIC_SIZE
     val CBUF_BANK_FETCH_BITS = log2Ceil(CBUF_BANK_SIZE/CDMA_ADDR_ALIGN)
-    val BANK_DEPTH_BITS = log2Ceil(ATMC/DMAIF) + log2Ceil(NVDLA_CBUF_BANK_DEPTH)
+    val BANK_DEPTH_BITS = log2Ceil(ATMC/DMAIF) + KK
+  
+
 
 }
 

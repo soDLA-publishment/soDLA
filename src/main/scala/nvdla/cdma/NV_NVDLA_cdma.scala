@@ -8,63 +8,37 @@
 // class NV_NVDLA_cdmaIO(implicit val conf: nvdlaConfig) extends Bundle{
 
 //     //general clock
-//     val nvdla_core_clk = Input(Clock())   
-//     val dla_clk_ovr_on_sync = Input(Clock())
-//     val global_clk_ovr_on_sync = Input(Clock())
-//     val tmc2slcg_disable_clock_gating = Input(Bool())      
+//     val nvdla_clock = Flipped(new nvdla_clock_if)
+//     val nvdla_core_rstn = Input(Bool())
 
 //     //csb
-//     val cdma2csb_resp_valid = Output(Bool())  
-//     val cdma2csb_resp_pd = Output(UInt(34.W))
-//     val csb2cdma_req_pvld = Input(Bool())
-//     val csb2cdma_req_prdy = Output(Bool()) 
-//     val csb2cdma_req_pd = Input(UInt(63.W))
+//     val cdma2csb_resp_valid = ValidIO(UInt(34.W))
+//     val csb2cdma_req_pd = Flipped(DecoupledIO(UInt(63.W)))
 
 //     //buf dat
-//     val cdma2buf_dat_wr_en = Output(Bool())
 //     val cdma2buf_dat_wr_sel = if(conf.DMAIF<conf.ATMC) Some(Output(UInt((conf.ATMC/conf.DMAIF).W))) else None
-//     val cdma2buf_dat_wr_addr = Output(UInt(17.W))
-//     val cdma2buf_dat_wr_data = Output(UInt(conf.DMAIF.W))
+//     val cdma2buf_dat_wr = new nvdla_wr_if(17, conf.DMAIF)
 
 //     //buf wt
-//     val cdma2buf_wt_wr_en = Output(Bool())
 //     val cdma2buf_wt_wr_sel = if(conf.DMAIF<conf.ATMC) Some(Output(UInt((conf.ATMC/conf.DMAIF).W))) else None 
-//     val cdma2buf_wt_wr_addr = Output(UInt(17.W))
-//     val cdma2buf_wt_wr_data = Output(UInt(conf.DMAIF.W))
-
+//     val cdma2buf_wt_wr = new nvdla_wr_if(17, conf.DMAIF)
 //     //glb
 //     val cdma_dat2glb_done_intr_pd = Output(UInt(2.W))
 //     val cdma_wt2glb_done_intr_pd = Output(UInt(2.W))
 
 //     //cvif
-//     val cdma_dat2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val cdma_dat2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val cdma_dat2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
-//     val cvif2cdma_dat_rd_rsp_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val cvif2cdma_dat_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val cvif2cdma_dat_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))) else None
+//     val cdma_dat2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
+//     val cvif2cdma_dat_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))) else None
 
-//     val cdma_wt2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val cdma_wt2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val cdma_wt2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
-//     val cvif2cdma_wt_rd_rsp_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val cvif2cdma_wt_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val cvif2cdma_wt_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))) else None
+//     val cdma_wt2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
+//     val cvif2cdma_wt_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))) else None
 
 //     //mcif
-//     val cdma_dat2mcif_rd_req_valid = Output(Bool())
-//     val cdma_dat2mcif_rd_req_ready = Input(Bool())
-//     val cdma_dat2mcif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//     val mcif2cdma_dat_rd_rsp_valid = Input(Bool())
-//     val mcif2cdma_dat_rd_rsp_ready = Output(Bool())
-//     val mcif2cdma_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+//     val cdma_dat2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//     val mcif2cdma_dat_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))
 
-//     val cdma_wt2mcif_rd_req_valid = Output(Bool())
-//     val cdma_wt2mcif_rd_req_ready = Input(Bool())
-//     val cdma_wt2mcif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//     val mcif2cdma_wt_rd_rsp_valid = Input(Bool())
-//     val mcif2cdma_wt_rd_rsp_ready = Output(Bool())
-//     val mcif2cdma_wt_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+//     val cdma_wt2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//     val mcif2cdma_wt_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))
 
 //     //sc
 //     val sc2cdma_dat_pending_req = Input(Bool())
@@ -72,20 +46,12 @@
 //     val cdma2sc_dat_pending_ack = Output(Bool())
 //     val cdma2sc_wt_pending_ack = Output(Bool())
 
-//     val cdma2sc_dat_updt = Output(Bool())
-//     val cdma2sc_dat_entries = Output(UInt(15.W))
-//     val cdma2sc_dat_slices = Output(UInt(14.W))
-//     val sc2cdma_dat_updt = Input(Bool())
-//     val sc2cdma_dat_entries = Input(UInt(15.W))
-//     val sc2cdma_dat_slices = Input(UInt(14.W))
+//     val cdma2sc_dat_updt = ValidIO(new updt_entries_slices_if)
+//     val sc2cdma_dat_updt = Flipped(ValidIO(new updt_entries_slices_if))
 
-//     val cdma2sc_wt_updt = Output(Bool())
-//     val cdma2sc_wt_kernels = Output(UInt(14.W))
-//     val cdma2sc_wt_entries = Output(UInt(15.W))
+//     val cdma2sc_wt_updt = ValidIO(new updt_entries_slices_if)
 //     val cdma2sc_wmb_entries = Output(UInt(9.W))
-//     val sc2cdma_wt_updt = Input(Bool())
-//     val sc2cdma_wt_kernels = Input(UInt(14.W))
-//     val sc2cdma_wt_entries = Input(UInt(15.W))
+//     val sc2cdma_wt_updt = Flipped(ValidIO(new updt_entries_slices_if))
 //     val sc2cdma_wmb_entries = Input(UInt(9.W))
 
 //     //pwrbus
@@ -116,6 +82,8 @@
 // //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 // //             │ ─┤ ─┤       │ ─┤ ─┤         
 // //             └──┴──┘       └──┴──┘ 
+
+// withReset(io.nvdla_core_rstn){
 //     val cdma2sc_wmb_entries_f = Wire(UInt(12.W))
 //     io.cdma2sc_wmb_entries := cdma2sc_wmb_entries_f(8, 0)
 
@@ -965,7 +933,7 @@
 
  
 
-// }
+// }}
 
 
 // object NV_NVDLA_cdmaDriver extends App {

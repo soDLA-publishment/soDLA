@@ -11,36 +11,24 @@
 //         val nvdla_core_clk = Input(Clock())
 //         val nvdla_core_ng_clk = Input(Clock())
 
-//         val img_dat2mcif_rd_req_valid = Output(Bool())
-//         val img_dat2mcif_rd_req_ready = Input(Bool())
-//         val img_dat2mcif_rd_req_pd = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-//         val mcif2img_dat_rd_rsp_valid = Input(Bool())
-//         val mcif2img_dat_rd_rsp_ready = Output(Bool())
-//         val mcif2img_dat_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//         val img_dat2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+//         val mcif2img_dat_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W)))
 
-//         val img2cvt_dat_wr_en = Output(Bool())
 //         val img2cvt_dat_wr_sel = if(conf.DMAIF<conf.ATMC) Some(Output(UInt(log2Ceil(conf.ATMC/conf.DMAIF).W))) else None
-//         val img2cvt_dat_wr_addr = Output(UInt(17.W))
-//         val img2cvt_dat_wr_data = Output(UInt(conf.DMAIF.W))
+//         val img2cvt_dat_wr = new nvdla_wr_if(17, conf.DMAIF)
 //         val img2cvt_mn_wr_data = Output(UInt((conf.BNUM*16).W))
 //         val img2cvt_dat_wr_pad_mask = Output(UInt(conf.BNUM.W))
 //         val img2cvt_dat_wr_info_pd = Output(UInt(12.W))
 
 //         val img2status_state = Output(UInt(2.W))
-//         val img2status_dat_updt = Output(Bool())
-//         val img2status_dat_entries = Output(UInt(15.W))
-//         val img2status_dat_slices = Output(UInt(14.W))
+//         val img2status_dat_updt = ValidIO(new updt_entries_slices_if)
 //         val status2dma_valid_slices = Input(UInt(14.W))
 //         val status2dma_free_entries = Input(UInt(15.W))
 //         val status2dma_wr_idx = Input(UInt(15.W))
 //         val status2dma_fsm_switch = Input(Bool())
 
-//         val img2sbuf_p0_wr_en = Output(Bool())
-//         val img2sbuf_p0_wr_addr = Output(UInt(8.W))
-//         val img2sbuf_p0_wr_data = Output(UInt(conf.ATMM.W))
-//         val img2sbuf_p0_rd_en = Output(Bool())
-//         val img2sbuf_p0_rd_addr = Output(UInt(8.W))
-//         val img2sbuf_p0_rd_data = Input(UInt(conf.ATMM.W))   
+//         val img2sbuf_p_wr = Vec(conf.ATMM_NUM, new nvdla_wr_if(8, conf.ATMM))
+//         val img2sbuf_p_rd = Vec(conf.ATMM_NUM, new nvdla_rd_if(8, conf.ATMM))
 
 //         val sc2cdma_dat_pending_req = Input(Bool())
 
