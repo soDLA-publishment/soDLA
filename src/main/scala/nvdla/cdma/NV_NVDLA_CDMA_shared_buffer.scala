@@ -52,6 +52,7 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////
 val b1 = log2Ceil(conf.CDMA_SBUF_DEPTH)
 val b0 = log2Ceil(conf.CDMA_SBUF_DEPTH) - log2Ceil(conf.CDMA_SBUF_NUMBER)
+
 val dc2sbuf_p0_wr_bsel = io.dc2sbuf_p_wr(0).addr.bits(b1-1, b0)
 val img2sbuf_p0_wr_bsel = io.img2sbuf_p_wr(0).addr.bits(b1-1, b0)
 val dc2sbuf_p1_wr_bsel = io.dc2sbuf_p_wr(1).addr.bits(b1-1, b0)

@@ -563,7 +563,7 @@ withClock(io.nvdla_core_clk){
         wt_data_stored_sub := Mux(status_update, Cat(incr_wt_entries_w, "b0".asUInt(1.W)), "b0".asUInt(17.W))
         wt_data_avl_sub := Mux(sc_wt_updt,  Cat(sc_wt_entries, "b0".asUInt(1.W)), "b0".asUInt(17.W))       
     }
-    else if(conf.ATMC/conf.ATMM == 2){
+    else if(conf.ATMC/conf.ATMM == 4){
         wt_data_stored_sub := Mux(status_update, Cat(incr_wt_entries_w, "b0".asUInt(2.W)), "b0".asUInt(17.W))
         wt_data_avl_sub := Mux(sc_wt_updt,  Cat(sc_wt_entries, "b0".asUInt(2.W)), "b0".asUInt(17.W))   
     }
