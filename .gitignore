@@ -1,6 +1,7 @@
 # These are generated when I initialize the sbt
 project/
 .idea/
+target/
 
 #perl
 src/plugins/
