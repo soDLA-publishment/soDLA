@@ -35,14 +35,22 @@ class xxifConfiguration extends cdpConfiguration{
   val tieoff_axid_cdma_dat = 8
   val tieoff_axid_cdma_wt = 9
 
-  var tieoff_axid_read = List(tieoff_axid_cdma_dat, tieoff_axid_cdma_wt, tieoff_axid_sdp)
-  if(NVDLA_SDP_BS_ENABLE) {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_sdp_b}
-  if(NVDLA_SDP_BN_ENABLE) {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_sdp_n}
-  if(NVDLA_SDP_EW_ENABLE) {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_sdp_e}
-  if(NVDLA_PDP_ENABLE)    {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_pdp}
-  if(NVDLA_CDP_ENABLE)    {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_cdp}
-  if(NVDLA_RUBIK_ENABLE)  {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_rbk}
-  if(NVDLA_BDMA_ENABLE)   {tieoff_axid_read = tieoff_axid_read :+ tieoff_axid_bdma}
+  var arr_tieoff_axid = List(tieoff_axid_cdma_dat, tieoff_axid_cdma_wt, tieoff_axid_sdp)
+  if(NVDLA_SDP_BS_ENABLE) {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_b}
+  if(NVDLA_SDP_BN_ENABLE) {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_n}
+  if(NVDLA_SDP_EW_ENABLE) {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_e}
+  if(NVDLA_PDP_ENABLE)    {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_pdp}
+  if(NVDLA_CDP_ENABLE)    {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_cdp}
+  if(NVDLA_RUBIK_ENABLE)  {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_rbk}
+  if(NVDLA_BDMA_ENABLE)   {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_bdma}
 
+  var arr_tieoff_lat_fifo_depth = List(0, 0, 256)
+  if(NVDLA_SDP_BS_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+  if(NVDLA_SDP_BN_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+  if(NVDLA_SDP_EW_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+  if(NVDLA_PDP_ENABLE)    {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+  if(NVDLA_CDP_ENABLE)    {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+  if(NVDLA_RUBIK_ENABLE)  {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+  if(NVDLA_BDMA_ENABLE)   {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
 }
 
