@@ -4,11 +4,32 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_CSC_sg(implicit val conf: cscConfiguration) extends Module {
+class NV_NVDLA_CSC_sg(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clk
         val nvdla_core_clk = Input(Clock())
         val nvdla_core_ng_clk = Input(Clock())
+
+        //cdma dat
+        val cdma2sc_dat_updt = Flipped(ValidIO(new updt_entries_slices_if))
+        val sc2cdma_dat_pending_req = Output(Bool())   //send sg pending to cdma
+        val cdma2sc_dat_pending_ack = Input(Bool())   //cdma ask sg to clr pending
+
+        //cdma wt
+        val cdma2sc_wt_updt = Flipped(ValidIO(new updt_entries_kernels_if))    
+        val sc2cdma_wt_pending_req = Output(Bool())   //send wt pending to cdma
+        val cdma2sc_wt_pending_ack = Input(Bool())  //cdma ask sg to clr pending
+
+        val sc_state = Output(UInt(2.W))
+
+        //to dl
+        val sg2dl = new csc_sg2dl_if
+
+        //to wl
+        val sg2wl = new csc_sg2wl_if
+
+        //cacc to sc
+        val accu2sc_credit_size = Flipped(ValidIO(UInt(3.W)))
 
         // reg2dp
         val reg2dp_op_en = Input(Bool())
@@ -33,36 +54,6 @@ class NV_NVDLA_CSC_sg(implicit val conf: cscConfiguration) extends Module {
         val reg2dp_atomics = Input(UInt(21.W)) 
         val reg2dp_rls_slices = Input(UInt(12.W)) 
         val dp2reg_done = Output(Bool())
-
-        //cdma dat
-        val cdma2sc_dat_updt = Input(Bool())    
-        val cdma2sc_dat_slices = Input(UInt(14.W))
-        val cdma2sc_dat_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-        val sc2cdma_dat_pending_req = Output(Bool())   //send sg pending to cdma
-        val cdma2sc_dat_pending_ack = Input(Bool())   //cdma ask sg to clr pending
-
-        //cdma wt
-        val cdma2sc_wt_updt = Input(Bool())       
-        val cdma2sc_wt_kernels = Input(UInt(14.W))
-        val cdma2sc_wt_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-        val cdma2sc_wmb_entries = Input(UInt(9.W))
-        val sc2cdma_wt_pending_req = Output(Bool())   //send wt pending to cdma
-        val cdma2sc_wt_pending_ack = Input(Bool())  //cdma ask sg to clr pending
-
-        val sc_state = Output(UInt(2.W))
-
-        //to dl
-        val sg2dl_pvld = Output(Bool())
-        val sg2dl_pd = Output(UInt(31.W))
-        val sg2dl_reuse_rls = Output(Bool())
-        //to wl
-        val sg2wl_pvld = Output(Bool())
-        val sg2wl_pd = Output(UInt(18.W))
-        val sg2wl_reuse_rls = Output(Bool())
-
-        //cacc to sc
-        val accu2sc_credit_vld = Input(Bool())
-        val accu2sc_credit_size = Input(UInt(3.W))
 
         val pwrbus_ram_pd = Input(UInt(32.W))
 
@@ -148,16 +139,14 @@ withClock(io.nvdla_core_clk){
     val wt_bank_change = (last_weight_bank =/= io.reg2dp_weight_bank)
     need_pending := (dat_bank_change | wt_bank_change)
     pending_done := is_pending & ~(dat_pending_clr^dat_pending_req) & ~(wt_pending_clr^wt_pending_req)
-    val flush_cycles_w = dat_stripe_size +& conf.CSC_SG_DONE_FLUSH.U
-    val sg_dn_cnt_w = Mux(~is_done & is_nxt_done, flush_cycles, sg_dn_cnt - 1.U)
 
     when(is_nxt_done){
-        sg_dn_cnt := sg_dn_cnt_w
+        sg_dn_cnt := Mux(~is_done & is_nxt_done, flush_cycles, sg_dn_cnt - 1.U)
     }
     dat_pending_ack := io.cdma2sc_dat_pending_ack
     wt_pending_ack := io.cdma2sc_wt_pending_ack
     when(dat_pop_req & dat_pop_ready & sg2dat_layer_end){
-        flush_cycles := flush_cycles_w 
+        flush_cycles := dat_stripe_size +& conf.CSC_SG_DONE_FLUSH.U
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -174,17 +163,13 @@ withClock(io.nvdla_core_clk){
     is_nxt_done := (nxt_state === sDone)
     val is_nxt_pending = (nxt_state === sPend)
     io.sc_state := Mux(is_idle, "b00".asUInt(2.W), Mux(is_pending, "b01".asUInt(2.W), Mux(is_running, "b10".asUInt(2.W), "b11".asUInt(2.W))))
-    val dat_pending_req_w = Mux(is_nxt_pending & dat_bank_change, "b1".asUInt(1.W), Mux( ~is_nxt_pending, "b0".asUInt(1.W), dat_pending_req))
-    val wt_pending_req_w = Mux(is_nxt_pending, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), wt_pending_req))
     val is_mode_change = (last_mode =/= cur_mode)
-    val dat_pending_clr_w = Mux(is_pending & dat_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), dat_pending_clr))
-    val wt_pending_clr_w =  Mux(is_pending & dat_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), wt_pending_clr))
 
     io.dp2reg_done := RegNext(is_done && (sg_dn_cnt === 1.U), false.B)
-    dat_pending_req := dat_pending_req_w
-    wt_pending_req := wt_pending_req_w
-    dat_pending_clr := dat_pending_clr_w
-    wt_pending_clr := wt_pending_clr_w
+    dat_pending_req := Mux(is_nxt_pending & dat_bank_change, "b1".asUInt(1.W), Mux( ~is_nxt_pending, "b0".asUInt(1.W), dat_pending_req))
+    wt_pending_req := Mux(is_nxt_pending, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), wt_pending_req))
+    dat_pending_clr := Mux(is_pending & dat_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), dat_pending_clr))
+    wt_pending_clr := Mux(is_pending & wt_pending_ack, "b1".asUInt(1.W), Mux(~is_nxt_pending, "b0".asUInt(1.W), wt_pending_clr))
 
     // sg send pending status to cdma
     io.sc2cdma_dat_pending_req := dat_pending_req
@@ -210,37 +195,14 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////////////////////////////
     //  registers to calculate local values                               //
     ////////////////////////////////////////////////////////////////////////
-    val is_img = Wire(Bool())
     val is_pixel = (io.reg2dp_datain_format === 1.U)
     val is_conv = (io.reg2dp_conv_mode === 0.U )
+    val is_img = is_conv & is_pixel
     val is_dc = is_conv & ~is_pixel 
-    val data_out_atomic_w = Wire(UInt(22.W))
-    val weight_width_cmp_w = Wire(UInt(5.W))
-    val weight_height_cmp_w = Wire(UInt(5.W))
 
     cur_mode :=  Cat(is_img, false.B, is_dc)
-    data_out_atomic_w := Mux(is_img, io.reg2dp_dataout_width +& 1.U, io.reg2dp_atomics +& 1.U)
-    weight_width_cmp_w := Mux(is_img, "b0".asUInt(5.W), io.reg2dp_weight_width_ext)
-    weight_height_cmp_w := io.reg2dp_weight_height_ext
-
-    is_img := is_conv & is_pixel
-    val data_in_height_w = io.reg2dp_datain_height_ext +& 1.U
-    val weight_channel_w = io.reg2dp_weight_channel_ext +& 1.U
-    val weight_groups_w = io.reg2dp_weight_kernel(12, conf.LOG2_ATOMK) +& 1.U
-    val weight_r_add_w = ("h9".asUInt(6.W) << io.reg2dp_y_extension)(5, 3)
-    val weight_r_last_w = Mux(weight_r_add_w(0), "b0".asUInt(2.W), 
-                          Mux(weight_r_add_w(1), Cat("b0".asUInt(1.W), io.reg2dp_weight_height_ext(0))
-                          , io.reg2dp_weight_height_ext(1, 0)))
-    val rls_slices_w = io.reg2dp_rls_slices + 1.U
-    val slice_left_w = Mux(io.reg2dp_skip_data_rls, io.reg2dp_datain_height_ext + 1.U, io.reg2dp_datain_height_ext - io.reg2dp_rls_slices)
-
-    //In opensource, DC batching only support fully connected layer. In this case stripe operation length is always 1
-    //upper_limit = 2*lower_limit or upper_limit = lower_limit
-    val lower_limit_w = Mux(is_img, conf.CSC_IMG_STRIPE.U, conf.CSC_ATOMK_HEX.U)
-    val upper_limit_w = Mux(is_img, conf.CSC_IMG_STRIPE.U, conf.CSC_ATOMK_MUL2_HEX.U)
 
     val c_fetch_size = conf.CSC_ENTRY_HEX.U 
-    val data_batch_w = "b0".asUInt(6.W) // ndef NVDLA_BATCH_ENABLE
 
     val data_in_height = RegInit(Fill(14, false.B))
     val data_out_atomic = RegInit(Fill(22, false.B))
@@ -256,21 +218,27 @@ withClock(io.nvdla_core_clk){
     val lower_limit = RegInit(conf.CSC_ATOMK_HEX.U)
     val upper_limit = RegInit(conf.CSC_ATOMK_MUL2_HEX.U)
 
+    val weight_r_add_w = ("h9".asUInt(6.W) << io.reg2dp_y_extension)(5, 3)
+
     when(layer_st){
-        data_in_height := data_in_height_w
-        data_out_atomic := data_out_atomic_w
-        data_batch := data_batch_w
-        weight_width_cmp := weight_width_cmp_w
-        weight_height_cmp := weight_height_cmp_w
-        weight_channel := weight_channel_w
-        weight_groups := weight_groups_w
+        data_in_height := io.reg2dp_datain_height_ext +& 1.U
+        data_out_atomic := Mux(is_img, io.reg2dp_dataout_width +& 1.U, io.reg2dp_atomics +& 1.U)
+        data_batch := "b0".asUInt(6.W) // ndef NVDLA_BATCH_ENABLE
+        weight_width_cmp := Mux(is_img, "b0".asUInt(5.W), io.reg2dp_weight_width_ext)
+        weight_height_cmp := io.reg2dp_weight_height_ext
+        weight_channel := io.reg2dp_weight_channel_ext +& 1.U
+        weight_groups := io.reg2dp_weight_kernel(12, conf.LOG2_ATOMK) +& 1.U
         weight_r_add := weight_r_add_w
-        weight_r_last := weight_r_last_w
-        rls_slices := rls_slices_w
-        slice_left := slice_left_w
+        weight_r_last := Mux(weight_r_add_w(0), "b0".asUInt(2.W), 
+                         Mux(weight_r_add_w(1), Cat("b0".asUInt(1.W), io.reg2dp_weight_height_ext(0))
+                         , io.reg2dp_weight_height_ext(1, 0)))
+        rls_slices := io.reg2dp_rls_slices + 1.U
+        slice_left := Mux(io.reg2dp_skip_data_rls, io.reg2dp_datain_height_ext +& 1.U, io.reg2dp_datain_height_ext -& io.reg2dp_rls_slices)
         is_img_d1 := is_img
-        lower_limit := lower_limit_w
-        upper_limit := upper_limit_w
+        //In opensource, DC batching only support fully connected layer. In this case stripe operation length is always 1
+        //upper_limit = 2*lower_limit or upper_limit = lower_limit
+        lower_limit := Mux(is_img, conf.CSC_IMG_STRIPE.U, conf.CSC_ATOMK_HEX.U)
+        upper_limit :=  Mux(is_img, conf.CSC_IMG_STRIPE.U, conf.CSC_ATOMK_MUL2_HEX.U)
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -280,9 +248,8 @@ withClock(io.nvdla_core_clk){
     val is_last_group = Wire(Bool())
     val op_layer_en = Wire(Bool())
 
-    val layer_done_w = Mux(layer_st, false.B, Mux(is_last_group, true.B, layer_done))
     when(layer_st | op_layer_en){
-        layer_done:= layer_done_w
+        layer_done:= Mux(layer_st, false.B, Mux(is_last_group, true.B, layer_done))
     }
 
     //---------------------------kernel group count -----------------------------//
@@ -290,11 +257,10 @@ withClock(io.nvdla_core_clk){
     val group_up_cnt = RegInit(Fill(10, false.B))
     val group_up_cnt_inc = group_up_cnt + 1.U
     is_last_group := (group_up_cnt_inc === weight_groups)
-    val group_up_cnt_w = Mux(layer_st, "b0".asUInt(10.W), group_up_cnt_inc)
     val cur_kernel = Mux(~is_last_group, conf.CSC_ATOMK_HEX.U, io.reg2dp_weight_kernel(conf.LOG2_ATOMK-1, 0) +& 1.U)
     
     when(layer_st | op_group_en){
-        group_up_cnt:= group_up_cnt_w
+        group_up_cnt:= Mux(layer_st, "b0".asUInt(10.W), group_up_cnt_inc)
     }
 
     //--------------------------- output height count, for image case only -----------------------------//
@@ -302,11 +268,10 @@ withClock(io.nvdla_core_clk){
     val op_do_h_en = Wire(Bool())
 
     val is_last_do_h = ~is_img_d1 | (dataout_h_up_cnt === io.reg2dp_dataout_height)
-    val dataout_h_up_cnt_w = Mux(layer_st, "h0".asUInt(13.W), 
-                             Mux(is_last_do_h, "h0".asUInt(13.W), 
-                             (dataout_h_up_cnt + 1.U)))
     when(layer_st | op_do_h_en){
-        dataout_h_up_cnt := dataout_h_up_cnt_w
+        dataout_h_up_cnt := Mux(layer_st, "h0".asUInt(13.W), 
+                            Mux(is_last_do_h, "h0".asUInt(13.W), 
+                            (dataout_h_up_cnt + 1.U)))
     }
 
     //--------------------------- output stripe count -----------------------------//
@@ -316,16 +281,15 @@ withClock(io.nvdla_core_clk){
     val is_stripe_be_2x = (stripe_up_cnt_2x_inc <= data_out_atomic)
     val is_stripe_le_1x = (stripe_up_cnt_1x_inc >= data_out_atomic)
     val is_last_stripe = is_stripe_le_1x
-    val stripe_up_cnt_w = Mux(layer_st, "b0".asUInt(22.W), 
-                          Mux(is_last_stripe, "b0".asUInt(22.W),
-                          Mux(is_stripe_be_2x, (stripe_up_cnt + upper_limit),
-                             (stripe_up_cnt + lower_limit))))
     val cur_stripe_inc = (data_out_atomic -  stripe_up_cnt)(6, 0)
     val cur_stripe = Mux(is_stripe_be_2x, upper_limit, Mux(is_stripe_le_1x, cur_stripe_inc, lower_limit))
     val op_stripe_en = Wire(Bool())
 
     when(layer_st | op_stripe_en){
-        stripe_up_cnt := stripe_up_cnt_w
+        stripe_up_cnt := Mux(layer_st, "b0".asUInt(22.W), 
+                         Mux(is_last_stripe, "b0".asUInt(22.W),
+                         Mux(is_stripe_be_2x, (stripe_up_cnt + upper_limit),
+                         (stripe_up_cnt + lower_limit))))
     }
 
     //--------------------------- channel count -----------------------------//
@@ -333,13 +297,11 @@ withClock(io.nvdla_core_clk){
     val channel_up_cnt = RegInit(Fill(14, false.B))
     val channel_up_cnt_inc = channel_up_cnt + c_fetch_size(6, 0)
     val is_last_channel = (channel_up_cnt_inc >= weight_channel)
-    val channel_up_cnt_w = Mux(layer_st, Fill(14, false.B), Mux(is_last_channel, Fill(14, false.B), channel_up_cnt_inc))
     
-
     val cur_channel = Mux(~is_last_channel, c_fetch_size(6, 0), io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC - 1, 0)+&1.U)
 
     when(layer_st | op_channel_en){
-        channel_up_cnt := channel_up_cnt_w
+        channel_up_cnt := Mux(layer_st, Fill(14, false.B), Mux(is_last_channel, Fill(14, false.B), channel_up_cnt_inc))
     }
 
     //--------------------------- weight block count -----------------------------//
@@ -358,16 +320,14 @@ withClock(io.nvdla_core_clk){
                 "h0".asUInt(2.W))))
 
     val is_last_block = is_last_s & is_last_r
-    val weight_s_up_cnt_w = Mux(layer_st, "b0".asUInt(5.W),
-                            Mux(is_last_s, "b0".asUInt(5.W),
-                            weight_s_up_cnt_inc))
-    val weight_r_up_cnt_w = Mux(layer_st, "b0".asUInt(5.W),
-                            Mux(is_last_r, "b0".asUInt(5.W),
-                            weight_r_up_cnt_inc(4, 0)))
     
     when(layer_st | op_s_en){
-        weight_s_up_cnt := weight_s_up_cnt_w
-        weight_r_up_cnt := weight_r_up_cnt_w
+        weight_s_up_cnt := Mux(layer_st, "b0".asUInt(5.W),
+                            Mux(is_last_s, "b0".asUInt(5.W),
+                            weight_s_up_cnt_inc))
+        weight_r_up_cnt := Mux(layer_st, "b0".asUInt(5.W),
+                            Mux(is_last_r, "b0".asUInt(5.W),
+                            weight_r_up_cnt_inc(4, 0)))
     }
     //--------------------------- cbuf check logic -----------------------------//
     val slices_avl = RegInit("b0".asUInt(14.W))
@@ -376,11 +336,10 @@ withClock(io.nvdla_core_clk){
 
     val dat_cbuf_ready = (slices_avl >= data_in_height)
     val required_kernels_inc = required_kernels + cur_kernel
-    val required_kernels_w = Mux((layer_st | is_last_group | ~io.reg2dp_skip_weight_rls), "b0".asUInt(14.W), required_kernels_inc)
     val wt_cbuf_ready = required_kernels_inc <= kernels_avl
 
     when(layer_st | op_group_en){
-        required_kernels := required_kernels_w
+        required_kernels := Mux((layer_st | is_last_group | ~io.reg2dp_skip_weight_rls), "b0".asUInt(14.W), required_kernels_inc)
     }
 
     //--------------------------- register enable signal -----------------------------//
@@ -397,9 +356,8 @@ withClock(io.nvdla_core_clk){
     op_do_h_en := is_img_d1 & pkg_adv & is_last_block & is_last_channel & is_last_stripe
     op_group_en := pkg_adv & is_last_block & is_last_channel & is_last_stripe & is_last_do_h
     op_layer_en := pkg_adv & is_last_block & is_last_channel & is_last_stripe & is_last_do_h & is_last_group
-    val pkg_adv_w = Mux(~is_running, false.B, Mux(cbuf_ready & ~layer_done, true.B, Mux(fifo_push_ready, false.B, pkg_vld)))
 
-    pkg_vld := pkg_adv_w
+    pkg_vld := Mux(~is_running, false.B, Mux(cbuf_ready & ~layer_done, true.B, Mux(fifo_push_ready, false.B, pkg_vld)))
 
     //--------------------------- package registers -----------------------------//
     val pkg_idx = RegInit(Fill(2, true.B))
@@ -423,7 +381,7 @@ withClock(io.nvdla_core_clk){
     val pkg_layer_end_w = is_last_block & is_last_channel & is_last_stripe & is_last_do_h & is_last_group
 
     when(layer_st | pkg_adv){
-        pkg_idx := pkg_idx_w
+        pkg_idx := Mux(layer_st, "h3".asUInt(2.W), pkg_idx + "b1".asUInt(2.W))
     }
     when(pkg_adv){
         dat_pkg_w_offset := weight_s_up_cnt
@@ -452,7 +410,7 @@ withClock(io.nvdla_core_clk){
 
     when(pkg_adv){
         wt_pkg_kernel_size := cur_kernel
-        wt_pkg_weight_size := pkg_weight_size_w
+        wt_pkg_weight_size := cur_channel
         wt_pkg_cur_sub_h := cur_r
         wt_pkg_wt_release := ~io.reg2dp_skip_weight_rls & pkg_group_end_w
     }
@@ -472,28 +430,32 @@ withClock(io.nvdla_core_clk){
     val wt_push_req = pkg_vld & dat_push_ready
     val wt_pop_ready = Wire(Bool())
 
-    val u_dat_fifo = Module(new NV_NVDLA_CSC_SG_fifo(4, 33))
+    val u_dat_fifo = Module(new NV_NVDLA_fifo(depth = 4, width = 33,
+                        ram_type = 2, distant_wr_req = true,
+                        io_wr_empty = true ))
     u_dat_fifo.io.clk := io.nvdla_core_clk
-    u_dat_fifo.io.wr_req := dat_push_req
-    u_dat_fifo.io.wr_data := dat_push_data
-    u_dat_fifo.io.rd_ready := dat_pop_ready
     u_dat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-    dat_push_ready := u_dat_fifo.io.wr_ready
-    dat_push_empty := u_dat_fifo.io.wr_empty
-    dat_pop_req := u_dat_fifo.io.rd_req
-    val dat_pop_data = u_dat_fifo.io.rd_data
+    u_dat_fifo.io.wr_pvld := dat_push_req
+    dat_push_ready := u_dat_fifo.io.wr_prdy
+    u_dat_fifo.io.wr_pd := dat_push_data
+    dat_pop_req := u_dat_fifo.io.rd_pvld
+    u_dat_fifo.io.rd_prdy := dat_pop_ready
+    val dat_pop_data = u_dat_fifo.io.rd_pd
+    dat_push_empty := u_dat_fifo.io.wr_empty.get
 
-    val u_wt_fifo = Module(new NV_NVDLA_CSC_SG_fifo(4, 20))
+    val u_wt_fifo = Module(new NV_NVDLA_fifo(depth = 4, width = 20,
+                        ram_type = 2, distant_wr_req = true,
+                        io_wr_empty = true ))
     u_wt_fifo.io.clk := io.nvdla_core_clk
-    u_wt_fifo.io.wr_req := wt_push_req
-    u_wt_fifo.io.wr_data := wt_push_data
-    u_wt_fifo.io.rd_ready := wt_pop_ready
     u_wt_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-    wt_push_ready := u_wt_fifo.io.wr_ready
-    wt_push_empty := u_wt_fifo.io.wr_empty
-    wt_pop_req := u_wt_fifo.io.rd_req
-    val wt_pop_data = u_wt_fifo.io.rd_data
-
+    u_wt_fifo.io.wr_pvld := wt_push_req
+    wt_push_ready := u_wt_fifo.io.wr_prdy
+    u_wt_fifo.io.wr_pd := wt_push_data
+    wt_pop_req := u_wt_fifo.io.rd_pvld
+    u_wt_fifo.io.rd_prdy := wt_pop_ready
+    val wt_pop_data = u_wt_fifo.io.rd_pd
+    wt_push_empty := u_wt_fifo.io.wr_empty.get
+    
     ////////////////////////////////////////////////////////////////////////
     //  issue control logic                                               //
     ////////////////////////////////////////////////////////////////////////
@@ -531,7 +493,6 @@ withClock(io.nvdla_core_clk){
                                   Mux(io.reg2dp_y_extension === "h1".asUInt(2.W), ((sg2dat_stripe_length +& "h1".asUInt(2.W)) & "hfe".asUInt(8.W))(6,0),
                                   sg2dat_stripe_length)))
                                   
-
     val dat_stripe_length_w = Mux(is_img_d1, dat_stripe_img_length_w, dat_stripe_batch_size_w)
 
     //delay for one cycle
@@ -575,10 +536,10 @@ withClock(io.nvdla_core_clk){
         sg2wl_pd_out := wt_pop_pd
     }
 
-    io.sg2dl_pvld := sg2dl_pvld_out
-    io.sg2dl_pd := sg2dl_pd_out
-    io.sg2wl_pvld := sg2wl_pvld_out
-    io.sg2wl_pd := sg2wl_pd_out
+    io.sg2dl.pd.valid := sg2dl_pvld_out
+    io.sg2dl.pd.bits := sg2dl_pd_out
+    io.sg2wl.pd.valid := sg2wl_pvld_out
+    io.sg2wl.pd.bits := sg2wl_pd_out
 
     ////////////////////////////////////////////////////////////////////////
     //  credit controll logic                                             //
@@ -588,50 +549,42 @@ withClock(io.nvdla_core_clk){
     val credit_vld = withClock(io.nvdla_core_ng_clk){RegInit(false.B)}
     val credit_size = withClock(io.nvdla_core_ng_clk){Reg(UInt(3.W))}
 
-    credit_vld := io.accu2sc_credit_vld
-    when(io.accu2sc_credit_vld){
-        credit_size := io.accu2sc_credit_size
+    credit_vld := io.accu2sc_credit_size.valid
+    when(io.accu2sc_credit_size.valid){
+        credit_size := io.accu2sc_credit_size.bits
     }
 
     val dat_impact_cnt = Cat("b0".asUInt(2.W), dat_stripe_size)
     val credit_req_size = dat_impact_cnt
     val credit_cnt_add = Mux(credit_vld,  credit_size,  "b0".asUInt(4.W))
     val credit_cnt_dec = Mux(dat_pop_ready&sg2dat_channel_end, dat_impact_cnt, "b0".asUInt(9.W))
-    val credit_cnt_w = credit_cnt + credit_cnt_add - credit_cnt_dec
     credit_ready := ~sg2dat_channel_end | (credit_cnt >= credit_req_size)
 
     when(dat_pop_ready | credit_vld){
-        credit_cnt := credit_cnt_w
+        credit_cnt := credit_cnt + credit_cnt_add - credit_cnt_dec
     }
 
     ////////////////////////////////////////////////////////////////////////
     //  convolution buffer local status                                   //
     ////////////////////////////////////////////////////////////////////////
-    val sg2dl_reuse_rls_out = withClock(io.nvdla_core_ng_clk){RegInit(false.B)}
-    val sg2wl_reuse_rls_out = withClock(io.nvdla_core_ng_clk){RegInit(false.B)}
-
     val dat_release = pkg_adv & pkg_layer_end_w & ~io.reg2dp_skip_data_rls
     val dat_reuse_release = is_idle & io.reg2dp_op_en & (~io.reg2dp_data_reuse | is_mode_change) & (last_slices.orR);
-    val slices_avl_add = Mux(io.cdma2sc_dat_updt, io.cdma2sc_dat_slices, "b0".asUInt(14.W));
+    val slices_avl_add = Mux(io.cdma2sc_dat_updt.valid, io.cdma2sc_dat_updt.bits.slices, "b0".asUInt(14.W));
     val slices_avl_sub = Mux(dat_release, rls_slices, Mux(dat_reuse_release, last_slices, "b0".asUInt(14.W)));
-    val slices_avl_w = Mux(dat_pending_req, "b0".asUInt(14.W), (slices_avl + slices_avl_add - slices_avl_sub));
     val wt_release = pkg_adv & ~io.reg2dp_skip_weight_rls & pkg_group_end_w;
     val wt_reuse_release = is_idle & io.reg2dp_op_en & ~io.reg2dp_weight_reuse & last_skip_weight_rls;
-    val kernels_avl_add = Mux(io.cdma2sc_wt_updt, io.cdma2sc_wt_kernels, "b0".asUInt(14.W));
+    val kernels_avl_add = Mux(io.cdma2sc_wt_updt.valid, io.cdma2sc_wt_updt.bits.kernels, "b0".asUInt(14.W));
     val kernels_avl_sub = Mux(wt_release, Cat("b0".asUInt(7.W), cur_kernel), Mux(wt_reuse_release, last_kernels, "b0".asUInt(14.W)));
-    val kernels_avl_w = Mux(wt_pending_req, "b0".asUInt(14.W), kernels_avl + kernels_avl_add - kernels_avl_sub);
 
-    when(dat_pending_req | dat_release | dat_reuse_release | io.cdma2sc_dat_updt){
-        slices_avl := slices_avl_w
+    when(dat_pending_req | dat_release | dat_reuse_release | io.cdma2sc_dat_updt.valid){
+        slices_avl := Mux(dat_pending_req, "b0".asUInt(14.W), (slices_avl + slices_avl_add - slices_avl_sub))
     }
-    when(wt_pending_req | wt_release | wt_reuse_release | io.cdma2sc_wt_updt){
-        kernels_avl := kernels_avl_w
+    when(wt_pending_req | wt_release | wt_reuse_release | io.cdma2sc_wt_updt.valid){
+        kernels_avl := Mux(wt_pending_req, "b0".asUInt(14.W), kernels_avl + kernels_avl_add - kernels_avl_sub);
     }
-    sg2dl_reuse_rls_out := dat_reuse_release
-    sg2wl_reuse_rls_out := wt_reuse_release
 
-    io.sg2dl_reuse_rls := sg2dl_reuse_rls_out
-    io.sg2wl_reuse_rls := sg2wl_reuse_rls_out
+    io.sg2dl.reuse_rls := withClock(io.nvdla_core_ng_clk){RegNext(dat_reuse_release, false.B)}
+    io.sg2wl.reuse_rls := withClock(io.nvdla_core_ng_clk){RegNext(wt_reuse_release, false.B)}
 
     //================  Non-SLCG clock domain end ================//
 
@@ -644,7 +597,7 @@ withClock(io.nvdla_core_clk){
 
 
 object NV_NVDLA_CSC_sgDriver extends App {
-  implicit val conf: cscConfiguration = new cscConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_sg())
 }
 

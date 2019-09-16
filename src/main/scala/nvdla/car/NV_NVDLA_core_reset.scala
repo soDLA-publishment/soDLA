@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
 class NV_NVDLA_core_reset extends Module {
     val io = IO(new Bundle {
         val dla_reset_rstn = Input(Bool())
@@ -60,6 +59,4 @@ class NV_NVDLA_core_reset extends Module {
     sync_reset_synced_rstn.io.test_mode := io.test_mode
     io.synced_rstn := sync_reset_synced_rstn.io.outreset_    
     
-  
 }
-

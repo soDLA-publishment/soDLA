@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_CDP_DP_bufferin_tp1(implicit val conf: cdpConfiguration) extends Module {
+// class NV_NVDLA_CDP_DP_bufferin_tp1(implicit val conf: nvdlaConfig) extends Module {
 //     val buf2sq_data_bw = conf.NVDLA_CDP_ICVTO_BWPE*(conf.NVDLA_CDP_THROUGHPUT+8)
 //     val buf2sq_dp_bw = buf2sq_data_bw + 17
 //     val io = IO(new Bundle {
@@ -608,7 +608,7 @@
 // }}
 
 // object NV_NVDLA_CDP_DP_bufferin_tp1Driver extends App {
-//     implicit val conf: cdpConfiguration = new cdpConfiguration
+//     implicit val conf: nvdlaConfig = new nvdlaConfig
 //     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_bufferin_tp1())
 // }
 

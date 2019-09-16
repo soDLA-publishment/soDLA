@@ -52,9 +52,6 @@ class NV_NVDLA_CDMA_WT_sp_arb extends Module {
 
     io.gnt0 := gnt_pre(0)&(!io.gnt_busy)
     io.gnt1 := gnt_pre(1)&(!io.gnt_busy)
-
-
-    
 }
 
 

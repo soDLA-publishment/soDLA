@@ -16,3 +16,17 @@ class cdpConfiguration extends pdpConfiguration
     
 
 }
+
+class cdp_rdma_reg_dual_flop_outputs extends Bundle{
+    val cya = Output(UInt(32.W))
+    val channel = Output(UInt(13.W))
+    val height = Output(UInt(13.W))
+    val cdp_width = Output(UInt(13.W))
+    val input_data = Output(UInt(2.W))
+    val dma_en = Output(Bool())
+    val src_base_addr_high = Output(UInt(32.W))
+    val src_base_addr_low = Output(UInt(32.W))
+    val src_ram_type = Output(Bool())
+    val src_line_stride = Output(UInt(32.W))
+    val src_surface_stride = Output(UInt(32.W))
+}

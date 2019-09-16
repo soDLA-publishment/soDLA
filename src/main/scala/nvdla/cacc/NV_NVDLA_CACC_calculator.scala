@@ -15,9 +15,7 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
 
         //abuf
         val abuf_rd_data = Input(UInt(conf.CACC_ABUF_WIDTH.W))
-        val abuf_wr_en = Output(Bool())
-        val abuf_wr_addr = Output(UInt(conf.CACC_ABUF_AWIDTH.W))   
-        val abuf_wr_data = Output(UInt(conf.CACC_ABUF_WIDTH.W))  
+        val abuf_wr = new nvdla_wr_if(conf.CACC_ABUF_AWIDTH, conf.CACC_ABUF_WIDTH)
     
         //dlv buf
         val dlv_valid = Output(Bool())
@@ -26,24 +24,20 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
         val dlv_pd = Output(UInt(2.W))  
 
         //control
-        val accu_ctrl_pd = Input(UInt(13.W))
+        val accu_ctrl_pd = Flipped(ValidIO(UInt(13.W)))
         val accu_ctrl_ram_valid = Input(Bool())
-        val accu_ctrl_valid = Input(Bool())
 
         //cfg
         val cfg_in_en_mask = Input(Bool())
-        val cfg_is_wg = Input(Bool())
         val cfg_truncate = Input(UInt(5.W))
 
         //mac2cacc
         val mac_a2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_a2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-        val mac_a2accu_mode = Input(Bool())
         val mac_a2accu_pvld = Input(Bool())
 
         val mac_b2accu_data = Input(Vec(conf.CACC_ATOMK/2, UInt(conf.CACC_IN_WIDTH.W)))
         val mac_b2accu_mask = Input(Vec(conf.CACC_ATOMK/2, Bool()))
-        val mac_b2accu_mode = Input(Bool())
         val mac_b2accu_pvld = Input(Bool())
 
         //reg
@@ -78,7 +72,7 @@ withClock(io.nvdla_core_clk){
     val abuf_in_data = VecInit((0 to conf.CACC_ATOMK-1) 
                         map { i => io.abuf_rd_data(conf.CACC_PARSUM_WIDTH*(i+1)-1, conf.CACC_PARSUM_WIDTH*i)})
     //1T delay, the same T with data/mask
-    val accu_ctrl_pd_d1 = RegEnable(io.accu_ctrl_pd, "b0".asUInt(13.W), io.accu_ctrl_valid)
+    val accu_ctrl_pd_d1 = RegEnable(io.accu_ctrl_pd.bits, "b0".asUInt(13.W), io.accu_ctrl_pd.valid)
     val calc_valid_in = (io.mac_b2accu_pvld | io.mac_a2accu_pvld)
 
     val calc_valid = ShiftRegister(calc_valid_in, 3, false.B, true.B)
@@ -203,9 +197,9 @@ withClock(io.nvdla_core_clk){
 
     // to abuffer, 1 pipe
 
-    io.abuf_wr_en := RegNext(calc_wr_en_out, false.B)
-    io.abuf_wr_addr := RegEnable(calc_addr_out, calc_wr_en_out)
-    io.abuf_wr_data := RegEnable(calc_pout.asUInt, calc_wr_en_out)
+    io.abuf_wr.addr.valid := RegNext(calc_wr_en_out, false.B)
+    io.abuf_wr.addr.bits := RegEnable(calc_addr_out, calc_wr_en_out)
+    io.abuf_wr.data := RegEnable(calc_pout.asUInt, calc_wr_en_out)
 
     // to dbuffer, 1 pipe.
     io.dlv_data := RegEnable(calc_fout, calc_dlv_valid_out)

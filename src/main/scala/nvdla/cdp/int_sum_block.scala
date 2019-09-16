@@ -157,6 +157,5 @@
 // }}
 
 // object int_sum_blockDriver extends App {
-//     implicit val conf: cdpConfiguration = new cdpConfiguration  
 //     chisel3.Driver.execute(args, () => new int_sum_block())
 // }

@@ -5,25 +5,19 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_DMAIF_wr(implicit conf: sdpConfiguration) extends Module {
-    val DMABW = conf.DMAIF + conf.ATMM_NUM
+class NV_NVDLA_DMAIF_wr(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clk
         val nvdla_core_clk = Input(Clock())
-        
-        val cvif_wr_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-        val cvif_wr_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-        val cvif_wr_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(DMABW.W))) else None
-        val cvif_wr_rsp_complete = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
 
-        val mcif_wr_req_valid = Output(Bool())
-        val mcif_wr_req_ready = Input(Bool())
-        val mcif_wr_req_pd = Output(UInt(DMABW.W))
+        val mcif_wr_req_pd = DecoupledIO(UInt(DMABW.W))
         val mcif_wr_rsp_complete = Input(Bool())
 
-        val dmaif_wr_req_pvld = Input(Bool())
-        val dmaif_wr_req_prdy = Output(Bool())
-        val dmaif_wr_req_pd = Input(UInt(DMABW.W))
+        val cvif_wr_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(DMABW.W)))
+                             else None
+        val cvif_wr_rsp_complete = Input(Bool())
+
+        val dmaif_wr_req_pd = Flipped(DecoupledIO(UInt(DMABW.W)))
         val dmaif_wr_rsp_complete = Output(Bool())
 
         val reg2dp_dst_ram_type = Input(Bool())
@@ -62,43 +56,43 @@ class NV_NVDLA_DMAIF_wr(implicit conf: sdpConfiguration) extends Module {
     val wr_req_rdyi = Wire(Bool())
     // wr Channel: Request 
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-        cv_dma_wr_req_vld.get := io.dmaif_wr_req_pvld & (dma_wr_req_type === false.B)
+        cv_dma_wr_req_vld.get := io.dmaif_wr_req_pd.valid & (dma_wr_req_type === false.B)
         cv_wr_req_rdyi.get := cv_dma_wr_req_rdy.get & (dma_wr_req_type === false.B)
         wr_req_rdyi := mc_wr_req_rdyi | cv_wr_req_rdyi.get;
     }
     else{
         wr_req_rdyi := mc_wr_req_rdyi
     }
-    val mc_dma_wr_req_vld = io.dmaif_wr_req_pvld & (dma_wr_req_type === true.B)
+    val mc_dma_wr_req_vld = io.dmaif_wr_req_pd.valid & (dma_wr_req_type === true.B)
     val mc_dma_wr_req_rdy = Wire(Bool())
     mc_wr_req_rdyi := mc_dma_wr_req_rdy & (dma_wr_req_type === true.B)
-    io.dmaif_wr_req_prdy := wr_req_rdyi
+    io.dmaif_wr_req_pd.ready := wr_req_rdyi
 
     val is_pipe1 = Module{new NV_NVDLA_IS_pipe(DMABW+1)}
     is_pipe1.io.clk := io.nvdla_core_clk
     is_pipe1.io.vi := mc_dma_wr_req_vld
     mc_dma_wr_req_rdy := is_pipe1.io.ro
-    is_pipe1.io.di := io.dmaif_wr_req_pd
-    io.mcif_wr_req_valid := is_pipe1.io.vo
-    is_pipe1.io.ri := io.mcif_wr_req_ready
-    io.mcif_wr_req_pd := is_pipe1.io.dout
+    is_pipe1.io.di := io.dmaif_wr_req_pd.bits
+    io.mcif_wr_req_pd.valid := is_pipe1.io.vo
+    is_pipe1.io.ri := io.mcif_wr_req_pd.ready
+    io.mcif_wr_req_pd.bits := is_pipe1.io.dout
 
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
         val is_pipe2 = Module{new NV_NVDLA_IS_pipe(DMABW+1)}
         is_pipe2.io.clk := io.nvdla_core_clk
         is_pipe2.io.vi := cv_dma_wr_req_vld.get
         cv_dma_wr_req_rdy.get := is_pipe2.io.ro
-        is_pipe2.io.di := io.dmaif_wr_req_pd
-        io.cvif_wr_req_valid.get := is_pipe2.io.vo
-        is_pipe2.io.ri := io.cvif_wr_req_ready.get
-        io.cvif_wr_req_pd.get := is_pipe2.io.dout
+        is_pipe2.io.di := io.dmaif_wr_req_pd.bits
+        io.cvif_wr_req_pd.get.valid := is_pipe2.io.vo
+        is_pipe2.io.ri := io.cvif_wr_req_pd.get.ready
+        io.cvif_wr_req_pd.get.bits := is_pipe2.io.dout
 
     }
     // wr Channel: Response
     val mc_int_wr_rsp_complete = io.mcif_wr_rsp_complete
-    val require_ack = if(conf.DMAIF>64) (io.dmaif_wr_req_pd(DMABW-1) === 0.U) & (io.dmaif_wr_req_pd(77) === 1.U)
-                      else (io.dmaif_wr_req_pd(DMABW-1) === 0.U) & (io.dmaif_wr_req_pd(45) === 1.U)
-    val ack_raw_vld = io.dmaif_wr_req_pvld & wr_req_rdyi & require_ack;
+    val require_ack = if(conf.DMAIF>64) (io.dmaif_wr_req_pd.bits(DMABW-1) === 0.U) & (io.dmaif_wr_req_pd.bits(77) === 1.U)
+                      else (io.dmaif_wr_req_pd.bits(DMABW-1) === 0.U) & (io.dmaif_wr_req_pd.bits(45) === 1.U)
+    val ack_raw_vld = io.dmaif_wr_req_pd.valid & wr_req_rdyi & require_ack;
     val ack_raw_id  = dma_wr_req_type;
     // stage1: bot
     val ack_bot_rdy = Wire(Bool())
@@ -130,7 +124,7 @@ class NV_NVDLA_DMAIF_wr(implicit conf: sdpConfiguration) extends Module {
 
     val cv_dma_wr_rsp_complete = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(RegInit(false.B)) else None
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-        cv_dma_wr_rsp_complete.get := io.cvif_wr_rsp_complete.get
+        cv_dma_wr_rsp_complete.get := io.cvif_wr_rsp_complete
     }
 
     val dmaif_wr_rsp_complete_out = RegInit(false.B)
@@ -171,8 +165,3 @@ class NV_NVDLA_DMAIF_wr(implicit conf: sdpConfiguration) extends Module {
         releasing := mc_releasing
     }
 }}
-
-object NV_NVDLA_DMAIF_wrDriver extends App {
-  implicit val conf: sdpConfiguration = new sdpConfiguration
-  chisel3.Driver.execute(args, () => new NV_NVDLA_DMAIF_wr())
-}

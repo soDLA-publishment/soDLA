@@ -50,6 +50,7 @@ libraryDependencies ++= Seq("org.json4s" %% "json4s-jackson" % "3.6.1")
 
 libraryDependencies += "edu.berkeley.cs" %% "dsptools" % "1.1.6"
 
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),

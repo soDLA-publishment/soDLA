@@ -14,12 +14,9 @@ class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Modu
 
         //dbuf
         val dbuf_rd_ready = Input(Bool())
-        val dbuf_rd_addr = Output(UInt(conf.CACC_DBUF_AWIDTH.W))
-        val dbuf_rd_en = Output(Bool())
+        val dbuf_rd_addr = ValidIO(UInt(conf.CACC_DBUF_AWIDTH.W))
         val dbuf_rd_layer_end = Output(Bool())
-        val dbuf_wr_addr = Output(UInt(conf.CACC_DBUF_AWIDTH.W))
-        val dbuf_wr_data = Output(UInt(conf.CACC_DBUF_WIDTH.W))
-        val dbuf_wr_en = Output(Bool())
+        val dbuf_wr = new nvdla_wr_if(conf.CACC_ABUF_AWIDTH, conf.CACC_ABUF_WIDTH)
 
         //reg2dp
         val reg2dp_op_en = Input(Bool()) 
@@ -35,10 +32,6 @@ class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Modu
         val reg2dp_line_stride = Input(UInt(24.W))
         val reg2dp_surf_stride = Input(UInt(24.W))
         val dp2reg_done = Output(Bool())
-
-        //sdp
-        val cacc2sdp_ready = Input(Bool())
-        val cacc2sdp_valid = Input(Bool())
 
         //dlv
         val dlv_data = Input(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
@@ -138,9 +131,9 @@ when(io.dlv_valid){
     dbuf_wr_data_out := io.dlv_data.asUInt
 }
 
-io.dbuf_wr_en := dbuf_wr_en_out
-io.dbuf_wr_addr := dbuf_wr_addr_out
-io.dbuf_wr_data := dbuf_wr_data_out
+io.dbuf_wr.addr.valid := dbuf_wr_en_out
+io.dbuf_wr.addr.bits := dbuf_wr_addr_out
+io.dbuf_wr.data := dbuf_wr_data_out
 
 
 ///// generate stored data size, add delay for write, due to ecc,could set 0 currently.
@@ -181,11 +174,11 @@ when(dlv_data_add_valid | dlv_data_sub_valid){
 ///// generate dbuf read request   
 val dbuf_rd_addr_cnt = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
 
-dlv_pop := io.dbuf_rd_en & io.dbuf_rd_ready
+dlv_pop := io.dbuf_rd_addr.valid & io.dbuf_rd_ready
 val dbuf_rd_addr_cnt_inc = dbuf_rd_addr_cnt + 1.U
 val dbuf_empty = ~(dlv_data_avl.orR)
-io.dbuf_rd_en := ~dbuf_empty
-io.dbuf_rd_addr := dbuf_rd_addr_cnt
+io.dbuf_rd_addr.valid := ~dbuf_empty
+io.dbuf_rd_addr.bits := dbuf_rd_addr_cnt
 
 when(dlv_pop){
     dbuf_rd_addr_cnt := dbuf_rd_addr_cnt_inc
@@ -203,7 +196,7 @@ val dlv_end_tag1_addr = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
 
 val dlv_end_set = io.dlv_valid & dlv_stripe_end & dlv_layer_end
 val dlv_end_addr_w = dbuf_wr_addr_pre
-val dlv_end_clr = dlv_pop & (io.dbuf_rd_addr === dlv_end_tag0_addr) & dlv_end_tag0_vld
+val dlv_end_clr = dlv_pop & (io.dbuf_rd_addr.bits === dlv_end_tag0_addr) & dlv_end_tag0_vld
 val dlv_end_tag0_vld_w = Mux(dlv_end_tag1_vld | dlv_end_set, true.B, Mux(dlv_end_clr, false.B, dlv_end_tag0_vld))
 val dlv_end_tag1_vld_w = Mux(dlv_end_tag0_vld | dlv_end_set, true.B, Mux(dlv_end_clr, false.B, dlv_end_tag1_vld))
 val dlv_end_tag0_en = (dlv_end_set & ~dlv_end_tag0_vld) | (dlv_end_set & dlv_end_clr) |(dlv_end_clr & dlv_end_tag1_vld);
@@ -223,4 +216,3 @@ when(dlv_end_tag1_en){
 
 
 }}
-
