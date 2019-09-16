@@ -6,15 +6,14 @@ import chisel3.util._
 import scala.math._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_CDMA_IMG_pack(implicit conf: cdmaConfiguration) extends Module {
+class NV_NVDLA_CDMA_IMG_pack(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
         //clk
         val nvdla_core_clk = Input(Clock())
+
         //img2sbuf
-        val img2sbuf_p0_rd_data = Input(UInt(conf.ATMM.W))
-        val img2sbuf_p0_rd_addr = Output(UInt(8.W))
-        val img2sbuf_p0_rd_en = Output(Bool())
+        val img2sbuf_p0_rd = new nvdla_rd_if(8, conf.ATMM)
         
         val is_running = Input(Bool())
         val layer_st = Input(Bool())
@@ -30,34 +29,29 @@ class NV_NVDLA_CDMA_IMG_pack(implicit conf: cdmaConfiguration) extends Module {
         val pixel_precision = Input(UInt(2.W))
         val pixel_uint = Input(Bool())
 
+        val sg2pack_img_pd = Flipped(Decoupled(UInt(11.W)))
         val sg2pack_data_entries = Input(UInt(15.W))
         val sg2pack_entry_end = Input(UInt(15.W))
         val sg2pack_entry_mid = Input(UInt(15.W))
         val sg2pack_entry_st = Input(UInt(15.W))
         val sg2pack_height_total = Input(UInt(13.W))
-        val sg2pack_img_pd = Input(UInt(11.W))
-        val sg2pack_img_pvld = Input(Bool())
         val sg2pack_mn_enable = Input(Bool())
         val sg2pack_sub_h_end = Input(UInt(4.W))
         val sg2pack_sub_h_mid = Input(UInt(4.W))
         val sg2pack_sub_h_st = Input(UInt(4.W))
+
         val status2dma_wr_idx = Input(UInt(15.W))
 
-        
         val img2cvt_dat_wr_sel = if(conf.DMAIF < conf.ATMC) Some(Output(UInt(log2Ceil(conf.ATMC/conf.DMAIF).W))) 
-                                else None
-        val img2cvt_dat_wr_addr =  Output(UInt(17.W))
-        val img2cvt_dat_wr_data = Output(UInt(conf.DMAIF.W))
+                                  else None
+        val img2cvt_dat_wr = new nvdla_wr_if(17, conf.DMAIF)
         val img2cvt_mn_wr_data = Output(UInt((conf.BNUM*16).W))
-        val img2cvt_dat_wr_pad_mask =Output(UInt(conf.BNUM.W))
-
-        val img2cvt_dat_wr_en = Output(Bool())
+        val img2cvt_dat_wr_pad_mask = Output(UInt(conf.BNUM.W))
         val img2cvt_dat_wr_info_pd = Output(UInt(12.W))
-        val img2status_dat_entries = Output(UInt(15.W))
-        val img2status_dat_slices = Output(UInt(14.W))
-        val img2status_dat_updt = Output(Bool())
+
+        val img2status_dat_updt = ValidIO(new updt_entries_slices_if)
+
         val pack_is_done = Output(Bool())
-        val sg2pack_img_prdy = Output(Bool())
 
         val reg2dp_datain_width = Input(UInt(13.W))
         val reg2dp_datain_channel = Input(UInt(13.W))
@@ -96,7 +90,7 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////
 val is_running_d1 = RegInit(false.B)
 
-val img_pd = Mux(io.sg2pack_img_pvld,  io.sg2pack_img_pd, 0.U)
+val img_pd = Mux(io.sg2pack_img_pd.valid,  io.sg2pack_img_pd.bits, 0.U)
 
 val img_p0_burst = img_pd(3, 0)
 val img_p1_burst = img_pd(8, 4)
@@ -162,6 +156,7 @@ val rd_sub_h_cnt = "b0".asUInt(3.W)
 // img_p0_burst[3:1],means img_p0_burst/2, 2 means atmm_num/per_dmaif
 val rd_loop_cnt = RegInit("b0".asUInt(4.W))
 val rd_loop_en = Wire(Bool())
+
 val rd_loop_cnt_limit = img_p0_burst
 
 val rd_loop_cnt_inc = rd_loop_cnt + 1.U
@@ -183,7 +178,9 @@ when(rd_planar_en){
 //////// partial burst cnt ////////
 val rd_pburst_cnt = RegInit("b0".asUInt(2.W))
 val rd_pburst_en = Wire(Bool())
-val rd_pburst_limit = Mux((rd_planar_cnt & (~is_last_loop | ~img_p1_burst(0))), "b1".asUInt(1.W), "b0".asUInt(2.W))
+
+val rd_pburst_limit = Mux((rd_planar_cnt & (~is_last_loop | ~img_p1_burst(0))), "b1".asUInt(2.W), "b0".asUInt(2.W))
+
 val is_last_pburst = (rd_pburst_cnt === rd_pburst_limit)
 
 when(rd_pburst_en){
@@ -195,11 +192,11 @@ val rd_vld = Wire(Bool())
 val rd_sub_h_end = Wire(Bool())
 val rd_local_vld = RegInit(false.B)
 
-io.sg2pack_img_prdy := rd_vld & rd_sub_h_end
-rd_vld := (io.sg2pack_img_pvld | rd_local_vld)
+io.sg2pack_img_pd.ready := rd_vld & rd_sub_h_end
+rd_vld := (io.sg2pack_img_pd.valid | rd_local_vld)
 val rd_local_vld_w = Mux(~io.is_running, false.B,
                      Mux(rd_sub_h_end, false.B,
-                     Mux(io.sg2pack_img_pvld, true.B, rd_local_vld)))
+                     Mux(io.sg2pack_img_pd.valid, true.B, rd_local_vld)))
 
 val rd_pburst_end = rd_vld & is_last_pburst
 val rd_planar_end = rd_vld & is_last_pburst & is_last_planar
@@ -372,8 +369,8 @@ when(rd_vld){
 // connect to shared buffer                                           //
 ////////////////////////////////////////////////////////////////////////
 
-io.img2sbuf_p0_rd_en := rd_p0_vld_d1
-io.img2sbuf_p0_rd_addr := rd_p0_addr_d1
+io.img2sbuf_p0_rd.addr.valid := rd_p0_vld_d1
+io.img2sbuf_p0_rd.addr.bits := rd_p0_addr_d1
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -461,7 +458,7 @@ when(pk_rsp_vld_d1_w){
 ////////////////////////////////////////////////////////////////////////
 //  connect to sbuf ram input                                         //
 ////////////////////////////////////////////////////////////////////////
-val pk_rsp_p0_data = io.img2sbuf_p0_rd_data
+val pk_rsp_p0_data = io.img2sbuf_p0_rd.data
 ////////////////////////////////////////////////////////////////////////
 // data write logic                                                   //
 ////////////////////////////////////////////////////////////////////////
@@ -739,18 +736,18 @@ when(pk_rsp_data_updt){
 ////////////////////////////////////////////////////////////////////////
 //  output connection                                                 //
 ////////////////////////////////////////////////////////////////////////
-io.img2status_dat_updt := pk_out_data_updt
-io.img2status_dat_slices := Cat("b0".asUInt(10.W), pk_out_data_slices)
-io.img2status_dat_entries := pk_out_data_entries
+io.img2status_dat_updt.valid := pk_out_data_updt
+io.img2status_dat_updt.bits.slices := Cat("b0".asUInt(10.W), pk_out_data_slices)
+io.img2status_dat_updt.bits.entries := pk_out_data_entries
 
-io.img2cvt_dat_wr_en := pk_out_vld
+io.img2cvt_dat_wr.addr.valid := pk_out_vld
 io.img2cvt_dat_wr_info_pd := pk_out_info_pd
 
 if(conf.DMAIF < conf.ATMC){
     io.img2cvt_dat_wr_sel.get := pk_out_hsel
 }
-io.img2cvt_dat_wr_addr := pk_out_addr
-io.img2cvt_dat_wr_data := pk_out_data
+io.img2cvt_dat_wr.addr.bits := pk_out_addr
+io.img2cvt_dat_wr.data := pk_out_data
 io.img2cvt_mn_wr_data := pk_mn_out_data
 io.img2cvt_dat_wr_pad_mask := pk_out_pad_mask
 
@@ -772,6 +769,6 @@ io.pack_is_done := pack_is_done_out
 
     
 object NV_NVDLA_CDMA_IMG_packDriver extends App {
-  implicit val conf: cdmaConfiguration = new cdmaConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_IMG_pack())
 }

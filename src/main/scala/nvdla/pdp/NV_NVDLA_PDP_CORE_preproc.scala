@@ -4,19 +4,15 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_PDP_CORE_preproc(implicit val conf: pdpConfiguration) extends Module {
+// class NV_NVDLA_PDP_CORE_preproc(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         // clk
 //         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 //         //sdp2pdp
-//         val sdp2pdp_valid = Input(Bool())
-//         val sdp2pdp_ready = Output(Bool())
-//         val sdp2pdp_pd = Input(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W))
+//         val sdp2pdp_pd = Flipped(DecoupledIO(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W)))
 //         //pre2cal1d
-//         val pre2cal1d_pvld = Output(Bool())
-//         val pre2cal1d_prdy = Input(Bool())
-//         val pre2cal1d_pd = Output(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W))
+//         val pre2cal1d_pd = DecoupledIO(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W))
 //         //config  
 //         val reg2dp_cube_in_channel = Input(UInt(13.W))
 //         val reg2dp_cube_in_height = Input(UInt(13.W))
@@ -162,6 +158,6 @@
 
 
 // object NV_NVDLA_PDP_CORE_preprocDriver extends App {
-//   implicit val conf: pdpConfiguration = new pdpConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_CORE_preproc())
 // }

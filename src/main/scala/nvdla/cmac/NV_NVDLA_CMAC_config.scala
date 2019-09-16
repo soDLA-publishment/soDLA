@@ -21,7 +21,36 @@ class cmacConfiguration extends project_spec
     val MAC_PD_LATENCY = (CMAC_OUT_RETIMING+CMAC_ACTV_LATENCY-3)     //pd must be 3T earlier than data
     val RT_CMAC_A2CACC_LATENCY = 2
     val RT_CMAC_B2CACC_LATENCY = 3
+
     val PKT_nvdla_stripe_info_stripe_st_FIELD = 5
     val PKT_nvdla_stripe_info_stripe_end_FIELD = 6
     val PKT_nvdla_stripe_info_layer_end_FIELD = 8
+
 }
+
+
+class cmac_core_actv(implicit val conf: nvdlaConfig) extends Bundle{
+    val nz = Output(Bool())
+    val data = Output(UInt(conf.CMAC_BPE.W))
+}
+
+class cmac_reg_dual_flop_outputs extends Bundle{
+    val conv_mode = Output(Bool())
+    val proc_precision = Output(UInt(2.W))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

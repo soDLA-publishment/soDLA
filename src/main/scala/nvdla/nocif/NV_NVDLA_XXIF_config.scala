@@ -1,7 +1,7 @@
 package nvdla
 
 
-class xxifConfiguration extends project_spec{
+class xxifConfiguration extends cdpConfiguration{
 
   val RDMA_MAX_NUM = 10
   val WDMA_MAX_NUM = 5

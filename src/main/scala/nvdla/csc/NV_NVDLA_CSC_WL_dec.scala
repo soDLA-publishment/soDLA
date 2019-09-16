@@ -3,24 +3,18 @@
  import chisel3._
  import chisel3.experimental._
  import chisel3.util._
- import chisel3.iotesters.Driver
 
-class NV_NVDLA_CSC_WL_dec(implicit val conf: cscConfiguration) extends Module {
+class NV_NVDLA_CSC_WL_dec(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
-        val nvdla_core_clk = Input(Clock())    
+        val nvdla_core_clk = Input(Clock()) 
+
         //input 
-        val input_data = Input(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-        val input_mask = Input(Vec(conf.CSC_ATOMC, Bool()))
+        val input = Flipped(ValidIO(new csc_wl_dec_if))
         val input_mask_en = Input(UInt(10.W))
-        val input_pipe_valid = Input(Bool())
-        val input_sel = Input(Vec(conf.CSC_ATOMK, Bool()))
 
         //output
-        val output_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-        val output_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-        val output_pvld = Output(Bool())
-        val output_sel = Output(Vec(conf.CSC_ATOMK, Bool()))    
+        val output = ValidIO(new csc_wl_dec_if) 
 
     })
     //     
@@ -59,7 +53,7 @@ withClock(io.nvdla_core_clk){
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////// phase I: calculate sums for mux //////////////////////////////////
-    val input_mask_gated = Mux(io.input_mask_en(8), io.input_mask, VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
+    val input_mask_gated = Mux(io.input_mask_en(8), io.input.bits.mask, VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
     val vec_sum = Wire(MixedVec((0 to conf.CSC_ATOMC-1) map { i => UInt((log2Ceil(i+2)).W) }))
 
     for(i <- 0 to conf.CSC_ATOMC-1){     
@@ -73,15 +67,15 @@ withClock(io.nvdla_core_clk){
     val sel_d1 = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK)(false.B)))
     val vec_sum_d1 = RegInit(MixedVecInit((0 to conf.CSC_ATOMC-1) map { i => Fill(log2Ceil(i+2), false.B) }))
 
-    valid_d1 := io.input_pipe_valid
-    when(io.input_pipe_valid){
-        data_d1 := io.input_data
-        mask_d1 := io.input_mask
-        sel_d1 := io.input_sel       
+    valid_d1 := io.input.valid
+    when(io.input.valid){
+        data_d1 := io.input.bits.data
+        mask_d1 := io.input.bits.mask
+        sel_d1 := io.input.bits.sel       
     }
 
     for(i <- 0 to conf.CSC_ATOMC-1){
-        when(io.input_pipe_valid & io.input_mask_en(i/8))
+        when(io.input.valid & io.input_mask_en(i/8))
         {
             vec_sum_d1(i) := vec_sum(i)
         }
@@ -138,15 +132,15 @@ withClock(io.nvdla_core_clk){
     }
 
     ////////////////////////////////// output: rename //////////////////////////////////    
-    io.output_pvld := valid_d3
-    io.output_mask := mask_d3
-    io.output_sel := sel_d3
-    io.output_data := vec_data_d3
+    io.output.valid := valid_d3
+    io.output.bits.mask := mask_d3
+    io.output.bits.sel := sel_d3
+    io.output.bits.data := vec_data_d3
     
 }}
 
 object NV_NVDLA_CSC_WL_decDriver extends App {
-  implicit val conf: cscConfiguration = new cscConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_WL_dec)
 }
 

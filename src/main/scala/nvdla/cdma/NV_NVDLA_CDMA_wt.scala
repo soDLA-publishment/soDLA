@@ -6,7 +6,7 @@ import chisel3.util._
 import chisel3.iotesters.Driver
 
 
-class NV_NVDLA_CDMA_wtIO(implicit conf: cdmaConfiguration) extends Bundle {
+class NV_NVDLA_CDMA_wtIO(implicit conf: nvdlaConfig) extends Bundle {
 
     //nvdla core clock
     val nvdla_core_clk = Input(Clock())
@@ -14,40 +14,23 @@ class NV_NVDLA_CDMA_wtIO(implicit conf: cdmaConfiguration) extends Bundle {
     val pwrbus_ram_pd = Input(UInt(32.W))
 
     //mcif
-    val cdma_wt2mcif_rd_req_valid = Output(Bool())
-    val cdma_wt2mcif_rd_req_ready = Input(Bool())
-    val cdma_wt2mcif_rd_req_pd  = Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
-    val mcif2cdma_wt_rd_rsp_valid = Input(Bool())
-    val mcif2cdma_wt_rd_rsp_ready = Output(Bool())
-    val mcif2cdma_wt_rd_rsp_pd = Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))
+    val cdma_wt2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))
+    val mcif2cdma_wt_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W)))
 
     //cvif
-    val cdma_wt2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-    val cdma_wt2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-    val cdma_wt2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
-    val cvif2cdma_wt_rd_rsp_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-    val cvif2cdma_wt_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-    val cvif2cdma_wt_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W))) else None
+    val cdma_wt2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_REQ.W))) else None
+    val cvif2cdma_wt_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_CDMA_MEM_RD_RSP.W)))) else None
 
-    val cdma2buf_wt_wr_en = Output(Bool())
     val cdma2buf_wt_wr_sel = if(conf.DMAIF<conf.ATMC) Some(Output(UInt((conf.ATMC/conf.DMAIF).W))) else None
-    val cdma2buf_wt_wr_addr = Output(UInt(17.W))
-    val cdma2buf_wt_wr_data = Output(UInt(conf.DMAIF.W))
-    val status2dma_fsm_switch = Input(Bool())
+    val cdma2buf_wt_wr = new nvdla_wr_if(17, conf.DMAIF)
 
+    val status2dma_fsm_switch = Input(Bool())
     val wt2status_state = Output(UInt(2.W))
 
-    val cdma2sc_wt_updt = Output(Bool())
-    val cdma2sc_wt_kernels = Output(UInt(14.W))
-    val cdma2sc_wt_entries = Output(UInt(15.W))
-    val cdma2sc_wmb_entries = Output(UInt(12.W))
-    val sc2cdma_wt_updt = Input(Bool())
-    val sc2cdma_wt_kernels = Input(UInt(14.W))
-    val sc2cdma_wt_entries = Input(UInt(15.W))
-    val sc2cdma_wmb_entries = Input(UInt(9.W))
-
-    val sc2cdma_wt_pending_req = Input(Bool())
+    val cdma2sc_wt_updt = ValidIO(new updt_entries_kernels_if)
     val cdma2sc_wt_pending_ack = Output(Bool())
+    val sc2cdma_wt_updt = Flipped(ValidIO(new updt_entries_kernels_if))
+    val sc2cdma_wt_pending_req = Input(Bool())
 
     val reg2dp_arb_weight = Input(UInt(4.W))
     val reg2dp_arb_wmb = Input(UInt(4.W))
@@ -76,13 +59,12 @@ class NV_NVDLA_CDMA_wtIO(implicit conf: cdmaConfiguration) extends Bundle {
     val dp2reg_inf_weight_num = Output(UInt(32.W))
     val dp2reg_wt_flush_done = Output(Bool())
     val dp2reg_wt_rd_stall = Output(UInt(32.W))
-    val dp2reg_wt_rd_latency = Output(UInt(32.W))
 
 }
 
 
 
-class NV_NVDLA_CDMA_wt(implicit conf: cdmaConfiguration) extends Module {
+class NV_NVDLA_CDMA_wt(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new NV_NVDLA_CDMA_wtIO)
 //     
 //          ┌─┐       ┌─┐
@@ -219,7 +201,7 @@ withClock(io.nvdla_core_clk){
     val src_id_wt = "b00".asUInt(2.W)
     val src_id_wmb = "b01".asUInt(2.W)
     val src_id_wgs = "b10".asUInt(2.W)
-/////////////////// stage 1 ///////////////////
+    /////////////////// stage 1 ///////////////////
     val wt_req_size_d1 = RegInit("b0".asUInt(4.W))
     val wt_req_burst_cnt_d1 = RegInit("b0".asUInt(29.W))
     val wt_req_stage_vld_d1 = RegInit(false.B)
@@ -279,6 +261,7 @@ withClock(io.nvdla_core_clk){
      }
 
     val wt_req_src_d3 = src_id_wt
+
 /////////////////// overflow control logic ///////////////////
     val wt_data_onfly = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(14.W))}
     val wt_data_stored = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(17.W))}
@@ -286,6 +269,7 @@ withClock(io.nvdla_core_clk){
     val wt_req_sum = wt_data_onfly + wt_data_stored + wt_data_avl
     val wt_req_overflow = is_running && (wt_req_sum > (Cat(weight_bank, "b0".asUInt(conf.CBUF_BANK_FETCH_BITS.W)) +& conf.ATMM8.U))
     val wt_req_overflow_d3 = wt_req_overflow
+
 /////////////////// pipeline control logic ///////////////////
     val wt_req_rdy = Wire(Bool())
     wt_req_reg_en := layer_st | (is_running & (~wt_req_vld_d3 | wt_req_rdy))
@@ -311,53 +295,43 @@ withClock(io.nvdla_core_clk){
     val dma_rd_req_addr = Wire(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
     val dma_rd_req_size = Wire(UInt(15.W))
     val dma_rd_req_vld = Wire(Bool())
-    val dmaif_rd_rsp_prdy = Wire(Bool())
 
-    val nv_NVDLA_PDP_RDMA_rdreq = Module{new NV_NVDLA_DMAIF_rdreq}
+    val nv_NVDLA_PDP_RDMA_rdreq = Module{new NV_NVDLA_DMAIF_rdreq(conf.NVDLA_CDMA_MEM_RD_REQ)}
     nv_NVDLA_PDP_RDMA_rdreq.io.nvdla_core_clk := io.nvdla_core_clk
     nv_NVDLA_PDP_RDMA_rdreq.io.reg2dp_src_ram_type := io.reg2dp_weight_ram_type
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-        nv_NVDLA_PDP_RDMA_rdreq.io.cvif_rd_req_ready.get := io.cdma_wt2cvif_rd_req_ready.get
-        io.cdma_wt2cvif_rd_req_pd.get := nv_NVDLA_PDP_RDMA_rdreq.io.cvif_rd_req_pd.get
-        io.cdma_wt2cvif_rd_req_valid.get := nv_NVDLA_PDP_RDMA_rdreq.io.cvif_rd_req_valid.get
+        io.cdma_wt2cvif_rd_req_pd.get <> nv_NVDLA_PDP_RDMA_rdreq.io.cvif_rd_req_pd.get
     }
-    io.cdma_wt2mcif_rd_req_pd:= nv_NVDLA_PDP_RDMA_rdreq.io.mcif_rd_req_pd
-    io.cdma_wt2mcif_rd_req_valid := nv_NVDLA_PDP_RDMA_rdreq.io.mcif_rd_req_valid
-    nv_NVDLA_PDP_RDMA_rdreq.io.mcif_rd_req_ready := io.cdma_wt2mcif_rd_req_ready
+    io.cdma_wt2mcif_rd_req_pd <> nv_NVDLA_PDP_RDMA_rdreq.io.mcif_rd_req_pd
 
-    nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_pd := dma_rd_req_pd
-    nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_vld := dma_rd_req_vld
-    dma_rd_req_rdy := nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_rdy
+    nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_pd.bits := dma_rd_req_pd
+    nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_pd.valid := dma_rd_req_vld
+    dma_rd_req_rdy := nv_NVDLA_PDP_RDMA_rdreq.io.dmaif_rd_req_pd.ready
     // rd Channel: Response
-    val nv_NVDLA_PDP_RDMA_rdrsp = Module{new NV_NVDLA_DMAIF_rdrsp}
+    val nv_NVDLA_PDP_RDMA_rdrsp = Module{new NV_NVDLA_DMAIF_rdrsp(conf.NVDLA_CDMA_MEM_RD_RSP)}
     nv_NVDLA_PDP_RDMA_rdrsp.io.nvdla_core_clk := io.nvdla_core_clk
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-        nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_pd.get := io.cvif2cdma_wt_rd_rsp_pd.get
-        nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_valid.get := io.cvif2cdma_wt_rd_rsp_valid.get
-        io.cvif2cdma_wt_rd_rsp_ready.get := nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_ready.get
+        nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_pd.get <> io.cvif2cdma_wt_rd_rsp_pd.get
     }
-    nv_NVDLA_PDP_RDMA_rdrsp.io.mcif_rd_rsp_pd := io.mcif2cdma_wt_rd_rsp_pd
-    nv_NVDLA_PDP_RDMA_rdrsp.io.mcif_rd_rsp_valid := io.mcif2cdma_wt_rd_rsp_valid
-    io.mcif2cdma_wt_rd_rsp_ready := nv_NVDLA_PDP_RDMA_rdrsp.io.mcif_rd_rsp_ready
-
-    val dmaif_rd_rsp_pd= nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd
-    val dmaif_rd_rsp_pvld = nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pvld
-    nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_prdy := dmaif_rd_rsp_prdy
+    nv_NVDLA_PDP_RDMA_rdrsp.io.mcif_rd_rsp_pd <> io.mcif2cdma_wt_rd_rsp_pd
 
 ///////////////////////////////////////////
 //DorisLei: adding a 8*atmm fifo here for data buffering.
 //use case: Cbuf has empty entries, but empty entry number < 8*atmm
 //continue reading 8*atmm data from memory and then Cbuf can be fully written 
     val dma_rd_rsp_rdy = Wire(Bool())
-    val u_8atmm_fifo = Module{new NV_NVDLA_CDMA_WT_8ATMM_fifo(conf.NVDLA_CDMA_MEM_RD_RSP, 8*(conf.NVDLA_MEMORY_ATOMIC_SIZE * conf.NVDLA_CDMA_BPE)/(conf.NVDLA_CDMA_DMAIF_BW))}
-    u_8atmm_fifo.io.nvdla_core_clk := io.nvdla_core_clk
-    dmaif_rd_rsp_prdy := u_8atmm_fifo.io.lat_wr_prdy
-    u_8atmm_fifo.io.lat_wr_pvld := dmaif_rd_rsp_pvld
-    u_8atmm_fifo.io.lat_wr_pd := dmaif_rd_rsp_pd
-    u_8atmm_fifo.io.lat_rd_prdy := dma_rd_rsp_rdy
-    val dma_rd_rsp_vld = u_8atmm_fifo.io.lat_rd_pvld 
-    val dma_rd_rsp_pd = u_8atmm_fifo.io.lat_rd_pd 
+    val u_8atmm_fifo = Module{new NV_NVDLA_fifo(depth = 8*conf.ATMM/conf.DMAIF, width = conf.NVDLA_CDMA_MEM_RD_RSP,
+                        ram_type = 2, 
+                        distant_wr_req = false)}
+    u_8atmm_fifo.io.clk := io.nvdla_core_clk
     u_8atmm_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+    u_8atmm_fifo.io.wr_pvld := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.bits
+    nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.ready := u_8atmm_fifo.io.wr_prdy
+    u_8atmm_fifo.io.wr_pd := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.bits
+    val dma_rd_rsp_vld = u_8atmm_fifo.io.rd_pvld 
+    u_8atmm_fifo.io.rd_prdy := dma_rd_rsp_rdy
+    val dma_rd_rsp_pd = u_8atmm_fifo.io.rd_pd 
+    
 ///////////////////////////////////////////
     dma_rd_req_pd := Cat(dma_rd_req_size, dma_rd_req_addr)
     dma_rd_req_vld := arb_sp_out_vld & dma_req_fifo_ready
@@ -415,16 +389,19 @@ withClock(io.nvdla_core_clk){
     val dma_req_fifo_data = Wire(UInt(6.W))
     val dma_rsp_fifo_ready = Wire(Bool())
 
-    val u_fifo = Module{new NV_NVDLA_CDMA_fifo(128, 6)}
+    val u_fifo = Module{new  NV_NVDLA_fifo(depth = 128, width = 6,
+                        ram_type = 2, 
+                        distant_wr_req = true)}
     u_fifo.io.clk := io.nvdla_core_clk
-    dma_req_fifo_ready := u_fifo.io.wr_ready
-    u_fifo.io.wr_req := dma_req_fifo_req
-    u_fifo.io.wr_data := dma_req_fifo_data
-    u_fifo.io.rd_ready := dma_rsp_fifo_ready
-    val dma_rsp_fifo_req = u_fifo.io.rd_req
-    val dma_rsp_fifo_data = u_fifo.io.rd_data
     u_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-
+    
+    u_fifo.io.wr_pvld := dma_req_fifo_req
+    dma_req_fifo_ready := u_fifo.io.wr_prdy
+    u_fifo.io.wr_pd := dma_req_fifo_data
+    val dma_rsp_fifo_req = u_fifo.io.rd_pvld
+    u_fifo.io.rd_prdy := dma_rsp_fifo_ready
+    val dma_rsp_fifo_data = u_fifo.io.rd_pd
+    
     dma_req_fifo_req := arb_sp_out_vld & dma_rd_req_rdy
     dma_req_fifo_data := Cat(dma_req_src, dma_req_size)
 
@@ -437,13 +414,13 @@ withClock(io.nvdla_core_clk){
     val dma_rd_rsp_mask = dma_rd_rsp_pd(conf.NVDLA_CDMA_MEM_RD_RSP - 1, conf.NVDLA_MEMIF_WIDTH)
     val dma_rsp_size = dma_rsp_fifo_data(3, 0)
     val dma_rsp_src = dma_rsp_fifo_data(5, 4)
-    val dma_rsp_size_cnt_inc = dma_rsp_size_cnt + dma_rd_rsp_mask(0)
+    val dma_rsp_size_cnt_inc = dma_rsp_size_cnt + PopCount(dma_rd_rsp_mask)
 
     val dma_rsp_size_cnt_w = Mux(dma_rsp_size_cnt_inc === dma_rsp_size, "b0".asUInt(4.W), dma_rsp_size_cnt_inc)
     dma_rsp_fifo_ready := (dma_rd_rsp_vld & dma_rd_rsp_rdy & (dma_rsp_size_cnt_inc === dma_rsp_size))
     val wt_rsp_valid = (dma_rd_rsp_vld & dma_rd_rsp_rdy & (dma_rsp_src === src_id_wt))
 
-    val dma_rsp_data_p0 = dma_rd_rsp_data
+    val dma_rsp_data_p = dma_rd_rsp_data
 
     when(dma_rd_rsp_vld & dma_rd_rsp_rdy){
         dma_rsp_size_cnt := dma_rsp_size_cnt_w
@@ -455,20 +432,54 @@ withClock(io.nvdla_core_clk){
     val wt_local_data = Reg(UInt(conf.ATMM.W))
     val wt_local_data_vld = RegInit(false.B)
     val wt_cbuf_wr_idx = RegInit("b0".asUInt(17.W))
-    val wt_local_data_cnt = wt_local_data_vld + dma_rd_rsp_mask(0)
-    //$mask == 1
-    val wt_local_data_vld_w = false.B
-    val wt_local_data_reg_en = false.B
-    wt_cbuf_wr_vld_w := wt_rsp_valid
-    val wt_local_data_w = "b0".asUInt(conf.ATMM.W)
-    val wt_cbuf_wr_data_ori_w = dma_rsp_data_p0
+
+    val wt_local_data_vld_w = Wire(Bool())
+    val wt_local_data_reg_en = Wire(Bool())
+    val wt_local_data_w = Wire(UInt(conf.ATMMBW.W))
+    val wt_cbuf_wr_data_ori_w = Wire(UInt(conf.NVDLA_CDMA_DMAIF_BW.W))
+
+    if(conf.NVDLA_CDMA_MEM_MASK_BIT == 1){
+        val wt_local_data_cnt =  wt_local_data_vld +& dma_rd_rsp_mask(0)
+        val dma_rsp_data_p0 = dma_rd_rsp_data
+        wt_local_data_vld_w := false.B
+        wt_local_data_reg_en := false.B
+        wt_cbuf_wr_vld_w := wt_rsp_valid
+        wt_local_data_w := 0.U
+        wt_cbuf_wr_data_ori_w := dma_rsp_data_p0
+
+    }
+    else if(conf.NVDLA_CDMA_MEM_MASK_BIT == 2){
+        val wt_local_data_cnt =  wt_local_data_vld +& dma_rd_rsp_mask(0) +& dma_rd_rsp_mask(1)
+        val dma_rsp_data_p0 = dma_rd_rsp_data(conf.ATMM-1, 0)
+        val dma_rsp_data_p1 = dma_rd_rsp_data(2*conf.ATMM-1, conf.ATMM)
+        wt_local_data_vld_w := wt_local_data_cnt(0)
+        wt_local_data_reg_en := wt_rsp_valid & wt_local_data_cnt(0)
+        wt_cbuf_wr_vld_w := wt_rsp_valid & wt_local_data_cnt(1)
+        wt_local_data_w := Mux(dma_rd_rsp_mask(1), dma_rsp_data_p1, dma_rsp_data_p0) 
+        wt_cbuf_wr_data_ori_w := Mux(wt_local_data_vld,  Cat(dma_rsp_data_p0, wt_local_data), dma_rd_rsp_data)
+    }
+    else if(conf.NVDLA_CDMA_MEM_MASK_BIT == 4){
+        val wt_local_data_cnt =  wt_local_data_vld +& dma_rd_rsp_mask(0) +& dma_rd_rsp_mask(1) +& dma_rd_rsp_mask(2) +& dma_rd_rsp_mask(3) 
+        val dma_rsp_data_p0 = dma_rd_rsp_data(conf.ATMM-1, 0)
+        val dma_rsp_data_p1 = dma_rd_rsp_data(2*conf.ATMM-1, conf.ATMM)
+        val dma_rsp_data_p2 = dma_rd_rsp_data(3*conf.ATMM-1, 2*conf.ATMM)
+        wt_local_data_vld_w := wt_local_data_cnt(1, 0).orR
+        wt_local_data_reg_en := wt_rsp_valid & wt_local_data_vld_w
+        wt_cbuf_wr_vld_w := wt_rsp_valid & wt_local_data_cnt(2)
+        wt_local_data_w := Mux(dma_rd_rsp_mask(3), dma_rd_rsp_data,
+                           Mux(dma_rd_rsp_mask(2), Cat(dma_rsp_data_p2, dma_rsp_data_p1, dma_rsp_data_p0),
+                           Mux(dma_rd_rsp_mask(1), Cat(dma_rsp_data_p1, dma_rsp_data_p0),
+                           dma_rsp_data_p0)))
+        wt_cbuf_wr_data_ori_w := Mux(wt_local_data_vld,  Cat(dma_rsp_data_p0, wt_local_data), dma_rd_rsp_data)       
+    }
+
 
     val wt_cbuf_wr_idx_inc = wt_cbuf_wr_idx + 1.U
     val wt_cbuf_wr_idx_set = (layer_st & ~(wt_cbuf_wr_idx.orR))
     
     val wt_cbuf_wr_idx_wrap = (wt_cbuf_wr_idx_inc === Cat(weight_bank_end, "b0".asUInt(conf.BANK_DEPTH_BITS.W)))
     val wt_cbuf_wr_idx_w = Mux(clear_all | wt_cbuf_wr_idx_set | wt_cbuf_wr_idx_wrap, 
-                           Cat(data_bank_w, "b0".asUInt(conf.BANK_DEPTH_BITS.W)), wt_cbuf_wr_idx_inc)
+                           Cat(data_bank_w, "b0".asUInt(conf.BANK_DEPTH_BITS.W)), wt_cbuf_wr_idx_inc(16, 0))
     val wt_cbuf_wr_data_w = wt_cbuf_wr_data_ori_w
     when(wt_local_data_reg_en){
         wt_local_data := wt_local_data_w
@@ -488,9 +499,9 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////
     val wt_cbuf_flush_idx = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(18.W))}
     val wt_cbuf_flush_idx_w = wt_cbuf_flush_idx + 1.U
-    val wt_cbuf_flush_vld_w = ~wt_cbuf_flush_idx(log2Ceil(conf.ATMC/conf.DMAIF) + log2Ceil(conf.NVDLA_CBUF_BANK_NUMBER*conf.NVDLA_CBUF_BANK_DEPTH)-1)
+    val wt_cbuf_flush_vld_w = ~wt_cbuf_flush_idx(log2Ceil(conf.ATMC/conf.DMAIF) + conf.KK - 1)
 
-    io.dp2reg_wt_flush_done := wt_cbuf_flush_idx(log2Ceil(conf.ATMC/conf.DMAIF) + log2Ceil(conf.NVDLA_CBUF_BANK_NUMBER*conf.NVDLA_CBUF_BANK_DEPTH)-1)
+    io.dp2reg_wt_flush_done := wt_cbuf_flush_idx(log2Ceil(conf.ATMC/conf.DMAIF) + conf.KK - 1)
 
     when(wt_cbuf_flush_vld_w){
         wt_cbuf_flush_idx := wt_cbuf_flush_idx_w
@@ -518,12 +529,12 @@ withClock(io.nvdla_core_clk){
     }
 
     val cdma2buf_wt_wr_data_w = Mux(wt_cbuf_wr_vld_w, wt_cbuf_wr_data_w, 0.U)
-    io.cdma2buf_wt_wr_en := withClock(io.nvdla_core_ng_clk){RegNext(cdma2buf_wt_wr_en_w, false.B)}
-    io.cdma2buf_wt_wr_addr := withClock(io.nvdla_core_ng_clk){RegEnable(cdma2buf_wt_wr_addr_w, "b0".asUInt(17.W), cdma2buf_wt_wr_en_w)}
+    io.cdma2buf_wt_wr.addr.valid := withClock(io.nvdla_core_ng_clk){RegNext(cdma2buf_wt_wr_en_w, false.B)}
+    io.cdma2buf_wt_wr.addr.bits := withClock(io.nvdla_core_ng_clk){RegEnable(cdma2buf_wt_wr_addr_w, "b0".asUInt(17.W), cdma2buf_wt_wr_en_w)}
 ////////////////////////////////////////////////////////////////////////
 //  Non-SLCG clock domain end                                         //
 ////////////////////////////////////////////////////////////////////////
-    io.cdma2buf_wt_wr_data := RegEnable(cdma2buf_wt_wr_data_w, "b0".asUInt(conf.NVDLA_CDMA_DMAIF_BW.W), cdma2buf_wt_wr_en_w)
+    io.cdma2buf_wt_wr.data := RegEnable(cdma2buf_wt_wr_data_w, "b0".asUInt(conf.NVDLA_CDMA_DMAIF_BW.W), cdma2buf_wt_wr_en_w)
     io.dp2reg_nan_weight_num := "b0".asUInt(32.W)
     io.dp2reg_inf_weight_num := "b0".asUInt(32.W)
 ////////////////////////////////////////////////////////////////////////
@@ -533,9 +544,9 @@ withClock(io.nvdla_core_clk){
 //sc2cdma_wt_kernels are useless
 
 //retiming
-    sc_wt_updt := io.sc2cdma_wt_updt
-    when(io.sc2cdma_wt_updt){
-        sc_wt_entries := io.sc2cdma_wt_entries
+    sc_wt_updt := io.sc2cdma_wt_updt.valid
+    when(io.sc2cdma_wt_updt.valid){
+        sc_wt_entries := io.sc2cdma_wt_updt.bits.entries
     }
 //cation: the basic unit of data_stored, data_onfly and data_avl is atomic_m bytes, 32 bytes in Xavier
     val status_update = Wire(Bool())
@@ -551,6 +562,10 @@ withClock(io.nvdla_core_clk){
     else if(conf.ATMC/conf.ATMM == 2){
         wt_data_stored_sub := Mux(status_update, Cat(incr_wt_entries_w, "b0".asUInt(1.W)), "b0".asUInt(17.W))
         wt_data_avl_sub := Mux(sc_wt_updt,  Cat(sc_wt_entries, "b0".asUInt(1.W)), "b0".asUInt(17.W))       
+    }
+    else if(conf.ATMC/conf.ATMM == 4){
+        wt_data_stored_sub := Mux(status_update, Cat(incr_wt_entries_w, "b0".asUInt(2.W)), "b0".asUInt(17.W))
+        wt_data_avl_sub := Mux(sc_wt_updt,  Cat(sc_wt_entries, "b0".asUInt(2.W)), "b0".asUInt(17.W))   
     }
 
     val wt_data_onfly_w = wt_data_onfly + wt_data_onfly_add - wt_data_onfly_sub
@@ -665,276 +680,54 @@ withClock(io.nvdla_core_clk){
         }
     }
 
-    io.cdma2sc_wt_kernels := incr_wt_kernels_d(conf.CDMA_CBUF_WR_LATENCY)
-    io.cdma2sc_wt_entries := incr_wt_entries_d(conf.CDMA_CBUF_WR_LATENCY) 
-    io.cdma2sc_wmb_entries := "b0".asUInt(12.W)
-    io.cdma2sc_wt_updt := incr_wt_updt_d(conf.CDMA_CBUF_WR_LATENCY) 
+
+    io.cdma2sc_wt_updt.valid := incr_wt_updt_d(conf.CDMA_CBUF_WR_LATENCY) 
+    io.cdma2sc_wt_updt.bits.kernels := incr_wt_kernels_d(conf.CDMA_CBUF_WR_LATENCY)
+    io.cdma2sc_wt_updt.bits.entries := incr_wt_entries_d(conf.CDMA_CBUF_WR_LATENCY) 
 
 ////////////////////////////////////////////////////////////////////////
 // performance counting register //
 ////////////////////////////////////////////////////////////////////////  
-    val wt_rd_stall_inc = RegInit(false.B)
-    val wt_rd_stall_clr = RegInit(false.B)
-    val wt_rd_stall_cen = RegInit(false.B)
+    //stall
+    val wt_rd_stall_inc = RegNext(dma_rd_req_vld & ~dma_rd_req_rdy & io.reg2dp_dma_en, false.B)
+    val wt_rd_stall_clr = RegNext(io.status2dma_fsm_switch & io.reg2dp_dma_en, false.B)
+    val wt_rd_stall_cen = RegNext(io.reg2dp_op_en & io.reg2dp_dma_en, false.B)
+
     val dp2reg_wt_rd_stall_dec = false.B
 
-    wt_rd_stall_inc := dma_rd_req_vld & ~dma_rd_req_rdy & io.reg2dp_dma_en
-    wt_rd_stall_clr := io.status2dma_fsm_switch & io.reg2dp_dma_en
-    wt_rd_stall_cen := io.reg2dp_op_en & io.reg2dp_dma_en
-    // stl adv logic
-    val stl_adv = wt_rd_stall_inc ^ dp2reg_wt_rd_stall_dec
+    val stl = Module(new NV_COUNTER_STAGE(32))
+    stl.io.clk := io.nvdla_core_clk
+    stl.io.rd_stall_inc := wt_rd_stall_inc
+    stl.io.rd_stall_dec := dp2reg_wt_rd_stall_dec
+    stl.io.rd_stall_clr := wt_rd_stall_clr
+    stl.io.rd_stall_cen := wt_rd_stall_cen
+    io.dp2reg_wt_rd_stall := stl.io.cnt_cur
 
-    // stl cnt logic
-    val stl_cnt_cur = RegInit("b0".asUInt(32.W))
-    val stl_cnt_ext = Wire(UInt(34.W))
-    val stl_cnt_inc = Wire(UInt(34.W))
-    val stl_cnt_dec = Wire(UInt(34.W))
-    val stl_cnt_mod = Wire(UInt(34.W))
-    val stl_cnt_new = Wire(UInt(34.W))
-    val stl_cnt_nxt = Wire(UInt(34.W))
-
-    stl_cnt_ext := stl_cnt_cur
-    stl_cnt_inc := stl_cnt_cur +& 1.U
-    stl_cnt_dec := stl_cnt_cur -& 1.U
-    stl_cnt_mod := Mux(wt_rd_stall_inc && !dp2reg_wt_rd_stall_dec, stl_cnt_inc, 
-                   Mux(!wt_rd_stall_inc && dp2reg_wt_rd_stall_dec, stl_cnt_dec,
-                   stl_cnt_ext))
-    stl_cnt_new := Mux(stl_adv, stl_cnt_mod, stl_cnt_ext)
-    stl_cnt_nxt := Mux(wt_rd_stall_clr, 0.U, stl_cnt_new)
-
-    // stl flops
-    when(wt_rd_stall_cen){
-        stl_cnt_cur := stl_cnt_nxt
-    }
-   // stl output logic
-    val wt_rd_latency_inc = RegInit(false.B)
-    val wt_rd_latency_dec = RegInit(false.B)
-    val wt_rd_latency_clr = RegInit(false.B)
-    val wt_rd_latency_cen = RegInit(false.B)
-
-    io.dp2reg_wt_rd_stall := stl_cnt_cur
-
-    wt_rd_latency_inc := dma_rd_req_vld & dma_rd_req_rdy & io.reg2dp_dma_en
-    wt_rd_latency_dec := dma_rsp_fifo_ready & io.reg2dp_dma_en
-    wt_rd_latency_clr := io.status2dma_fsm_switch
-    wt_rd_latency_cen := io.reg2dp_op_en & io.reg2dp_dma_en
+    //latency_1
+    val wt_rd_latency_inc = RegNext(dma_rd_req_vld & ~dma_rd_req_rdy & io.reg2dp_dma_en, false.B)
+    val wt_rd_latency_dec = RegNext(dma_rsp_fifo_ready & io.reg2dp_dma_en, false.B)
+    val wt_rd_latency_clr = RegNext(io.status2dma_fsm_switch, false.B)
+    val wt_rd_latency_cen = RegNext(io.reg2dp_op_en & io.reg2dp_dma_en, false.B)
 
     val outs_dp2reg_wt_rd_latency = Wire(UInt(9.W))
+    val ltc_1_inc = (outs_dp2reg_wt_rd_latency =/= 511.U) & wt_rd_latency_inc
+    val ltc_1_dec = (outs_dp2reg_wt_rd_latency =/= 511.U) & wt_rd_latency_dec
 
-    val ltc_1_inc = (outs_dp2reg_wt_rd_latency =/=511.U) & wt_rd_latency_inc
-    val ltc_1_dec = (outs_dp2reg_wt_rd_latency =/=511.U) & wt_rd_latency_dec
-
-    // ltc_1 adv logic
-    val ltc_1_adv = ltc_1_inc ^ ltc_1_dec
-
-    // ltc_1 cnt logic
-    val ltc_1_cnt_cur = RegInit("b0".asUInt(9.W))
-    val ltc_1_cnt_ext = Wire(UInt(11.W))
-    val ltc_1_cnt_inc = Wire(UInt(11.W))
-    val ltc_1_cnt_dec = Wire(UInt(11.W))
-    val ltc_1_cnt_mod = Wire(UInt(11.W))
-    val ltc_1_cnt_new = Wire(UInt(11.W))
-    val ltc_1_cnt_nxt = Wire(UInt(11.W))
-
-    ltc_1_cnt_ext := ltc_1_cnt_cur
-    ltc_1_cnt_inc := ltc_1_cnt_cur +& 1.U
-    ltc_1_cnt_dec := ltc_1_cnt_cur -& 1.U
-    ltc_1_cnt_mod := Mux(ltc_1_inc && !ltc_1_dec, ltc_1_cnt_inc, 
-                     Mux((!ltc_1_inc && ltc_1_dec), ltc_1_cnt_dec,
-                     ltc_1_cnt_ext))
-    ltc_1_cnt_new := Mux(ltc_1_adv, ltc_1_cnt_mod, ltc_1_cnt_ext)
-    ltc_1_cnt_nxt := Mux(wt_rd_latency_clr, 0.U, ltc_1_cnt_new)
-
-    // ltc_1 flops
-    when(wt_rd_latency_cen){
-        ltc_1_cnt_cur := ltc_1_cnt_nxt
-    }
-
-    // ltc_1 output logic
-    outs_dp2reg_wt_rd_latency := ltc_1_cnt_cur
-
-    io.dp2reg_wt_rd_latency := 0.U
+    val ltc_1 = Module(new NV_COUNTER_STAGE(9))
+    ltc_1.io.clk := io.nvdla_core_clk
+    ltc_1.io.rd_stall_inc := ltc_1_inc
+    ltc_1.io.rd_stall_dec := ltc_1_dec
+    ltc_1.io.rd_stall_clr := wt_rd_latency_clr
+    ltc_1.io.rd_stall_cen := wt_rd_latency_cen
+    outs_dp2reg_wt_rd_latency := ltc_1.io.cnt_cur
 
 }}
 
 
 
-
-class NV_NVDLA_CDMA_WT_8ATMM_fifo(fifo_width:Int, fifo_depth:Int) extends Module {
-    val io = IO(new Bundle {
-        //clk
-        val nvdla_core_clk = Input(Clock())
-
-        val lat_wr_prdy = Output(Bool())
-        val lat_wr_pvld = Input(Bool())
-        val lat_wr_pd = Input(UInt(fifo_width.W))
-        val lat_rd_prdy = Input(Bool())
-        val lat_rd_pvld = Output(Bool())
-        val lat_rd_pd = Output(UInt(fifo_width.W))
-
-        val pwrbus_ram_pd = Input(UInt(32.W))
-    })
-    //     
-    //          ┌─┐       ┌─┐
-    //       ┌──┘ ┴───────┘ ┴──┐
-    //       │                 │
-    //       │       ───       │          
-    //       │  ─┬┘       └┬─  │
-    //       │                 │
-    //       │       ─┴─       │
-    //       │                 │
-    //       └───┐         ┌───┘
-    //           │         │
-    //           │         │
-    //           │         │
-    //           │         └──────────────┐
-    //           │                        │
-    //           │                        ├─┐
-    //           │                        ┌─┘    
-    //           │                        │
-    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-    //             │ ─┤ ─┤       │ ─┤ ─┤         
-    //             └──┴──┘       └──┴──┘
-    withClock(io.nvdla_core_clk){
-    // Master Clock Gating (SLCG)
-    //
-    // We gate the clock(s) when idle or stalled.
-    // This allows us to turn off numerous miscellaneous flops
-    // that don't get gated during synthesis for one reason or another.
-    //
-    // We gate write side and read side separately. 
-    // If the fifo is synchronous, we also gate the ram separately, but if
-    // -master_clk_gated_unified or -status_reg/-status_logic_reg is specified, 
-    // then we use one clk gate for write, ram, and read.
-    //
-    val nvdla_core_clk_mgated_enable = Wire(Bool())
-    val nvdla_core_clk_mgate = Module(new NV_CLK_gate_power)
-    nvdla_core_clk_mgate.io.clk := io.nvdla_core_clk
-    nvdla_core_clk_mgate.io.clk_en := nvdla_core_clk_mgated_enable
-    val nvdla_core_clk_mgated = nvdla_core_clk_mgate.io.clk_gated
-
-    ////////////////////////////////////////////////////////////////////////
-    // WRITE SIDE                                                        //
-    ////////////////////////////////////////////////////////////////////////
-    val wr_reserving = Wire(Bool())
-    val lat_wr_busy_int = withClock(nvdla_core_clk_mgated){RegInit(false.B)}  // copy for internal use
-    io.lat_wr_prdy := !lat_wr_busy_int
-    wr_reserving := io.lat_wr_pvld && !lat_wr_busy_int   // reserving write space?
-
-    val wr_popping = withClock(nvdla_core_clk_mgated){RegInit(false.B)}       // fwd: write side sees pop?
-    val lat_wr_count = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt((log2Ceil(fifo_depth)+1).W))} // write-side count
-    val wr_count_next_wr_popping = Mux(wr_reserving, lat_wr_count, lat_wr_count-1.U)
-    val wr_count_next_no_wr_popping = Mux(wr_reserving, lat_wr_count+1.U, lat_wr_count)
-    val wr_count_next = Mux(wr_popping, wr_count_next_wr_popping, wr_count_next_no_wr_popping)
-
-    val wr_count_next_no_wr_popping_is_fifo_depth = (wr_count_next_no_wr_popping === fifo_depth.U)
-    val wr_count_next_is_fifo_depth = Mux(wr_popping, false.B, wr_count_next_no_wr_popping_is_fifo_depth)
-    val wr_limit_muxed = Wire(UInt((log2Ceil(fifo_depth)+1).W))    // muxed with simulation/emulation overrides
-    val wr_limit_reg = wr_limit_muxed
-    val lat_wr_busy_next = wr_count_next_is_fifo_depth ||(wr_limit_reg =/= 0.U && (wr_count_next >= wr_limit_reg))
-
-    lat_wr_busy_int := lat_wr_busy_next
-    when(wr_reserving ^ wr_popping){
-        lat_wr_count := wr_count_next
-    }
-
-    val wr_pushing = wr_reserving // data pushed same cycle as wr_req_in
-
-    //
-    // RAM
-    //  
-
-    val lat_wr_adr = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(log2Ceil(fifo_depth).W))}   // current write address
-    val lat_rd_adr_p = Wire(UInt(log2Ceil(fifo_depth).W));		// read address to use for ram
-    val lat_rd_pd_p = Wire(UInt(fifo_width.W));		// read data directly out of ram
-    val rd_enable = Wire(Bool())
-    val ore = Wire(Bool())
-
-    // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
-    // Fifogen handles this by ignoring the data on the ram data out for that cycle.
-
-    val ram = Module(new nv_ram_rwsp(fifo_depth, fifo_width))
-    ram.io.clk := io.nvdla_core_clk
-    ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-    ram.io.wa := lat_wr_adr
-    ram.io.we := wr_pushing
-    ram.io.di := io.lat_wr_pd 
-    ram.io.ra := lat_rd_adr_p
-    ram.io.re := rd_enable
-    ram.io.ore := ore
-    lat_rd_pd_p := ram.io.dout
-    
-    // next wr_adr if wr_pushing=1
-    val wr_adr_next = lat_wr_adr + 1.U
-    when(wr_pushing){
-        lat_wr_adr  := wr_adr_next
-    }
-
-    val rd_popping = Wire(Bool())   // read side doing pop this cycle?
-    val lat_rd_adr = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt(log2Ceil(fifo_depth).W))}  // current read address
-    val rd_adr_next = lat_rd_adr + 1.U
-    lat_rd_adr_p := Mux(rd_popping, rd_adr_next, lat_rd_adr) // for ram
-    when(rd_popping){
-        lat_rd_adr := rd_adr_next
-    }
-
-
-    //
-    // SYNCHRONOUS BOUNDARY
-    //
-    wr_popping := rd_popping    
-    val rd_pushing = withClock(nvdla_core_clk_mgated){RegNext(wr_pushing, false.B)} 
-
-    //
-    // READ SIDE
-    //
-    val lat_rd_pvld_p = withClock(nvdla_core_clk_mgated){RegInit(false.B)}  // data out of fifo is valid
-    val lat_rd_pvld_int = withClock(nvdla_core_clk_mgated){RegInit(false.B)} // internal copy of rd_req
-    io.lat_rd_pvld := lat_rd_pvld_int
-    rd_popping := lat_rd_pvld_p && !(lat_rd_pvld_int && !io.lat_rd_prdy)
-
-    val lat_rd_count_p = withClock(nvdla_core_clk_mgated){RegInit("b0".asUInt((log2Ceil(fifo_depth)+1).W))} // read-side fifo count
-    val rd_count_p_next_rd_popping = Mux(rd_pushing, lat_rd_count_p, lat_rd_count_p-1.U)
-    val rd_count_p_next_no_rd_popping = Mux(rd_pushing, lat_rd_count_p + 1.U, lat_rd_count_p)
-    val rd_count_p_next = Mux(rd_popping, rd_count_p_next_rd_popping, rd_count_p_next_no_rd_popping)
-
-    val rd_count_p_next_rd_popping_not_0 = rd_count_p_next_rd_popping =/= 0.U
-    val rd_count_p_next_no_rd_popping_not_0 = rd_count_p_next_no_rd_popping =/= 0.U
-    val rd_count_p_next_not_0 = Mux(rd_popping, rd_count_p_next_rd_popping_not_0, rd_count_p_next_no_rd_popping_not_0)
-
-    rd_enable := ((rd_count_p_next_not_0) && ((~lat_rd_pvld_p) || rd_popping));  // anytime data's there and not stalled
-
-    
-    when(rd_pushing || rd_popping){
-        lat_rd_count_p := rd_count_p_next
-        lat_rd_pvld_p := rd_count_p_next_not_0
-    }
-    
-    val rd_req_next = (lat_rd_pvld_p || (lat_rd_pvld_int && !io.lat_rd_prdy))
-
-    lat_rd_pvld_int := rd_req_next
-
-    io.lat_rd_pd := lat_rd_pd_p
-    ore := rd_popping
-
-    nvdla_core_clk_mgated_enable := ((wr_reserving || wr_pushing || rd_popping || 
-                        wr_popping || (io.lat_wr_pvld && !lat_wr_busy_int) || 
-                        (lat_wr_busy_int =/= lat_wr_busy_next)) || (rd_pushing || rd_popping || 
-                        (lat_rd_pvld_int && io.lat_rd_prdy) || wr_pushing))
-
-    wr_limit_muxed := "d0".asUInt((log2Ceil(fifo_depth)+1).W)
-
-    
-}}
 
 
 object NV_NVDLA_CDMA_wtDriver extends App {
-  implicit val conf: cdmaConfiguration = new cdmaConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_wt())
-}
-
-
-object NV_NVDLA_CDMA_WT_8ATMM_fifoDriver extends App {
-  implicit val conf: cdmaConfiguration = new cdmaConfiguration
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_WT_8ATMM_fifo(257, 8))
 }

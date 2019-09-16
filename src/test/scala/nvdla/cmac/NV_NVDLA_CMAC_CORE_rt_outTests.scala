@@ -14,16 +14,16 @@ class NV_NVDLA_CMAC_CORE_rt_outTests(c: NV_NVDLA_CMAC_CORE_rt_out) extends PeekP
     val out_pd = rnd.nextInt(1<<9)
     val out_pvld = rnd.nextBoolean()
 
-    poke(c.io.out_pd, out_pd)
-    poke(c.io.out_pvld, out_pvld)
+    poke(c.io.out.bits.pd, out_pd)
+    poke(c.io.out.valid, out_pvld)
 
     for (i <- 0 to conf.CMAC_ATOMK_HALF-1){
 
       out_data(i) = rnd.nextInt(1<<conf.CMAC_BPE)
       out_mask(i) = rnd.nextBoolean()
 
-      poke(c.io.out_data(i), out_data(i))
-      poke(c.io.out_mask(i), out_mask(i))
+      poke(c.io.out.bits.data(i), out_data(i))
+      poke(c.io.out.bits.mask(i), out_mask(i))
 
     }
 
@@ -32,17 +32,17 @@ class NV_NVDLA_CMAC_CORE_rt_outTests(c: NV_NVDLA_CMAC_CORE_rt_out) extends PeekP
 
     //check the result
     //dat valid
-    expect(c.io.mac2accu_pvld, out_pvld) 
+    expect(c.io.mac2accu.valid, out_pvld)
     if(out_pvld){
       for (i <- 0 to conf.CMAC_ATOMK_HALF-1){
         //dat mask
-        expect(c.io.mac2accu_mask(i), out_mask(i))
+        expect(c.io.mac2accu.bits.mask(i), out_mask(i))
         //dat data
         if(out_mask(i)){
-          expect(c.io.mac2accu_data(i), out_data(i))
+          expect(c.io.mac2accu.bits.data(i), out_data(i))
         }}
       //dat pd
-      expect(c.io.mac2accu_pd, out_pd)    
+      expect(c.io.mac2accu.bits.pd, out_pd)
     }    
 }}
 
@@ -52,6 +52,7 @@ class NV_NVDLA_CMAC_CORE_rt_outTester extends ChiselFlatSpec {
   backends foreach {backend =>
     it should s"correctly retiming wt and dat $backend" in {
       implicit val conf: cmacConfiguration = new cmacConfiguration
+      implicit val nvconf: nvdlaConfig = new nvdlaConfig
       Driver(() => new NV_NVDLA_CMAC_CORE_rt_out())(c => new NV_NVDLA_CMAC_CORE_rt_outTests(c)) should be (true)
     }
   }

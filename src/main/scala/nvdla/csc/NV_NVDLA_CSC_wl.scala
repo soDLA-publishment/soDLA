@@ -4,46 +4,27 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-//6/28/2019 redpanda3 update
-//prevent java heap space
-class NV_NVDLA_CSC_wlIO(implicit conf: cscConfiguration) extends Bundle{
+class NV_NVDLA_CSC_wlIO(implicit conf: nvdlaConfig) extends Bundle{
 
     //clock
     val nvdla_core_clk = Input(Clock())    
     val nvdla_core_ng_clk = Input(Clock())    
 
-    val sg2wl_pvld = Input(Bool())  /* data valid */
-    val sg2wl_pd = Input(UInt(18.W))
+    val sg2wl = Flipped(new csc_sg2wl_if)   /* data valid */
 
     val sc_state = Input(UInt(2.W))
-    val sg2wl_reuse_rls = Input(Bool())
+
     val sc2cdma_wt_pending_req = Input(Bool())
 
-    val cdma2sc_wt_updt = Input(Bool())  /* data valid */
-    val cdma2sc_wt_kernels = Input(UInt(14.W))
-    val cdma2sc_wt_entries = Input(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val cdma2sc_wt_updt = Flipped(ValidIO(new updt_entries_kernels_if))  /* data valid */
     val cdma2sc_wmb_entries = Input(UInt(9.W))
-
-    val sc2cdma_wt_updt = Output(Bool())     /* data valid */
-    val sc2cdma_wt_kernels = Output(UInt(14.W))
-    val sc2cdma_wt_entries = Output(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val sc2cdma_wt_updt =  ValidIO(new updt_entries_kernels_if)    /* data valid */
     val sc2cdma_wmb_entries = Output(UInt(9.W))
+
+    val sc2buf_wt_rd = new sc2buf_wt_rd_if
+    val sc2mac_wt_a = ValidIO(new csc2cmac_wt_if)     /* data valid */
+    val sc2mac_wt_b = ValidIO(new csc2cmac_wt_if)     /* data valid */
     
-    val sc2buf_wt_rd_en = Output(Bool()) 
-    val sc2buf_wt_rd_addr = Output(UInt(conf.CBUF_ADDR_WIDTH.W))
-
-    val sc2buf_wt_rd_valid = Input(Bool()) 
-    val sc2buf_wt_rd_data = Input(UInt(conf.CBUF_ENTRY_BITS.W))
-
-    val sc2mac_wt_a_pvld = Output(Bool())      /* data valid */
-    val sc2mac_wt_b_pvld = Output(Bool())      /* data valid */
-    val sc2mac_wt_a_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-    val sc2mac_wt_b_mask = Output(Vec(conf.CSC_ATOMC, Bool()))
-    val sc2mac_wt_a_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
-    val sc2mac_wt_b_sel = Output(Vec(conf.CSC_ATOMK_HF, Bool()))
-    val sc2mac_wt_a_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
-    val sc2mac_wt_b_data = Output(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))     
-
     val reg2dp_op_en = Input(Bool())
     val reg2dp_in_precision = Input(UInt(2.W))
     val reg2dp_proc_precision = Input(UInt(2.W))
@@ -58,7 +39,7 @@ class NV_NVDLA_CSC_wlIO(implicit conf: cscConfiguration) extends Bundle{
 
 }
 
-class NV_NVDLA_CSC_wl(implicit val conf: cscConfiguration) extends Module {
+class NV_NVDLA_CSC_wl(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new NV_NVDLA_CSC_wlIO)
     //     
     //          ┌─┐       ┌─┐
@@ -118,7 +99,6 @@ withClock(io.nvdla_core_clk){
     val is_sg_running = (io.sc_state === 2.U)
     val is_sg_done = (io.sc_state === 3.U)
     val addr_init = is_sg_running & ~is_sg_running_d1
-
     
     is_sg_running_d1 := is_sg_running
 
@@ -133,22 +113,18 @@ withClock(io.nvdla_core_clk){
     val is_compressed_d1 = RegInit(false.B)
 
     val layer_st = io.reg2dp_op_en & is_sg_idle
-    val data_bank_w = io.reg2dp_data_bank + 1.U
-    val weight_bank_w = io.reg2dp_weight_bank + 1.U
     val is_int8 = (io.reg2dp_proc_precision === "b0".asUInt(2.W)) 
     val is_compressed = (io.reg2dp_weight_format === "b1".asUInt(1.W))
-    val sub_h_total_w =  ("h9".asUInt(6.W) << io.reg2dp_y_extension)(5, 3)
-    val last_wmb_entries_w = Mux(is_compressed_d1, io.reg2dp_wmb_bytes(8 + conf.LOG2_ATOMC, conf.LOG2_ATOMC), "b0".asUInt(9.W))
 
     when(layer_st){
-        data_bank := data_bank_w
-        weight_bank := weight_bank_w
-        sub_h_total := sub_h_total_w
+        data_bank := io.reg2dp_data_bank + 1.U
+        weight_bank := io.reg2dp_weight_bank + 1.U
+        sub_h_total := ("h9".asUInt(6.W) << io.reg2dp_y_extension)(5, 3)
         is_compressed_d1 := is_compressed   
     }
     when(is_sg_done & io.reg2dp_skip_weight_rls){
         last_weight_entries := io.reg2dp_weight_bytes(conf.CSC_ENTRIES_NUM_WIDTH-1+conf.LOG2_ATOMC, conf.LOG2_ATOMC)
-        last_wmb_entries := last_wmb_entries_w
+        last_wmb_entries := Mux(is_compressed_d1, io.reg2dp_wmb_bytes(8 + conf.LOG2_ATOMC, conf.LOG2_ATOMC), "b0".asUInt(9.W))
     }
 
     //////////////////////////////////////////////////////////////
@@ -161,7 +137,7 @@ withClock(io.nvdla_core_clk){
     val wt_rls_wt_entries = Wire(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val wt_entry_avl = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W))}
 
-    val wt_entry_avl_add = Mux(io.cdma2sc_wt_updt, io.cdma2sc_wt_entries, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
+    val wt_entry_avl_add = Mux(io.cdma2sc_wt_updt.valid, io.cdma2sc_wt_updt.bits.entries, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val wt_entry_avl_sub = Mux(wt_rls, wt_rls_wt_entries, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val wt_entry_avl_w = Mux(cbuf_reset, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), wt_entry_avl + wt_entry_avl_add - wt_entry_avl_sub)
 
@@ -169,7 +145,7 @@ withClock(io.nvdla_core_clk){
     val wt_rls_wmb_entries = Wire(UInt(9.W))
     val wmb_entry_avl = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(9.W))}
 
-    val wmb_entry_avl_add = Mux(io.cdma2sc_wt_updt, io.cdma2sc_wmb_entries, "b0".asUInt(9.W))
+    val wmb_entry_avl_add = Mux(io.cdma2sc_wt_updt.valid, io.cdma2sc_wmb_entries, "b0".asUInt(9.W))
     val wmb_entry_avl_sub = Mux(wt_rls, wt_rls_wmb_entries, "b0".asUInt(9.W))
     val wmb_entry_avl_w = Mux(cbuf_reset, "b0".asUInt(9.W), wmb_entry_avl + wmb_entry_avl_add - wmb_entry_avl_sub)
     
@@ -181,10 +157,11 @@ withClock(io.nvdla_core_clk){
     val is_wt_entry_st_wrap = (wt_entry_st_inc >=  Cat(weight_bank, "b0".asUInt(conf.LOG2_CBUF_BANK_DEPTH.W)))
     val wt_entry_st_w = Mux(cbuf_reset, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), Mux(~wt_rls, wt_entry_st, Mux(is_wt_entry_st_wrap, wt_entry_st_inc_wrap, wt_entry_st_inc)))
 
+
     //////////////////////////////////// calculate weight entries end offset ////////////////////////////////////
     val wt_entry_end = withClock(io.nvdla_core_ng_clk){Reg(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))}
 
-    val wt_entry_end_inc = wt_entry_end + io.cdma2sc_wt_entries
+    val wt_entry_end_inc = wt_entry_end + io.cdma2sc_wt_updt.bits.entries
     val wt_entry_end_inc_wrap = wt_entry_end_inc - Cat(weight_bank, "b0".asUInt(conf.LOG2_CBUF_BANK_DEPTH.W))
     val is_wt_entry_end_wrap = (wt_entry_end_inc >=  Cat(weight_bank, "b0".asUInt(conf.LOG2_CBUF_BANK_DEPTH.W)))
     val wt_entry_end_w = Mux(cbuf_reset, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), Mux(is_wt_entry_end_wrap, wt_entry_end_inc_wrap, wt_entry_end_inc)) 
@@ -194,15 +171,13 @@ withClock(io.nvdla_core_clk){
 
     val wmb_entry_st_inc = wmb_entry_st + wt_rls_wmb_entries
     val wmb_entry_st_w = Mux(cbuf_reset, "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), Mux(~wt_rls, wmb_entry_st, wmb_entry_st_inc))
-
     //////////////////////////////////// calculate wmb entries end offset ////////////////////////////////////
     val wmb_entry_end = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(9.W))}
 
     val wmb_entry_end_inc = wmb_entry_end + io.cdma2sc_wmb_entries
     val wmb_entry_end_w = Mux(cbuf_reset, "b0".asUInt(9.W), wmb_entry_end_inc)
-
     //////////////////////////////////// registers and assertions ////////////////////////////////////
-    when(io.cdma2sc_wt_updt | wt_rls | cbuf_reset){
+    when(io.cdma2sc_wt_updt.valid | wt_rls | cbuf_reset){
         wt_entry_avl := wt_entry_avl_w 
         wmb_entry_avl := wmb_entry_avl_w
     }
@@ -210,7 +185,7 @@ withClock(io.nvdla_core_clk){
         wt_entry_st := wt_entry_st_w
         wmb_entry_st := wmb_entry_st_w
     }
-    when(cbuf_reset | io.cdma2sc_wt_updt){
+    when(cbuf_reset | io.cdma2sc_wt_updt.valid){
         wt_entry_end := wt_entry_end_w
         wmb_entry_end := wmb_entry_end_w
     }
@@ -225,31 +200,21 @@ withClock(io.nvdla_core_clk){
     val wt_rsp_wt_rls_entries = Wire(UInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
     val wt_rsp_wmb_rls_entries = Wire(UInt(9.W))
 
-    val sc2cdma_wt_updt_out = RegInit(false.B)
-    val sc2cdma_wt_entries_out = RegInit("b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
-    val sc2cdma_wmb_entries_out = RegInit("b0".asUInt(9.W))
-
     val sub_rls = wt_rsp_pipe_pvld & wt_rsp_rls
     val sub_rls_wt_entries = wt_rsp_wt_rls_entries
     val sub_rls_wmb_entries = wt_rsp_wmb_rls_entries
-    val reuse_rls = io.sg2wl_reuse_rls
+    val reuse_rls = io.sg2wl.reuse_rls
     wt_rls := reuse_rls | sub_rls
     wt_rls_wt_entries := Mux(reuse_rls, last_weight_entries, sub_rls_wt_entries)
     wt_rls_wmb_entries := Mux(reuse_rls, last_wmb_entries, sub_rls_wmb_entries)
     val wt_rls_updt = wt_rls
 
-    sc2cdma_wt_updt_out := wt_rls_updt
-    when(wt_rls_updt){
-        sc2cdma_wt_entries_out := wt_rls_wt_entries
-        sc2cdma_wmb_entries_out := wt_rls_wmb_entries
-    }
-
-    io.sc2cdma_wt_updt := sc2cdma_wt_updt_out
-    io.sc2cdma_wt_entries := sc2cdma_wt_entries_out
-    io.sc2cdma_wmb_entries := sc2cdma_wmb_entries_out
+    io.sc2cdma_wt_updt.valid := RegNext(wt_rls_updt, false.B)
+    io.sc2cdma_wt_updt.bits.entries := RegEnable(Mux(reuse_rls, last_weight_entries, sub_rls_wt_entries), "b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W), wt_rls_updt)
+    io.sc2cdma_wmb_entries := RegEnable(Mux(reuse_rls, last_wmb_entries, sub_rls_wmb_entries), "b0".asUInt(9.W), wt_rls_updt)
 
     //sc2cmda_wt_kernels is useless
-    io.sc2cdma_wt_kernels := "b0".asUInt(14.W)
+    io.sc2cdma_wt_updt.bits.kernels := "b0".asUInt(14.W)
 
     //////////////////////////////////////////////////////////////
     ///// input data package                                 /////
@@ -259,8 +224,8 @@ withClock(io.nvdla_core_clk){
     val wl_in_pd_d = Wire(Bool()) +: 
                    Seq.fill(conf.CSC_WL_PIPELINE_ADDITION)(RegInit("b0".asUInt(18.W)))
 
-    wl_in_pvld_d(0) := io.sg2wl_pvld
-    wl_in_pd_d(0) := io.sg2wl_pd
+    wl_in_pvld_d(0) := io.sg2wl.pd.valid
+    wl_in_pd_d(0) := io.sg2wl.pd.bits
 
     for(t <- 0 to conf.CSC_WL_PIPELINE_ADDITION-1){
         wl_in_pvld_d(t+1) := wl_in_pvld_d(t)
@@ -663,8 +628,8 @@ withClock(io.nvdla_core_clk){
     when(wt_req_pipe_valid & wt_req_rls){
         wt_req_wt_rls_entries_d1 := wt_rls_entries
     }
-    io.sc2buf_wt_rd_en := sc2buf_wt_rd_en_out 
-    io.sc2buf_wt_rd_addr := sc2buf_wt_rd_addr_out 
+    io.sc2buf_wt_rd.addr.valid := sc2buf_wt_rd_en_out 
+    io.sc2buf_wt_rd.addr.bits := sc2buf_wt_rd_addr_out 
 
     //////////////////////////////////////////////////////////////
     ///// sideband pipeline for wmb read                     /////
@@ -734,7 +699,7 @@ withClock(io.nvdla_core_clk){
     val wt_rsp_byte_remain = RegInit("b0".asUInt(7.W))
     val wt_rsp_byte_remain_last = RegInit("b0".asUInt(7.W))
 
-    val wt_rsp_byte_remain_add = Mux(io.sc2buf_wt_rd_valid, conf.CSC_WT_ELEMENTS.U, "h0".asUInt(8.W))
+    val wt_rsp_byte_remain_add = Mux(io.sc2buf_wt_rd.data.valid, conf.CSC_WT_ELEMENTS.U, "h0".asUInt(8.W))
     val wt_rsp_byte_remain_w = Mux(layer_st, "b0".asUInt(8.W), 
                              Mux(wt_rsp_channel_end & ~wt_rsp_group_end, Cat("b0".asUInt(2.W), wt_rsp_byte_remain_last), wt_rsp_byte_remain + wt_rsp_byte_remain_add - wt_rsp_bytes))(6, 0)
     val wt_rsp_byte_remain_en = layer_st | wt_rsp_pipe_pvld
@@ -752,19 +717,19 @@ withClock(io.nvdla_core_clk){
     val wt_data_remain_last = Reg(UInt(conf.CBUF_ENTRY_BITS.W))
 
     val wt_shift_remain = wt_rsp_bytes - wt_rsp_byte_remain(6, 0)
-    val wt_data_input_rs = (io.sc2buf_wt_rd_data(conf.CBUF_ENTRY_BITS-1, 0) >> Cat(wt_shift_remain, "b0".asUInt(3.W)))
+    val wt_data_input_rs = (io.sc2buf_wt_rd.data.bits(conf.CBUF_ENTRY_BITS-1, 0) >> Cat(wt_shift_remain, "b0".asUInt(3.W)))
     val wt_data_remain_masked = Mux( ~wt_rsp_byte_remain.orR, "b0".asUInt(conf.CBUF_ENTRY_BITS.W),  wt_data_remain)
     val wt_data_remain_rs = (wt_data_remain >> Cat(wt_rsp_bytes, "b0".asUInt(3.W)))
     //weight data local remain, 1 entry at most
     val wt_data_remain_w = Mux(layer_st, "b0".asUInt(conf.CBUF_ENTRY_BITS.W), 
                            Mux(wt_rsp_channel_end & ~wt_rsp_group_end & (wt_rsp_byte_remain_last.orR), wt_data_remain_last,
-                           Mux(io.sc2buf_wt_rd_valid, wt_data_input_rs,
+                           Mux(io.sc2buf_wt_rd.data.valid, wt_data_input_rs,
                            wt_data_remain_rs
                            )))
     val wt_data_remain_reg_en = layer_st | (wt_rsp_pipe_pvld & (wt_rsp_byte_remain_w.orR))
     val wt_data_remain_last_reg_en = layer_st | (wt_rsp_pipe_pvld & wt_rsp_group_end & (wt_rsp_byte_remain_w.orR))
-    val wt_data_input_ls = (io.sc2buf_wt_rd_data << Cat(wt_rsp_byte_remain(6, 0), "b0".asUInt(3.W)))
-    val wt_data_input_sft = Mux(io.sc2buf_wt_rd_valid, wt_data_input_ls, "b0".asUInt(conf.CBUF_ENTRY_BITS.W))
+    val wt_data_input_ls = (io.sc2buf_wt_rd.data.bits << Cat(wt_rsp_byte_remain(6, 0), "b0".asUInt(3.W)))
+    val wt_data_input_sft = Mux(io.sc2buf_wt_rd.data.valid, wt_data_input_ls, "b0".asUInt(conf.CBUF_ENTRY_BITS.W))
     
     when(wt_data_remain_reg_en){
         wt_data_remain := wt_data_remain_w
@@ -812,19 +777,25 @@ withClock(io.nvdla_core_clk){
 
     val u_dec = Module(new NV_NVDLA_CSC_WL_dec)
     u_dec.io.nvdla_core_clk := io.nvdla_core_clk          //|< i
-    u_dec.io.input_data := dec_input_data  //|< r
-    u_dec.io.input_mask := dec_input_mask  //|< r
+    u_dec.io.input.bits.data := dec_input_data  //|< r
+    u_dec.io.input.bits.mask := dec_input_mask  //|< r
     u_dec.io.input_mask_en := dec_input_mask_en  //|< r
-    u_dec.io.input_pipe_valid := dec_input_pipe_valid    //|< r
-    u_dec.io.input_sel := dec_input_sel     //|< w
-    val sc2mac_out_data = u_dec.io.output_data
-    val sc2mac_out_mask = u_dec.io.output_mask 
-    val sc2mac_out_pvld = u_dec.io.output_pvld
-    val sc2mac_out_sel = u_dec.io.output_sel
+    u_dec.io.input.valid := dec_input_pipe_valid    //|< r
+    u_dec.io.input.bits.sel := dec_input_sel     //|< w
+    val sc2mac_out_data = u_dec.io.output.bits.data
+    val sc2mac_out_mask = u_dec.io.output.bits.mask
+    val sc2mac_out_pvld = u_dec.io.output.valid
+    val sc2mac_out_sel = u_dec.io.output.bits.sel
 
     //////////////////////////////////////////////////////////////
     ///// registers for retiming                             /////
     //////////////////////////////////////////////////////////////
+
+    val sc2mac_out_a_sel_w = Fill(conf.CSC_ATOMK_HF, sc2mac_out_pvld) & Cat(sc2mac_out_sel.asUInt)(conf.CSC_ATOMK_HF-1, 0)
+    val sc2mac_out_b_sel_w = Fill(conf.CSC_ATOMK_HF, sc2mac_out_pvld) & Cat(sc2mac_out_sel.asUInt)(conf.CSC_ATOMK-1, conf.CSC_ATOMK_HF)
+    val sc2mac_wt_a_pvld_w = sc2mac_out_a_sel_w.orR
+    val sc2mac_wt_b_pvld_w = sc2mac_out_b_sel_w.orR
+
     val sc2mac_wt_a_pvld_out = RegInit(false.B)
     val sc2mac_wt_b_pvld_out = RegInit(false.B)
     val sc2mac_wt_a_mask_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
@@ -833,13 +804,6 @@ withClock(io.nvdla_core_clk){
     val sc2mac_wt_b_sel_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK_HF)(false.B)))
     val sc2mac_wt_a_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
     val sc2mac_wt_b_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))   
-
-    val sc2mac_out_a_sel_w = Fill(conf.CSC_ATOMK_HF, sc2mac_out_pvld) & Cat(sc2mac_out_sel.asUInt)(conf.CSC_ATOMK_HF-1, 0)
-    val sc2mac_out_b_sel_w = Fill(conf.CSC_ATOMK_HF, sc2mac_out_pvld) & Cat(sc2mac_out_sel.asUInt)(conf.CSC_ATOMK-1, conf.CSC_ATOMK_HF)
-
-    val sc2mac_wt_a_pvld_w = sc2mac_out_a_sel_w.orR
-    val sc2mac_wt_b_pvld_w = sc2mac_out_b_sel_w.orR
-
     val sc2mac_out_a_mask = VecInit((0 to conf.CSC_ATOMC-1) map { i => sc2mac_out_mask(i).toBool&sc2mac_wt_a_pvld_w})
     val sc2mac_out_b_mask = VecInit((0 to conf.CSC_ATOMC-1) map { i => sc2mac_out_mask(i).toBool&sc2mac_wt_b_pvld_w})
 
@@ -847,14 +811,10 @@ withClock(io.nvdla_core_clk){
     sc2mac_wt_b_pvld_out := sc2mac_wt_b_pvld_w
     when(sc2mac_wt_a_pvld_w | sc2mac_wt_a_pvld_out){
         sc2mac_wt_a_mask_out := sc2mac_out_a_mask
-    }
-    when(sc2mac_wt_b_pvld_w | sc2mac_wt_b_pvld_out){
-        sc2mac_wt_b_mask_out := sc2mac_out_b_mask
-    }
-    when(sc2mac_wt_a_pvld_w | sc2mac_wt_a_pvld_out){
         sc2mac_wt_a_sel_out := VecInit((0 to conf.CSC_ATOMK_HF-1) map { i => sc2mac_out_a_sel_w(i)})
     }
     when(sc2mac_wt_b_pvld_w | sc2mac_wt_b_pvld_out){
+        sc2mac_wt_b_mask_out := sc2mac_out_b_mask
         sc2mac_wt_b_sel_out := VecInit((0 to conf.CSC_ATOMK_HF-1) map { i => sc2mac_out_b_sel_w(i)})
     }
 
@@ -866,21 +826,19 @@ withClock(io.nvdla_core_clk){
             sc2mac_wt_b_data_out(i) := sc2mac_out_data(i)
         }        
     }
-    io.sc2mac_wt_a_pvld := sc2mac_wt_a_pvld_out
-    io.sc2mac_wt_b_pvld := sc2mac_wt_b_pvld_out
-    io.sc2mac_wt_a_mask := sc2mac_wt_a_mask_out
-    io.sc2mac_wt_b_mask := sc2mac_wt_b_mask_out 
-    io.sc2mac_wt_a_sel := sc2mac_wt_a_sel_out
-    io.sc2mac_wt_b_sel := sc2mac_wt_b_sel_out 
-    io.sc2mac_wt_a_data := sc2mac_wt_a_data_out
-    io.sc2mac_wt_b_data := sc2mac_wt_b_data_out
+    io.sc2mac_wt_a.valid := sc2mac_wt_a_pvld_out
+    io.sc2mac_wt_b.valid := sc2mac_wt_b_pvld_out
+    io.sc2mac_wt_a.bits.mask := sc2mac_wt_a_mask_out
+    io.sc2mac_wt_b.bits.mask := sc2mac_wt_b_mask_out 
+    io.sc2mac_wt_a.bits.sel := sc2mac_wt_a_sel_out
+    io.sc2mac_wt_b.bits.sel := sc2mac_wt_b_sel_out 
+    io.sc2mac_wt_a.bits.data := sc2mac_wt_a_data_out
+    io.sc2mac_wt_b.bits.data := sc2mac_wt_b_data_out
 
-}
-
-}
+}}
 
 
 object NV_NVDLA_CSC_wlDriver extends App {
-  implicit val conf: cscConfiguration = new cscConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CSC_wl)
 }

@@ -7,7 +7,7 @@
 		revision="3.2-SNAPSHOT"
 		conf="runtime-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190628113803"/>
+		date="20190827205038"/>
 	<dependencies>
 		<module organisation="edu.berkeley.cs" name="dsptools_2.12">
 			<revision name="1.1.6" status="release" pubdate="20181214154815" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="41">
@@ -319,19 +319,19 @@
 			</revision>
 		</module>
 		<module organisation="edu.berkeley.cs" name="chisel-iotesters_2.12">
-			<revision name="1.2.9" status="release" pubdate="20190320152242" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="true" default="false" conf="default, compile, runtime, default(compile), master, runtime(*), master(compile), compile(*)" position="24">
+			<revision name="1.2.10" status="release" pubdate="20190708104641" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="true" default="false" conf="default, compile, runtime, default(compile), master, runtime(*), master(compile), compile(*)" position="24">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
-				<metadata-artifact status="no" details="" size="3752" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel-iotesters_2.12\ivy-1.2.9.xml" searched="true" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel-iotesters_2.12/1.2.9/chisel-iotesters_2.12-1.2.9.pom"/>
+				<metadata-artifact status="no" details="" size="3753" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel-iotesters_2.12\ivy-1.2.10.xml" searched="true" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel-iotesters_2.12/1.2.10/chisel-iotesters_2.12-1.2.10.pom"/>
 				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile, runtime-internal, runtime, optional" rev="1.2.+" rev-constraint-default="1.2.+" rev-constraint-dynamic="1.2.+" callerrev="3.2-SNAPSHOT"/>
 				<caller organisation="edu.berkeley.cs" name="dsptools_2.12" conf="default, compile, runtime, master" rev="1.2.7" rev-constraint-default="1.2.7" rev-constraint-dynamic="1.2.7" callerrev="1.1.6"/>
 				<artifacts>
-					<artifact name="chisel-iotesters_2.12" type="jar" ext="jar" status="no" details="" size="375566" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel-iotesters_2.12\jars\chisel-iotesters_2.12-1.2.9.jar">
-						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel-iotesters_2.12/1.2.9/chisel-iotesters_2.12-1.2.9.jar"/>
+					<artifact name="chisel-iotesters_2.12" type="jar" ext="jar" status="no" details="" size="375565" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel-iotesters_2.12\jars\chisel-iotesters_2.12-1.2.10.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel-iotesters_2.12/1.2.10/chisel-iotesters_2.12-1.2.10.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
 			<revision name="1.2.7" evicted="latest-revision" evicted-reason="" downloaded="false" searched="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="-1">
-				<evicted-by rev="1.2.9"/>
+				<evicted-by rev="1.2.10"/>
 				<caller organisation="edu.berkeley.cs" name="dsptools_2.12" conf="default, compile, runtime, master" rev="1.2.7" rev-constraint-default="1.2.7" rev-constraint-dynamic="1.2.7" callerrev="1.1.6"/>
 				<artifacts>
 				</artifacts>
@@ -341,7 +341,7 @@
 			<revision name="1.0.5" status="release" pubdate="20190320151216" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="33">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
 				<metadata-artifact status="no" details="" size="3429" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\treadle_2.12\ivy-1.0.5.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/treadle_2.12/1.0.5/treadle_2.12-1.0.5.pom"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.0.5" rev-constraint-default="1.0.5" rev-constraint-dynamic="1.0.5" callerrev="1.2.9"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.0.5" rev-constraint-default="1.0.5" rev-constraint-dynamic="1.0.5" callerrev="1.2.10"/>
 				<artifacts>
 					<artifact name="treadle_2.12" type="jar" ext="jar" status="no" details="" size="1107043" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\treadle_2.12\jars\treadle_2.12-1.0.5.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/treadle_2.12/1.0.5/treadle_2.12-1.0.5.jar"/>
@@ -353,7 +353,7 @@
 			<revision name="1.1.7" status="release" pubdate="20190320150631" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="25">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
 				<metadata-artifact status="no" details="" size="3314" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\firrtl-interpreter_2.12\ivy-1.1.7.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/firrtl-interpreter_2.12/1.1.7/firrtl-interpreter_2.12-1.1.7.pom"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="1.2.9"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="1.2.10"/>
 				<artifacts>
 					<artifact name="firrtl-interpreter_2.12" type="jar" ext="jar" status="no" details="" size="457406" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\firrtl-interpreter_2.12\jars\firrtl-interpreter_2.12-1.1.7.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/firrtl-interpreter_2.12/1.1.7/firrtl-interpreter_2.12-1.1.7.jar"/>
@@ -387,20 +387,20 @@
 			</revision>
 		</module>
 		<module organisation="edu.berkeley.cs" name="chisel3_2.12">
-			<revision name="3.1.7" status="release" pubdate="20190320151431" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="true" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="1">
+			<revision name="3.1.8" status="release" pubdate="20190708104428" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="true" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="1">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
-				<metadata-artifact status="no" details="" size="3375" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel3_2.12\ivy-3.1.7.xml" searched="true" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel3_2.12/3.1.7/chisel3_2.12-3.1.7.pom"/>
+				<metadata-artifact status="no" details="" size="3375" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel3_2.12\ivy-3.1.8.xml" searched="true" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel3_2.12/3.1.8/chisel3_2.12-3.1.8.pom"/>
 				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile, runtime-internal, runtime, optional" rev="3.1.+" rev-constraint-default="3.1.+" rev-constraint-dynamic="3.1.+" callerrev="3.2-SNAPSHOT"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="3.1.7" rev-constraint-default="3.1.7" rev-constraint-dynamic="3.1.7" callerrev="1.2.9"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="3.1.8" rev-constraint-default="3.1.8" rev-constraint-dynamic="3.1.8" callerrev="1.2.10"/>
 				<caller organisation="edu.berkeley.cs" name="dsptools_2.12" conf="default, compile, runtime, master" rev="3.1.5" rev-constraint-default="3.1.5" rev-constraint-dynamic="3.1.5" callerrev="1.1.6"/>
 				<artifacts>
-					<artifact name="chisel3_2.12" type="jar" ext="jar" status="no" details="" size="1195939" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel3_2.12\jars\chisel3_2.12-3.1.7.jar">
-						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel3_2.12/3.1.7/chisel3_2.12-3.1.7.jar"/>
+					<artifact name="chisel3_2.12" type="jar" ext="jar" status="no" details="" size="1196174" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\chisel3_2.12\jars\chisel3_2.12-3.1.8.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/chisel3_2.12/3.1.8/chisel3_2.12-3.1.8.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
 			<revision name="3.1.5" evicted="latest-revision" evicted-reason="" downloaded="false" searched="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="-1">
-				<evicted-by rev="3.1.7"/>
+				<evicted-by rev="3.1.8"/>
 				<caller organisation="edu.berkeley.cs" name="dsptools_2.12" conf="default, compile, runtime, master" rev="3.1.5" rev-constraint-default="3.1.5" rev-constraint-dynamic="3.1.5" callerrev="1.1.6"/>
 				<artifacts>
 				</artifacts>
@@ -410,10 +410,10 @@
 			<revision name="1.1.7" status="release" pubdate="20190320150223" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="4">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
 				<metadata-artifact status="no" details="" size="4115" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\firrtl_2.12\ivy-1.1.7.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/edu/berkeley/cs/firrtl_2.12/1.1.7/firrtl_2.12-1.1.7.pom"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="1.2.9"/>
+				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="3.1.8"/>
 				<caller organisation="edu.berkeley.cs" name="treadle_2.12" conf="compile, runtime" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="1.0.5"/>
-				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="3.1.7"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl-interpreter_2.12" conf="compile, runtime" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="1.1.7"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.1.7" rev-constraint-default="1.1.7" rev-constraint-dynamic="1.1.7" callerrev="1.2.10"/>
 				<artifacts>
 					<artifact name="firrtl_2.12" type="jar" ext="jar" status="no" details="" size="2121545" time="0" location="C:\Users\yuda\.ivy2\cache\edu.berkeley.cs\firrtl_2.12\jars\firrtl_2.12-1.1.7.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/edu/berkeley/cs/firrtl_2.12/1.1.7/firrtl_2.12-1.1.7.jar"/>
@@ -697,9 +697,9 @@
 			<revision name="3.7.0" status="release" pubdate="20170825022648" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/scopt/scopt" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="3">
 				<license name="MIT License" url="http://www.opensource.org/licenses/mit-license.php"/>
 				<metadata-artifact status="no" details="" size="2835" time="0" location="C:\Users\yuda\.ivy2\cache\com.github.scopt\scopt_2.12\ivy-3.7.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/github/scopt/scopt_2.12/3.7.0/scopt_2.12-3.7.0.pom"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="3.7.0" rev-constraint-default="3.7.0" rev-constraint-dynamic="3.7.0" callerrev="1.2.9"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl_2.12" conf="compile, runtime" rev="3.7.0" rev-constraint-default="3.7.0" rev-constraint-dynamic="3.7.0" callerrev="1.1.7"/>
-				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="3.7.0" rev-constraint-default="3.7.0" rev-constraint-dynamic="3.7.0" callerrev="3.1.7"/>
+				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="3.7.0" rev-constraint-default="3.7.0" rev-constraint-dynamic="3.7.0" callerrev="3.1.8"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="3.7.0" rev-constraint-default="3.7.0" rev-constraint-dynamic="3.7.0" callerrev="1.2.10"/>
 				<artifacts>
 					<artifact name="scopt_2.12" type="jar" ext="jar" status="no" details="" size="78676" time="0" location="C:\Users\yuda\.ivy2\cache\com.github.scopt\scopt_2.12\jars\scopt_2.12-3.7.0.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/github/scopt/scopt_2.12/3.7.0/scopt_2.12-3.7.0.jar"/>
@@ -711,9 +711,9 @@
 			<revision name="3.0.1" status="release" pubdate="20161109215252" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scalatest.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="26">
 				<license name="the Apache License, ASL Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
 				<metadata-artifact status="no" details="" size="5340" time="0" location="C:\Users\yuda\.ivy2\cache\org.scalatest\scalatest_2.12\ivy-3.0.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scalatest/scalatest_2.12/3.0.1/scalatest_2.12-3.0.1.pom"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="3.0.1" rev-constraint-default="3.0.1" rev-constraint-dynamic="3.0.1" callerrev="1.2.9"/>
 				<caller organisation="edu.berkeley.cs" name="treadle_2.12" conf="compile, runtime" rev="3.0.1" rev-constraint-default="3.0.1" rev-constraint-dynamic="3.0.1" callerrev="1.0.5"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl-interpreter_2.12" conf="compile, runtime" rev="3.0.1" rev-constraint-default="3.0.1" rev-constraint-dynamic="3.0.1" callerrev="1.1.7"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="3.0.1" rev-constraint-default="3.0.1" rev-constraint-dynamic="3.0.1" callerrev="1.2.10"/>
 				<caller organisation="edu.berkeley.cs" name="dsptools_2.12" conf="default, compile, runtime, master" rev="3.0.1" rev-constraint-default="3.0.1" rev-constraint-dynamic="3.0.1" callerrev="1.1.6"/>
 				<artifacts>
 					<artifact name="scalatest_2.12" type="bundle" ext="jar" status="no" details="" size="6992597" time="0" location="C:\Users\yuda\.ivy2\cache\org.scalatest\scalatest_2.12\bundles\scalatest_2.12-3.0.1.jar">
@@ -726,9 +726,9 @@
 			<revision name="1.13.4" status="release" pubdate="20161101071622" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scalacheck.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="29">
 				<license name="BSD-style" url="http://www.opensource.org/licenses/bsd-license.php"/>
 				<metadata-artifact status="no" details="" size="2831" time="0" location="C:\Users\yuda\.ivy2\cache\org.scalacheck\scalacheck_2.12\ivy-1.13.4.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scalacheck/scalacheck_2.12/1.13.4/scalacheck_2.12-1.13.4.pom"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.13.4" rev-constraint-default="1.13.4" rev-constraint-dynamic="1.13.4" callerrev="1.2.9"/>
 				<caller organisation="edu.berkeley.cs" name="treadle_2.12" conf="compile, runtime" rev="1.13.4" rev-constraint-default="1.13.4" rev-constraint-dynamic="1.13.4" callerrev="1.0.5"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl-interpreter_2.12" conf="compile, runtime" rev="1.13.4" rev-constraint-default="1.13.4" rev-constraint-dynamic="1.13.4" callerrev="1.1.7"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="1.13.4" rev-constraint-default="1.13.4" rev-constraint-dynamic="1.13.4" callerrev="1.2.10"/>
 				<caller organisation="edu.berkeley.cs" name="dsptools_2.12" conf="default, compile, runtime, master" rev="1.13.4" rev-constraint-default="1.13.4" rev-constraint-dynamic="1.13.4" callerrev="1.1.6"/>
 				<artifacts>
 					<artifact name="scalacheck_2.12" type="jar" ext="jar" status="no" details="" size="705250" time="0" location="C:\Users\yuda\.ivy2\cache\org.scalacheck\scalacheck_2.12\jars\scalacheck_2.12-1.13.4.jar">
@@ -780,9 +780,9 @@
 				<caller organisation="org.typelevel" name="machinist_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.6.1"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.1.7"/>
 				<caller organisation="net.jcazevedo" name="moultingyaml_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.4.0"/>
+				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.1.8"/>
 				<caller organisation="org.scalatest" name="scalatest_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.0.1"/>
 				<caller organisation="com.typesafe.scala-logging" name="scala-logging_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.7.2"/>
-				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.1.7"/>
 				<caller organisation="org.scalanlp" name="breeze-macros_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.13.2"/>
 				<caller organisation="org.scalactic" name="scalactic_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.0.1"/>
 				<artifacts>
@@ -804,12 +804,10 @@
 				<caller organisation="org.json4s" name="json4s-core_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.5.3"/>
 				<caller organisation="org.scalatest" name="scalatest_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.0.1"/>
 				<caller organisation="com.typesafe.scala-logging" name="scala-logging_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.7.2"/>
-				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.1.7"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl-interpreter_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.1.7"/>
 				<caller organisation="org.scala-lang.modules" name="scala-xml_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.0.6"/>
 				<caller organisation="org.scalacheck" name="scalacheck_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.13.4"/>
 				<caller organisation="org.json4s" name="json4s-native_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.5.3"/>
-				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.2.9"/>
 				<caller organisation="edu.berkeley.cs" name="firrtl_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.1.7"/>
 				<caller organisation="net.jcazevedo" name="moultingyaml_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.4.0"/>
 				<caller organisation="org.json4s" name="json4s-ast_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.6.1"/>
@@ -827,11 +825,13 @@
 				<caller organisation="org.typelevel" name="cats-kernel_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.9.0"/>
 				<caller organisation="edu.berkeley.cs" name="sodla_2.12" conf="compile, runtime-internal, runtime, optional" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.2-SNAPSHOT"/>
 				<caller organisation="org.json4s" name="json4s-core_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.6.1"/>
+				<caller organisation="edu.berkeley.cs" name="chisel3_2.12" conf="default, compile, runtime, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.1.8"/>
 				<caller organisation="org.scala-lang.modules" name="scala-parser-combinators_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.0.4"/>
 				<caller organisation="org.json4s" name="json4s-ast_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="3.5.3"/>
 				<caller organisation="org.spire-math" name="spire-macros_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.13.0"/>
 				<caller organisation="org.typelevel" name="macro-compat_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.1.1"/>
 				<caller organisation="org.typelevel" name="algebra_2.12" conf="compile, runtime" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="0.7.0"/>
+				<caller organisation="edu.berkeley.cs" name="chisel-iotesters_2.12" conf="default, compile, runtime, master" rev="2.12.4" rev-constraint-default="2.12.4" rev-constraint-dynamic="2.12.4" callerrev="1.2.10"/>
 				<artifacts>
 					<artifact name="scala-library" type="jar" ext="jar" status="no" details="" size="5247152" time="0" location="C:\Users\yuda\.ivy2\cache\org.scala-lang\scala-library\jars\scala-library-2.12.4.jar">
 						<origin-location is-local="false" location="UNKNOWN"/>
