@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_MCIF_WRITE_IG_cvt(conf:xxifConfiguration) extends Module {
+class NV_NVDLA_MCIF_WRITE_IG_cvt(conf:nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())

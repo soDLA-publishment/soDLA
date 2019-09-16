@@ -2,7 +2,7 @@ package nvdla
 
 import chisel3._
 
-class NV_NVDLA_MCIF_WRITE_IG_spt(conf:xxifConfiguration) extends Module {
+class NV_NVDLA_MCIF_WRITE_IG_spt(conf:nvdlaConfig) extends Module {
   val io = IO(new Bundle {
     //general clock
     val nvdla_core_clk = Input(Clock())
