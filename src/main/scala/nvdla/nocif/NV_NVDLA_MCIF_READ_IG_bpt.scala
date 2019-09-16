@@ -23,7 +23,6 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
         val tieoff_lat_fifo_depth = Input(UInt(9.W))
     })
 
-
     val in_rdy_p = Wire(Bool())
     val in_rdy  = Wire(Bool())
 
@@ -76,7 +75,6 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
         val mon_lat_fifo_free_slot_c = Wire(Bool())
 
         val slot_needed = Reg(UInt(3.W))
-
 
         val in_vld_pd = Fill(conf.NVDLA_DMA_RD_REQ, in_vld) & in_pd
         val in_addr = in_vld_pd(conf.NVDLA_MEM_ADDRESS_WIDTH-1, 0)
@@ -161,7 +159,6 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
         // lat output logic
         lat_count_cnt := lat_cnt_cur
 
-//        Cat(mon_lat_fifo_free_slot_c, lat_fifo_free_slot) := io.tieoff_lat_fifo_depth - lat_count_cnt
         val tmp = io.tieoff_lat_fifo_depth - lat_count_cnt
         mon_lat_fifo_free_slot_c := tmp(8)
         lat_fifo_free_slot := tmp(7,0)
@@ -209,7 +206,6 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
                 }
             } .otherwise {
                 out_addr := out_addr +& (conf.NVDLA_MCIF_BURST_SIZE.U << conf.NVDLA_MEMORY_ATOMIC_LOG2.U).asUInt()
-
             }
 
             when(is_ltran) {
@@ -219,23 +215,15 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: xxifConfiguration) extends Module
             }
         }
 
-
         val bpt2arb_addr = Mux(is_ftran, in_addr, out_addr)
-        val bpt2arb_size = out_size
-        val bpt2arb_swizzle = out_swizzle
-        val bpt2arb_odd   = out_odd
-        val bpt2arb_ltran = is_ltran
-        val bpt2arb_ftran = is_ftran
-        val bpt2arb_axid  = io.tieoff_axid
 
         val req_rdy = req_enable & io.bpt2arb_req_ready
         val req_vld = req_enable & in_vld;
+        bpt2arb_accept := req_vld & req_rdy
 
         in_rdy := req_rdy & is_ltran;
-
         io.bpt2arb_req_valid := req_vld
-        bpt2arb_accept := io.bpt2arb_req_valid & req_rdy
-        io.bpt2arb_req_pd := Cat(bpt2arb_ftran, bpt2arb_ltran, bpt2arb_odd, bpt2arb_swizzle, bpt2arb_size, bpt2arb_addr, bpt2arb_axid)
+        io.bpt2arb_req_pd := Cat(is_ftran, is_ltran, out_odd, out_swizzle, out_size, bpt2arb_addr, io.tieoff_axid)
     }
 }
 

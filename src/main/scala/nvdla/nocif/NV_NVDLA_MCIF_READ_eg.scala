@@ -51,7 +51,7 @@ class NV_NVDLA_MCIF_READ_eg(implicit conf: xxifConfiguration) extends Module {
         ipipe_axi_rdy := (rq_wr_prdy zip rq_wr_pvld).map { case (a, b) => a & b }.reduce(_ | _)
 
         for (i <- 0 until conf.RDMA_NUM) {
-            rq_wr_pvld(i) := ipipe_axi_vld & (ipipe_axi_axid === conf.tieoff_axid_read(i).U)
+            rq_wr_pvld(i) := ipipe_axi_vld & (ipipe_axi_axid === conf.arr_tieoff_axid(i).asUInt(4.W))
         }
 
         val lat_fifo = Array.fill(conf.RDMA_NUM) {

@@ -16,7 +16,7 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
         //spt2cvt
         val spt2cvt_req_valid = Input(Bool())
         val spt2cvt_req_ready = Output(Bool())
-        val spt2cvt_req_pd = Input(UInt((conf.NVDLA_MEM_ADDRESS_WIDTH+11).W))
+        val spt2cvt_req_pd = Input(UInt((conf.NVDLA_DMA_RD_IG_PW).W))
 
         //mcif2noc
         val mcif2noc_axi_ar_arvalid = Output(Bool())
@@ -39,9 +39,8 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
         val cmd_ltran = io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+9)
         val cmd_ftran = io.spt2cvt_req_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+10)
 
-        val eg2ig_axi_vld_d = RegInit(true.B)
+        val eg2ig_axi_vld_d = RegInit(false.B)
 
-//        val os_cnt = Wire(UInt(9.W))
         val os_cnt_cur = RegInit(UInt(9.W), 0.U)
         val os_cnt_ext = Wire(UInt(11.W))
         val os_cnt_mod = Wire(UInt(11.W))
@@ -96,7 +95,7 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: xxifConfiguration) extends Module
         } else {
             axi_cmd_vld := cmd_vld & !os_cnt_full
             cmd_rdy := axi_cmd_rdy & !os_cnt_full
-            axi_len := cmd_size
+            axi_len := cmd_size(1, 0)
         }
 
         eg2ig_axi_vld_d := io.eg2ig_axi_vld
