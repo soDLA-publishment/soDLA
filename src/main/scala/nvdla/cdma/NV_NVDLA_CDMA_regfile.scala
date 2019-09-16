@@ -13,7 +13,7 @@ class NV_NVDLA_CDMA_regfile extends Module {
         val nvdla_core_clk = Input(Clock())      
 
         //csb2cdma
-        val csb2csc = new csb2dp_if
+        val csb2cdma = new csb2dp_if
 
         //reg2dp
         val dp2reg_done = Input(Bool())
@@ -223,7 +223,7 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////////////////////////////
     val csb_logic = Module(new NV_NVDLA_CSB_LOGIC)
     csb_logic.io.clk := io.nvdla_core_clk
-    csb_logic.io.csb2dp <> io.csb2csc
+    csb_logic.io.csb2dp <> io.csb2cdma
     reg_offset := csb_logic.io.reg.offset
     reg_wr_en := csb_logic.io.reg.wr_en
     reg_wr_data := csb_logic.io.reg.wr_data
