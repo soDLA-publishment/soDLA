@@ -1,5 +1,4 @@
 # These are generated when I initialize the sbt
-target/
 project/
 .idea/
 
