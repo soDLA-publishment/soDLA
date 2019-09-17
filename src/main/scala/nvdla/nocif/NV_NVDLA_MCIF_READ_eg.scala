@@ -56,9 +56,9 @@ class NV_NVDLA_MCIF_READ_eg(implicit conf: nvdlaConfig) extends Module {
 
         val lat_fifo = Array.fill(conf.RDMA_NUM) {
             Module(new NV_NVDLA_fifo(depth = 16,
-                width = 256, wr_empty_port = false, wr_idle_port = false, rd_idle_port = false,
+                width = 256, io_wr_empty = false, io_wr_idle = false, io_rd_idle = false, io_wr_count = false,
                 ram_type = 1,
-                distant_rd_data = false, distant_wr_data = false, distant_rd_req = false, distant_wr_req = false))
+                distant_wr_req = false))
         }
 
         val rq_rd_prdy = Wire(Vec(conf.RDMA_NUM, Bool()))
@@ -68,13 +68,13 @@ class NV_NVDLA_MCIF_READ_eg(implicit conf: nvdlaConfig) extends Module {
             lat_fifo(i).io.clk := io.nvdla_core_clk
             lat_fifo(i).io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
-            rq_wr_prdy(i) := lat_fifo(i).io.wr_ready
-            lat_fifo(i).io.wr_req := rq_wr_pvld(i)
-            lat_fifo(i).io.wr_data:= ipipe_axi_data
+            rq_wr_prdy(i) := lat_fifo(i).io.wr_prdy
+            lat_fifo(i).io.wr_pvld := rq_wr_pvld(i)
+            lat_fifo(i).io.wr_pd:= ipipe_axi_data
 
-            lat_fifo(i).io.rd_ready := rq_rd_prdy(i)
-            rq_rd_pvld(i) := lat_fifo(i).io.rd_req
-            rq_rd_pd(i) := lat_fifo(i).io.rd_data
+            lat_fifo(i).io.rd_prdy := rq_rd_prdy(i)
+            rq_rd_pvld(i) := lat_fifo(i).io.rd_pvld
+            rq_rd_pd(i) := lat_fifo(i).io.rd_pd
         }
 
 
