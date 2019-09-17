@@ -17,6 +17,7 @@
 //     val sdp_b2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))
 //     val mcif2sdp_b_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
 //     val sdp_b2mcif_rd_cdt_lat_fifo_pop = Output(Bool())
+
 //     //cvif
 //     val sdp_b2cvif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))
 //     val cvif2sdp_b_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))

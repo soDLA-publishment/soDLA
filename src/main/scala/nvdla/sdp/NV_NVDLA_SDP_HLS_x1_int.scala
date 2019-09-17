@@ -9,25 +9,13 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         //data_in
-//         val chn_in_pvld = Input(Bool())
-//         val chn_in_prdy = Output(Bool())
-//         val chn_data_in = Input(UInt(conf.BS_IN_DW.W))
-
+//         val chn_data_in = Flipped(DecoupledIO(UInt(conf.BS_IN_DW.W)))
 //         //alu_op
-//         val chn_alu_op_pvld = Input(Bool())
-//         val chn_alu_op_prdy = Output(Bool())
-//         val chn_alu_op = Input(UInt(conf.BS_OP_DW.W))
-        
+//         val chn_alu_op = Flipped(DecoupledIO(UInt(conf.BS_OP_DW.W)))     
 //         //mul_op
-//         val chn_mul_op_pvld = Input(Bool())
-//         val chn_mul_op_prdy = Output(Bool())
-//         val chn_mul_op = Input(UInt(conf.BS_OP_DW.W))
-
+//         val chn_mul_op = Flipped(DecoupledIO(UInt(conf.BS_OP_DW.W)))
 //         //chn_data
-//         val chn_out_pvld = Output(Bool())
-//         val chn_out_prdy = Input(Bool())
-//         val chn_data_out = Output(UInt(conf.BS_OUT_DW.W))
-
+//         val chn_data_out = DecoupledIO(UInt(conf.BS_OUT_DW.W))
 //         //cfg
 //         val cfg_alu_algo = Input(UInt(2.W))
 //         val cfg_alu_bypass = Input(Bool())

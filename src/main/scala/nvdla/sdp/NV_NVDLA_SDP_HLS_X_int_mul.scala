@@ -8,17 +8,9 @@
 //    val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
-//         val alu_out_pvld = Input(Bool())
-//         val alu_out_prdy = Output(Bool())
-//         val alu_data_out = Input(UInt(33.W))
-
-//         val mul_op_pvld = Input(Bool())
-//         val mul_op_prdy = Output(Bool())
-//         val chn_mul_op = Input(UInt(16.W))
-
-//         val mul_out_pvld = Output(Bool())
-//         val mul_out_prdy = Input(Bool())
-//         val mul_data_out = Output(UInt(49.W))
+//         val alu_data_out = Flipped(DecoupledIO(UInt(33.W)))
+//         val chn_mul_op = Flipped(DecoupledIO(UInt(16.W)))
+//         val mul_data_out = DecoupledIO(UInt(49.W))
 
 //         val cfg_mul_bypass = Input(Bool())
 //         val cfg_mul_op = Input(UInt(16.W))
