@@ -19,7 +19,7 @@ class read_ig_arb extends Module {
         "b0000100000", "b0001000000", "b0010000000", "b0100000000", "b1000000000",
     )
 
-    val req = VecInit((0 to 9)  map { i => io.req(i) & io.wt(i).orR })
+    val req = VecInit((0 to 9)  map { i => io.req(i) & (io.wt(i).orR)})
 
     withClock(io.clk) {
         val gnt    = RegInit(UInt(10.W), 0.U)
