@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-class NV_NVDLA_glb(implicit val conf: project_spec) extends Module {
+class NV_NVDLA_glb(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
@@ -135,7 +135,7 @@ class NV_NVDLA_glb(implicit val conf: project_spec) extends Module {
 }
 
 object NV_NVDLA_glbDriver extends App {
-  implicit val conf: project_spec = new project_spec
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_glb())
 }
     

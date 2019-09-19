@@ -11,13 +11,8 @@ class NV_NVDLA_SDP_CORE_unpack(IW: Int = 128, OW: Int = 512) extends Module {
         //in clock
         val nvdla_core_clk = Input(Clock())
 
-        val inp_pvld = Input(Bool())
-        val inp_prdy = Output(Bool())
-        val inp_data = Input(UInt(IW.W))
-
-        val out_pvld = Output(Bool())
-        val out_prdy = Input(Bool())
-        val out_data = Output(UInt(OW.W))
+        val inp_data = Flipped(DecoupledIO(UInt(IW.W)))
+        val out_data = DecoupledIO(UInt(OW.W))
 
     })
     //     
@@ -45,15 +40,15 @@ withClock(io.nvdla_core_clk){
 
     val pack_pvld = RegInit(false.B)
 
-    val pack_prdy = io.out_prdy
-    io.out_pvld := pack_pvld
-    io.inp_prdy := (!pack_pvld) | pack_prdy
+    val pack_prdy = io.out_data.ready
+    io.out_data.valid := pack_pvld
+    io.inp_data.bits := (!pack_pvld) | pack_prdy
 
     val is_pack_last = Wire(Bool())
-    when(io.inp_prdy){
-        pack_pvld := io.inp_pvld & is_pack_last
+    when(io.inp_data.ready){
+        pack_pvld := io.inp_data.valid & is_pack_last
     }
-    val inp_acc = io.inp_pvld & io.inp_prdy
+    val inp_acc = io.inp_data.valid & io.inp_data.ready
 
     val pack_cnt = RegInit("b0".asUInt(4.W))
     val pack_seg = Reg(Vec(RATIO, UInt(IW.W)))
@@ -67,13 +62,13 @@ withClock(io.nvdla_core_clk){
 
         for(i <- 0 to RATIO-1){
             when(pack_cnt === i.U){
-                pack_seg(i) := io.inp_data
+                pack_seg(i) := io.inp_data.bits
             }
         }
     }
-    
+
     is_pack_last := pack_cnt === (RATIO-1).U
-    io.out_data := pack_seg.asUInt
+    io.out_data.bits := pack_seg.asUInt
 
 }}
 

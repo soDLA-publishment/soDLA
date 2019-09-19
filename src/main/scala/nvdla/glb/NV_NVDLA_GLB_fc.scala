@@ -4,12 +4,11 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_GLB_fc(implicit val conf: project_spec) extends Module {
+class NV_NVDLA_GLB_fc(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
-        //nvdla_falcon_clk, direct_reset_, test_mode is dangling
-        
+          
         //csb2gec
         val csb2gec_req_pd = Input(UInt(63.W))
         val csb2gec_req_pvld = Input(Bool())

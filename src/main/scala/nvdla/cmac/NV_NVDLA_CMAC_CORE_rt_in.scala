@@ -2,36 +2,22 @@ package nvdla
 
 import chisel3._
 import chisel3.experimental._
+import chisel3.util._
 
-class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: cmacConfiguration) extends Module {
+
+class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
 
+        // odif
         // sc2mac dat&wt
-        val sc2mac_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
-        val sc2mac_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_dat_pd = Input(UInt(9.W))
-        val sc2mac_dat_pvld = Input(Bool())
+        val sc2mac_dat = Flipped(ValidIO(new csc2cmac_data_if))  /* data valid */
+        val sc2mac_wt = Flipped(ValidIO(new csc2cmac_wt_if))  /* data valid */
 
-        val sc2mac_wt_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
-        val sc2mac_wt_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val sc2mac_wt_sel = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-        val sc2mac_wt_pvld = Input(Bool())
-        
         // in dat&wt 
-        val in_dat_data = Output(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
-        val in_dat_mask = Output(Vec(conf.CMAC_ATOMC, Bool()))
-        val in_dat_pd = Output(UInt(9.W))
-        val in_dat_pvld = Output(Bool())
-        val in_dat_stripe_st = Output(Bool())
-        val in_dat_stripe_end = Output(Bool())
-
-        val in_wt_data = Output(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
-        val in_wt_mask = Output(Vec(conf.CMAC_ATOMC, Bool()))
-        val in_wt_sel = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-        val in_wt_pvld = Output(Bool())
-
+        val in_dat = ValidIO(new csc2cmac_data_if)  /* data valid */
+        val in_wt = ValidIO(new csc2cmac_wt_if)  /* data valid */
     })
 
 //     
@@ -80,15 +66,14 @@ class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: 
 
     // assign input
 
-    in_rt_dat_pvld_d(0) := io.sc2mac_dat_pvld
-    in_rt_dat_mask_d(0) := io.sc2mac_dat_mask
-    in_rt_dat_pd_d(0) := io.sc2mac_dat_pd
-    in_rt_wt_pvld_d(0) := io.sc2mac_wt_pvld
-    in_rt_wt_mask_d(0) := io.sc2mac_wt_mask
-    in_rt_wt_sel_d(0) := io.sc2mac_wt_sel
-
-    in_rt_dat_data_d(0) := io.sc2mac_dat_data
-    in_rt_wt_data_d(0) := io.sc2mac_wt_data
+    in_rt_dat_pvld_d(0) := io.sc2mac_dat.valid
+    in_rt_dat_mask_d(0) := io.sc2mac_dat.bits.mask
+    in_rt_dat_pd_d(0) := io.sc2mac_dat.bits.pd
+    in_rt_wt_pvld_d(0) := io.sc2mac_wt.valid
+    in_rt_wt_mask_d(0) := io.sc2mac_wt.bits.mask
+    in_rt_wt_sel_d(0) := io.sc2mac_wt.bits.sel
+    in_rt_dat_data_d(0) := io.sc2mac_dat.bits.data
+    in_rt_wt_data_d(0) := io.sc2mac_wt.bits.data
 
     //==========================================================
     // Retiming flops,add latency.
@@ -117,17 +102,16 @@ class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: 
 
     //assign output
 
-    io.in_dat_pvld := in_rt_dat_pvld_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_dat_mask := in_rt_dat_mask_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_dat_pd := in_rt_dat_pd_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_pvld := in_rt_wt_pvld_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_mask := in_rt_wt_mask_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_sel := in_rt_wt_sel_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_dat_data := in_rt_dat_data_d(conf.CMAC_IN_RT_LATENCY)
-    io.in_wt_data := in_rt_wt_data_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_dat.valid := in_rt_dat_pvld_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_dat.bits.mask := in_rt_dat_mask_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_dat.bits.pd := in_rt_dat_pd_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_dat.bits.data := in_rt_dat_data_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt.valid := in_rt_wt_pvld_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt.bits.mask := in_rt_wt_mask_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt.bits.sel := in_rt_wt_sel_d(conf.CMAC_IN_RT_LATENCY)
+    io.in_wt.bits.data := in_rt_wt_data_d(conf.CMAC_IN_RT_LATENCY)
 
-    io.in_dat_stripe_st := io.in_dat_pd(conf.PKT_nvdla_stripe_info_stripe_st_FIELD)
-    io.in_dat_stripe_end := io.in_dat_pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)
+
     }
 
     val rt_in = withClock(internal_clock){new rt_inImpl}
@@ -135,10 +119,6 @@ class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: 
 }
 
 object NV_NVDLA_CMAC_CORE_rt_inDriver extends App {
-  implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_rt_in(useRealClock = true))
 }
-
-    
-    
-

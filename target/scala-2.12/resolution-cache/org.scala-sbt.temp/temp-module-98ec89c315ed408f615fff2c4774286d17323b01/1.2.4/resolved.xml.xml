@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+	<info organisation="org.scala-sbt.temp"
+		module="temp-module-98ec89c315ed408f615fff2c4774286d17323b01"
+		revision="1.2.4"
+		status="integration"
+		publication="20190827203932"
+	/>
+	<configurations>
+		<conf name="compile" visibility="public" description=""/>
+		<conf name="runtime" visibility="public" description="" extends="compile"/>
+		<conf name="test" visibility="public" description="" extends="runtime"/>
+		<conf name="provided" visibility="public" description=""/>
+		<conf name="optional" visibility="public" description=""/>
+	</configurations>
+	<publications>
+	</publications>
+	<dependencies>
+		<dependency org="org.scala-sbt" name="compiler-bridge_2.12" rev="1.2.4" conf="compile->default(compile)">
+			<artifact name="compiler-bridge_2.12" type="src" ext="jar" conf="*" e:classifier="sources"/>
+		</dependency>
+	</dependencies>
+</ivy-module>

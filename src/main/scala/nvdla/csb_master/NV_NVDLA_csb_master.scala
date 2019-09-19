@@ -27,118 +27,47 @@
 //         val nvdla2csb_wr_complete = Output(Bool())
 
 //         //cfgrom
-//         val csb2cfgrom_req_pvld = Output(Bool())    /* data valid */
-//         val csb2cfgrom_req_prdy = Input(Bool())     /* data return handshake */
-//         val csb2cfgrom_req_pd = Output(UInt(63.W))
-//         val cfgrom2csb_resp_valid = Input(Bool())
-//         val cfgrom2csb_resp_pd = Input(Bool())
+//         val csb2cfgrom = Flipped(new csb2dp_if)
 
 //         //csb2glb
-//         val csb2glb_req_pvld = Output(Bool())
-//         val csb2glb_req_prdy = Input(Bool())
-//         val csb2glb_req_pd = Output(UInt(63.W))
-//         val glb2csb_resp_valid = Input(Bool())
-//         val glb2csb_resp_pd = Input(UInt(34.W))
+//         val csb2glb = Flipped(new csb2dp_if)
 
 //         //mcif
-//         val csb2mcif_req_pvld = Output(Bool())
-//         val csb2mcif_req_prdy = Input(Bool())
-//         val csb2mcif_req_pd = Output(UInt(63.W))
-//         val mcif2csb_resp_valid = Input(Bool())
-//         val mcif2csb_resp_pd = Input(UInt(34.W))
+//         val csb2mcif = Flipped(new csb2dp_if)
 
 //         //memif
-//         val csb2cvif_req_pvld = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//         val csb2cvif_req_prdy = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//         val csb2cvif_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(63.W))) else None
-//         val cvif2csb_resp_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//         val cvif2csb_resp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(34.W))) else None
+//         val csb2cvif = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(new csb2dp_if)) else None
 
 //         //bdma
-//         val csb2bdma_req_pvld = if(conf.NVDLA_BDMA_ENABLE) Some(Output(Bool())) else None
-//         val csb2bdma_req_prdy = if(conf.NVDLA_BDMA_ENABLE) Some(Input(Bool())) else None
-//         val csb2bdma_req_pd = if(conf.NVDLA_BDMA_ENABLE) Some(Output(UInt(63.W))) else None  
-//         val bdma2csb_resp_valid = if(conf.NVDLA_BDMA_ENABLE) Some(Input(Bool())) else None  
-//         val bdma2csb_resp_pd = if(conf.NVDLA_BDMA_ENABLE) Some(Input(UInt(34.W))) else None 
+//         val csb2bdma = if(conf.NVDLA_BDMA_ENABLE) Some(Flipped(new csb2dp_if)) else None
 
 //         //cdma
-//         val csb2cdma_req_pvld = Output(Bool())
-//         val csb2cdma_req_prdy = Input(Bool())
-//         val csb2cdma_req_pd = Output(UInt(63.W))
-//         val cdma2csb_resp_valid = Input(Bool())
-//         val cdma2csb_resp_pd = Input(UInt(34.W))
+//         val csb2cdma = Flipped(new csb2dp_if)
 
 //         //csc
-//         val csb2csc_req_pvld = Output(Bool())
-//         val csb2csc_req_prdy = Input(Bool())
-//         val csb2csc_req_pd = Output(UInt(63.W))
-//         val csc2csb_resp_valid = Input(Bool())
-//         val csc2csb_resp_pd = Input(UInt(34.W))
+//         val csb2csc = Flipped(new csb2dp_if)
 
 //         //cmac
-//         val csb2cmac_a_req_pvld = Output(Bool())
-//         val csb2cmac_a_req_prdy = Input(Bool())
-//         val csb2cmac_a_req_pd = Output(UInt(63.W))
-//         val cmac_a2csb_resp_valid = Input(Bool())
-//         val cmac_a2csb_resp_pd = Input(UInt(34.W))
-//         val csb2cmac_b_req_pvld = Output(Bool())
-//         val csb2cmac_b_req_prdy = Input(Bool())
-//         val csb2cmac_b_req_pd = Output(UInt(63.W))
-//         val cmac_b2csb_resp_valid = Input(Bool())
-//         val cmac_b2csb_resp_pd = Input(UInt(34.W))
+//         val csb2cmac_a = Flipped(new csb2dp_if)
+//         val csb2cmac_b = Flipped(new csb2dp_if)
 
 //         //cacc
-//         val csb2cacc_req_pvld = Output(Bool())
-//         val csb2cacc_req_prdy = Input(Bool())
-//         val csb2cacc_req_pd = Output(UInt(63.W))
-//         val cacc2csb_resp_valid = Input(Bool())
-//         val cacc2csb_resp_pd = Input(UInt(34.W))
+//         val csb2cacc = Flipped(new csb2dp_if)
 
 //         //sdp
-//         val csb2sdp_rdma_req_pvld = Output(Bool())
-//         val csb2sdp_rdma_req_prdy = Input(Bool())
-//         val csb2sdp_rdma_req_pd = Output(UInt(63.W))
-//         val sdp_rdma2csb_resp_valid = Input(Bool())
-//         val sdp_rdma2csb_resp_pd = Input(UInt(34.W))
-
-//         val csb2sdp_req_pvld = Output(Bool())
-//         val csb2sdp_req_prdy = Input(Bool())
-//         val csb2sdp_req_pd = Output(UInt(63.W))
-//         val sdp2csb_resp_valid = Input(Bool())
-//         val sdp2csb_resp_pd = Input(UInt(34.W))
+//         val csb2sdp_rdma = Flipped(new csb2dp_if)
+//         val csb2sdp = Flipped(new csb2dp_if)
 
 //         //pdp
-//         val csb2pdp_rdma_req_pvld = if(conf.NVDLA_PDP_ENABLE) Some(Output(Bool())) else None
-//         val csb2pdp_rdma_req_prdy = if(conf.NVDLA_PDP_ENABLE) Some(Input(Bool())) else None
-//         val csb2pdp_rdma_req_pd = if(conf.NVDLA_PDP_ENABLE) Some(Output(UInt(63.W))) else None
-//         val pdp_rdma2csb_resp_valid = if(conf.NVDLA_PDP_ENABLE) Some(Input(Bool())) else None
-//         val pdp_rdma2csb_resp_pd = if(conf.NVDLA_PDP_ENABLE) Some(Input(UInt(34.W))) else None    
-
-//         val csb2pdp_req_pvld = if(conf.NVDLA_PDP_ENABLE) Some(Output(Bool())) else None
-//         val csb2pdp_req_prdy = if(conf.NVDLA_PDP_ENABLE) Some(Input(Bool())) else None
-//         val csb2pdp_req_pd = if(conf.NVDLA_PDP_ENABLE) Some(Output(UInt(63.W))) else None
-//         val pdp2csb_resp_valid = if(conf.NVDLA_PDP_ENABLE) Some(Input(Bool())) else None
-//         val pdp2csb_resp_pd = if(conf.NVDLA_PDP_ENABLE) Some(Input(UInt(34.W))) else None
+//         val csb2pdp_rdma = if(conf.NVDLA_PDP_ENABLE) Some(Flipped(new csb2dp_if)) else None 
+//         val csb2pdp = if(conf.NVDLA_PDP_ENABLE) Some(Flipped(new csb2dp_if)) else None 
 
 //         //cdp
-//         val csb2cdp_rdma_req_pvld = if(conf.NVDLA_CDP_ENABLE) Some(Output(Bool())) else None
-//         val csb2cdp_rdma_req_prdy = if(conf.NVDLA_CDP_ENABLE) Some(Input(Bool())) else None
-//         val csb2cdp_rdma_req_pd = if(conf.NVDLA_CDP_ENABLE) Some(Output(UInt(63.W))) else None
-//         val cdp_rdma2csb_resp_valid = if(conf.NVDLA_CDP_ENABLE) Some(Input(Bool())) else None
-//         val cdp_rdma2csb_resp_pd = if(conf.NVDLA_CDP_ENABLE) Some(Input(UInt(34.W))) else None
-
-//         val csb2cdp_req_pvld = if(conf.NVDLA_CDP_ENABLE) Some(Output(Bool())) else None
-//         val csb2cdp_req_prdy = if(conf.NVDLA_CDP_ENABLE) Some(Input(Bool())) else None
-//         val csb2cdp_req_pd = if(conf.NVDLA_CDP_ENABLE) Some(Output(UInt(63.W))) else None
-//         val cdp2csb_resp_valid = if(conf.NVDLA_CDP_ENABLE) Some(Input(Bool())) else None
-//         val cdp2csb_resp_pd = if(conf.NVDLA_CDP_ENABLE) Some(Input(UInt(34.W))) else None
+//         val csb2cdp_rdma = if(conf.NVDLA_CDP_ENABLE) Some(Flipped(new csb2dp_if)) else None 
+//         val csb2cdp = if(conf.NVDLA_CDP_ENABLE) Some(Flipped(new csb2dp_if)) else None 
 
 //         //rubik
-//         val csb2rbk_req_pvld = if(conf.NVDLA_RUBIK_ENABLE) Some(Output(Bool())) else None
-//         val csb2rbk_req_prdy = if(conf.NVDLA_RUBIK_ENABLE) Some(Input(Bool())) else None
-//         val csb2rbk_req_pd = if(conf.NVDLA_RUBIK_ENABLE) Some(Output(UInt(63.W))) else None
-//         val rbk2csb_resp_valid = if(conf.NVDLA_RUBIK_ENABLE) Some(Input(Bool())) else None
-//         val rbk2csb_resp_pd = if(conf.NVDLA_RUBIK_ENABLE) Some(Input(UInt(34.W))) else None
+//         val csb2rbk = if(conf.NVDLA_RUBIK_ENABLE) Some(Flipped(new csb2dp_if)) else None 
 
 //     })
 

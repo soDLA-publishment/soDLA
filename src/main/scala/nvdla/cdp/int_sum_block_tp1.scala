@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
-class int_sum_block_tp1(implicit val conf: cdpConfiguration) extends Module {
+class int_sum_block_tp1 extends Module {
     val pINT8_BW = 9
     val io = IO(new Bundle {
         //nvdla core clock
@@ -101,6 +101,5 @@ withClock(io.nvdla_core_clk){
 
 
 object int_sum_block_tp1Driver extends App {
-    implicit val conf: cdpConfiguration = new cdpConfiguration  
     chisel3.Driver.execute(args, () => new int_sum_block_tp1())
 }

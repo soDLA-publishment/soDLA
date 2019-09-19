@@ -8,15 +8,11 @@ class NV_NVDLA_CFGROM_rom extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())     
-
-        val reg_rd_data = Output(UInt(32.W))
-        val reg_offset = Input(UInt(12.W))
-        val reg_wr_data = Input(UInt(32.W))
-        val reg_wr_en = Input(Bool())
+        val reg = new reg_control_if
     }) 
-    withClock(io.nvdla_core_clk){
-
-    io.reg_rd_data := MuxLookup(io.reg_offset, "b0".asUInt(32.W), 
+    
+withClock(io.nvdla_core_clk){
+    io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq( 
      // Register NVDLA_CFGROM_CFGROM_HW_VERSION_0
      "h0".asUInt(32.W) -> "h10001".asUInt(32.W), 

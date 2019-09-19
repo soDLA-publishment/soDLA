@@ -7,35 +7,24 @@ import chisel3.util._
 
 //this module is to active dat and wt
 
-class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf: cmacConfiguration) extends Module {
+class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
 
-        //input_dat
-        val in_dat_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
-        val in_dat_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val in_dat_pvld = Input(Bool())
+        // input_dat
+        val in_dat = Flipped(ValidIO(new csc2cmac_data_if))  /* data valid */
         val in_dat_stripe_st = Input(Bool())
         val in_dat_stripe_end = Input(Bool())
 
-        //input_wt
-        val in_wt_data = Input(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
-        val in_wt_mask = Input(Vec(conf.CMAC_ATOMC, Bool()))
-        val in_wt_pvld = Input(Bool())
-        val in_wt_sel = Input(Vec(conf.CMAC_ATOMK_HALF, Bool()))
+        //odif
+        // input_wt
+        val in_wt = Flipped(ValidIO(new csc2cmac_wt_if))  /* data valid */
 
-        // atomk, atomc, data
-        val dat_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
-        val dat_actv_nz = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))
-        val dat_actv_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))
-        val dat_pre_stripe_st = Output(Vec(conf.CMAC_ATOMK_HALF, Bool()))
-        val dat_pre_stripe_end = Output(Vec(conf.CMAC_ATOMK_HALF,Bool()))
-
-        // atomk, atomc, data
-        val wt_actv_data = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))   
-        val wt_actv_nz = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))
-        val wt_actv_pvld = Output(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, Bool())))                  
+        // atomk, atomc, data&wt
+        val dat_actv = Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, ValidIO(new cmac_core_actv)))
+        val wt_actv = Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, ValidIO(new cmac_core_actv)))
+            
     })
 
 //     
@@ -72,14 +61,14 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
     val wt_pre_data = Reg(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
     val wt_pre_sel = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
 
-    when(io.in_wt_pvld){
+    when(io.in_wt.valid){
 
-        wt_pre_nz := io.in_wt_mask
-        wt_pre_sel := io.in_wt_sel
+        wt_pre_nz := io.in_wt.bits.mask
+        wt_pre_sel := io.in_wt.bits.sel
 
         for(i <- 0 to conf.CMAC_ATOMC-1){
-            when(io.in_wt_mask(i)){
-                wt_pre_data(i) := io.in_wt_data(i)
+            when(io.in_wt.bits.mask(i)){
+                wt_pre_data(i) := io.in_wt.bits.data(i)
             }
         }   
     } 
@@ -91,12 +80,12 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
     val dat_pre_stripe_st_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
     val dat_pre_stripe_end_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
 
-    dat_pre_pvld := io.in_dat_pvld
-    when(io.in_dat_pvld){
-        dat_pre_nz := io.in_dat_mask
+    dat_pre_pvld := io.in_dat.valid
+    when(io.in_dat.valid){
+        dat_pre_nz := io.in_dat.bits.mask
         for(i <- 0 to conf.CMAC_ATOMC-1){
-            when(io.in_dat_mask(i)){
-                dat_pre_data(i):=io.in_dat_data(i)
+            when(io.in_dat.bits.mask(i)){
+                dat_pre_data(i):=io.in_dat.bits.data(i)
             }
         } 
         for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
@@ -112,14 +101,12 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
     //push input weight into shadow
 
     val wt_sd_pvld = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
-    val wt_sd_pvld_w = Wire(Vec(conf.CMAC_ATOMK_HALF,Bool()))
     val wt_sd_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
     val wt_sd_data = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
     val dat_actv_stripe_end = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
         
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-        wt_sd_pvld_w(i) := Mux(wt_pre_sel(i), true.B, Mux(dat_pre_stripe_st_out(i), false.B, wt_sd_pvld(i)))
-        wt_sd_pvld(i) := wt_sd_pvld_w(i) 
+        wt_sd_pvld(i) := Mux(wt_pre_sel(i), true.B, Mux(dat_pre_stripe_st_out(i), false.B, wt_sd_pvld(i)))
         when(wt_pre_sel(i)){
             wt_sd_nz(i) := wt_pre_nz
             for (j <- 0 to conf.CMAC_ATOMC-1){
@@ -169,29 +156,29 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
         for (j <- 0 to conf.CMAC_ATOMC-1){
             dat_actv_pvld_reg(i)(j) := dat_pre_pvld
-        }
-        when(dat_pre_pvld){
-            dat_actv_nz_reg(i) := dat_pre_nz
-        }
-        for (j <- 0 to conf.CMAC_ATOMC-1){
+            when(dat_pre_pvld){
+                dat_actv_nz_reg(i)(j) := dat_pre_nz(j)     
+            }
             when(dat_pre_pvld&dat_pre_nz(j)){
-                dat_actv_data_reg(i)(j) := dat_pre_data(j)
+                dat_actv_data_reg(i)(j) := dat_pre_data(j)            
             }
         }
-    }    
+    }
 
-    //assign output
-        
-    io.dat_pre_stripe_end := dat_pre_stripe_end_out      
-    io.dat_pre_stripe_st := dat_pre_stripe_st_out
+//assign output  
+    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
+        for (j <- 0 to conf.CMAC_ATOMC-1){
+            io.dat_actv(i)(j).valid := dat_actv_pvld_reg(i)(j)
+            io.dat_actv(i)(j).bits.nz := dat_actv_nz_reg(i)(j)
+            io.dat_actv(i)(j).bits.data := dat_actv_data_reg(i)(j)
 
-    io.wt_actv_pvld := wt_actv_pvld_out
-    io.wt_actv_data := wt_actv_data_out
-    io.wt_actv_nz := wt_actv_nz_out          
-
-    io.dat_actv_pvld := dat_actv_pvld_reg
-    io.dat_actv_data := dat_actv_data_reg
-    io.dat_actv_nz := dat_actv_nz_reg
+            io.wt_actv(i)(j).valid := wt_actv_pvld_out(i)(j)
+            io.wt_actv(i)(j).bits.nz := wt_actv_nz_out(i)(j)
+            io.wt_actv(i)(j).bits.data := wt_actv_data_out(i)(j)
+        }
+    }
+    
+    
   }
 
   val active = withClock(internal_clock){new activeImpl} 
@@ -201,7 +188,7 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
 
 
 object NV_NVDLA_CMAC_CORE_activeDriver extends App {
-  implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_active(useRealClock = true))
 }
 

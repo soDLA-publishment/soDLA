@@ -4,30 +4,20 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_CDMA_status(implicit conf: cdmaConfiguration) extends Module {
+class NV_NVDLA_CDMA_status(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         // clk
         val nvdla_core_clk = Input(Clock())
 
         // dc2status
-        val dc2status_dat_updt = Input(Bool())
-        val dc2status_dat_entries = Input(UInt(15.W))
-        val dc2status_dat_slices = Input(UInt(14.W))
+        val dc2status_dat_updt = Flipped(ValidIO(new updt_entries_slices_if))
 
         //img2status
-        val img2status_dat_updt = Input(Bool())
-        val img2status_dat_entries = Input(UInt(15.W))
-        val img2status_dat_slices = Input(UInt(14.W))
+        val img2status_dat_updt = Flipped(ValidIO(new updt_entries_slices_if))
     
         //sc2cdma
-        val sc2cdma_dat_updt = Input(Bool())
-        val sc2cdma_dat_entries = Input(UInt(15.W))
-        val sc2cdma_dat_slices = Input(UInt(14.W))
-
-        //cdma2cs
-        val cdma2sc_dat_updt = Output(Bool())
-        val cdma2sc_dat_entries = Output(UInt(15.W))
-        val cdma2sc_dat_slices = Output(UInt(14.W))
+        val sc2cdma_dat_updt = Flipped(ValidIO(new updt_entries_slices_if))
+        val cdma2sc_dat_updt = ValidIO(new updt_entries_slices_if)
 
         //status2dma
         val status2dma_valid_slices = Output(UInt(14.W))
@@ -74,7 +64,8 @@ class NV_NVDLA_CDMA_status(implicit conf: cdmaConfiguration) extends Module {
 //           │                        │
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘ 
+//             └──┴──┘       └──┴──┘
+withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////
 //  control CDMA working status                                       //
 ////////////////////////////////////////////////////////////////////////
@@ -129,15 +120,15 @@ class NV_NVDLA_CDMA_status(implicit conf: cdmaConfiguration) extends Module {
 
 // ///// Register flop declarations
     val pending_ack_w = (io.reg2dp_op_en & (dc2status_pend | img2status_pend))
-    val update_dma = io.dc2status_dat_updt | io.img2status_dat_updt
-    val update_all = update_dma | io.sc2cdma_dat_updt | (pending_ack & pending_req)
-    val entries_add = (Fill(15, io.dc2status_dat_updt) & io.dc2status_dat_entries)|
-                      (Fill(15, io.img2status_dat_updt) & io.img2status_dat_entries)
-    val entries_sub = Mux(io.sc2cdma_dat_updt, io.sc2cdma_dat_entries, "b0".asUInt(15.W))
+    val update_dma = io.dc2status_dat_updt.valid | io.img2status_dat_updt.valid
+    val update_all = update_dma | io.sc2cdma_dat_updt.valid | (pending_ack & pending_req)
+    val entries_add = (Fill(15, io.dc2status_dat_updt.valid) & io.dc2status_dat_updt.bits.entries)|
+                      (Fill(15, io.img2status_dat_updt.valid) & io.img2status_dat_updt.bits.entries)
+    val entries_sub = Mux(io.sc2cdma_dat_updt.valid, io.sc2cdma_dat_updt.bits.entries, "b0".asUInt(15.W))
     val status2dma_valid_entries_w = Mux(pending_ack & pending_req, "b0".asUInt(15.W), status2dma_valid_entries + entries_add - entries_sub)
-    val slices_add = (Fill(14, io.dc2status_dat_updt) & io.dc2status_dat_slices)|
-                     (Fill(14, io.img2status_dat_updt) & io.img2status_dat_slices)
-    val slices_sub = Mux(io.sc2cdma_dat_updt, io.sc2cdma_dat_slices, "b0".asUInt(14.W))
+    val slices_add = (Fill(14, io.dc2status_dat_updt.valid) & io.dc2status_dat_updt.bits.slices)|
+                     (Fill(14, io.img2status_dat_updt.valid) & io.img2status_dat_updt.bits.slices)
+    val slices_sub = Mux(io.sc2cdma_dat_updt.valid, io.sc2cdma_dat_updt.bits.slices, "b0".asUInt(14.W))
     val status2dma_valid_slices_w = Mux(pending_ack & pending_req, "b0".asUInt(14.W), status2dma_valid_slices_out + slices_add - slices_sub)
     val status2dma_free_entries_w = Cat(real_bank, "b0".asUInt(log2Ceil(conf.NVDLA_CBUF_BANK_DEPTH).W)) - status2dma_valid_entries_w
     val entries_reg_en = (status2dma_free_entries_w =/= status2dma_free_entries_out)
@@ -187,14 +178,14 @@ class NV_NVDLA_CDMA_status(implicit conf: cdmaConfiguration) extends Module {
         }
     }  
 
-    io.cdma2sc_dat_updt := dat_updt_d(conf.CDMA_STATUS_LATENCY)
-    io.cdma2sc_dat_entries := dat_entries_d(conf.CDMA_STATUS_LATENCY)
-    io.cdma2sc_dat_slices := dat_slices_d(conf.CDMA_STATUS_LATENCY)
+    io.cdma2sc_dat_updt.valid := dat_updt_d(conf.CDMA_STATUS_LATENCY)
+    io.cdma2sc_dat_updt.bits.entries := dat_entries_d(conf.CDMA_STATUS_LATENCY)
+    io.cdma2sc_dat_updt.bits.slices := dat_slices_d(conf.CDMA_STATUS_LATENCY)
  
-}
+}}
 
 
 object NV_NVDLA_CDMA_statusDriver extends App {
-  implicit val conf: cdmaConfiguration = new cdmaConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_status())
 }

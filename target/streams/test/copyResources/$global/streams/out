@@ -1,3 +1,7 @@
 [0m[[0m[0mdebug[0m] [0m[0mCopy resource mappings: [0m
+[0m[[0m[0mdebug[0m] [0m[0m	(C:\Users\yuda\Desktop\soDLA\src\test\resources\cmac,C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\cmac)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(C:\Users\yuda\Desktop\soDLA\src\test\resources\cmac\NV_NVDLA_CMAC_REG_dual_G.v,C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\cmac\NV_NVDLA_CMAC_REG_dual_G.v)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(C:\Users\yuda\Desktop\soDLA\src\test\resources\cmac\NV_NVDLA_CMAC_reg_G.v,C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\cmac\NV_NVDLA_CMAC_reg_G.v)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(C:\Users\yuda\Desktop\soDLA\src\test\resources\cmac\NV_NVDLA_CMAC_REG_single_G.v,C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\cmac\NV_NVDLA_CMAC_REG_single_G.v)[0m
 [0m[[0m[0mdebug[0m] [0m[0m	(C:\Users\yuda\Desktop\soDLA\src\test\resources\in.im24,C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\in.im24)[0m
 [0m[[0m[0mdebug[0m] [0m[0m	(C:\Users\yuda\Desktop\soDLA\src\test\resources\in.wav,C:\Users\yuda\Desktop\soDLA\target\scala-2.12\test-classes\in.wav)[0m

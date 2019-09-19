@@ -6,7 +6,7 @@ import chisel3.util._
 import chisel3.iotesters.Driver
 
 
-class NV_NVDLA_CDMA_IMG_ctrl(implicit conf: cdmaConfiguration) extends Module {
+class NV_NVDLA_CDMA_IMG_ctrl(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
         //nvdla core clock
@@ -129,7 +129,6 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////
 //  FSM output signals                                                //
 ////////////////////////////////////////////////////////////////////////
-    val img2status_state_out = RegInit(false.B)
     val is_running_d1 = RegInit(false.B)
 
     val is_idle = (cur_state === sIdle);
@@ -138,14 +137,10 @@ withClock(io.nvdla_core_clk){
     val is_done = (cur_state === sDone)
 
     io.layer_st := img_en & is_idle
-    val img2status_state_w = nxt_state
     val is_first_running = io.is_running & !is_running_d1
 
-    img2status_state_out := img2status_state_w
     is_running_d1 := io.is_running
-
-    io.img2status_state := img2status_state_out
-
+    io.img2status_state := RegNext(nxt_state, false.B)
 ////////////////////////////////////////////////////////////////////////
 //  registers to keep last layer status                               //
 ////////////////////////////////////////////////////////////////////////
@@ -322,34 +317,6 @@ withClock(io.nvdla_core_clk){
     
     ////////////////////////////////////////////////
     ////////////////////////////////////////////////
-    val pixel_planar_out = RegInit(false.B)
-    val pixel_precision_out = RegInit("b0".asUInt(2.W))
-    val pixel_order_out = RegInit("b0".asUInt(11.W))
-    val pixel_packed_10b_out = RegInit(false.B)
-    val pixel_data_expand_out = RegInit(false.B)
-    val pixel_data_shrink_out = RegInit(false.B)
-    val pixel_uint_out = RegInit(false.B)
-    val pixel_planar0_sft_out = RegInit("b0".asUInt(3.W))
-    val pixel_planar1_sft_out = RegInit("b0".asUInt(3.W))
-    val pixel_planar0_lp_burst_out = RegInit("b0".asUInt(4.W))
-    val pixel_planar1_lp_burst_out = RegInit("b0".asUInt(3.W))
-    val pixel_planar0_lp_vld_out = RegInit(false.B)
-    val pixel_planar1_lp_vld_out = RegInit(false.B)
-    val pixel_planar0_width_burst_out = RegInit("b0".asUInt(14.W))
-    val pixel_planar1_width_burst_out = RegInit("b0".asUInt(14.W))
-    val pixel_planar0_rp_burst_out = RegInit("b0".asUInt(4.W))
-    val pixel_planar1_rp_burst_out = RegInit("b0".asUInt(3.W))
-    val pixel_planar0_rp_vld_out = RegInit(false.B)
-    val pixel_planar1_rp_vld_out = RegInit(false.B)
-    val pixel_early_end_out = RegInit(false.B)
-    val pixel_planar0_byte_sft_out = RegInit("b0".asUInt(conf.ATMMBW.W))
-    val pixel_planar1_byte_sft_out = RegInit("b0".asUInt(conf.ATMMBW.W))
-    val pixel_bank_out = RegInit("b0".asUInt(6.W))
-    val pixel_planar0_bundle_limit_out = RegInit("b0".asUInt(4.W))
-    val pixel_planar1_bundle_limit_out = RegInit("b0".asUInt(5.W))
-    val pixel_planar0_bundle_limit_1st_out = RegInit("b0".asUInt(4.W))
-    val pixel_planar1_bundle_limit_1st_out = RegInit("b0".asUInt(5.W))
-
     val pixel_element_sft_w = (io.reg2dp_pixel_x_offset -& io.reg2dp_pad_left(conf.ATMMBW-1, 0))(conf.ATMMBW-1, 0)
     val pixel_planar0_byte_sft_w = (Cat(pixel_element_sft_w, Fill(conf.ATMMBW, false.B)) >> pixel_planar0_sft_nxt)(conf.ATMMBW-1, 0)
     val pixel_planar1_byte_sft_w = (Cat(pixel_element_sft_w, Fill(conf.ATMMBW, false.B)) >> pixel_planar1_sft_nxt)(conf.ATMMBW-1, 0)
@@ -359,76 +326,44 @@ withClock(io.nvdla_core_clk){
     val pixel_planar1_bundle_limit_w = "h10".asUInt(5.W)
     val pixel_planar1_bundle_limit_1st_w = "h11".asUInt(5.W)
 
-    val planar1_vld_w = pixel_planar_nxt
+    val planar1_vld_w = pixel_planar_nxt.toBool
     val pixel_planar0_lp_vld_w = pixel_planar0_lp_burst_w.orR
     val pixel_planar1_lp_vld_w = pixel_planar1_lp_burst_w.orR
     val pixel_planar0_rp_vld_w = pixel_planar0_rp_burst_w.orR
     val pixel_planar1_rp_vld_w = pixel_planar1_rp_burst_w.orR
 
-    when(io.layer_st){
-        pixel_planar_out := pixel_planar_nxt
-        pixel_precision_out := pixel_precision_nxt
-        pixel_order_out := pixel_order_nxt
-        pixel_packed_10b_out := pixel_packed_10b_nxt
-        pixel_data_expand_out := pixel_data_expand_nxt
-        pixel_data_shrink_out := pixel_data_shrink_nxt
-        pixel_uint_out := pixel_uint_nxt
-        pixel_planar0_sft_out := pixel_planar0_sft_nxt
-        when(planar1_vld_w.toBool){
-            pixel_planar1_sft_out := pixel_planar1_sft_nxt
-            pixel_planar1_lp_burst_out := pixel_planar1_lp_burst_w
-            pixel_planar1_lp_vld_out := pixel_planar1_lp_vld_w
-            pixel_planar1_width_burst_out := pixel_planar1_width_burst_w
-            pixel_planar1_rp_burst_out := pixel_planar1_rp_burst_w
-            pixel_planar1_rp_vld_out := pixel_planar1_rp_vld_w
-            pixel_early_end_out := pixel_early_end_w
-            pixel_planar1_byte_sft_out := pixel_planar1_byte_sft_w
-            pixel_planar1_bundle_limit_out := pixel_planar1_bundle_limit_w
-            pixel_planar1_bundle_limit_1st_out := pixel_planar1_bundle_limit_1st_w
-        }
-        pixel_planar0_lp_burst_out := pixel_planar0_lp_burst_w
-        pixel_planar0_lp_vld_out := pixel_planar0_lp_vld_w
-        pixel_planar0_width_burst_out := pixel_planar0_width_burst_w
-        pixel_planar0_rp_burst_out := pixel_planar0_rp_burst_w
-        pixel_planar0_rp_vld_out := pixel_planar0_rp_vld_w
-        pixel_planar0_byte_sft_out := pixel_planar0_byte_sft_w
-        pixel_bank_out := io.reg2dp_data_bank +& 1.U
-        pixel_planar0_bundle_limit_out := pixel_planar0_bundle_limit_w
-        pixel_planar0_bundle_limit_1st_out := pixel_planar0_bundle_limit_1st_w 
-    }
-
-    io.pixel_planar := pixel_planar_out
-    io.pixel_precision := pixel_precision_out
-    io.pixel_order := pixel_order_out
-    io.pixel_packed_10b := pixel_packed_10b_out
-    io.pixel_data_expand := pixel_data_expand_out
-    io.pixel_data_shrink := pixel_data_shrink_out
-    io.pixel_uint := pixel_uint_out
-    io.pixel_planar0_sft := pixel_planar0_sft_out
-    io.pixel_planar1_sft := pixel_planar1_sft_out
-    io.pixel_planar0_lp_burst := pixel_planar0_lp_burst_out
-    io.pixel_planar1_lp_burst := pixel_planar1_lp_burst_out
-    io.pixel_planar0_lp_vld := pixel_planar0_lp_vld_out
-    io.pixel_planar1_lp_vld := pixel_planar1_lp_vld_out
-    io.pixel_planar0_width_burst := pixel_planar0_width_burst_out
-    io.pixel_planar1_width_burst := pixel_planar1_width_burst_out
-    io.pixel_planar0_rp_burst := pixel_planar0_rp_burst_out
-    io.pixel_planar1_rp_burst := pixel_planar1_rp_burst_out 
-    io.pixel_planar0_rp_vld := pixel_planar0_rp_vld_out
-    io.pixel_planar1_rp_vld := pixel_planar1_rp_vld_out
-    io.pixel_early_end := pixel_early_end_out
-    io.pixel_planar0_byte_sft := pixel_planar0_byte_sft_out
-    io.pixel_planar1_byte_sft := pixel_planar1_byte_sft_out
-    io.pixel_bank := pixel_bank_out
-    io.pixel_planar0_bundle_limit := pixel_planar0_bundle_limit_out 
-    io.pixel_planar1_bundle_limit := pixel_planar1_bundle_limit_out
-    io.pixel_planar0_bundle_limit_1st := pixel_planar0_bundle_limit_1st_out
-    io.pixel_planar1_bundle_limit_1st := pixel_planar1_bundle_limit_1st_out
+    io.pixel_planar := RegEnable(pixel_planar_nxt, false.B, io.layer_st)
+    io.pixel_precision := RegEnable(pixel_precision_nxt, "b0".asUInt(2.W), io.layer_st)
+    io.pixel_order := RegEnable(pixel_order_nxt, "b0".asUInt(11.W), io.layer_st)
+    io.pixel_packed_10b := RegEnable(pixel_packed_10b_nxt, false.B, io.layer_st)
+    io.pixel_data_expand := RegEnable(pixel_data_expand_nxt, false.B, io.layer_st)
+    io.pixel_data_shrink := RegEnable(pixel_data_shrink_nxt, false.B, io.layer_st)
+    io.pixel_uint := RegEnable(pixel_uint_nxt, false.B, io.layer_st)
+    io.pixel_planar0_sft := RegEnable(pixel_planar0_sft_nxt, "b0".asUInt(3.W), io.layer_st)
+    io.pixel_planar1_sft := RegEnable(pixel_planar1_sft_nxt, "b0".asUInt(3.W), io.layer_st & planar1_vld_w)
+    io.pixel_planar0_lp_burst := RegEnable(pixel_planar0_lp_burst_w, "b0".asUInt(4.W), io.layer_st)
+    io.pixel_planar1_lp_burst := RegEnable(pixel_planar1_lp_burst_w, "b0".asUInt(3.W), io.layer_st & planar1_vld_w)
+    io.pixel_planar0_lp_vld := RegEnable(pixel_planar0_lp_vld_w, false.B, io.layer_st)
+    io.pixel_planar1_lp_vld := RegEnable(pixel_planar1_lp_vld_w, false.B, io.layer_st & planar1_vld_w)
+    io.pixel_planar0_width_burst := RegEnable(pixel_planar0_width_burst_w, "b0".asUInt(14.W), io.layer_st)
+    io.pixel_planar1_width_burst := RegEnable(pixel_planar1_width_burst_w, "b0".asUInt(14.W), io.layer_st & planar1_vld_w)
+    io.pixel_planar0_rp_burst := RegEnable(pixel_planar0_rp_burst_w, "b0".asUInt(4.W), io.layer_st)
+    io.pixel_planar1_rp_burst := RegEnable(pixel_planar1_rp_burst_w, "b0".asUInt(3.W), io.layer_st & planar1_vld_w)
+    io.pixel_planar0_rp_vld := RegEnable(pixel_planar0_rp_vld_w, false.B, io.layer_st)
+    io.pixel_planar1_rp_vld := RegEnable(pixel_planar1_rp_vld_w, false.B, io.layer_st & planar1_vld_w)
+    io.pixel_early_end := RegEnable(pixel_early_end_w, false.B, io.layer_st & planar1_vld_w)
+    io.pixel_planar0_byte_sft := RegEnable(pixel_planar0_byte_sft_w, "b0".asUInt(conf.ATMMBW.W), io.layer_st)
+    io.pixel_planar1_byte_sft := RegEnable(pixel_planar1_byte_sft_w, "b0".asUInt(conf.ATMMBW.W), io.layer_st & planar1_vld_w)
+    io.pixel_bank := RegEnable(io.reg2dp_data_bank +& 1.U, "b0".asUInt(6.W), io.layer_st)
+    io.pixel_planar0_bundle_limit := RegEnable(pixel_planar0_bundle_limit_w, "b0".asUInt(4.W), io.layer_st)
+    io.pixel_planar1_bundle_limit := RegEnable(pixel_planar1_bundle_limit_w, "b0".asUInt(5.W), io.layer_st & planar1_vld_w)
+    io.pixel_planar0_bundle_limit_1st := RegEnable(pixel_planar0_bundle_limit_1st_w, "b0".asUInt(4.W), io.layer_st)
+    io.pixel_planar1_bundle_limit_1st := RegEnable(pixel_planar1_bundle_limit_1st_w, "b0".asUInt(5.W), io.layer_st & planar1_vld_w)
 
 }}
 
 object NV_NVDLA_CDMA_IMG_ctrlDriver extends App {
-  implicit val conf: cdmaConfiguration = new cdmaConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_IMG_ctrl())
 }
 
