@@ -173,21 +173,12 @@
 //     val u_NV_NVDLA_SDP_RDMA_dmaif = Module(new NV_NVDLA_SDP_RDMA_dmaif)
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.nvdla_core_clk := nvdla_gated_clk
 //     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         cvio.get.sdp_b2cvif_rd_req_valid := u_NV_NVDLA_SDP_RDMA_dmaif.cvio.get.sdp2cvif_rd_req_valid
-//         u_NV_NVDLA_SDP_RDMA_dmaif.cvio.get.sdp2cvif_rd_req_ready := cvio.get.sdp_b2cvif_rd_req_ready
-//         cvio.get.sdp_b2cvif_rd_req_pd := u_NV_NVDLA_SDP_RDMA_dmaif.cvio.get.sdp2cvif_rd_req_pd
-//         cvio.get.sdp_b2cvif_rd_cdt_lat_fifo_pop := u_NV_NVDLA_SDP_RDMA_dmaif.cvio.get.sdp2cvif_rd_cdt_lat_fifo_pop
-//         u_NV_NVDLA_SDP_RDMA_dmaif.cvio.get.cvif2sdp_rd_rsp_valid := cvio.get.cvif2sdp_b_rd_rsp_valid
-//         cvio.get.cvif2sdp_b_rd_rsp_ready := u_NV_NVDLA_SDP_RDMA_dmaif.cvio.get.cvif2sdp_rd_rsp_ready
-//         u_NV_NVDLA_SDP_RDMA_dmaif.cvio.get.cvif2sdp_rd_rsp_pd := cvio.get.cvif2sdp_b_rd_rsp_pd
+//         io.sdp_b2cvif_rd_req_pd.get <> u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_req_pd.get
+//         io.sdp_b2cvif_rd_cdt_lat_fifo_pop.get := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_cdt_lat_fifo_pop.get
+//         u_NV_NVDLA_SDP_RDMA_dmaif.io.get.cvif2sdp_rd_rsp_pd.get := io.cvif2sdp_b_rd_rsp_pd.get
 //     }
-
-//     io.sdp_b2mcif_rd_req_pd.valid := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_valid
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_ready := io.sdp_b2mcif_rd_req_ready
 //     io.sdp_b2mcif_rd_req_pd := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_pd
 //     io.sdp_b2mcif_rd_cdt_lat_fifo_pop := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_cdt_lat_fifo_pop
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_valid := io.mcif2sdp_b_rd_rsp_valid
-//     io.mcif2sdp_b_rd_rsp_ready := u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_ready
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_pd := io.mcif2sdp_b_rd_rsp_pd
 
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_ram_type := io.reg2dp_brdma_ram_type

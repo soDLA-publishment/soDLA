@@ -1028,7 +1028,7 @@ withClock(io.nvdla_core_clk){
 
     val dp2reg_dc_rd_stall_dec = false.B
 
-    val stl = Module(new NV_COUNTER_STAGE(32))
+    val stl = Module(new NV_COUNTER_STAGE_histogram(32))
     stl.io.clk := io.nvdla_core_clk
     stl.io.rd_stall_inc := dc_rd_stall_inc
     stl.io.rd_stall_dec := dp2reg_dc_rd_stall_dec
@@ -1046,7 +1046,7 @@ withClock(io.nvdla_core_clk){
     val ltc_1_inc = (outs_dp2reg_dc_rd_latency =/= 511.U) & dc_rd_latency_inc
     val ltc_1_dec = (outs_dp2reg_dc_rd_latency =/= 511.U) & dc_rd_latency_dec
 
-    val ltc_1 = Module(new NV_COUNTER_STAGE(9))
+    val ltc_1 = Module(new NV_COUNTER_STAGE_histogram(9))
     ltc_1.io.clk := io.nvdla_core_clk
     ltc_1.io.rd_stall_inc := ltc_1_inc
     ltc_1.io.rd_stall_dec := ltc_1_dec
@@ -1058,7 +1058,7 @@ withClock(io.nvdla_core_clk){
     val ltc_2_inc = (~io.dp2reg_dc_rd_latency.andR) & (outs_dp2reg_dc_rd_latency.orR)
     val ltc_2_dec = false.B
 
-    val ltc_2 = Module(new NV_COUNTER_STAGE(32))
+    val ltc_2 = Module(new NV_COUNTER_STAGE_histogram(32))
     ltc_2.io.clk := io.nvdla_core_clk
     ltc_2.io.rd_stall_inc := ltc_2_inc
     ltc_2.io.rd_stall_dec := ltc_2_dec

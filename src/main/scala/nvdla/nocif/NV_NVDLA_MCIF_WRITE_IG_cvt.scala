@@ -11,18 +11,11 @@ class NV_NVDLA_MCIF_WRITE_IG_cvt(conf:nvdlaConfig) extends Module {
         val nvdla_core_rstn = Input(Bool())
 
         //spt2cvt
-        val spt2cvt_cmd_valid = Input(Bool())
-        val spt2cvt_cmd_ready = Output(Bool())
-        val spt2cvt_cmd_pd = Input(UInt(77.W))
-
-        val spt2cvt_dat_valid = Input(Bool())
-        val spt2cvt_dat_ready = Output(Bool())
-        val spt2cvt_dat_pd = Input(UInt(514.W))
+        val spt2cvt_cmd_pd = Flipped(DecoupledIO(UInt(77.W)))
+        val spt2cvt_dat_pd = Flipped(DecoupledIO(UInt(514.W)))
 
         //cq_wr
-        val cq_wr_pvld = Output(Bool())
-        val cq_wr_prdy = Input(Bool())
-        val cq_wr_pd = Output(UInt(3.W))
+        val cq_wr_pd = DecoupledIO(UInt(3.W))
         val cq_wr_thread_id = Output(UInt(3.W))
 
         //mcif2noc

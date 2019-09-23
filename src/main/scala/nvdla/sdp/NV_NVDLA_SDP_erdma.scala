@@ -12,30 +12,17 @@
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     //cvif
-//     val sdp_e2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val sdp_e2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val sdp_e2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
-//     val cvif2sdp_e_rd_rsp_valid  = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val cvif2sdp_e_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val cvif2sdp_e_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
+//     val sdp_e2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
+//     val cvif2sdp_e_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))) else None
 //     val sdp_e2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
 
 //     //mcif
-//     val sdp_e2mcif_rd_req_valid = Output(Bool())
-//     val sdp_e2mcif_rd_req_ready = Input(Bool())
-//     val sdp_e2mcif_rd_req_pd = Output(UInt(conf.NVDLA_DMA_RD_REQ.W))
-//     val mcif2sdp_e_rd_rsp_valid  = Input(Bool())
-//     val mcif2sdp_e_rd_rsp_ready = Output(Bool())
-//     val mcif2sdp_e_rd_rsp_pd = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
+//     val sdp_e2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))
+//     val mcif2sdp_e_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
 //     val sdp_e2mcif_rd_cdt_lat_fifo_pop = Output(Bool())
 
-//     val sdp_erdma2dp_alu_valid = Output(Bool()) 
-//     val sdp_erdma2dp_alu_ready = Input(Bool())  
-//     val sdp_erdma2dp_alu_pd = Output(UInt((conf.AM_DW2+1).W))
-
-//     val sdp_erdma2dp_mul_valid = Output(Bool()) 
-//     val sdp_erdma2dp_mul_ready = Input(Bool())  
-//     val sdp_erdma2dp_mul_pd = Output(UInt((conf.AM_DW2+1).W))
+//     val sdp_erdma2dp_alu_pd = DecoupledIO(UInt((conf.AM_DW2+1).W))
+//     val sdp_erdma2dp_mul_pd = DecoupledIO(UInt((conf.AM_DW2+1).W))
 
 //     val reg2dp_erdma_data_mode = Input(Bool())  
 //     val reg2dp_erdma_data_size = Input(Bool())  

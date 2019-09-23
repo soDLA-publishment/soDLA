@@ -27,6 +27,7 @@
 //         val dp2reg_status_nan_output_num = Input(UInt(32.W))
 //         val dp2reg_status_unequal = Input(Bool())
 //         val dp2reg_wdma_stall = Input(UInt(32.W))
+
 //         val reg2dp_field = new sdp_reg_dual_flop_outputs
 
 
@@ -56,9 +57,9 @@
 // withClock(io.nvdla_core_clk){
 
 //     //Instance single register group
-//     val s_reg.offset = Wire(UInt(24.W))
-//     val s_reg.wr_data = Wire(UInt(32.W))
-//     val s_reg.wr_en = Wire(Bool())
+//     val s_reg_offset = Wire(UInt(24.W))
+//     val s_reg_wr_data = Wire(UInt(32.W))
+//     val s_reg_wr_en = Wire(Bool())
 //     val dp2reg_lut_data = Wire(UInt(16.W))
 
 //     val dp2reg_consumer = RegInit(false.B)  
@@ -395,7 +396,7 @@
 //     ////////////////////////////////////////////////////////////////////////
 //      val csb_logic = Module(new NV_NVDLA_CSB_LOGIC)
 //     csb_logic.io.clk := io.nvdla_core_clk
-//     csb_logic.io.csb2dp <> io.csb2cdma
+//     csb_logic.io.csb2dp <> io.csb2sdp
 //     reg_offset := csb_logic.io.reg.offset
 //     reg_wr_en := csb_logic.io.reg.wr_en
 //     reg_wr_data := csb_logic.io.reg.wr_data

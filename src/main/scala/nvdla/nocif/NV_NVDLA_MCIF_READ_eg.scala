@@ -54,7 +54,7 @@
 //             rq_wr_pvld(i) := ipipe_axi_vld & (ipipe_axi_axid === conf.arr_tieoff_axid(i).asUInt(4.W))
 //         }
 
-//         val lat_fifo = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_fifo(depth = 16,width = 256, ram_type = 1))}
+//         val lat_fifo = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_fifo(depth = 16,width = 256, ram_type = 0))}
 
 //         val rq_rd_prdy = Wire(Vec(conf.RDMA_NUM, Bool()))
 //         val rq_rd_pvld = Wire(Vec(conf.RDMA_NUM, Bool()))
