@@ -15,6 +15,7 @@ class NV_NVDLA_CDMA_CVT_cell(implicit conf: nvdlaConfig) extends Module {
         val cfg_mul_in_rsc = Input(UInt(16.W))
         val cfg_out_precision = Input(UInt(2.W))
         val cfg_truncate = Input(UInt(6.W))
+        
         //cvt
         val chn_alu_in_rsc = Flipped(DecoupledIO(UInt(16.W)))
         val chn_data_in_rsc = Flipped(DecoupledIO(UInt(17.W)))

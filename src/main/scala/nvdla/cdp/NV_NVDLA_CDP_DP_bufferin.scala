@@ -14,16 +14,9 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         //cdp_rdma2dp
-//         val cdp_rdma2dp_valid = Input(Bool())
-//         val cdp_rdma2dp_ready = Output(Bool())
-//         val cdp_rdma2dp_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+17).W))
-
+//         val cdp_rdma2dp_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+17).W)))
 //         //normalz_buf
-//         val normalz_buf_data_pvld = Output(Bool())
-//         val normalz_buf_data_prdy = Input(Bool())
-//         val normalz_buf_data = Output(UInt(((conf.NVDLA_CDP_THROUGHPUT+8)*conf.NVDLA_CDP_ICVTO_BWPE+17).W))
-
-//         // val dp2reg_done = Output(Bool())
+//         val normalz_buf_data = DecoupledIO(UInt(((conf.NVDLA_CDP_THROUGHPUT+8)*conf.NVDLA_CDP_ICVTO_BWPE+17).W))
 //     })
 
 //     /////////////////////////////////////////////////////////////
@@ -39,9 +32,9 @@
 //     pipe_p1.io.ri := nvdla_cdp_rdma2dp_ready
 //     val nvdla_cdp_rdma2dp_pd = pipe_p1.io.dout
 
-// //==============
-// // INPUT UNPACK: from RDMA
-// //==============
+//     //==============
+//     // INPUT UNPACK: from RDMA
+//     //==============
 //     val       dp_data =    nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE-1, 0)
 //     val       dp_pos_w =    nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+3, conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE)
 //     val       dp_width =    nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+7, conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+4)

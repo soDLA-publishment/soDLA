@@ -8,13 +8,8 @@
 //    val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
-//         val cvt_in_pvld = Input(Bool())
-//         val cvt_in_prdy = Output(Bool())
-//         val cvt_pd_in = Input(UInt(conf.CV_IN_DW.W))
-
-//         val cvt_out_pvld = Output(Bool())
-//         val cvt_out_prdy = Input(Bool())
-//         val cvt_pd_out = Output(UInt((conf.CV_OUT_DW+conf.NVDLA_SDP_MAX_THROUGHPUT).W))
+//         val cvt_pd_in = Flipped(DecoupledIO(UInt(conf.CV_IN_DW.W)))
+//         val cvt_pd_out = DecoupledIO(UInt((conf.CV_OUT_DW+conf.NVDLA_SDP_MAX_THROUGHPUT).W))
 
 //         val cfg_mode_eql = Input(Bool())
 //         val cfg_offset = Input(UInt(32.W))

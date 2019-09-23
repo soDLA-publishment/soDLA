@@ -12,12 +12,7 @@
 //         val nvdla_core_clk = Input(Clock())      
 
 //         //csb2pdp
-//         val csb2sdp_rdma_req_pd = Input(UInt(63.W))
-//         val csb2sdp_rdma_req_pvld = Input(Bool())
-//         val csb2sdp_rdma_req_prdy = Output(Bool())
-        
-//         val sdp_rdma2csb_resp_pd = Output(UInt(34.W))
-//         val sdp_rdma2csb_resp_valid = Output(Bool())
+//         val csb2sdp_rdma = new csb2dp
 
 //         //reg2dp
 //         val dp2reg_brdma_stall = Input(UInt(32.W))

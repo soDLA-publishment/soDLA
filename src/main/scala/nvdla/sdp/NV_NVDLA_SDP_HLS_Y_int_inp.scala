@@ -20,6 +20,7 @@
 //         val inp_x_in = Input(UInt(32.W))
 //         val inp_y0_in = Input(UInt(16.W))
 //         val inp_y1_in = Input(UInt(16.W))
+
 //         //out
 //         val inp_out_pvld = Output(Bool())
 //         val inp_out_prdy = Input(Bool())
