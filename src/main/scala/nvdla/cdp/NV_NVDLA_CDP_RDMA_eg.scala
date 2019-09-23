@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_CDP_RDMA_eg(implicit val conf: cdpConfiguration) extends Module {
+// class NV_NVDLA_CDP_RDMA_eg(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 //         val reg2dp_channel = Input(UInt(5.W))
@@ -375,6 +375,6 @@
 
 
 // object NV_NVDLA_CDP_RDMA_egDriver extends App {
-//     implicit val conf: cdpConfiguration = new cdpConfiguration
+//     implicit val conf: nvdlaConfig = new nvdlaConfig
 //     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_RDMA_eg())
 // }

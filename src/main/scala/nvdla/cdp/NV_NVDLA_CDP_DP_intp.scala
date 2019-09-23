@@ -4,7 +4,7 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// class NV_NVDLA_CDP_DP_intp(implicit val conf: cdpConfiguration) extends Module {
+// class NV_NVDLA_CDP_DP_intp(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(UInt(32.W))
@@ -474,7 +474,7 @@
 
 
 // object NV_NVDLA_CDP_DP_intpDriver extends App {
-//     implicit val conf: cdpConfiguration = new cdpConfiguration
+//     implicit val conf: nvdlaConfig = new nvdlaConfig
 //     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_intp())
 // }
 
