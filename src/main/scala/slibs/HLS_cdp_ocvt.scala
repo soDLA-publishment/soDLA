@@ -17,27 +17,14 @@ class HLS_cdp_ocvt extends Module {
     })
 
 withClock(io.nvdla_core_clk){
-    val chn_in_pvld = io.chn_data_in_rsc_z.valid
-    val chn_out_prdy = io.chn_data_out_rsc_z.ready
-    val chn_data_in = io.chn_data_in_rsc_z.bits
-    val cfg_alu_in = io.cfg_alu_in_rsc_z
-    val cfg_mul_in = io.cfg_mul_in_rsc_z
-    val cfg_truncate = io.cfg_truncate_rsc_z
 
-    val chn_in_prdy = Wire(Bool())
-    val chn_out_pvld = Wire(Bool())
-    val chn_data_out = Wire(UInt(9.W))
-    io.chn_data_in_rsc_z.ready := chn_in_prdy
-    io.chn_data_out_rsc_z.valid := chn_out_pvld
-    io.chn_data_out_rsc_z.bits := chn_data_out
-
-    val cat_chn_cfg_in = Cat(chn_data_in, cfg_alu_in)
+    val cat_chn_cfg_in = Cat(io.chn_data_in_rsc_z.bits, io.cfg_alu_in_rsc_z)
     val sub_in_prdy = Wire(Bool())
 
     val pipe_p1 = Module(new NV_NVDLA_BC_pipe(50))
     pipe_p1.io.clk := io.nvdla_core_clk
-    pipe_p1.io.vi := chn_in_pvld
-    chn_in_prdy := pipe_p1.io.ro
+    pipe_p1.io.vi := io.chn_data_in_rsc_z.valid
+    io.chn_data_in_rsc_z.ready := pipe_p1.io.ro
     pipe_p1.io.di := cat_chn_cfg_in
     val sub_in_pvld = pipe_p1.io.vo
     pipe_p1.io.ri := sub_in_prdy
@@ -68,7 +55,7 @@ withClock(io.nvdla_core_clk){
     val sub_data_out = pipe_p2.io.dout
 
     //mul
-    val mul_dout = (sub_data_out.asSInt * cfg_mul_in.asSInt).asUInt
+    val mul_dout = (sub_data_out.asSInt * io.cfg_mul_in_rsc_z.asSInt).asUInt
 
     val mul_out_prdy = Wire(Bool())
     
@@ -85,7 +72,7 @@ withClock(io.nvdla_core_clk){
 
     val shiftright_su = Module(new NV_NVDLA_HLS_shiftrightsu(16+26, 8, 6))
     shiftright_su.io.data_in := mul_data_out
-    shiftright_su.io.shift_num := cfg_truncate
+    shiftright_su.io.shift_num := io.cfg_truncate_rsc_z
     val tru_dout = shiftright_su.io.data_out
 
     val pipe_p4 = Module(new NV_NVDLA_BC_pipe(8))
@@ -93,9 +80,9 @@ withClock(io.nvdla_core_clk){
     pipe_p4.io.vi := mul_out_pvld
     mul_out_prdy := pipe_p4.io.ro
     pipe_p4.io.di := tru_dout
-    chn_out_pvld := pipe_p4.io.vo
-    pipe_p4.io.ri := chn_out_prdy
-    chn_data_out := pipe_p4.io.dout
+    io.chn_data_out_rsc_z.valid := pipe_p4.io.vo
+    pipe_p4.io.ri := io.chn_data_out_rsc_z.ready
+    io.chn_data_out_rsc_z.bits := pipe_p4.io.dout
 
 }}
 

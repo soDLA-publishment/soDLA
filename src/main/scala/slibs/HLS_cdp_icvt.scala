@@ -19,23 +19,9 @@ class HLS_cdp_icvt extends Module {
 
 withClock(io.nvdla_core_clk){
 
-    val chn_in_pvld = io.chn_data_in_rsc_z.valid
-    val chn_out_prdy = io.chn_data_out_rsc_z.ready
-    val chn_data_in = io.chn_data_in_rsc_z.bits
-    val cfg_alu_in = io.cfg_alu_in_rsc_z
-    val cfg_mul_in = io.cfg_mul_in_rsc_z
-    val cfg_truncate = io.cfg_truncate_rsc_z
-
-    val chn_in_prdy = Wire(Bool())
-    val chn_out_pvld = Wire(Bool())
-    val chn_data_out = Wire(UInt(9.W))
-    io.chn_data_in_rsc_z.ready := chn_in_prdy
-    io.chn_data_out_rsc_z.valid := chn_out_pvld
-    io.chn_data_out_rsc_z.bits := chn_data_out
-
     //cvt
-    val chn_data_ext = Cat(chn_data_in(7), chn_data_in)
-    val cfg_alu_ext = Cat(cfg_alu_in(7), cfg_alu_in)
+    val chn_data_ext = Cat(io.chn_data_in_rsc_z.bits(7), io.chn_data_in_rsc_z.bits)
+    val cfg_alu_ext = Cat(io.cfg_alu_in_rsc_z(7), io.cfg_alu_in_rsc_z)
 
     //sub
     val chn_data_sub_cfg_alu = (chn_data_ext.asSInt -& cfg_alu_ext.asSInt).asUInt
@@ -46,15 +32,15 @@ withClock(io.nvdla_core_clk){
 
     val pipe_p1 = Module(new NV_NVDLA_BC_pipe(9))
     pipe_p1.io.clk := io.nvdla_core_clk
-    pipe_p1.io.vi := chn_in_pvld
-    chn_in_prdy := pipe_p1.io.ro
+    pipe_p1.io.vi := io.chn_data_in_rsc_z.valid
+    io.chn_data_in_rsc_z.ready := pipe_p1.io.ro
     pipe_p1.io.di := sub_dout
     val sub_out_pvld = pipe_p1.io.vo
     pipe_p1.io.ri := sub_out_prdy
     val sub_data_out = pipe_p1.io.dout
 
     //mul
-    val mul_dout = (sub_data_out.asSInt * cfg_mul_in.asSInt).asUInt
+    val mul_dout = (sub_data_out.asSInt * io.cfg_mul_in_rsc_z.asSInt).asUInt
 
     val mul_out_prdy = Wire(Bool())
     
@@ -71,7 +57,7 @@ withClock(io.nvdla_core_clk){
 
     val shiftright_su = Module(new NV_NVDLA_HLS_shiftrightsu(16+9, 9, 5))
     shiftright_su.io.data_in := mul_data_out
-    shiftright_su.io.shift_num := cfg_truncate
+    shiftright_su.io.shift_num := io.cfg_truncate_rsc_z
     val tru_dout = shiftright_su.io.data_out
 
     val pipe_p3 = Module(new NV_NVDLA_BC_pipe(9))
@@ -79,15 +65,11 @@ withClock(io.nvdla_core_clk){
     pipe_p3.io.vi := mul_out_pvld
     mul_out_prdy := pipe_p3.io.ro
     pipe_p3.io.di := tru_dout
-    chn_out_pvld := pipe_p3.io.vo
-    pipe_p3.io.ri := chn_out_prdy
-    chn_data_out := pipe_p3.io.dout
+    io.chn_data_out_rsc_z.valid := pipe_p3.io.vo
+    pipe_p3.io.ri := io.chn_data_out_rsc_z.ready
+    io.chn_data_out_rsc_z.bits := pipe_p3.io.dout
 
 }}
-
-// object HLS_cdp_icvtDriver extends App {
-//   chisel3.Driver.execute(args, () => new HLS_cdp_icvt())
-// }
 
 
 

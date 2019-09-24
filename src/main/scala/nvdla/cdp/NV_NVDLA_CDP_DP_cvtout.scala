@@ -10,19 +10,15 @@
 //         //clock
 //         val nvdla_core_clk = Input(Clock())
 
-//         val cvtout_pd = Output(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_BWPE+17).W))
+//         //mul2ocvt
+//         val mul2ocvt_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE+16)).W)))
 
-//         val mul2ocvt_pvld = Input(Bool())
-//         val mul2ocvt_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE+16)).W))
-//         val mul2ocvt_prdy = Output(Bool())
+//         val cvtout_pd = DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_BWPE+17).W))
 
 //         val reg2dp_datout_offset = Input(UInt(32.W))
 //         val reg2dp_datout_scale = Input(UInt(16.W))
 //         val reg2dp_datout_shifter = Input(UInt(6.W))
 
-//         val sync2ocvt_pd = Input(UInt(17.W))
-//         val sync2ocvt_pvld = Input(Bool())
-//         val sync2ocvt_prdy = Output(Bool())
 //     })
 
 //     /////////////////////////////////////////////////////////////

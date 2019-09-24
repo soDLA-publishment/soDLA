@@ -9,18 +9,12 @@
 //         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 
-//         val sdp_rdma2dp_valid = Output(Bool())
-//         val sdp_rdma2dp_ready = Input(Bool())
-//         val sdp_rdma2dp_pd = Output(UInt((conf.AM_DW2 + 1).W))
+//         val sdp_rdma2dp_pd = DecoupledIO(UInt((conf.AM_DW2 + 1).W))
 
-//         val rod_wr_vld = Input(Bool())
-//         val rod_wr_rdy = Output(Bool())
-//         val rod_wr_pd = Input(Vec(4,UInt(conf.AM_DW.W)))
+//         val rod_wr_pd = Flipped(DecoupledIO(Vec(4,UInt(conf.AM_DW.W))))
 //         val rod_wr_mask = Input(UInt(4.W))
 
-//         val roc_wr_vld = Input(Bool())
-//         val roc_wr_rdy = Output(Bool())
-//         val roc_wr_pd = Input(UInt(2.W))
+//         val roc_wr_pd = Flipped(DecoupledIO(UInt(2.W)))
 
 //         val cfg_dp_8 = Input(Bool())
 //         val cfg_dp_size_1byte = Input(Bool())
@@ -61,17 +55,13 @@
 //         rod_wr_mask_prdy(i) := io.rod_wr_mask(i) & !rod_wr_prdy(i)
 //     }
 
-//     io.rod_wr_rdy := !( rod_wr_mask_prdy.asUInt.orR )
+//     io.rod_wr_pd.ready := !( rod_wr_mask_prdy.asUInt.orR )
                         
 //     val rod_wr_pvld = Wire(Vec(4, Bool()))
-//     rod_wr_pvld(0) := io.rod_wr_vld & io.rod_wr_mask(0) & 
-//                       !(rod_wr_mask_prdy(1)|rod_wr_mask_prdy(2)|rod_wr_mask_prdy(3))
-//     rod_wr_pvld(1) := io.rod_wr_vld & io.rod_wr_mask(1) & 
-//                       !(rod_wr_mask_prdy(0)|rod_wr_mask_prdy(2)|rod_wr_mask_prdy(3))
-//     rod_wr_pvld(2) := io.rod_wr_vld & io.rod_wr_mask(2) & 
-//                       !(rod_wr_mask_prdy(0)|rod_wr_mask_prdy(1)|rod_wr_mask_prdy(3))
-//     rod_wr_pvld(3) := io.rod_wr_vld & io.rod_wr_mask(3) & 
-//                       !(rod_wr_mask_prdy(0)|rod_wr_mask_prdy(1)|rod_wr_mask_prdy(2))
+
+//     for(i <- 0 to 3){
+//         rod_wr_pvld(i) := io.rod_wr_pd.valid & io.rod_wr_mask(i) & !(rod_wr_mask_prdy.drop(i).reduce(_||_))
+//     }
     
 //     val rod_rd_prdy = Wire(Vec(4,Bool()))
 //     val rod_rd_pvld = Wire(Vec(4,Bool()))
@@ -112,12 +102,12 @@
 //     // CMD FIFO
 //     //==============
 //     val roc_rd_prdy = Wire(Bool())
-//     val u_roc = Module(new NV_NVDLA_SDP_fifo_flop_based(4, 2))
+//     val u_roc = Module(new NV_NVDLA_fifo(depth = 4, width = 2, ram_type = 0, distant_wr_req = false))
 //     u_roc.io.clk := io.nvdla_core_clk
 //     u_roc.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-//     u_roc.io.wr_vld := io.roc_wr_vld
-//     io.roc_wr_rdy := u_roc.io.wr_rdy
-//     u_roc.io.wr_data := io.roc_wr_pd
+//     u_roc.io.wr_vld := io.roc_wr_pd.valid
+//     io.roc_wr_pd.ready := u_roc.io.wr_rdy
+//     u_roc.io.wr_data := io.roc_wr_pd.bits
 //     val roc_rd_pvld = u_roc.io.rd_vld
 //     u_roc.io.rd_rdy := roc_rd_prdy
 //     val roc_rd_pd = u_roc.io.rd_data

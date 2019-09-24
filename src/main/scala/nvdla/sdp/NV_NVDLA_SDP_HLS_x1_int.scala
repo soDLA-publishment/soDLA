@@ -73,12 +73,12 @@
 //     val trt_data_out_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, UInt(32.W)))
 //     val trt_out_prdy_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, Bool()))
 //     val trt_out_pvld_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, Bool()))
-//     io.chn_data_out := chn_data_out_wire.asUInt
+//     io.chn_data_out.bits := chn_data_out_wire.asUInt
 
-//     io.chn_in_prdy := chn_in_prdy_wire(0)
-//     io.chn_alu_op_prdy := chn_alu_op_prdy_wire(0)
-//     io.chn_mul_op_prdy := chn_mul_op_prdy_wire(0)
-//     io.chn_out_pvld := chn_out_pvld_wire(0)
+//     io.chn_data_in.ready := chn_in_prdy_wire(0)
+//     io.chn_alu_op.ready := chn_alu_op_prdy_wire(0)
+//     io.chn_mul_op.ready := chn_mul_op_prdy_wire(0)
+//     io.chn_data_out.valid := chn_out_pvld_wire(0)
 
 //     val u_sdp_x_alu = Array.fill(conf.NVDLA_SDP_BS_THROUGHPUT){Module(new NV_NVDLA_SDP_HLS_X_int_alu)}
 //     val u_sdp_x_mul = Array.fill(conf.NVDLA_SDP_BS_THROUGHPUT){Module(new NV_NVDLA_SDP_HLS_X_int_mul)}

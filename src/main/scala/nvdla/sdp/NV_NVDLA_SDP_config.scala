@@ -59,10 +59,6 @@ class lut_out_if extends Bundle{
     val uflow = Output(Bool())
 }
 
-class c_int_out_if extends Bundle{
-    val data = Output(UInt(16.W))
-    val sat = Output(Bool())
-}
 
 class sdp_rdma_reg_dual_flop_outputs extends Bundle{
     val bn_base_addr_high = Output(UInt(32.W))

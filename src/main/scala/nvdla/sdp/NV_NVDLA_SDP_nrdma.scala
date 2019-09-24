@@ -8,34 +8,23 @@
 
 // val io = IO(new Bundle {
 //     //in clock
-//     val nvdla_core_clk = Input(Clock())
+//     val nvdla_clock = Flipped(new nvdla_clock_if)
+//     val nrdma_slcg_op_en = Input(Bool())
+//     val nrdma_disable = Input(Bool())
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     //cvif
-//     val sdp_n2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val sdp_n2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val sdp_n2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
-//     val cvif2sdp_n_rd_rsp_valid  = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val cvif2sdp_n_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val cvif2sdp_n_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
+//     val sdp_n2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
+//     val cvif2sdp_n_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))) else None
 //     val sdp_n2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
 
 //     //mcif
-//     val sdp_n2mcif_rd_req_valid = Output(Bool())
-//     val sdp_n2mcif_rd_req_ready = Input(Bool())
-//     val sdp_n2mcif_rd_req_pd = Output(UInt(conf.NVDLA_DMA_RD_REQ.W))
-//     val mcif2sdp_n_rd_rsp_valid  = Input(Bool())
-//     val mcif2sdp_n_rd_rsp_ready = Output(Bool())
-//     val mcif2sdp_n_rd_rsp_pd = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
+//     val sdp_n2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))
+//     val mcif2sdp_n_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
 //     val sdp_n2mcif_rd_cdt_lat_fifo_pop = Output(Bool())
 
-//     val sdp_nrdma2dp_alu_valid = Output(Bool()) 
-//     val sdp_nrdma2dp_alu_ready = Input(Bool())  
-//     val sdp_nrdma2dp_alu_pd = Output(UInt((conf.AM_DW2+1).W))
-
-//     val sdp_nrdma2dp_mul_valid = Output(Bool()) 
-//     val sdp_nrdma2dp_mul_ready = Input(Bool())  
-//     val sdp_nrdma2dp_mul_pd = Output(UInt((conf.AM_DW2+1).W))
+//     val sdp_nrdma2dp_alu_pd = DecoupledIO(UInt((conf.AM_DW2+1).W))
+//     val sdp_nrdma2dp_mul_pd = DecoupledIO(UInt((conf.AM_DW2+1).W))
 
 //     val reg2dp_nrdma_data_mode = Input(Bool())  
 //     val reg2dp_nrdma_data_size = Input(Bool())  
@@ -56,14 +45,6 @@
 //     val reg2dp_winograd = Input(Bool())  
 //     val dp2reg_nrdma_stall = Output(UInt(32.W))   
 //     val dp2reg_done = Output(Bool())  
-
-
-//     val dla_clk_ovr_on_sync = Input(Clock())
-//     val global_clk_ovr_on_sync = Input(Clock())
-//     val tmc2slcg_disable_clock_gating = Input(Bool())
-//     val nrdma_slcg_op_en = Input(Bool())
-//     val nrdma_disable = Input(Bool())
-
 // })
 
 //     //     
@@ -103,12 +84,9 @@
 
 //     //=======================================
 //     val u_gate = Module(new NV_NVDLA_slcg(1, true))
-//     u_gate.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_gate.io.nvdla_core := io.nvdla_core
 //     u_gate.io.slcg_disable.get := io.nrdma_disable
 //     u_gate.io.slcg_en(0) := io.nrdma_slcg_op_en
-//     u_gate.io.dla_clk_ovr_on_sync := io.dla_clk_ovr_on_sync
-//     u_gate.io.global_clk_ovr_on_sync := io.global_clk_ovr_on_sync
-//     u_gate.io.tmc2slcg_disable_clock_gating := io.tmc2slcg_disable_clock_gating
 //     val nvdla_gated_clk = u_gate.io.nvdla_core_gated_clk 
 
 //     val ig2cq_prdy = Wire(Bool())
@@ -117,12 +95,9 @@
 //     val u_ig = Module(new NV_NVDLA_SDP_RDMA_ig)
 //     u_ig.io.nvdla_core_clk := nvdla_gated_clk
 //     u_ig.io.op_load := op_load
-//     val ig2cq_pd = u_ig.io.ig2cq_pd
-//     val ig2cq_pvld = u_ig.io.ig2cq_pvld
-//     u_ig.io.ig2cq_prdy := ig2cq_prdy
-//     val dma_rd_req_pd = u_ig.io.dma_rd_req_pd
-//     val dma_rd_req_vld = u_ig.io.dma_rd_req_vld
-//     u_ig.io.dma_rd_req_rdy := dma_rd_req_rdy
+//     val dma_rd_req_vld = 
+//     u_ig.io.dma_rd_req_pd.ready := dma_rd_req_rdy
+//     val dma_rd_req_pd = u_ig.io.dma_rd_req_pd.bits
 //     u_ig.io.reg2dp_op_en := io.reg2dp_op_en
 //     u_ig.io.reg2dp_perf_dma_en := io.reg2dp_perf_dma_en
 //     u_ig.io.reg2dp_winograd := io.reg2dp_winograd
@@ -140,12 +115,12 @@
 //     io.dp2reg_nrdma_stall := u_ig.io.dp2reg_rdma_stall
 
 //     val cq2eg_prdy = Wire(Bool())
-//     val u_cq = Module(new NV_NVDLA_SDP_fifo(conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, 16))
+//     val u_cq = Module(new NV_NVDLA_SDP_fifo(depth = conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, width = 16, distant_wr_req = false, ram_type = 2))
 //     u_cq.io.clk := nvdla_gated_clk
 //     u_cq.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-//     ig2cq_prdy := u_cq.io.wr_rdy
-//     u_cq.io.wr_vld := ig2cq_pvld
-//     u_cq.io.wr_data := ig2cq_pd
+//     u_cq.io.wr_vld := u_ig.io.ig2cq_pvld
+//     u_ig.io.ig2cq_prdy := u_cq.io.wr_rdy
+//     u_cq.io.wr_data := u_ig.io.ig2cq_pd
 //     u_cq.io.rd_rdy := cq2eg_prdy
 //     val cq2eg_pvld = u_cq.io.rd_vld
 //     val cq2eg_pd = u_cq.io.rd_data
@@ -196,28 +171,17 @@
 //     val u_NV_NVDLA_SDP_RDMA_dmaif = Module(new NV_NVDLA_SDP_RDMA_dmaif)
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.nvdla_core_clk := nvdla_gated_clk
 //     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-
-//         io.sdp_n2cvif_rd_req_valid.get := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_req_valid.get
-//         u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_req_ready.get := io.sdp_n2cvif_rd_req_ready.get
-//         io.sdp_n2cvif_rd_req_pd.get := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_req_pd.get
+//         io.sdp_n2cvif_rd_req_pd.get <> u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_req_pd.get
 //         io.sdp_n2cvif_rd_cdt_lat_fifo_pop.get := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2cvif_rd_cdt_lat_fifo_pop.get
-//         u_NV_NVDLA_SDP_RDMA_dmaif.io.cvif2sdp_rd_rsp_valid.get := io.cvif2sdp_n_rd_rsp_valid.get
-//         io.cvif2sdp_n_rd_rsp_ready.get := u_NV_NVDLA_SDP_RDMA_dmaif.io.cvif2sdp_rd_rsp_ready.get
-//         u_NV_NVDLA_SDP_RDMA_dmaif.io.cvif2sdp_rd_rsp_pd.get := io.cvif2sdp_n_rd_rsp_pd.get
+//         u_NV_NVDLA_SDP_RDMA_dmaif.io.cvif2sdp_rd_rsp_pd.get <> io.cvif2sdp_n_rd_rsp_pd.get
 //     }
 
-//     io.sdp_n2mcif_rd_req_valid := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_valid
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_ready := io.sdp_n2mcif_rd_req_ready
-//     io.sdp_n2mcif_rd_req_pd := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_pd
+//     io.sdp_n2mcif_rd_req_pd <> u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_req_pd
 //     io.sdp_n2mcif_rd_cdt_lat_fifo_pop := u_NV_NVDLA_SDP_RDMA_dmaif.io.sdp2mcif_rd_cdt_lat_fifo_pop
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_valid := io.mcif2sdp_n_rd_rsp_valid
-//     io.mcif2sdp_n_rd_rsp_ready := u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_ready
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_pd := io.mcif2sdp_n_rd_rsp_pd
+//     u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_pd <> io.mcif2sdp_n_rd_rsp_pd
 
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_ram_type := io.reg2dp_nrdma_ram_type
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_vld := dma_rd_req_vld
-//     dma_rd_req_rdy := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_rdy
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_pd := dma_rd_req_pd
+//     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_pd <> u_ig.io.dma_rd_req_pd.valid 
 
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_ram_type := io.reg2dp_nrdma_ram_type
 //     dma_rd_rsp_vld := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_vld
