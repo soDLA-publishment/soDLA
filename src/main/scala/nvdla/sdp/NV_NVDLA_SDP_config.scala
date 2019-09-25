@@ -109,6 +109,34 @@ class sdp_rdma_reg_dual_flop_outputs extends Bundle{
     val src_surface_stride = Output(UInt(32.W))
 }
 
+class sdp_reg_single_flop_outputs extends Bundle{
+    
+    val lut_access_type = Output(Bool())      
+    val lut_addr = Output(UInt(10.W))
+    val lut_addr_trigger = Output(Bool())
+    val lut_table_id = Output(Bool())
+    val lut_data_trigger = Output(Bool())
+    val lut_hybrid_priority = Output(Bool())
+    val lut_le_function = Output(Bool())
+    val lut_oflow_priority = Output(Bool())
+    val lut_uflow_priority = Output(Bool())
+    val lut_le_index_offset = Output(UInt(8.W))
+    val lut_le_index_select = Output(UInt(8.W))
+    val lut_lo_index_select = Output(UInt(8.W))
+    val lut_le_end = Output(UInt(32.W))
+    val lut_le_slope_oflow_scale = Output(UInt(16.W))
+    val lut_le_slope_uflow_scale = Output(UInt(16.W))
+    val lut_le_slope_oflow_shift = Output(UInt(5.W))
+    val lut_le_slope_uflow_shift = Output(UInt(5.W))
+    val lut_le_start = Output(UInt(32.W))
+    val lut_lo_end = Output(UInt(32.W))
+    val lut_lo_slope_oflow_scale = Output(UInt(16.W))
+    val lut_lo_slope_uflow_scale = Output(UInt(16.W))
+    val lut_lo_slope_oflow_shift = Output(UInt(5.W))
+    val lut_lo_slope_uflow_shift = Output(UInt(5.W))
+    val lut_lo_start = Output(UInt(32.W))
+}
+
 class sdp_reg_dual_flop_outputs extends Bundle{
     val cvt_offset = Output(UInt(32.W))
     val cvt_scale = Output(UInt(16.W))

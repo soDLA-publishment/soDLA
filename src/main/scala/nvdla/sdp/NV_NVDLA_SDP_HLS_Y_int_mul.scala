@@ -8,23 +8,15 @@
 //    val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
+//         val chn_mul_in = Flipped(DecoupledIO(UInt(32.W)))
+//         val chn_mul_op = Flipped(DecoupledIO(UInt(32.W)))
+//         val mul_data_out = DecoupledIO(UInt(32.W))
+
 //         val cfg_mul_bypass = Input(Bool())
 //         val cfg_mul_op = Input(UInt(32.W))
 //         val cfg_mul_prelu = Input(Bool())
 //         val cfg_mul_src = Input(Bool())
 //         val cfg_mul_truncate = Input(UInt(10.W))
-
-//         val chn_in_pvld = Input(Bool())
-//         val chn_in_prdy = Output(Bool())
-//         val chn_mul_in = Input(UInt(32.W))
-
-//         val chn_mul_op_pvld = Input(Bool())
-//         val chn_mul_op_prdy = Output(Bool())
-//         val chn_mul_op = Input(UInt(32.W))
-
-//         val mul_out_pvld = Output(Bool())
-//         val mul_out_prdy = Input(Bool())
-//         val mul_data_out = Output(UInt(32.W))
 
 //     })
 //     //     
@@ -113,10 +105,10 @@
 //     pipe_p2.io.ri := mul_final_prdy
 //     val mul_data_final = pipe_p2.io.dout
     
-//     io.chn_in_prdy := Mux(io.cfg_mul_bypass, io.mul_out_prdy, chn_in_srdy)
+//     io.chn_mul_in.ready := Mux(io.cfg_mul_bypass, io.mul_out_prdy, chn_in_srdy)
 //     mul_final_prdy := Mux(io.cfg_mul_bypass, true.B, io.mul_out_prdy)
-//     io.mul_out_pvld := Mux(io.cfg_mul_bypass, io.chn_in_pvld, mul_final_pvld)
-//     io.mul_data_out := Mux(io.cfg_mul_bypass, io.chn_mul_in, mul_data_final)
+//     io.mul_data_out.valid := Mux(io.cfg_mul_bypass, io.chn_mul_in.valid, mul_final_pvld)
+//     io.mul_data_out.bits := Mux(io.cfg_mul_bypass, io.chn_mul_in.bits, mul_data_final)
 // }}
 
 
