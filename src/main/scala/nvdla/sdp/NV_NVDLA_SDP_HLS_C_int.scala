@@ -4,6 +4,11 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+class c_int_out_if extends Bundle{
+    val data = Output(UInt(16.W))
+    val sat = Output(Bool())
+}
+
 class NV_NVDLA_SDP_HLS_C_int extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())

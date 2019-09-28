@@ -99,13 +99,13 @@ withClock(io.nvdla_core_clk){
     u_rdma_unpack.io.nvdla_core_clk := io.nvdla_core_clk
 
     u_rdma_unpack.io.inp_end := lat_ecc_rd_beat_end
-    u_rdma_unpack.io.inp_pvld := lat_ecc_rd_pvld
-    lat_ecc_rd_prdy := u_rdma_unpack.io.inp_prdy
-    u_rdma_unpack.io.inp_data := lat_ecc_rd_pd
+    u_rdma_unpack.io.inp.valid := lat_ecc_rd_pvld
+    lat_ecc_rd_prdy := u_rdma_unpack.io.inp.ready
+    u_rdma_unpack.io.inp.bits := lat_ecc_rd_pd
 
-    val unpack_out_pvld = u_rdma_unpack.io.out_pvld
-    u_rdma_unpack.io.out_prdy := unpack_out_prdy
-    val unpack_out_pd = u_rdma_unpack.io.out_data
+    val unpack_out_pvld = u_rdma_unpack.io.out.valid
+    u_rdma_unpack.io.out.ready := unpack_out_prdy
+    val unpack_out_pd = u_rdma_unpack.io.out.bits
 
     val pfifo_wr_rdy = Wire(Bool())
     unpack_out_prdy := pfifo_wr_rdy

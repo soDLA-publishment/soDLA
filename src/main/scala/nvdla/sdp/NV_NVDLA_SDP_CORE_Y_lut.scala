@@ -200,7 +200,6 @@ lut_hybrid_cnt := perf_hybrid_counter.io.hit_cnt
 
 io.dp2reg_lut_hybrid := lut_hybrid_cnt
 
-
 //=======================================
 // PERF STATISTIC
 // LE_HIT
