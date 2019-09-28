@@ -30,3 +30,26 @@ class cdp_rdma_reg_dual_flop_outputs extends Bundle{
     val src_line_stride = Output(UInt(32.W))
     val src_surface_stride = Output(UInt(32.W))
 }
+
+
+class cdp_reg_dual_flop_outputs extends Bundle{
+    val cya = Output(UInt(32.W))
+    val input_data_type = Output(UInt(2.W))
+    val datin_offset = Output(UInt(16.W))
+    val datin_scale = Output(UInt(16.W))
+    val datin_shifter = Output(UInt(5.W))
+    val datout_offset = Output(UInt(32.W))
+    val datout_scale = Output(UInt(16.W))
+    val datout_shifter = Output(UInt(6.W))
+    val dst_base_addr_high = Output(UInt(32.W))
+    val dst_base_addr_low = Output(UInt(32.W))
+    val dst_ram_type = Output(Bool())
+    val dst_line_stride = Output(UInt(32.W))
+    val dst_surface_stride = Output(UInt(32.W))
+    val mul_bypass = Output(Bool())
+    val sqsum_bypass = Output(Bool())
+    val normalz_len = Output(UInt(2.W))
+    val nan_to_zero = Output(Bool())
+    val dma_en = Output(Bool())
+    val lut_en = Output(Bool())
+}
