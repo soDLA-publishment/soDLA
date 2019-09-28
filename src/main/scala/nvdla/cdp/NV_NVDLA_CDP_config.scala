@@ -53,3 +53,33 @@ class cdp_reg_dual_flop_outputs extends Bundle{
     val dma_en = Output(Bool())
     val lut_en = Output(Bool())
 }
+
+
+class cdp_reg_single_flop_outputs extends Bundle{
+    val lut_access_type = Output(Bool())
+    val lut_table_id = Output(Bool())
+    val lut_hybrid_priority = Output(Bool())
+    val lut_le_function = Output(Bool())
+    val lut_oflow_priority = Output(Bool())
+    val lut_uflow_priority = Output(Bool())
+    val lut_le_index_offset = Output(UInt(8.W))
+    val lut_le_index_select = Output(UInt(8.W))
+    val lut_lo_index_select = Output(UInt(8.W))
+    val lut_le_end_high = Output(UInt(6.W))
+    val lut_le_end_low = Output(UInt(32.W))
+    val lut_le_slope_oflow_scale = Output(UInt(16.W))
+    val lut_le_slope_uflow_scale = Output(UInt(16.W))
+    val lut_le_slope_oflow_shift = Output(UInt(5.W))
+    val lut_le_slope_uflow_shift = Output(UInt(5.W))
+    val lut_le_start_high = Output(UInt(6.W))
+    val lut_le_start_low = Output(UInt(32.W))
+    val lut_lo_end_high = Output(UInt(6.W))
+    val lut_lo_end_low = Output(UInt(32.W))
+    val lut_lo_slope_oflow_scale = Output(UInt(16.W))
+    val lut_lo_slope_uflow_scale = Output(UInt(16.W))
+    val lut_lo_slope_oflow_shift = Output(UInt(5.W))
+    val lut_lo_slope_uflow_shift = Output(UInt(5.W))
+    val lut_lo_start_high = Output(UInt(6.W))
+    val lut_lo_start_low = Output(UInt(32.W))
+    val producer = Output(Bool())
+}
