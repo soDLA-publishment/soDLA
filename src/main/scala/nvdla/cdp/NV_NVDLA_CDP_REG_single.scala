@@ -21,6 +21,7 @@ class NV_NVDLA_CDP_REG_single extends Module{
 
         //Writable register flop/trigger outputs
         val field = new cdp_reg_single_flop_outputs
+        val producer = Output(Bool())
         val lut_addr_trigger = Output(Bool())
         val lut_data_trigger = Output(Bool())
 
@@ -114,7 +115,7 @@ class NV_NVDLA_CDP_REG_single extends Module{
     //nvdla_cdp_s_lut_lo_start_low_0_out
     "h28".asUInt(32.W)  -> io.field.lut_lo_start_low,
     //nvdla_cdp_s_pointer_0_out
-    "h04".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.field.producer),
+    "h04".asUInt(32.W)  -> Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer),
     //nvdla_cdp_s_status_0_out
     "h00".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0),
    ))
@@ -175,7 +176,7 @@ class NV_NVDLA_CDP_REG_single extends Module{
     io.field.lut_lo_start_low := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_s_lut_lo_start_low_0_wren)
   // Not generating flops for read-only field NVDLA_CDP_S_POINTER_0::consumer
   // Register: NVDLA_CDP_S_POINTER_0    Field: producer
-    io.field.producer := RegEnable(io.reg.wr_data(0), false.B, nvdla_cdp_s_pointer_0_wren)
+    io.producer := RegEnable(io.reg.wr_data(0), false.B, nvdla_cdp_s_pointer_0_wren)
   // Not generating flops for read-only field NVDLA_CDP_S_STATUS_0::status_0
   // Not generating flops for read-only field NVDLA_CDP_S_STATUS_0::status_1
 }}
