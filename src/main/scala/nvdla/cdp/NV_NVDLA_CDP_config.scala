@@ -81,5 +81,4 @@ class cdp_reg_single_flop_outputs extends Bundle{
     val lut_lo_slope_uflow_shift = Output(UInt(5.W))
     val lut_lo_start_high = Output(UInt(6.W))
     val lut_lo_start_low = Output(UInt(32.W))
-    val producer = Output(Bool())
 }
