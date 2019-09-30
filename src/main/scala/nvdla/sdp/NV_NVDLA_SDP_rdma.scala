@@ -8,118 +8,61 @@
 
 // val io = IO(new Bundle {
 //     //in clock
-//     val nvdla_core_clk = Input(Clock())
+//     val nvdla_core_clk = Flipped(new nvdla_clock_if)
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
-//     //csb2sdp
-//     val csb2sdp_rdma_req_pvld = Input(Bool())
-//     val csb2sdp_rdma_req_prdy = Output(Bool())
-//     val csb2sdp_rdma_req_pd = Input(UInt(63.W))
-//     val sdp_rdma2csb_resp_valid = Output(Bool())
-//     val sdp_rdma2csb_resp_pd = Output(UInt(34.W))
+//     //csb2sdp_rdma
+//     val csb2sdp_rdma = new csb2dp_if
 
 //     //sdp_bcvif
-//     val sdp_b2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//     val sdp_b2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
 //     val sdp_b2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //     val sdp_b2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//     val cvif2sdp_b_rd_rsp_valid  = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//     val cvif2sdp_b_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
 //     val cvif2sdp_b_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
 
 //     //sdp_e2cvif
-//     val sdp_e2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
-//     val sdp_e2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
 //     val sdp_e2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_EW_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //     val sdp_e2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
-//     val cvif2sdp_e_rd_rsp_valid  = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
-//     val cvif2sdp_e_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
 //     val cvif2sdp_e_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_EW_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
     
 //     //sdp_n2cvif
-//     val sdp_n2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
-//     val sdp_n2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
 //     val sdp_n2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BN_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //     val sdp_n2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
-//     val cvif2sdp_n_rd_rsp_valid  = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
-//     val cvif2sdp_n_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
 //     val cvif2sdp_n_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BN_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
 
 //     //sdp2cvif
-//     val sdp2cvif_rd_req_valid = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val sdp2cvif_rd_req_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
 //     val sdp2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //     val sdp2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
-//     val cvif2sdp_rd_rsp_valid  = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
-//     val cvif2sdp_rd_rsp_ready = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
 //     val cvif2sdp_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
 
 //     //sdp_b2mcif
-//     val sdp_b2mcif_rd_req_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//     val sdp_b2mcif_rd_req_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
 //     val sdp_b2mcif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //     val sdp_b2mcif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//     val mcif2sdp_b_rd_rsp_valid  = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
-//     val mcif2sdp_b_rd_rsp_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
 //     val mcif2sdp_b_rd_rsp_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
 
-//     val sdp_brdma2dp_alu_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//     val sdp_brdma2dp_alu_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
 //     val sdp_brdma2dp_alu_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(UInt((conf.AM_DW2+1).W))) else None
-
-//     val sdp_brdma2dp_mul_valid = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-//     val sdp_brdma2dp_mul_ready = if(conf.NVDLA_SDP_BS_ENABLE) Some(Input(Bool())) else None
 //     val sdp_brdma2dp_mul_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(UInt((conf.AM_DW2+1).W))) else None
 
 //     //sdp_e2mcif
-//     val sdp_e2mcif_rd_req_valid = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
-//     val sdp_e2mcif_rd_req_ready = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
 //     val sdp_e2mcif_rd_req_pd = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //     val sdp_e2mcif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
-//     val mcif2sdp_e_rd_rsp_valid  = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
-//     val mcif2sdp_e_rd_rsp_ready = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
 //     val mcif2sdp_e_rd_rsp_pd = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
 
-//     val sdp_erdma2dp_alu_valid = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
-//     val sdp_erdma2dp_alu_ready = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
 //     val sdp_erdma2dp_alu_pd = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(UInt((conf.AM_DW2+1).W))) else None
-
-//     val sdp_erdma2dp_mul_valid = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(Bool())) else None
-//     val sdp_erdma2dp_mul_ready = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
 //     val sdp_erdma2dp_mul_pd = if(conf.NVDLA_SDP_EW_ENABLE) Some(Output(UInt((conf.AM_DW2+1).W))) else None
 
 //     //sdp_n2mcif
-//     val sdp_n2mcif_rd_req_valid = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
-//     val sdp_n2mcif_rd_req_ready = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
 //     val sdp_n2mcif_rd_req_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
 //     val sdp_n2mcif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
-//     val mcif2sdp_n_rd_rsp_valid  = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
-//     val mcif2sdp_n_rd_rsp_ready = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
 //     val mcif2sdp_n_rd_rsp_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None
 
-//     val sdp_nrdma2dp_alu_valid = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
-//     val sdp_nrdma2dp_alu_ready = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
-//     val sdp_nrdma2dp_alu_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(UInt((conf.AM_DW2+1).W))) else None
-
-//     val sdp_nrdma2dp_mul_valid = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(Bool())) else None
-//     val sdp_nrdma2dp_mul_ready = if(conf.NVDLA_SDP_BN_ENABLE) Some(Input(Bool())) else None
-//     val sdp_nrdma2dp_mul_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(Output(UInt((conf.AM_DW2+1).W))) else None
+//     val sdp_nrdma2dp_alu_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(DecoupledIO(UInt((conf.AM_DW2+1).W))) else None
+//     val sdp_nrdma2dp_mul_pd = if(conf.NVDLA_SDP_BN_ENABLE) Some(DecoupledIO(UInt((conf.AM_DW2+1).W))) else None
  
-//     val sdp2mcif_rd_req_valid = Output(Bool())
-//     val sdp2mcif_rd_req_ready = Input(Bool())
-//     val sdp2mcif_rd_req_pd = Output(UInt(conf.NVDLA_DMA_RD_REQ.W))
+//     val sdp2mcif_rd_req_pd = DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))
 //     val sdp2mcif_rd_cdt_lat_fifo_pop = Output(Bool())
-//     val mcif2sdp_rd_rsp_valid = Input(Bool())
-//     val mcif2sdp_rd_rsp_ready = Output(Bool())  
-//     val mcif2sdp_rd_rsp_pd = Input(UInt(conf.NVDLA_DMA_RD_RSP.W))
+//     val mcif2sdp_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
 
-//     val sdp_mrdma2cmux_valid = Output(Bool())
-//     val sdp_mrdma2cmux_ready = Input(Bool())
-//     val sdp_mrdma2cmux_pd = Output(UInt((conf.DP_DIN_DW+2).W))
-
-//     val dla_clk_ovr_on_sync = Input(Clock())
-//     val global_clk_ovr_on_sync = Input(Clock())
-//     val tmc2slcg_disable_clock_gating = Input(Bool())
+//     val sdp_mrdma2cmux_pd = DecoupledIO(UInt((conf.DP_DIN_DW+2).W))
 // })
 
 //     //     

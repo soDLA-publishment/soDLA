@@ -6,8 +6,8 @@ import chisel3.util._
 
 
 class NV_NVDLA_fifo(depth: Int, width: Int,
-                    ram_type: Int, 
-                    distant_wr_req: Boolean, 
+                    ram_type: Int = 0, 
+                    distant_wr_req: Boolean = false, 
                     io_wr_empty: Boolean = false, 
                     io_wr_idle: Boolean = false,
                     io_wr_count: Boolean = false,
@@ -140,7 +140,8 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
         io.rd_pd := rd_pd_out
         clk_mgated_enable := (false.B || (io.wr_pvld || 
                             (rd_pvld_int && rd_prdy_d) || 
-                            (rd_pvld_int_o && rd_prdy_d_o)))       
+                            (rd_pvld_int_o && rd_prdy_d_o)))  
+        io.wr_prdy := false.B  
     }
 
     else{

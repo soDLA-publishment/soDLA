@@ -28,9 +28,8 @@
 //         val dp2reg_status_unequal = Input(Bool())
 //         val dp2reg_wdma_stall = Input(UInt(32.W))
 
-//         val reg2dp_field = new sdp_reg_dual_flop_outputs
-
-
+//         val reg2dp_single_field = new sdp_reg_single_flop_outputs
+//         val reg2dp_dual_field = new sdp_reg_dual_flop_outputs
 //     })
 // //                             
 // //          ┌─┐       ┌─┐

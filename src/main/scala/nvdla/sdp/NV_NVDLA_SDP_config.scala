@@ -48,8 +48,6 @@ class sdpConfiguration extends cdmaConfiguration
     val LUT_TABLE_LO_DEPTH = 257
     val LUT_TABLE_MAX_DEPTH = LUT_TABLE_LO_DEPTH
 
-
-
 }
 
 class lut_out_if extends Bundle{
@@ -58,7 +56,6 @@ class lut_out_if extends Bundle{
     val oflow = Output(Bool())
     val uflow = Output(Bool())
 }
-
 
 class sdp_rdma_reg_dual_flop_outputs extends Bundle{
     val bn_base_addr_high = Output(UInt(32.W))
@@ -110,12 +107,10 @@ class sdp_rdma_reg_dual_flop_outputs extends Bundle{
 }
 
 class sdp_reg_single_flop_outputs extends Bundle{
-    
+
     val lut_access_type = Output(Bool())      
     val lut_addr = Output(UInt(10.W))
-    val lut_addr_trigger = Output(Bool())
     val lut_table_id = Output(Bool())
-    val lut_data_trigger = Output(Bool())
     val lut_hybrid_priority = Output(Bool())
     val lut_le_function = Output(Bool())
     val lut_oflow_priority = Output(Bool())

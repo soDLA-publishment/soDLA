@@ -105,9 +105,6 @@ class NV_NVDLA_SDP_REG_dual extends Module{
     val nvdla_sdp_d_status_nan_input_num_0_wren = (io.reg.offset === "hd0".asUInt(32.W)) & io.reg.wr_en ;   
     val nvdla_sdp_d_status_nan_output_num_0_wren = (io.reg.offset === "hd8".asUInt(32.W)) & io.reg.wr_en ;   
 
-
- 
-
     io.op_en_trigger := nvdla_sdp_d_op_enable_0_wren
 
     //Output mux
@@ -215,9 +212,6 @@ class NV_NVDLA_SDP_REG_dual extends Module{
 
     ))
 
-
-  //yifengdu y.f.du1994@gmail.com update on Aug 1, 2019 
-  //Solve Java heap space problem
   
   // Register: NVDLA_SDP_D_CVT_OFFSET_0    Field: cvt_offset
     io.field.cvt_offset := RegEnable(io.reg.wr_data, "b0".asUInt(32.W), nvdla_sdp_d_cvt_offset_0_wren)

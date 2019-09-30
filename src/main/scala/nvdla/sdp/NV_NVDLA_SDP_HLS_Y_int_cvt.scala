@@ -8,14 +8,13 @@ class NV_NVDLA_SDP_HLS_Y_int_cvt extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
 
+        val cvt_data_in = Flipped(DecoupledIO(UInt(16.W)))
+        val cvt_data_out = DecoupledIO(UInt(32.W))
+    
         val cfg_cvt_bypass = Input(Bool())
         val cfg_cvt_offset = Input(UInt(32.W))
         val cfg_cvt_scale = Input(UInt(16.W))
         val cfg_cvt_truncate = Input(UInt(6.W))
-
-        val cvt_data_in = Flipped(DecoupledIO(UInt(16.W)))
-        val cvt_data_out = DecoupledIO(UInt(32.W))
-        
     })
     //     
     //          ┌─┐       ┌─┐

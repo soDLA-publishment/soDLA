@@ -68,7 +68,7 @@
 //     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //     //             │ ─┤ ─┤       │ ─┤ ─┤         
 //     //             └──┴──┘       └──┴──┘ 
-// withClock(io.nvdla_core_clk){
+// withClock(io.nvdla_clock.nvdla_core_clk){
 //     // Layer Switch
 //     val layer_process = RegInit(false.B)
 //     val eg_done = Wire(Bool())
@@ -84,7 +84,7 @@
 
 //     //=======================================
 //     val u_gate = Module(new NV_NVDLA_slcg(1, true))
-//     u_gate.io.nvdla_core := io.nvdla_core
+//     u_gate.io.nvdla_clock := io.nvdla_clock
 //     u_gate.io.slcg_disable.get := io.nrdma_disable
 //     u_gate.io.slcg_en(0) := io.nrdma_slcg_op_en
 //     val nvdla_gated_clk = u_gate.io.nvdla_core_gated_clk 
@@ -181,7 +181,7 @@
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.mcif2sdp_rd_rsp_pd <> io.mcif2sdp_n_rd_rsp_pd
 
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_ram_type := io.reg2dp_nrdma_ram_type
-//     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_pd <> u_ig.io.dma_rd_req_pd.valid 
+//     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_req_pd <> u_ig.io.dma_rd_req_pd 
 
 //     u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_ram_type := io.reg2dp_nrdma_ram_type
 //     dma_rd_rsp_vld := u_NV_NVDLA_SDP_RDMA_dmaif.io.dma_rd_rsp_vld
