@@ -5,11 +5,11 @@ import chisel3.experimental._
 import chisel3.util._
 
 
-class sdp_core_ew_if extends Bundle{
-    val cfg_alu_cvt = new sdp_y_int_cvt_cfg_if
-    val cfg_mul_cvt = new sdp_y_int_cvt_cfg_if
-    val cfg_alu = new sdp_y_int_alu_cfg_if
-    val cfg_mul = new sdp_y_int_mul_cfg_if
+class sdp_y_ew_reg2dp_if extends Bundle{
+    val alu_cvt = new sdp_y_int_cvt_cfg_if
+    val mul_cvt = new sdp_y_int_cvt_cfg_if
+    val alu = new sdp_y_int_alu_cfg_if
+    val mul = new sdp_y_int_mul_cfg_if
     val lut_bypass = Output(Bool())
     
 }
@@ -29,8 +29,9 @@ class NV_NVDLA_SDP_CORE_y(implicit val conf: nvdlaConfig) extends Module {
         val ew_data_out_pd = DecoupledIO(UInt(conf.EW_OUT_DW.W))
 
         // reg2dp
-        val reg2dp_ew = Flipped(new sdp_core_ew_if)
+        val reg2dp_ew = Flipped(new sdp_y_ew_reg2dp_if)
         val reg2dp_lut = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Flipped(new sdp_y_lut_reg2dp_if)) else None
+        val reg2dp_perf_lut_en = Input(Bool())
         val dp2reg_lut =  if(conf.NVDLA_SDP_LUT_ENABLE) Some(new sdp_y_lut_dp2reg_if) else None
         val reg2dp_idx = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Flipped(new sdp_y_int_idx_cfg_if)) else None
 
@@ -90,33 +91,33 @@ withClock(io.nvdla_core_clk){
     val u_alu_cvt = Module(new NV_NVDLA_SDP_HLS_Y_cvt_top)
     u_alu_cvt.io.nvdla_core_clk := io.nvdla_core_clk
     u_alu_cvt.io.cvt_data_in <> io.ew_alu_in_data
-    u_alu_cvt.io.cfg_cvt.bypass := RegEnable(io.reg2dp_ew.cfg_alu_cvt.bypass, false.B, io.op_en_load)
-    u_alu_cvt.io.cfg_cvt.offset := RegEnable(io.reg2dp_ew.cfg_alu_cvt.offset, "b0".asUInt(32.W), io.op_en_load)
-    u_alu_cvt.io.cfg_cvt.scale := RegEnable(io.reg2dp_ew.cfg_alu_cvt.scale, "b0".asUInt(16.W), io.op_en_load)
-    u_alu_cvt.io.cfg_cvt.truncate := RegEnable(io.reg2dp_ew.cfg_alu_cvt.bypass, "b0".asUInt(6.W), io.op_en_load)
+    u_alu_cvt.io.cfg_cvt.bypass := RegEnable(io.reg2dp_ew.alu_cvt.bypass, false.B, io.op_en_load)
+    u_alu_cvt.io.cfg_cvt.offset := RegEnable(io.reg2dp_ew.alu_cvt.offset, "b0".asUInt(32.W), io.op_en_load)
+    u_alu_cvt.io.cfg_cvt.scale := RegEnable(io.reg2dp_ew.alu_cvt.scale, "b0".asUInt(16.W), io.op_en_load)
+    u_alu_cvt.io.cfg_cvt.truncate := RegEnable(io.reg2dp_ew.alu_cvt.bypass, "b0".asUInt(6.W), io.op_en_load)
 
     val u_mul_cvt = Module(new NV_NVDLA_SDP_HLS_Y_cvt_top)
     u_mul_cvt.io.nvdla_core_clk := io.nvdla_core_clk
     u_mul_cvt.io.cvt_data_in <> io.ew_mul_in_data
-    u_mul_cvt.io.cfg_cvt.bypass := RegEnable(io.reg2dp_ew.cfg_mul_cvt.bypass, false.B, io.op_en_load)
-    u_mul_cvt.io.cfg_cvt.offset := RegEnable(io.reg2dp_ew.cfg_mul_cvt.offset, "b0".asUInt(32.W), io.op_en_load)
-    u_mul_cvt.io.cfg_cvt.scale := RegEnable(io.reg2dp_ew.cfg_mul_cvt.scale, "b0".asUInt(16.W), io.op_en_load)
-    u_mul_cvt.io.cfg_cvt.truncate := RegEnable(io.reg2dp_ew.cfg_mul_cvt.bypass, "b0".asUInt(6.W), io.op_en_load)
+    u_mul_cvt.io.cfg_cvt.bypass := RegEnable(io.reg2dp_ew.mul_cvt.bypass, false.B, io.op_en_load)
+    u_mul_cvt.io.cfg_cvt.offset := RegEnable(io.reg2dp_ew.mul_cvt.offset, "b0".asUInt(32.W), io.op_en_load)
+    u_mul_cvt.io.cfg_cvt.scale := RegEnable(io.reg2dp_ew.mul_cvt.scale, "b0".asUInt(16.W), io.op_en_load)
+    u_mul_cvt.io.cfg_cvt.truncate := RegEnable(io.reg2dp_ew.mul_cvt.bypass, "b0".asUInt(6.W), io.op_en_load)
 
     val u_core = Module(new NV_NVDLA_SDP_HLS_Y_int_core)
     u_core.io.nvdla_core_clk := io.nvdla_core_clk
     u_core.io.chn_alu_op <> u_alu_cvt.io.cvt_data_out
     u_core.io.chn_data_in <> io.ew_data_in_pd
     u_core.io.chn_mul_op <> u_mul_cvt.io.cvt_data_out
-    u_core.io.cfg_alu.algo := RegEnable(io.reg2dp_ew.cfg_alu.algo, "b0".asUInt(2.W), io.op_en_load)
-    u_core.io.cfg_alu.bypass := RegEnable(io.reg2dp_ew.cfg_alu.bypass, false.B, io.op_en_load)
-    u_core.io.cfg_alu.op := RegEnable(io.reg2dp_ew.cfg_alu.op, "b0".asUInt(32.W), io.op_en_load)
-    u_core.io.cfg_alu.src := RegEnable(io.reg2dp_ew.cfg_alu.src, false.B, io.op_en_load)
-    u_core.io.cfg_mul.bypass := RegEnable(io.reg2dp_ew.cfg_mul.bypass, false.B, io.op_en_load)
-    u_core.io.cfg_mul.op := RegEnable(io.reg2dp_ew.cfg_mul.op, "b0".asUInt(32.W), io.op_en_load)
-    u_core.io.cfg_mul.prelu := RegEnable(io.reg2dp_ew.cfg_mul.prelu, false.B, io.op_en_load)
-    u_core.io.cfg_mul.src := RegEnable(io.reg2dp_ew.cfg_mul.src, false.B, io.op_en_load)
-    u_core.io.cfg_mul.truncate := RegEnable(io.reg2dp_ew.cfg_mul.truncate, "b0".asUInt(10.W), io.op_en_load)
+    u_core.io.cfg_alu.algo := RegEnable(io.reg2dp_ew.alu.algo, "b0".asUInt(2.W), io.op_en_load)
+    u_core.io.cfg_alu.bypass := RegEnable(io.reg2dp_ew.alu.bypass, false.B, io.op_en_load)
+    u_core.io.cfg_alu.op := RegEnable(io.reg2dp_ew.alu.op, "b0".asUInt(32.W), io.op_en_load)
+    u_core.io.cfg_alu.src := RegEnable(io.reg2dp_ew.alu.src, false.B, io.op_en_load)
+    u_core.io.cfg_mul.bypass := RegEnable(io.reg2dp_ew.mul.bypass, false.B, io.op_en_load)
+    u_core.io.cfg_mul.op := RegEnable(io.reg2dp_ew.mul.op, "b0".asUInt(32.W), io.op_en_load)
+    u_core.io.cfg_mul.prelu := RegEnable(io.reg2dp_ew.mul.prelu, false.B, io.op_en_load)
+    u_core.io.cfg_mul.src := RegEnable(io.reg2dp_ew.mul.src, false.B, io.op_en_load)
+    u_core.io.cfg_mul.truncate := RegEnable(io.reg2dp_ew.mul.truncate, "b0".asUInt(10.W), io.op_en_load)
 
     val idx_in_pvld = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Mux(cfg_ew_lut_bypass, false.B, u_core.io.chn_data_out.valid)) else None
     val idx_in_prdy = if(conf.NVDLA_SDP_LUT_ENABLE) Some(Wire(Bool())) else None
@@ -171,7 +172,7 @@ withClock(io.nvdla_core_clk){
         u_lut.get.io.reg2dp_lut.lo_slope_oflow_shift := RegEnable(io.reg2dp_lut.get.lo_slope_oflow_shift, "b0".asUInt(5.W), io.op_en_load)
         u_lut.get.io.reg2dp_lut.lo_slope_uflow_scale := RegEnable(io.reg2dp_lut.get.lo_slope_uflow_scale, "b0".asUInt(16.W), io.op_en_load)
         u_lut.get.io.reg2dp_lut.lo_slope_uflow_shift := RegEnable(io.reg2dp_lut.get.lo_slope_uflow_shift, "b0".asUInt(5.W), io.op_en_load)
-        u_lut.get.io.reg2dp_lut.perf_lut_en := io.reg2dp_lut.get.perf_lut_en
+        u_lut.get.io.reg2dp_perf_lut_en := io.reg2dp_perf_lut_en
 
 
         u_lut.get.io.reg2dp_lut.le_start := cfg_lut_le_start.get

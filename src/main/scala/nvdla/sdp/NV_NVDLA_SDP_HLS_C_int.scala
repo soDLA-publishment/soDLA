@@ -9,9 +9,8 @@ class sdp_c_int_out_if extends Bundle{
     val sat = Output(Bool())
 }
 
-class sdp_c_int_cfg_if extends Bundle{
-    val mode_eql = Output(Bool())
-    val out_precision = Output(UInt(2.W))
+class sdp_c_int_cfg_cvt_if extends Bundle{
+
     val offset = Output(UInt(32.W))
     val scale = Output(UInt(16.W))
     val truncate = Output(UInt(6.W))
@@ -24,8 +23,10 @@ class NV_NVDLA_SDP_HLS_C_int extends Module {
 
         val cvt_in = Flipped(DecoupledIO(UInt(32.W)))
         val cvt_out = DecoupledIO(new sdp_c_int_out_if)
-
-        val cfg = Flipped(new sdp_c_int_cfg_if)
+        
+        val cfg_cvt = Flipped(new sdp_c_int_cfg_cvt_if)
+        val cfg_mode_eql = Input(Bool())
+        val cfg_out_precision = Input(UInt(2.W))
 
     })
     //     
@@ -51,9 +52,9 @@ class NV_NVDLA_SDP_HLS_C_int extends Module {
     //             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){
 
-    val cvt_data_mux = Mux(io.cfg.mode_eql, 0.U, io.cvt_in.bits)
-    val cfg_offset_mux = Mux(io.cfg.mode_eql, 0.U, io.cfg.offset)
-    val cfg_scale_mux = Mux(io.cfg.mode_eql, 0.U, io.cfg.scale)
+    val cvt_data_mux = Mux(io.cfg_mode_eql, 0.U, io.cvt_in.bits)
+    val cfg_offset_mux = Mux(io.cfg_mode_eql, 0.U, io.cfg_cvt.offset)
+    val cfg_scale_mux = Mux(io.cfg_mode_eql, 0.U, io.cfg_cvt.scale)
 
     //sub
     val sub_dout = (cvt_data_mux.asSInt -& cfg_offset_mux.asSInt).asUInt
@@ -83,7 +84,7 @@ withClock(io.nvdla_core_clk){
     //truncate
     val c_shiftrightsat_su = Module{new NV_NVDLA_HLS_shiftrightsatsu(49, 17, 6)}
     c_shiftrightsat_su.io.data_in := mul_data_out
-    c_shiftrightsat_su.io.shift_num := io.cfg.truncate
+    c_shiftrightsat_su.io.shift_num := io.cfg_cvt.truncate
     val tru_dout = c_shiftrightsat_su.io.data_out
     val sat_dout = c_shiftrightsat_su.io.sat_out
 
@@ -112,15 +113,15 @@ withClock(io.nvdla_core_clk){
     val dout_int8_sat = c_saturate_int8.io.data_out
 
     val final_out_prdy = Wire(Bool())
-    sub_in_pvld := Mux(io.cfg.mode_eql, false.B, io.cvt_in.valid)
-    io.cvt_in.ready := Mux(io.cfg.mode_eql, final_out_prdy, sub_in_prdy)
-    tru_out_prdy := Mux(io.cfg.mode_eql, true.B, final_out_prdy)
-    val final_out_pvld = Mux(io.cfg.mode_eql, io.cvt_in.valid, tru_out_pvld)
+    sub_in_pvld := Mux(io.cfg_mode_eql, false.B, io.cvt_in.valid)
+    io.cvt_in.ready := Mux(io.cfg_mode_eql, final_out_prdy, sub_in_prdy)
+    tru_out_prdy := Mux(io.cfg_mode_eql, true.B, final_out_prdy)
+    val final_out_pvld = Mux(io.cfg_mode_eql, io.cvt_in.valid, tru_out_pvld)
 
-    val cvt_dout = Mux(io.cfg.mode_eql, io.cvt_in.bits,
-                   Mux(io.cfg.out_precision === 1.U, dout_int16_sat, 
+    val cvt_dout = Mux(io.cfg_mode_eql, io.cvt_in.bits,
+                   Mux(io.cfg_out_precision === 1.U, dout_int16_sat, 
                    Cat(Fill(8, dout_int8_sat(7)), dout_int8_sat)))
-    val cvt_sat = Mux(io.cfg.mode_eql, false.B, sat_out)
+    val cvt_sat = Mux(io.cfg_mode_eql, false.B, sat_out)
 
     val pipe_p4_data_in = Cat(cvt_sat, cvt_dout)
     val pipe_p4 = Module{new NV_NVDLA_BC_pipe(17)}

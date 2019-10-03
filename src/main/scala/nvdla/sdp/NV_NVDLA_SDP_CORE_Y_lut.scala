@@ -24,7 +24,6 @@ class sdp_y_lut_reg2dp_if extends Bundle{
     val lo_slope_uflow_scale = Output(UInt(16.W))        
     val lo_slope_uflow_shift = Output(UInt(5.W))       
     val lo_start = Output(UInt(32.W)) 
-    val perf_lut_en = Output(Bool())
 }
 
 class sdp_y_lut_dp2reg_if extends Bundle{
@@ -51,6 +50,7 @@ class NV_NVDLA_SDP_CORE_Y_lut(implicit val conf: nvdlaConfig) extends Module {
 
     //reg2dp interface
     val reg2dp_lut = Flipped(new sdp_y_lut_reg2dp_if)
+    val reg2dp_perf_lut_en = Input(Bool())
     val dp2reg_lut = new sdp_y_lut_dp2reg_if
 
     val pwrbus_ram_pd = Input(UInt(32.W))
@@ -157,7 +157,7 @@ val perf_lut_oflow_sub = false.B
 
 val perf_oflow_counter = Module(new NV_COUNTER_STAGE_lut(32))
 perf_oflow_counter.io.clk := io.nvdla_core_clk
-perf_oflow_counter.io.lut_en := io.reg2dp_lut.perf_lut_en
+perf_oflow_counter.io.lut_en := io.reg2dp_perf_lut_en
 perf_oflow_counter.io.op_en_load := io.op_en_load
 perf_oflow_counter.io.hit_add := perf_lut_oflow_add
 perf_oflow_counter.io.hit_sub := perf_lut_oflow_sub
@@ -178,7 +178,7 @@ val perf_lut_uflow_sub = false.B
 
 val perf_uflow_counter = Module(new NV_COUNTER_STAGE_lut(32))
 perf_uflow_counter.io.clk := io.nvdla_core_clk
-perf_uflow_counter.io.lut_en := io.reg2dp_lut.perf_lut_en
+perf_uflow_counter.io.lut_en := io.reg2dp_perf_lut_en
 perf_uflow_counter.io.op_en_load := io.op_en_load
 perf_uflow_counter.io.hit_add := perf_lut_uflow_add
 perf_uflow_counter.io.hit_sub := perf_lut_uflow_sub
@@ -199,7 +199,7 @@ val perf_lut_hybrid_sub = false.B
 
 val perf_hybrid_counter = Module(new NV_COUNTER_STAGE_lut(32))
 perf_hybrid_counter.io.clk := io.nvdla_core_clk
-perf_hybrid_counter.io.lut_en := io.reg2dp_lut.perf_lut_en
+perf_hybrid_counter.io.lut_en := io.reg2dp_perf_lut_en
 perf_hybrid_counter.io.op_en_load := io.op_en_load
 perf_hybrid_counter.io.hit_add := perf_lut_hybrid_add
 perf_hybrid_counter.io.hit_sub := perf_lut_hybrid_sub
@@ -219,7 +219,7 @@ val perf_lut_le_hit_sub = false.B
 
 val perf_le_hit_counter = Module(new NV_COUNTER_STAGE_lut(32))
 perf_le_hit_counter.io.clk := io.nvdla_core_clk
-perf_le_hit_counter.io.lut_en := io.reg2dp_lut.perf_lut_en
+perf_le_hit_counter.io.lut_en := io.reg2dp_perf_lut_en
 perf_le_hit_counter.io.op_en_load := io.op_en_load
 perf_le_hit_counter.io.hit_add := perf_lut_le_hit_add
 perf_le_hit_counter.io.hit_sub := perf_lut_le_hit_sub
@@ -239,7 +239,7 @@ val perf_lut_lo_hit_sub = false.B
 
 val perf_lo_hit_counter = Module(new NV_COUNTER_STAGE_lut(32))
 perf_lo_hit_counter.io.clk := io.nvdla_core_clk
-perf_lo_hit_counter.io.lut_en := io.reg2dp_lut.perf_lut_en
+perf_lo_hit_counter.io.lut_en := io.reg2dp_perf_lut_en
 perf_lo_hit_counter.io.op_en_load := io.op_en_load
 perf_lo_hit_counter.io.hit_add := perf_lut_lo_hit_add
 perf_lo_hit_counter.io.hit_sub := perf_lut_lo_hit_sub

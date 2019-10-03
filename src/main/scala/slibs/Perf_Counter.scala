@@ -199,5 +199,7 @@ withClock(io.clk){
     when(io.cvt_saturation_cen){
         cvt_sat_cvt_sat_cnt_cur := cvt_sat_cvt_sat_cnt_nxt(31,0)
     }
+
+    io.cvt_saturation_cnt := cvt_sat_cvt_sat_cnt_cur
 }}
 
