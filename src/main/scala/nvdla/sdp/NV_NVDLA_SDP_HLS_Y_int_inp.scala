@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class sdp_inp_in extends Bundle{
+class sdp_y_int_inp_in extends Bundle{
     val bias = Output(UInt(32.W))
     val flow = Output(Bool())
     val frac = Output(UInt(35.W))
@@ -22,7 +22,7 @@ class NV_NVDLA_SDP_HLS_Y_int_inp extends Module {
         val nvdla_core_clk = Input(Clock())
 
         //in
-        val inp_in = Flipped(DecoupledIO(new sdp_inp_in))
+        val inp_in = Flipped(DecoupledIO(new sdp_y_int_inp_in))
         //out
         val inp_data_out = DecoupledIO(UInt(32.W))
 

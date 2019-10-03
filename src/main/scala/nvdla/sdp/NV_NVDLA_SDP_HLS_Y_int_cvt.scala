@@ -4,6 +4,13 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+class sdp_y_int_cvt_cfg_if extends Bundle{
+    val bypass = Output(Bool())
+    val offset = Output(UInt(32.W))
+    val scale = Output(UInt(16.W))
+    val truncate = Output(UInt(6.W))
+}
+
 class NV_NVDLA_SDP_HLS_Y_int_cvt extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -11,10 +18,7 @@ class NV_NVDLA_SDP_HLS_Y_int_cvt extends Module {
         val cvt_data_in = Flipped(DecoupledIO(UInt(16.W)))
         val cvt_data_out = DecoupledIO(UInt(32.W))
     
-        val cfg_cvt_bypass = Input(Bool())
-        val cfg_cvt_offset = Input(UInt(32.W))
-        val cfg_cvt_scale = Input(UInt(16.W))
-        val cfg_cvt_truncate = Input(UInt(6.W))
+        val cfg_cvt = Flipped(new sdp_y_int_cvt_cfg_if)
     })
     //     
     //          ┌─┐       ┌─┐
@@ -40,11 +44,11 @@ class NV_NVDLA_SDP_HLS_Y_int_cvt extends Module {
 withClock(io.nvdla_core_clk){
 
     //sub
-    val cfg_scale = Mux(io.cfg_cvt_bypass, 0.U, io.cfg_cvt_scale)
-    val cfg_truncate = Mux(io.cfg_cvt_bypass, 0.U, io.cfg_cvt_truncate)
+    val cfg_scale = Mux(io.cfg_cvt.bypass, 0.U, io.cfg_cvt.scale)
+    val cfg_truncate = Mux(io.cfg_cvt.bypass, 0.U, io.cfg_cvt.truncate)
 
-    val cfg_offset_ext = Mux(io.cfg_cvt_bypass, 0.U, Cat(io.cfg_cvt_offset(31), io.cfg_cvt_offset))
-    val cvt_data_ext = Mux(io.cfg_cvt_bypass, 0.U, Cat(Fill(17, io.cvt_data_in.bits(15)), io.cvt_data_in.bits))
+    val cfg_offset_ext = Mux(io.cfg_cvt.bypass, 0.U, Cat(io.cfg_cvt.offset(31), io.cfg_cvt.offset))
+    val cvt_data_ext = Mux(io.cfg_cvt.bypass, 0.U, Cat(Fill(17, io.cvt_data_in.bits(15)), io.cvt_data_in.bits))
 
     val sub_in_pvld = Wire(Bool())
     val sub_out_prdy = Wire(Bool())
@@ -82,11 +86,11 @@ withClock(io.nvdla_core_clk){
     //signed 
     //unsigned 
     val final_out_prdy = Wire(Bool())
-    sub_in_pvld := Mux(io.cfg_cvt_bypass, false.B, io.cvt_data_in.valid)
-    io.cvt_data_in.ready := Mux(io.cfg_cvt_bypass, final_out_prdy, sub_in_prdy) 
-    mul_out_prdy := Mux(io.cfg_cvt_bypass, true.B, final_out_prdy)
-    val final_out_pvld = Mux(io.cfg_cvt_bypass, io.cvt_data_in.valid, mul_out_pvld)
-    val cvt_dout = Mux(io.cfg_cvt_bypass, Cat(Fill(16, io.cvt_data_in.bits(15)), io.cvt_data_in.bits), tru_dout)   
+    sub_in_pvld := Mux(io.cfg_cvt.bypass, false.B, io.cvt_data_in.valid)
+    io.cvt_data_in.ready := Mux(io.cfg_cvt.bypass, final_out_prdy, sub_in_prdy) 
+    mul_out_prdy := Mux(io.cfg_cvt.bypass, true.B, final_out_prdy)
+    val final_out_pvld = Mux(io.cfg_cvt.bypass, io.cvt_data_in.valid, mul_out_pvld)
+    val cvt_dout = Mux(io.cfg_cvt.bypass, Cat(Fill(16, io.cvt_data_in.bits(15)), io.cvt_data_in.bits), tru_dout)   
 
     val pipe_p3 = Module{new NV_NVDLA_BC_pipe(32)}
     pipe_p3.io.clk := io.nvdla_core_clk

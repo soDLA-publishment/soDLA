@@ -17,15 +17,8 @@ class NV_NVDLA_SDP_HLS_Y_int_core(implicit conf: nvdlaConfig) extends Module{
         //chn_data_out
         val chn_data_out = DecoupledIO(UInt(conf.EW_CORE_OUT_DW.W))
 
-        val cfg_alu_algo = Input(UInt(2.W))
-        val cfg_alu_bypass = Input(Bool())
-        val cfg_alu_op = Input(UInt(32.W))
-        val cfg_alu_src = Input(Bool())
-        val cfg_mul_bypass = Input(Bool())
-        val cfg_mul_op = Input(UInt(32.W))
-        val cfg_mul_prelu = Input(Bool())
-        val cfg_mul_src = Input(Bool())
-        val cfg_mul_truncate = Input(UInt(10.W))   
+        val cfg_alu = Flipped(new sdp_y_int_alu_cfg_if) 
+        val cfg_mul = Flipped(new sdp_y_int_mul_cfg_if)
     })
     //     
     //          ┌─┐       ┌─┐
@@ -95,11 +88,7 @@ withClock(io.nvdla_core_clk){
         u_sdp_y_core_mul(i).io.mul_data_out.ready := mul_out_prdy_wire(i)
         mul_data_out_wire(i) := u_sdp_y_core_mul(i).io.mul_data_out.bits
 
-        u_sdp_y_core_mul(i).io.cfg_mul_bypass := io.cfg_mul_bypass
-        u_sdp_y_core_mul(i).io.cfg_mul_op := io.cfg_mul_op
-        u_sdp_y_core_mul(i).io.cfg_mul_prelu := io.cfg_mul_prelu
-        u_sdp_y_core_mul(i).io.cfg_mul_src := io.cfg_mul_src
-        u_sdp_y_core_mul(i).io.cfg_mul_truncate := io.cfg_mul_truncate
+        u_sdp_y_core_mul(i).io.cfg_mul <> io.cfg_mul
 
     //: NV_NVDLA_SDP_HLS_Y_int_alu
         u_sdp_y_core_alu(i).io.nvdla_core_clk := io.nvdla_core_clk
@@ -116,11 +105,7 @@ withClock(io.nvdla_core_clk){
         u_sdp_y_core_alu(i).io.alu_data_out.ready := io.chn_data_out.ready
         chn_data_out_wire(i) := u_sdp_y_core_alu(i).io.alu_data_out.bits
 
-        u_sdp_y_core_alu(i).io.cfg_alu_algo := io.cfg_alu_algo
-        u_sdp_y_core_alu(i).io.cfg_alu_bypass := io.cfg_alu_bypass
-        u_sdp_y_core_alu(i).io.cfg_alu_op := io.cfg_alu_op
-        u_sdp_y_core_alu(i).io.cfg_alu_src := io.cfg_alu_src
-
+        u_sdp_y_core_alu(i).io.cfg_alu <> io.cfg_alu
 
     }
 

@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+
+
 class NV_NVDLA_SDP_HLS_Y_idx_top(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -11,17 +13,10 @@ class NV_NVDLA_SDP_HLS_Y_idx_top(implicit conf: nvdlaConfig) extends Module {
         val chn_lut_in_pd = Flipped(DecoupledIO(UInt(conf.EW_CORE_OUT_DW.W)))
         val chn_lut_out_pd = DecoupledIO(UInt(conf.EW_IDX_OUT_DW.W))
 
-        val cfg_lut_hybrid_priority = Input(Bool())
-        val cfg_lut_le_function = Input(Bool())
-        val cfg_lut_le_index_offset = Input(UInt(8.W))
-        val cfg_lut_le_index_select = Input(UInt(8.W))
-        val cfg_lut_le_start = Input(UInt(32.W))
-        val cfg_lut_lo_index_select = Input(UInt(8.W))
-        val cfg_lut_lo_start = Input(UInt(32.W))
-        val cfg_lut_oflow_priority = Input(Bool())
-        val cfg_lut_uflow_priority = Input(Bool())
+        val cfg_lut = Flipped(new sdp_y_int_idx_cfg_if)
 
     })
+    
     //     
     //          ┌─┐       ┌─┐
     //       ┌──┘ ┴───────┘ ┴──┐
@@ -78,15 +73,8 @@ withClock(io.nvdla_core_clk){
         lut_out_uflow_wire(i) := y_int_idx(i).io.lut_out.bits.uflow 
         lut_out_x_wire(i) := y_int_idx(i).io.lut_out.bits.x
 
-        y_int_idx(i).io.cfg_lut_hybrid_priority := io.cfg_lut_hybrid_priority
-        y_int_idx(i).io.cfg_lut_le_function := io.cfg_lut_le_function
-        y_int_idx(i).io.cfg_lut_le_index_offset := io.cfg_lut_le_index_offset
-        y_int_idx(i).io.cfg_lut_le_index_select := io.cfg_lut_le_index_select
-        y_int_idx(i).io.cfg_lut_le_start := io.cfg_lut_le_start
-        y_int_idx(i).io.cfg_lut_lo_index_select := io.cfg_lut_lo_index_select
-        y_int_idx(i).io.cfg_lut_lo_start := io.cfg_lut_lo_start
-        y_int_idx(i).io.cfg_lut_oflow_priority := io.cfg_lut_oflow_priority
-        y_int_idx(i).io.cfg_lut_uflow_priority := io.cfg_lut_uflow_priority
+        y_int_idx(i).io.cfg_lut <> io.cfg_lut
+
     }
 
 

@@ -4,6 +4,14 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+class sdp_x_int_alu_cfg_if extends Bundle{
+    val algo = Output(UInt(2.W))
+    val bypass = Output(Bool())
+    val op = Output(UInt(16.W))
+    val shift_value = Output(UInt(6.W))
+    val src = Output(Bool())
+}
+
 class NV_NVDLA_SDP_HLS_X_int_alu extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -12,11 +20,7 @@ class NV_NVDLA_SDP_HLS_X_int_alu extends Module {
         val alu_data_in = Flipped(DecoupledIO(UInt(32.W)))
         val alu_data_out = DecoupledIO(UInt(33.W))
 
-        val cfg_alu_algo = Input(UInt(2.W))
-        val cfg_alu_bypass = Input(Bool())
-        val cfg_alu_op = Input(UInt(16.W))
-        val cfg_alu_shift_value = Input(UInt(6.W))
-        val cfg_alu_src = Input(Bool())
+        val cfg_alu = Flipped(new sdp_x_int_alu_cfg_if)
                
     })
     //     
@@ -44,8 +48,8 @@ withClock(io.nvdla_core_clk){
 
     val alu_sync_prdy = Wire(Bool())
     val x_alu_sync2data = Module{new NV_NVDLA_HLS_sync2data(16, 32)}
-    x_alu_sync2data.io.chn1_en := io.cfg_alu_src & !io.cfg_alu_bypass
-    x_alu_sync2data.io.chn2_en := !io.cfg_alu_bypass
+    x_alu_sync2data.io.chn1_en := io.cfg_alu.src & !io.cfg_alu.bypass
+    x_alu_sync2data.io.chn2_en := !io.cfg_alu.bypass
     x_alu_sync2data.io.chn1_in <> io.chn_alu_op
     x_alu_sync2data.io.chn2_in.valid := io.alu_data_in.valid
     val alu_in_srdy = x_alu_sync2data.io.chn2_in.ready
@@ -55,11 +59,11 @@ withClock(io.nvdla_core_clk){
     val alu_op_sync = x_alu_sync2data.io.chn_out.bits.data1
     val alu_data_sync = x_alu_sync2data.io.chn_out.bits.data2
 
-    val alu_op_in = Mux(io.cfg_alu_src, alu_op_sync, io.cfg_alu_op)
+    val alu_op_in = Mux(io.cfg_alu.src, alu_op_sync, io.cfg_alu.op)
 
     val x_alu_shiftleft_su = Module{new NV_NVDLA_HLS_shiftleftsu(16, 32, 6)}
     x_alu_shiftleft_su.io.data_in := alu_op_in
-    x_alu_shiftleft_su.io.shift_num := io.cfg_alu_shift_value
+    x_alu_shiftleft_su.io.shift_num := io.cfg_alu.shift_value
     val alu_op_shift = x_alu_shiftleft_su.io.data_out
 
     val alu_shift_prdy = Wire(Bool())
@@ -81,10 +85,10 @@ withClock(io.nvdla_core_clk){
     val alu_sum = (alu_data_ext.asSInt + operand_ext.asSInt).asUInt
 
     val alu_dout = Wire(UInt(33.W))
-    when(io.cfg_alu_algo === 0.U){
+    when(io.cfg_alu.algo === 0.U){
         alu_dout := Mux(alu_data_ext.asSInt > operand_ext.asSInt, alu_data_ext, operand_ext)
     }
-    .elsewhen(io.cfg_alu_algo === 1.U){
+    .elsewhen(io.cfg_alu.algo === 1.U){
         alu_dout := Mux(alu_data_ext.asSInt < operand_ext.asSInt, alu_data_ext, operand_ext)
     }
     .otherwise{
@@ -101,10 +105,10 @@ withClock(io.nvdla_core_clk){
     pipe_p2.io.ri := alu_final_prdy
     val alu_data_final = pipe_p2.io.dout
 
-    io.alu_data_in.ready := Mux(io.cfg_alu_bypass, io.alu_data_out.ready, alu_in_srdy)
-    alu_final_prdy := Mux(io.cfg_alu_bypass, true.B, io.alu_data_out.ready)
-    io.alu_data_out.valid := Mux(io.cfg_alu_bypass, io.alu_data_in.ready, alu_final_pvld)
-    io.alu_data_out.bits := Mux(io.cfg_alu_bypass, Cat(io.alu_data_in.bits(31), io.alu_data_in.bits), alu_data_final)
+    io.alu_data_in.ready := Mux(io.cfg_alu.bypass, io.alu_data_out.ready, alu_in_srdy)
+    alu_final_prdy := Mux(io.cfg_alu.bypass, true.B, io.alu_data_out.ready)
+    io.alu_data_out.valid := Mux(io.cfg_alu.bypass, io.alu_data_in.ready, alu_final_pvld)
+    io.alu_data_out.bits := Mux(io.cfg_alu.bypass, Cat(io.alu_data_in.bits(31), io.alu_data_in.bits), alu_data_final)
 
 
 }} 

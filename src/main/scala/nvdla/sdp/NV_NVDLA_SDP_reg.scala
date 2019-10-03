@@ -70,9 +70,9 @@
 
 //     u_single_reg.io.nvdla_core_clk  := io.nvdla_core_clk
 //     val s_reg_rd_data               = u_single_reg.io.reg.rd_data
-//     u_single_reg.io.reg.offset      := s_reg.offset(11,0)
-//     u_single_reg.io.reg.wr_data     := s_reg.wr_data
-//     u_single_reg.io.reg.wr_en       := s_reg.wr_en
+//     u_single_reg.io.reg.offset      := s_reg_offset(11,0)
+//     u_single_reg.io.reg.wr_data     := s_reg_wr_data
+//     u_single_reg.io.reg.wr_en       := s_reg_wr_en
 //     val reg2dp_lut_access_type      = u_single_reg.io.lut_access_type
 //     val reg2dp_lut_addr             = u_single_reg.io.lut_addr
 //     val reg2dp_lut_addr_trigger     = u_single_reg.io.lut_addr_trigger

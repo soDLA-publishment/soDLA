@@ -11,10 +11,7 @@ class NV_NVDLA_SDP_HLS_Y_cvt_top(implicit conf: nvdlaConfig) extends Module {
         val cvt_data_in = Flipped(DecoupledIO(UInt(conf.EW_OP_DW.W)))
         val cvt_data_out = DecoupledIO(UInt(conf.EW_OC_DW.W))
     
-        val cfg_cvt_bypass = Input(Bool())
-        val cfg_cvt_offset = Input(UInt(32.W))
-        val cfg_cvt_scale = Input(UInt(16.W))
-        val cfg_cvt_truncate = Input(UInt(6.W)) 
+        val cfg_cvt = Flipped(new sdp_y_int_cvt_cfg_if)
     })
     //     
     //          ┌─┐       ┌─┐
@@ -61,10 +58,7 @@ withClock(io.nvdla_core_clk){
         y_int_cvt(i).io.cvt_data_out.ready := io.cvt_data_out.ready
         cvt_data_out_wire(i) := y_int_cvt(i).io.cvt_data_out.bits
 
-        y_int_cvt(i).io.cfg_cvt_bypass := io.cfg_cvt_bypass
-        y_int_cvt(i).io.cfg_cvt_offset := io.cfg_cvt_offset
-        y_int_cvt(i).io.cfg_cvt_scale := io.cfg_cvt_scale
-        y_int_cvt(i).io.cfg_cvt_truncate := io.cfg_cvt_truncate
+        y_int_cvt(i).io.cfg_cvt <> io.cfg_cvt
     }
 
     io.cvt_data_in.ready := cvt_in_prdy_wire(0)

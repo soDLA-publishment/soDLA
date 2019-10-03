@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class sdp_idx_out_if extends Bundle{
+class sdp_y_int_idx_out_if extends Bundle{
     val frac = Output(UInt(35.W))
     val le_hit = Output(Bool())
     val lo_hit = Output(Bool())
@@ -15,22 +15,27 @@ class sdp_idx_out_if extends Bundle{
     val x = Output(UInt(32.W))
 }
 
+class sdp_y_int_idx_cfg_if extends Bundle{
+    val le_function = Output(Bool())
+    val le_start = Output(UInt(32.W))
+    val lo_start = Output(UInt(32.W))
+    val oflow_priority = Output(Bool())
+    val uflow_priority = Output(Bool())
+    val hybrid_priority = Output(Bool())
+    val le_index_offset = Output(UInt(8.W))
+    val le_index_select = Output(UInt(8.W))
+    val lo_index_select = Output(UInt(8.W))
+}
+
+
 class NV_NVDLA_SDP_HLS_Y_int_idx extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
         
         val lut_data_in = Flipped(DecoupledIO(UInt(32.W)))
-        val lut_out = DecoupledIO(new sdp_idx_out_if)
+        val lut_out = DecoupledIO(new sdp_y_int_idx_out_if)
 
-        val cfg_lut_hybrid_priority = Input(Bool())
-        val cfg_lut_le_function = Input(Bool())
-        val cfg_lut_le_index_offset = Input(UInt(8.W))
-        val cfg_lut_le_index_select = Input(UInt(8.W))
-        val cfg_lut_le_start = Input(UInt(32.W))
-        val cfg_lut_lo_index_select = Input(UInt(8.W))
-        val cfg_lut_lo_start = Input(UInt(32.W))
-        val cfg_lut_oflow_priority = Input(Bool())
-        val cfg_lut_uflow_priority = Input(Bool())
+        val cfg_lut = Flipped(new sdp_y_int_idx_cfg_if)
         
     })
     //     
@@ -130,8 +135,8 @@ withClock(io.nvdla_core_clk){
     val lo_line_out_prdy = Wire(Bool())
     val lut_lo_line = Module(new NV_NVDLA_SDP_HLS_lut_line(257))
     lut_lo_line.io.nvdla_core_clk := io.nvdla_core_clk
-    lut_lo_line.io.cfg_lut_sel := io.cfg_lut_lo_index_select
-    lut_lo_line.io.cfg_lut_start := io.cfg_lut_lo_start
+    lut_lo_line.io.cfg_lut_sel := io.cfg_lut.lo_index_select
+    lut_lo_line.io.cfg_lut_start := io.cfg_lut.lo_start
     lut_lo_line.io.idx_in.bits := io.lut_data_in.bits
     lut_lo_line.io.idx_in.valid := lo_line_in_pvld
     lut_lo_line.io.idx_out.ready := lo_line_out_prdy
@@ -143,33 +148,33 @@ withClock(io.nvdla_core_clk){
     val lo_line_uflow = lut_lo_line.io.idx_out.bits.uflow
 
     //sync lut_x_in, le_in,lo_in 
-    le_expn_in_pvld := (io.cfg_lut_le_function === 0.U) & io.lut_data_in.valid & lo_line_in_prdy & lut_x_in_prdy
-    le_line_in_pvld := (io.cfg_lut_le_function =/= 0.U) & io.lut_data_in.valid & lo_line_in_prdy & lut_x_in_prdy
-    lo_line_in_pvld := Mux(io.cfg_lut_le_function === 0.U, le_expn_in_prdy, le_line_in_prdy) & io.lut_data_in.valid & lut_x_in_prdy
-    lut_x_in_pvld := Mux(io.cfg_lut_le_function === 0.U, le_expn_in_prdy, le_line_in_prdy) & io.lut_data_in.valid & lo_line_in_prdy
-    io.lut_data_in.ready := Mux(io.cfg_lut_le_function === 0.U, le_expn_in_prdy, le_line_in_prdy) & lo_line_in_prdy & lut_x_in_prdy
+    le_expn_in_pvld := (io.cfg_lut.le_function === 0.U) & io.lut_data_in.valid & lo_line_in_prdy & lut_x_in_prdy
+    le_line_in_pvld := (io.cfg_lut.le_function =/= 0.U) & io.lut_data_in.valid & lo_line_in_prdy & lut_x_in_prdy
+    lo_line_in_pvld := Mux(io.cfg_lut.le_function === 0.U, le_expn_in_prdy, le_line_in_prdy) & io.lut_data_in.valid & lut_x_in_prdy
+    lut_x_in_pvld := Mux(io.cfg_lut.le_function === 0.U, le_expn_in_prdy, le_line_in_prdy) & io.lut_data_in.valid & lo_line_in_prdy
+    io.lut_data_in.ready := Mux(io.cfg_lut.le_function === 0.U, le_expn_in_prdy, le_line_in_prdy) & lo_line_in_prdy & lut_x_in_prdy
 
     //sync lut_x_out, le_out,lo_out
     val lut_final_prdy = Wire(Bool())
-    le_expn_out_prdy := (io.cfg_lut_le_function === 0.U) & lut_final_prdy & lo_line_out_pvld & lut_x_out_pvld;
-    le_line_out_prdy := (io.cfg_lut_le_function =/= 0.U) & lut_final_prdy & lo_line_out_pvld & lut_x_out_pvld;
-    lo_line_out_prdy := Mux(io.cfg_lut_le_function === 0.U, le_expn_out_pvld, le_line_out_pvld) & lut_final_prdy & lut_x_out_pvld;
-    lut_x_out_prdy := Mux(io.cfg_lut_le_function === 0.U, le_expn_out_pvld, le_line_out_pvld) & lut_final_prdy & lo_line_out_pvld;
-    val lut_final_pvld = Mux(io.cfg_lut_le_function === 0.U, le_expn_out_pvld, le_line_out_pvld) & lo_line_out_pvld & lut_x_out_pvld;
+    le_expn_out_prdy := (io.cfg_lut.le_function === 0.U) & lut_final_prdy & lo_line_out_pvld & lut_x_out_pvld;
+    le_line_out_prdy := (io.cfg_lut.le_function =/= 0.U) & lut_final_prdy & lo_line_out_pvld & lut_x_out_pvld;
+    lo_line_out_prdy := Mux(io.cfg_lut.le_function === 0.U, le_expn_out_pvld, le_line_out_pvld) & lut_final_prdy & lut_x_out_pvld;
+    lut_x_out_prdy := Mux(io.cfg_lut.le_function === 0.U, le_expn_out_pvld, le_line_out_pvld) & lut_final_prdy & lo_line_out_pvld;
+    val lut_final_pvld = Mux(io.cfg_lut.le_function === 0.U, le_expn_out_pvld, le_line_out_pvld) & lo_line_out_pvld & lut_x_out_pvld;
 
-    le_expn_data_in := Mux(io.cfg_lut_le_function === 0.U, io.lut_data_in.bits, "b0".asUInt(32.W))
-    le_expn_cfg_start := Mux(io.cfg_lut_le_function === 0.U, io.cfg_lut_le_start, "b0".asUInt(32.W))
-    le_expn_cfg_offset := Mux(io.cfg_lut_le_function === 0.U, io. cfg_lut_le_index_offset, "b0".asUInt(8.W))
+    le_expn_data_in := Mux(io.cfg_lut.le_function === 0.U, io.lut_data_in.bits, "b0".asUInt(32.W))
+    le_expn_cfg_start := Mux(io.cfg_lut.le_function === 0.U, io.cfg_lut.le_start, "b0".asUInt(32.W))
+    le_expn_cfg_offset := Mux(io.cfg_lut.le_function === 0.U, io.cfg_lut.le_index_offset, "b0".asUInt(8.W))
 
-    le_line_data_in := Mux(io.cfg_lut_le_function =/= 0.U, io.lut_data_in.bits, "b0".asUInt(32.W))
-    le_line_cfg_start := Mux(io.cfg_lut_le_function =/= 0.U, io.cfg_lut_le_start, "b0".asUInt(32.W))
-    le_line_cfg_sel := Mux(io.cfg_lut_le_function =/= 0.U, io.cfg_lut_le_index_select, "b0".asUInt(8.W))
+    le_line_data_in := Mux(io.cfg_lut.le_function =/= 0.U, io.lut_data_in.bits, "b0".asUInt(32.W))
+    le_line_cfg_start := Mux(io.cfg_lut.le_function =/= 0.U, io.cfg_lut.le_start, "b0".asUInt(32.W))
+    le_line_cfg_sel := Mux(io.cfg_lut.le_function =/= 0.U, io.cfg_lut.le_index_select, "b0".asUInt(8.W))
 
-    val le_oflow = Mux(io.cfg_lut_le_function === 0.U, le_expn_oflow, le_line_oflow)
-    val le_uflow = Mux(io.cfg_lut_le_function === 0.U, le_expn_uflow, le_line_uflow)
+    val le_oflow = Mux(io.cfg_lut.le_function === 0.U, le_expn_oflow, le_line_oflow)
+    val le_uflow = Mux(io.cfg_lut.le_function === 0.U, le_expn_uflow, le_line_uflow)
 
-    val le_index = Mux(io.cfg_lut_le_function === 0.U, le_expn_index, le_line_index)
-    val le_frac = Mux(io.cfg_lut_le_function === 0.U, le_expn_frac, le_line_frac)
+    val le_index = Mux(io.cfg_lut.le_function === 0.U, le_expn_index, le_line_index)
+    val le_frac = Mux(io.cfg_lut.le_function === 0.U, le_expn_frac, le_line_frac)
 
     val lo_oflow = lo_line_oflow
     val lo_uflow = lo_line_uflow
@@ -189,25 +194,25 @@ withClock(io.nvdla_core_clk){
     val lut_final_frac = Wire(UInt(35.W))
 
     when(le_uflow & lo_uflow){
-        lut_final_uflow := Mux(io.cfg_lut_uflow_priority, lo_uflow, le_uflow)
+        lut_final_uflow := Mux(io.cfg_lut.uflow_priority, lo_uflow, le_uflow)
         lut_final_oflow := false.B 
-        lut_final_ram_sel := Mux(io.cfg_lut_uflow_priority, true.B, false.B)
-        lut_final_ram_addr := Mux(io.cfg_lut_uflow_priority, lo_index, le_index)
-        lut_final_frac := Mux(io.cfg_lut_uflow_priority, lo_frac, le_frac)
+        lut_final_ram_sel := Mux(io.cfg_lut.uflow_priority, true.B, false.B)
+        lut_final_ram_addr := Mux(io.cfg_lut.uflow_priority, lo_index, le_index)
+        lut_final_frac := Mux(io.cfg_lut.uflow_priority, lo_frac, le_frac)
     }
     .elsewhen(le_oflow & lo_oflow){
         lut_final_uflow := false.B
-        lut_final_oflow := Mux(io.cfg_lut_oflow_priority, lo_oflow, le_oflow)
-        lut_final_ram_sel := Mux(io.cfg_lut_oflow_priority, true.B, false.B)
-        lut_final_ram_addr := Mux(io.cfg_lut_uflow_priority, lo_index, le_index)
-        lut_final_frac := Mux(io.cfg_lut_oflow_priority, lo_frac, le_frac)
+        lut_final_oflow := Mux(io.cfg_lut.oflow_priority, lo_oflow, le_oflow)
+        lut_final_ram_sel := Mux(io.cfg_lut.oflow_priority, true.B, false.B)
+        lut_final_ram_addr := Mux(io.cfg_lut.uflow_priority, lo_index, le_index)
+        lut_final_frac := Mux(io.cfg_lut.oflow_priority, lo_frac, le_frac)
     }
     .elsewhen(le_hit & lo_hit){
         lut_final_uflow := false.B
         lut_final_oflow := false.B
-        lut_final_ram_sel := Mux(io.cfg_lut_hybrid_priority, true.B, false.B)
-        lut_final_ram_addr := Mux(io.cfg_lut_uflow_priority, lo_index, le_index)
-        lut_final_frac := Mux(io.cfg_lut_uflow_priority, lo_frac, le_frac)
+        lut_final_ram_sel := Mux(io.cfg_lut.hybrid_priority, true.B, false.B)
+        lut_final_ram_addr := Mux(io.cfg_lut.uflow_priority, lo_index, le_index)
+        lut_final_frac := Mux(io.cfg_lut.uflow_priority, lo_frac, le_frac)
     }
     .elsewhen(le_hit){
         lut_final_uflow := false.B

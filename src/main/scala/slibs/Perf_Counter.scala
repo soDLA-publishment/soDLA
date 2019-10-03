@@ -132,3 +132,72 @@ withClock(io.clk){
 
 }}
 
+
+class NV_COUNTER_STAGE_saturation extends Module{
+
+    val io = IO(new Bundle{
+        val clk = Input(Clock())
+
+        val cvt_saturation_add = Input(UInt(5.W))
+        val cvt_saturation_sub = Input(Bool())
+        val cvt_saturation_clr = Input(Bool())
+        val cvt_saturation_cen = Input(Bool())
+
+        val cvt_saturation_cnt = Output(UInt(32.W))
+
+    })
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘ 
+withClock(io.clk){
+
+    val cvt_sat_add_ext = io.cvt_saturation_add
+    val cvt_sat_sub_ext = Cat(Fill(4, false.B), io.cvt_saturation_sub)
+    val cvt_sat_inc = cvt_sat_add_ext > cvt_sat_sub_ext
+    val cvt_sat_dec = cvt_sat_add_ext < cvt_sat_sub_ext
+    val cvt_sat_mod_ext = Mux(cvt_sat_inc, (cvt_sat_add_ext -& cvt_sat_sub_ext) , (cvt_sat_sub_ext -& cvt_sat_add_ext))(4, 0)
+
+    val cvt_sat_sub_guard = io.cvt_saturation_cnt(31,1).orR === false.B
+    val cvt_sat_sub_act = io.cvt_saturation_cnt(0)
+    val cvt_sat_sub_act_ext = Cat(Fill(4, false.B), cvt_sat_sub_act)
+    val cvt_sat_sub_flow = cvt_sat_dec & cvt_sat_sub_guard & (cvt_sat_sub_act_ext < cvt_sat_mod_ext)
+
+    val cvt_sat_add_guard = io.cvt_saturation_cnt(31,5).andR === true.B
+    val cvt_sat_add_act = io.cvt_saturation_cnt(4,0)
+    val cvt_sat_add_act_ext = cvt_sat_add_act
+    val cvt_sat_add_flow = cvt_sat_inc & cvt_sat_add_guard & ((cvt_sat_add_act_ext +& cvt_sat_mod_ext) > 31.U )
+
+    val i_add = Mux(cvt_sat_add_flow, (31.U -& cvt_sat_add_act), Mux(cvt_sat_sub_flow, 0.U, io.cvt_saturation_add))
+    val i_sub = Mux(cvt_sat_sub_flow, cvt_sat_sub_act, Mux(cvt_sat_add_flow, 0.U, io.cvt_saturation_sub))
+
+    val cvt_sat_cvt_sat_adv = i_add =/= Cat(Fill(4,false.B), i_sub(0))
+
+    val cvt_sat_cvt_sat_cnt_cur = RegInit(0.U(32.W))
+    val cvt_sat_cvt_sat_cnt_ext = Cat(false.B, false.B, cvt_sat_cvt_sat_cnt_cur)
+    val cvt_sat_cvt_sat_cnt_mod = cvt_sat_cvt_sat_cnt_cur +& i_add(4, 0) -& i_sub(0)
+    val cvt_sat_cvt_sat_cnt_new = Mux(cvt_sat_cvt_sat_adv, cvt_sat_cvt_sat_cnt_mod, cvt_sat_cvt_sat_cnt_ext)
+    val cvt_sat_cvt_sat_cnt_nxt = Mux(io.cvt_saturation_clr, 0.U, cvt_sat_cvt_sat_cnt_new)
+
+    when(io.cvt_saturation_cen){
+        cvt_sat_cvt_sat_cnt_cur := cvt_sat_cvt_sat_cnt_nxt(31,0)
+    }
+}}
+
