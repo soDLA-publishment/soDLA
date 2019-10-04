@@ -507,7 +507,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         u_bs.get.io.cfg_mul.bypass := cfg_bs_mul_bypass.get
         u_bs.get.io.cfg_mul.op := cfg_bs_mul_operand.get
         u_bs.get.io.cfg_mul.prelu := cfg_bs_mul_prelu.get
-        u_bs.get.io.cfg_mul.shift_value := cfg_bs_mul_shift_value.get
+        u_bs.get.io.cfg_mul.shift_value := cfg_bs_mul_shift_value.get(5, 0)
         u_bs.get.io.cfg_mul.src := cfg_bs_mul_src.get
         u_bs.get.io.cfg_relu_bypass := cfg_bs_relu_bypass.get  
 
@@ -570,7 +570,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         u_bn.get.io.cfg_mul.bypass := cfg_bn_mul_bypass.get
         u_bn.get.io.cfg_mul.op := cfg_bn_mul_operand.get
         u_bn.get.io.cfg_mul.prelu := cfg_bn_mul_prelu.get
-        u_bn.get.io.cfg_mul.shift_value := cfg_bn_mul_shift_value.get
+        u_bn.get.io.cfg_mul.shift_value := cfg_bn_mul_shift_value.get(5, 0)
         u_bn.get.io.cfg_mul.src := cfg_bn_mul_src.get
         u_bn.get.io.cfg_relu_bypass := cfg_bn_relu_bypass.get 
 

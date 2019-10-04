@@ -17,6 +17,10 @@ class NV_NVDLA_SDP_REG_single extends Module{
         val producer = Output(Bool())
         val lut_addr_trigger = Output(Bool())
         val lut_data_trigger = Output(Bool())
+        val lut_access_type = Output(Bool())
+        val lut_addr = Output(UInt(10.W))
+        val lut_table_id = Output(Bool())
+
 
         //Read-only register inputs
         val consumer = Input(Bool())
@@ -72,7 +76,7 @@ class NV_NVDLA_SDP_REG_single extends Module{
     io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(      
     //nvdla_sdp_s_lut_access_cfg_0_out
-    "h08".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.field.lut_access_type, io.field.lut_table_id, "b0".asUInt(6.W), io.field.lut_addr),
+    "h08".asUInt(32.W)  -> Cat("b0".asUInt(14.W), io.lut_access_type, io.lut_table_id, "b0".asUInt(6.W), io.lut_addr),
     //nvdla_sdp_s_lut_access_data_0_out
     "h0c".asUInt(32.W)  -> Cat("b0".asUInt(16.W), io.lut_data),
     //nvdla_sdp_s_lut_cfg_0_out
@@ -103,11 +107,12 @@ class NV_NVDLA_SDP_REG_single extends Module{
 
   
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_access_type
-    io.field.lut_access_type := RegEnable(io.reg.wr_data(17), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
+    io.lut_access_type := RegEnable(io.reg.wr_data(17), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_addr
-    io.field.lut_addr := RegEnable(io.reg.wr_data(9,0), "b0".asUInt(10.W), nvdla_sdp_s_lut_access_cfg_0_wren)
+    io.lut_addr := RegEnable(io.reg.wr_data(9,0), "b0".asUInt(10.W), nvdla_sdp_s_lut_access_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_ACCESS_CFG_0    Field: lut_table_id
-    io.field.lut_table_id := RegEnable(io.reg.wr_data(16), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
+    io.lut_table_id := RegEnable(io.reg.wr_data(16), false.B, nvdla_sdp_s_lut_access_cfg_0_wren)
+
   // Register: NVDLA_SDP_S_LUT_CFG_0    Field: lut_hybrid_priority
     io.field.lut_hybrid_priority := RegEnable(io.reg.wr_data(6), false.B, nvdla_sdp_s_lut_cfg_0_wren)
   // Register: NVDLA_SDP_S_LUT_CFG_0    Field: lut_le_function

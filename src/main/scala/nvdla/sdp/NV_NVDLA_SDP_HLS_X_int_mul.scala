@@ -8,8 +8,8 @@ class sdp_x_int_mul_cfg_if extends Bundle{
     val bypass = Output(Bool())
     val op = Output(UInt(16.W))
     val prelu = Output(Bool())
-    val shift_value = Output(UInt(6.W))
     val src = Output(Bool())
+    val shift_value = Output(UInt(6.W))
 }
 
 class NV_NVDLA_SDP_HLS_X_int_mul extends Module {
