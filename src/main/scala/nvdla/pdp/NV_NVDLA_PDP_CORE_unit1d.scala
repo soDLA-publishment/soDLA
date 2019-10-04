@@ -10,14 +10,10 @@
 //         val nvdla_core_clk = Input(Clock())
 
 //         //pdma2pdp
-//         val pdma2pdp_pvld = Input(Bool())
-//         val pdma2pdp_prdy = Output(Bool())
-//         val pdma2pdp_pd = Input(UInt((((conf.NVDLA_PDP_BWPE + 3)*conf.NVDLA_PDP_THROUGHPUT)+9).W))
+//         val pdma2pdp_pd = Flipped(DecoupledIO(UInt((((conf.NVDLA_PDP_BWPE + 3)*conf.NVDLA_PDP_THROUGHPUT)+9).W)))
 
 //         //pooling
-//         val pooling_out_pvld = Output(Bool())
-//         val pooling_out_prdy = Input(Bool())
-//         val pooling_out = Output(UInt((((conf.NVDLA_PDP_BWPE + 3)*conf.NVDLA_PDP_THROUGHPUT)+4).W))
+//         val pooling_out = DecoupledIO(UInt((((conf.NVDLA_PDP_BWPE + 3)*conf.NVDLA_PDP_THROUGHPUT)+4).W))
 
 //         //config  
 //         val average_pooling_en = Input(Bool())
@@ -57,13 +53,13 @@
 // //-------------------------------------------------------
 
 // // interface
-//     val pdp_din_wpos = io.pdma2pdp_pd(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3)+3, conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3))
-//     val pdp_din_cpos = io.pdma2pdp_pd(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3)+8, conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3)+4)
+//     val pdp_din_wpos = io.pdma2pdp_pd.bits(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3)+3, conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3))
+//     val pdp_din_cpos = io.pdma2pdp_pd.bits(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3)+8, conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_PDP_BWPE+3)+4)
 //     val buf_sel       = pdp_din_cpos
   
 //     val pipe_in_rdy = Wire(Bool())
 //     val pdma2pdp_prdy_f = Wire(Bool())
-//     val load_din = io.pdma2pdp_pvld & pdma2pdp_prdy_f & (~io.cur_datin_disable) & io.pooling_unit_en;
+//     val load_din = io.pdma2pdp_pd.valid & pdma2pdp_prdy_f & (~io.cur_datin_disable) & io.pooling_unit_en;
 //     pdma2pdp_prdy_f := pipe_in_rdy
 //     io.pdma2pdp_prdy := pdma2pdp_prdy_f
 
