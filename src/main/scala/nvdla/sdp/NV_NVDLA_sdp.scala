@@ -7,7 +7,7 @@ import chisel3.util._
 class NV_NVDLA_sdp(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
 
-        val nvdla_clock = Input(Clock())
+        val nvdla_clock = Flipped(new nvdla_clock_if)
         val nvdla_core_rstn = Input(Bool())
         val pwrbus_ram_pd = Input(UInt(32.W))
 
@@ -32,9 +32,9 @@ class NV_NVDLA_sdp(implicit val conf: nvdlaConfig) extends Module {
 
         val sdp_n2cvif_rd_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
         val sdp_n2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
-        val cvif2sdp_n_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W))) else None 
+        val cvif2sdp_n_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE&conf.NVDLA_SDP_BS_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))) else None 
 
-        val sdp_e2mcif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W)))) else None
+        val sdp_e2mcif_rd_req_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))) else None
         val sdp_e2mcif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SDP_BS_ENABLE) Some(Output(Bool())) else None
         val mcif2sdp_e_rd_rsp_pd = if(conf.NVDLA_SDP_BS_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))) else None 
 
@@ -100,7 +100,7 @@ withReset(!io.nvdla_core_rstn){
     u_wdma.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     u_core.io.nvdla_clock <> io.nvdla_clock
     u_core.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-    u_reg.io.nvdla_clock.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
+    u_reg.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
     io.sdp2glb_done_intr_pd := u_wdma.io.sdp2glb_done_intr_pd
 
     //mcif
@@ -114,7 +114,9 @@ withReset(!io.nvdla_core_rstn){
 
     //csb2sdp
     u_rdma.io.csb2sdp_rdma <> io.csb2sdp_rdma
-    u_rdma.io.csb2sdp <> io.csb2sdp
+    u_reg.io.csb2sdp <> io.csb2sdp
+    val s_field = u_reg.io.reg2dp_single_field
+    val d_field = u_reg.io.reg2dp_dual_field
 
     //sdp2cacc
     u_core.io.cacc2sdp_pd <> io.cacc2sdp_pd
@@ -139,10 +141,22 @@ withReset(!io.nvdla_core_rstn){
         //sdp_brdma2dp_mul
         u_core.io.sdp_brdma2dp_mul_pd.get <> u_rdma.io.sdp_brdma2dp_mul_pd.get
         //reg2dp_bs
-        u_core.io.reg2dp_bs_alu <> u_reg.io.reg2dp_bs_alu
-        u_core.io.reg2dp_bs_bypass.get := u_reg.io.reg2dp_bs_bypass
-        u_core.io.reg2dp_bs_mul_src.get <> u_reg.io.reg2dp_bs_mul_src
-        u_core.io.reg2dp_bs_relu_bypass.get := u_reg.io.reg2dp_bs_relu_bypass
+        u_core.io.reg2dp_bs_bypass.get := d_field.bs_bypass
+        u_core.io.reg2dp_bs_relu_bypass.get := d_field.bs_relu_bypass
+
+        u_core.io.reg2dp_bs_alu.get.bypass := d_field.bs_alu_bypass
+        u_core.io.reg2dp_bs_alu.get.algo := d_field.bs_alu_algo
+        u_core.io.reg2dp_bs_alu.get.op := d_field.bs_alu_operand
+        u_core.io.reg2dp_bs_alu.get.shift_value := d_field.bs_alu_shift_value
+        u_core.io.reg2dp_bs_alu.get.src := d_field.bs_alu_src
+        
+        u_core.io.reg2dp_bs_mul.get.bypass := d_field.bs_mul_bypass
+        u_core.io.reg2dp_bs_mul.get.op := d_field.bs_mul_operand
+        u_core.io.reg2dp_bs_mul.get.prelu := d_field.bs_mul_prelu
+        u_core.io.reg2dp_bs_mul.get.shift_value := d_field.bs_mul_shift_value
+        u_core.io.reg2dp_bs_mul.get.src := d_field.bs_mul_src
+
+        
 
     }
     if(conf.NVDLA_SDP_BN_ENABLE){
@@ -155,10 +169,20 @@ withReset(!io.nvdla_core_rstn){
         //sdp_nrdma2dp_mul
         u_core.io.sdp_nrdma2dp_mul_pd.get <> u_rdma.io.sdp_nrdma2dp_mul_pd.get
         //reg2dp_bn
-        u_core.io.reg2dp_bn_alu <> u_reg.io.reg2dp_bn_alu
-        u_core.io.reg2dp_bn_bypass.get := u_reg.io.reg2dp_bn_bypass
-        u_core.io.reg2dp_bn_mul_src.get <> u_reg.io.reg2dp_bn_mul_src
-        u_core.io.reg2dp_bn_relu_bypass.get := u_reg.io.reg2dp_bn_relu_bypass
+        u_core.io.reg2dp_bn_bypass.get := d_field.bs_bypass
+        u_core.io.reg2dp_bn_relu_bypass.get := d_field.bs_relu_bypass
+
+        u_core.io.reg2dp_bn_alu.get.bypass := d_field.bs_alu_bypass
+        u_core.io.reg2dp_bn_alu.get.algo := d_field.bs_alu_algo
+        u_core.io.reg2dp_bn_alu.get.op := d_field.bs_alu_operand
+        u_core.io.reg2dp_bn_alu.get.shift_value := d_field.bs_alu_shift_value
+        u_core.io.reg2dp_bn_alu.get.src := d_field.bs_alu_src
+        
+        u_core.io.reg2dp_bn_mul.get.bypass := d_field.bs_mul_bypass
+        u_core.io.reg2dp_bn_mul.get.op := d_field.bs_mul_operand
+        u_core.io.reg2dp_bn_mul.get.prelu := d_field.bs_mul_prelu
+        u_core.io.reg2dp_bn_mul.get.shift_value := d_field.bs_mul_shift_value
+        u_core.io.reg2dp_bn_mul.get.src := d_field.bs_mul_src
 
     }
     if(conf.NVDLA_SDP_EW_ENABLE){
@@ -171,62 +195,69 @@ withReset(!io.nvdla_core_rstn){
         //sdp_erdma2dp_mul
         u_core.io.sdp_erdma2dp_mul_pd.get <> u_rdma.io.sdp_erdma2dp_mul_pd.get
 
-        u_wdma.io.reg2dp_ew_alu_algo := u_reg.io.reg2dp_ew_alu_algo
-        u_wdma.io.reg2dp_ew_alu_bypass := u_reg.io.reg2dp_ew_alu_bypass
-        u_wdma.io.reg2dp_ew_bypass := u_reg.io.reg2dp_ew_bypass
-
-        u_core.io.reg2dp_ew_alu_algo.get := u_reg.io.reg2dp_ew_alu_algo
-        u_core.io.reg2dp_ew_alu_bypass.get := u_reg.io.reg2dp_ew_alu_bypass
-        u_core.io.reg2dp_ew_alu_cvt_bypass.get := u_reg.io.reg2dp_ew_alu_cvt_bypass
-        u_core.io.reg2dp_ew_alu_cvt_offset.get := u_reg.io.reg2dp_ew_alu_cvt_offset
-        u_core.io.reg2dp_ew_alu_cvt_scale.get := u_reg.io.reg2dp_ew_alu_cvt_scale
-        u_core.io.reg2dp_ew_alu_cvt_truncate.get := u_reg.io.reg2dp_ew_alu_cvt_truncate
-        u_core.io.reg2dp_ew_alu_operand.get := u_reg.io.reg2dp_ew_alu_operand
-        u_core.io.reg2dp_ew_alu_src.get := u_reg.io.reg2dp_ew_alu_src
-        u_core.io.reg2dp_ew_bypass.get := u_reg.io.reg2dp_ew_bypass
-        u_core.io.reg2dp_ew_lut_bypass.get := u_reg.io.reg2dp_ew_lut_bypass
-        u_core.io.reg2dp_ew_mul_bypass.get := u_reg.io.reg2dp_ew_mul_bypass
-        u_core.io.reg2dp_ew_mul_cvt_bypass.get := u_reg.io.reg2dp_ew_mul_cvt_bypass
-        u_core.io.reg2dp_ew_mul_cvt_offset.get := u_reg.io.reg2dp_ew_mul_cvt_offset
-        u_core.io.reg2dp_ew_mul_cvt_scale.get := u_reg.io.reg2dp_ew_mul_cvt_scale
-        u_core.io.reg2dp_ew_mul_cvt_truncate.get := u_reg.io.reg2dp_ew_mul_cvt_truncate
-        u_core.io.reg2dp_ew_mul_operand.get := u_reg.io.reg2dp_ew_mul_operand
-        u_core.io.reg2dp_ew_mul_prelu.get := u_reg.io.reg2dp_ew_mul_prelu
-        u_core.io.reg2dp_ew_mul_src.get := u_reg.io.reg2dp_ew_mul_src
-        u_core.io.reg2dp_ew_truncate.get := u_reg.io.reg2dp_ew_truncate
+        u_wdma.io.reg2dp_ew_bypass := d_field.ew_bypass
+        u_wdma.io.reg2dp_ew_alu_algo := d_field.ew_alu_algo
+        u_wdma.io.reg2dp_ew_alu_bypass := d_field.ew_alu_bypass
+        
+        u_core.io.reg2dp_ew_bypass.get := d_field.ew_bypass
+        u_core.io.reg2dp_ew.get.alu.algo := d_field.ew_alu_algo
+        u_core.io.reg2dp_ew.get.alu.bypass := d_field.ew_alu_bypass
+        u_core.io.reg2dp_ew.get.alu.src := d_field.ew_alu_src
+        u_core.io.reg2dp_ew.get.alu.op := d_field.ew_alu_operand
+        u_core.io.reg2dp_ew.get.alu_cvt.bypass := d_field.ew_alu_cvt_bypass
+        u_core.io.reg2dp_ew.get.alu_cvt.offset := d_field.ew_alu_cvt_offset
+        u_core.io.reg2dp_ew.get.alu_cvt.scale := d_field.ew_alu_cvt_scale
+        u_core.io.reg2dp_ew.get.alu_cvt.truncate := d_field.ew_alu_cvt_truncate    
+        u_core.io.reg2dp_ew.get.lut_bypass := d_field.ew_lut_bypass
+        u_core.io.reg2dp_ew.get.mul.bypass := d_field.ew_mul_bypass
+        u_core.io.reg2dp_ew.get.mul_cvt.bypass := d_field.ew_mul_cvt_bypass
+        u_core.io.reg2dp_ew.get.mul_cvt.offset := d_field.ew_mul_cvt_offset
+        u_core.io.reg2dp_ew.get.mul_cvt.scale := d_field.ew_mul_cvt_scale
+        u_core.io.reg2dp_ew.get.mul_cvt.truncate := d_field.ew_mul_cvt_truncate
+        u_core.io.reg2dp_ew.get.mul.op := d_field.ew_mul_operand
+        u_core.io.reg2dp_ew.get.mul.prelu := d_field.ew_mul_prelu
+        u_core.io.reg2dp_ew.get.mul.src := d_field.ew_mul_src
+        u_core.io.reg2dp_ew.get.mul.truncate := d_field.ew_truncate
 
         if(conf.NVDLA_SDP_LUT_ENABLE){
-            u_core.io.reg2dp_lut_hybrid_priority.get := u_reg.io.reg2dp_lut_hybrid_priority
-            u_core.io.reg2dp_lut_int_access_type.get := u_reg.io.reg2dp_lut_int_access_type
-            u_core.io.reg2dp_lut_int_addr.get := u_reg.io.reg2dp_lut_int_addr
-            u_core.io.reg2dp_lut_int_data.get := u_reg.io.reg2dp_lut_int_data
-            u_core.io.reg2dp_lut_int_data_wr.get := u_reg.io.reg2dp_lut_int_data_wr
-            u_core.io.reg2dp_lut_int_table_id.get := u_reg.io.reg2dp_lut_int_table_id
-            u_core.io.reg2dp_lut_le_end.get := u_reg.io.reg2dp_lut_le_end
-            u_core.io.reg2dp_lut_le_function.get := u_reg.io.reg2dp_lut_le_function
-            u_core.io.reg2dp_lut_le_index_offset.get := u_reg.io.reg2dp_lut_le_index_offset
-            u_core.io.reg2dp_lut_le_index_select.get := u_reg.io.reg2dp_lut_le_index_select
-            u_core.io.reg2dp_lut_le_slope_oflow_scale.get := u_reg.io.reg2dp_lut_le_slope_oflow_scale
-            u_core.io.reg2dp_lut_le_slope_oflow_shift.get := u_reg.io.reg2dp_lut_le_slope_oflow_shift
-            u_core.io.reg2dp_lut_le_slope_uflow_scale.get := u_reg.io.reg2dp_lut_le_slope_uflow_scale
-            u_core.io.reg2dp_lut_le_slope_uflow_shift.get := u_reg.io.reg2dp_lut_le_slope_uflow_shift
-            u_core.io.reg2dp_lut_le_start.get := u_reg.io.reg2dp_lut_le_start
-            u_core.io.reg2dp_lut_lo_end.get := u_reg.io.reg2dp_lut_lo_end
-            u_core.io.reg2dp_lut_lo_index_select.get := u_reg.io.reg2dp_lut_lo_index_select
-            u_core.io.reg2dp_lut_lo_slope_oflow_scale.get := u_reg.io.reg2dp_lut_lo_slope_oflow_scale
-            u_core.io.reg2dp_lut_lo_slope_oflow_shift.get := u_reg.io.reg2dp_lut_lo_slope_oflow_shift
-            u_core.io.reg2dp_lut_lo_slope_uflow_scale.get := u_reg.io.reg2dp_lut_lo_slope_uflow_scale
-            u_core.io.reg2dp_lut_lo_slope_uflow_shift.get := u_reg.io.reg2dp_lut_lo_slope_uflow_shift
-            u_core.io.reg2dp_lut_lo_start.get := u_reg.io.reg2dp_lut_lo_start
-            u_core.io.reg2dp_lut_oflow_priority.get := u_reg.io.reg2dp_lut_oflow_priority
+            
+            u_core.io.reg2dp_lut.get.int_access_type := u_reg.io.reg2dp_lut_int_access_type
+            u_core.io.reg2dp_lut.get.int_addr := u_reg.io.reg2dp_lut_int_addr
+            u_core.io.reg2dp_lut.get.int_data := u_reg.io.reg2dp_lut_int_data
+            u_core.io.reg2dp_lut.get.int_data_wr := u_reg.io.reg2dp_lut_int_data_wr
+            u_core.io.reg2dp_lut.get.int_table_id := u_reg.io.reg2dp_lut_int_table_id
+            u_core.io.reg2dp_lut.get.le_end := s_field.lut_le_end
+            u_core.io.reg2dp_lut.get.le_slope_oflow_scale := s_field.lut_le_slope_oflow_scale
+            u_core.io.reg2dp_lut.get.le_slope_oflow_shift := s_field.lut_le_slope_oflow_shift
+            u_core.io.reg2dp_lut.get.le_slope_uflow_scale := s_field.lut_le_slope_uflow_scale
+            u_core.io.reg2dp_lut.get.le_slope_uflow_shift := s_field.lut_le_slope_uflow_shift
+            u_core.io.reg2dp_lut.get.lo_end := s_field.lut_lo_end
+            u_core.io.reg2dp_lut.get.lo_slope_oflow_scale := s_field.lut_lo_slope_oflow_scale
+            u_core.io.reg2dp_lut.get.lo_slope_oflow_shift := s_field.lut_lo_slope_oflow_shift
+            u_core.io.reg2dp_lut.get.lo_slope_uflow_scale := s_field.lut_lo_slope_uflow_scale
+            u_core.io.reg2dp_lut.get.lo_slope_uflow_shift := s_field.lut_lo_slope_uflow_shift
+            u_core.io.reg2dp_lut.get.le_start := s_field.lut_le_start
+            u_core.io.reg2dp_lut.get.lo_start := s_field.lut_lo_start
+            u_core.io.reg2dp_lut.get.le_function := s_field.lut_le_function
+            u_core.io.reg2dp_lut.get.le_index_offset := s_field.lut_le_index_offset
             u_core.io.reg2dp_lut_slcg_en.get := u_reg.io.reg2dp_lut_slcg_en
-            u_core.io.reg2dp_lut_uflow_priority.get := u_reg.io.reg2dp_lut_uflow_priority
-            u_reg.io.dp2reg_lut_hybrid := u_core.io.dp2reg_lut_hybrid.get 
-            u_reg.io.dp2reg_lut_int_data := u_core.io.dp2reg_lut_int_data.get 
-            u_reg.io.dp2reg_lut_le_hit := u_core.io.dp2reg_lut_le_hit.get 
-            u_reg.io.dp2reg_lut_lo_hit := u_core.io.dp2reg_lut_lo_hit.get 
-            u_reg.io.dp2reg_lut_oflow := u_core.io.dp2reg_lut_oflow.get 
-            u_reg.io.dp2reg_lut_uflow := u_core.io.dp2reg_lut_uflow.get 
+            
+            u_core.io.reg2dp_idx.get.hybrid_priority := s_field.lut_hybrid_priority
+            u_core.io.reg2dp_idx.get.le_index_offset := s_field.lut_le_index_offset
+            u_core.io.reg2dp_idx.get.le_function := s_field.lut_le_function
+            u_core.io.reg2dp_idx.get.le_index_select := s_field.lut_le_index_select
+            u_core.io.reg2dp_idx.get.le_start := s_field.lut_le_start
+            u_core.io.reg2dp_idx.get.lo_start := s_field.lut_lo_start
+            u_core.io.reg2dp_idx.get.lo_index_select := s_field.lut_lo_index_select
+            u_core.io.reg2dp_idx.get.oflow_priority := s_field.lut_oflow_priority
+            u_core.io.reg2dp_idx.get.uflow_priority := s_field.lut_uflow_priority
+
+            u_reg.io.dp2reg_lut_hybrid := u_core.io.dp2reg_lut.get.hybrid
+            u_reg.io.dp2reg_lut_int_data := u_core.io.dp2reg_lut.get.int_data 
+            u_reg.io.dp2reg_lut_le_hit := u_core.io.dp2reg_lut.get.le_hit 
+            u_reg.io.dp2reg_lut_lo_hit := u_core.io.dp2reg_lut.get.lo_hit 
+            u_reg.io.dp2reg_lut_oflow := u_core.io.dp2reg_lut.get.oflow 
+            u_reg.io.dp2reg_lut_uflow := u_core.io.dp2reg_lut.get.uflow 
         }
     }
     else{
@@ -243,38 +274,34 @@ withReset(!io.nvdla_core_rstn){
     }
     u_wdma.io.reg2dp_op_en := u_reg.io.reg2dp_op_en
     u_wdma.io.reg2dp_wdma_slcg_op_en := u_reg.io.reg2dp_wdma_slcg_op_en
-    u_wdma.io.reg2dp_output_dst := u_reg.io.reg2dp_output_dst
-    u_wdma.io.reg2dp_batch_number := u_reg.io.reg2dp_batch_number
-    u_wdma.io.reg2dp_winograd := u_reg.io.reg2dp_winograd
-    u_wdma.io.reg2dp_channel := u_reg.io.reg2dp_channel
-    u_wdma.io.reg2dp_height := u_reg.io.reg2dp_height
-    u_wdma.io.reg2dp_width := u_reg.io.reg2dp_width
-    u_wdma.io.reg2dp_proc_precision := u_reg.io.reg2dp_proc_precision
-    u_wdma.io.reg2dp_out_precision := u_reg.io.reg2dp_out_precision
-    u_wdma.io.reg2dp_dst_ram_type := u_reg.io.reg2dp_dst_ram_type
-    u_wdma.io.reg2dp_dst_base_addr_high := u_reg.io.reg2dp_dst_base_addr_high 
-    u_wdma.io.reg2dp_dst_base_addr_low := u_reg.io.reg2dp_dst_base_addr_low
-    u_wdma.io.reg2dp_dst_batch_stride  := u_reg.io.reg2dp_dst_batch_stride 
-    u_wdma.io.reg2dp_dst_line_stride := u_reg.io.reg2dp_dst_line_stride
-    u_wdma.io.reg2dp_dst_surface_stride := u_reg.io.reg2dp_dst_surface_stride
+    u_wdma.io.reg2dp_output_dst := d_field.output_dst
+    u_wdma.io.reg2dp_batch_number := d_field.batch_number
+    u_wdma.io.reg2dp_winograd := d_field.winograd
+    u_wdma.io.reg2dp_channel := d_field.channel
+    u_wdma.io.reg2dp_height := d_field.height
+    u_wdma.io.reg2dp_width := d_field.width_a
+    u_wdma.io.reg2dp_proc_precision := d_field.proc_precision
+    u_wdma.io.reg2dp_out_precision := d_field.out_precision
+    u_wdma.io.reg2dp_dst_ram_type := d_field.dst_ram_type
+    u_wdma.io.reg2dp_dst_base_addr_high := d_field.dst_base_addr_high 
+    u_wdma.io.reg2dp_dst_base_addr_low := d_field.dst_base_addr_low
+    u_wdma.io.reg2dp_dst_batch_stride  := d_field.dst_batch_stride 
+    u_wdma.io.reg2dp_dst_line_stride := d_field.dst_line_stride
+    u_wdma.io.reg2dp_dst_surface_stride := d_field.dst_surface_stride
     u_wdma.io.reg2dp_interrupt_ptr := u_reg.io.reg2dp_interrupt_ptr 
-    u_wdma.io.reg2dp_perf_dma_en := u_reg.io.reg2dp_perf_dma_en
-    u_reg.io.dp2reg_done := u_wdma.io.dp2reg_done
-    u_reg.io.dp2reg_status_nan_output_num := u_wdma.io.dp2reg_status_nan_output_num
-    u_reg.io.dp2reg_status_unequal := u_wdma.io.dp2reg_status_unequal
-    u_reg.io.dp2reg_wdma_stall := u_wdma.io.dp2reg_wdma_stall
+    u_wdma.io.reg2dp_perf_dma_en := d_field.perf_dma_en
 
-    u_core.io.reg2dp_cvt_offset := u_reg.io.reg2dp_cvt_offset
-    u_core.io.reg2dp_cvt_scale := u_reg.io.reg2dp_cvt_scale
-    u_core.io.reg2dp_cvt_shift := u_reg.io.reg2dp_cvt_shift
+    u_core.io.reg2dp_cvt.offset := d_field.cvt_offset
+    u_core.io.reg2dp_cvt.scale := d_field.cvt_scale
+    u_core.io.reg2dp_cvt.truncate := d_field.cvt_shift
     u_core.io.reg2dp_op_en := u_reg.io.reg2dp_op_en
-    u_core.io.reg2dp_flying_mode := u_reg.io.reg2dp_flying_mode
-    u_core.io.reg2dp_output_dst := u_reg.io.reg2dp_output_dst
-    u_core.io.reg2dp_nan_to_zero := u_reg.io.reg2dp_nan_to_zero
-    u_core.io.reg2dp_proc_precision := u_reg.io.reg2dp_proc_precision
-    u_core.io.reg2dp_out_precision := u_reg.io.reg2dp_out_precision
-    u_core.io.reg2dp_perf_lut_en := u_reg.io.reg2dp_perf_lut_en
-    u_core.io.reg2dp_perf_sat_en := u_reg.io.reg2dp_perf_sat_en
+    u_core.io.reg2dp_flying_mode := d_field.flying_mode
+    u_core.io.reg2dp_output_dst := d_field.output_dst
+    u_core.io.reg2dp_nan_to_zero := d_field.nan_to_zero
+    u_core.io.reg2dp_proc_precision := d_field.proc_precision
+    u_core.io.reg2dp_out_precision := d_field.out_precision
+    u_core.io.reg2dp_perf_lut_en := d_field.perf_lut_en
+    u_core.io.reg2dp_perf_sat_en := d_field.perf_sat_en
     u_core.io.dp2reg_done := u_wdma.io.dp2reg_done
     u_reg.io.dp2reg_out_saturation := u_core.io.dp2reg_out_saturation
 
