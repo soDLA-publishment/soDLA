@@ -12,13 +12,6 @@ class NV_NVDLA_CDP_REG_single extends Module{
         //Register control interface
         val reg = new reg_control_if
 
-// class reg_control_if extends Bundle{
-//     val rd_data = Output(UInt(32.W))
-//     val offset = Input(UInt(12.W))
-//     val wr_data = Input(UInt(32.W))
-//     val wr_en = Input(Bool())
-// }
-
         //Writable register flop/trigger outputs
         val field = new cdp_reg_single_flop_outputs
         val producer = Output(Bool())
