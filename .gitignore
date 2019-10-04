@@ -1,5 +1,4 @@
 # These are generated when I initialize the sbt
-project/
 .idea/
 target/
 
@@ -18,7 +17,6 @@ test_run_dir/
 
 
 # These are decided not to be public. 
-src/main/scala/cora
 *.class
 *.jar
 *.jar
