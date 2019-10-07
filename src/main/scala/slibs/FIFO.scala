@@ -209,19 +209,23 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
         // RAM
         //  
 
-        val wr_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))} // current write address
-        val wr_adr_next = wr_adr + 1.U
-        when(wr_pushing){
-            wr_adr := wr_adr_next
+        val wr_adr = if(depth>1) Some(withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}) else None // current write address
+        if(depth>1){
+            val wr_adr_next = wr_adr.get + 1.U
+            when(wr_pushing){
+                wr_adr.get := wr_adr_next
+            }
         }
 
         val rd_popping = Wire(Bool())
-        val rd_adr = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))}   // read address this cycle
+        val rd_adr = if(depth>1) withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth).W))} else 0.U   // read address this cycle
         val rd_adr_next_popping = rd_adr + 1.U
-        when(rd_popping){
-            rd_adr := rd_adr_next_popping
+        if(depth>1){
+            when(rd_popping){
+                rd_adr := rd_adr_next_popping
+            }
         }
-         
+        
         val rd_pd_p = Wire(UInt(width.W))
         // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
         // Fifogen handles this by ignoring the data on the ram data out for that cycle.
@@ -231,7 +235,9 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
             val ram = Module(new nv_flopram(depth, width, false))
             ram.io.clk := clk_mgated
             ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-            ram.io.wa := wr_adr
+            if(depth > 1){
+                ram.io.wa.get := wr_adr.get
+            }
             ram.io.we := ram_we
             ram.io.di := wr_pd_in
             ram.io.ra := Mux(wr_count === 0.U, depth.U, rd_adr)
@@ -249,7 +255,9 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
             ram.io.di := wr_pd_in
             ram.io.iwe.get := ram_iwe
             ram.io.we := ram_we
-            ram.io.wa := wr_adr
+            if(depth > 1){
+                ram.io.wa.get := wr_adr.get
+            }            
             ram.io.ra := Mux(wr_count === 0.U, depth.U, rd_adr)
             rd_pd_p := ram.io.dout
         }
@@ -259,7 +267,9 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
             val ram = Module(new nv_ram_rwsp(depth, width))
             ram.io.clk := io.clk
             ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-            ram.io.wa := wr_adr
+            if(depth>1){
+                ram.io.wa := wr_adr.get
+            }
             ram.io.we := wr_pushing
             ram.io.di := wr_pd_in
             ram.io.ra := Mux(rd_popping, rd_adr_next_popping, rd_adr)   // for ram
@@ -343,4 +353,8 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
     }
 }}
 
+
+object NV_NVDLA_fifoDriver extends App {
+  chisel3.Driver.execute(args, () => new NV_NVDLA_fifo(depth = 1, width = 80, distant_wr_req = true, ram_type = 1))
+}
 

@@ -1,5 +1,8 @@
 package nvdla
 
+import chisel3._
+import chisel3.experimental._
+import chisel3.util._
 
 class xxifConfiguration extends cdpConfiguration{
 
@@ -54,3 +57,33 @@ class xxifConfiguration extends cdpConfiguration{
   if(NVDLA_BDMA_ENABLE)   {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
 }
 
+
+
+
+class nocif_axi_wr_address_if(implicit val conf: nvdlaConfig) extends Bundle{
+  val data = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
+  val strb = Output(UInt((conf.NVDLA_PRIMARY_MEMIF_WIDTH/8).W))
+  val last = Output(Bool())
+}
+
+class nocif_axi_wr_data_if(implicit val conf: nvdlaConfig) extends Bundle{
+  val id = Output(UInt(8.W))
+  val len = Output(UInt(4.W))
+  val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+}
+
+class nocif_axi_wr_response_if extends Bundle{
+  val id = Output(UInt(8.W))
+}
+
+class nocif_axi_rd_address_if(implicit val conf: nvdlaConfig) extends Bundle{
+  val id = Output(UInt(8.W))
+  val len = Output(UInt(4.W))
+  val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+}
+
+class nocif_axi_rd_data_if(implicit val conf: nvdlaConfig) extends Bundle{
+  val id = Output(UInt(8.W))
+  val last = Output(Bool())
+  val data = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
+}
