@@ -11,7 +11,6 @@ class int_sum_block_tp1 extends Module {
         val nvdla_core_clk = Input(Clock())
 
         //control signal
-        val int8_en = Input(Bool())
         val len5 = Input(Bool())
         val len7 = Input(Bool())
         val len9 = Input(Bool())

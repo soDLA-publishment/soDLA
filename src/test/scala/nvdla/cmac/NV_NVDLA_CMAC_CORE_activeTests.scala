@@ -5,7 +5,7 @@ import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 
 class NV_NVDLA_CMAC_CORE_activeTests(c: NV_NVDLA_CMAC_CORE_active) extends PeekPokeTester(c) {
  
-  implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
 
 //==========================================================
 //test dat data forwading 
@@ -97,7 +97,6 @@ class NV_NVDLA_CMAC_CORE_activeTester extends ChiselFlatSpec {
   behavior of "NV_NVDLA_CMAC_CORE_active"
   backends foreach {backend =>
     it should s"correctly activate wt and dat $backend" in {
-      implicit val cmacconf: cmacConfiguration = new cmacConfiguration
       implicit val nvconf: nvdlaConfig = new nvdlaConfig
       Driver(() => new NV_NVDLA_CMAC_CORE_active())(c => new NV_NVDLA_CMAC_CORE_activeTests(c)) should be (true)
     }

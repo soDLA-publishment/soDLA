@@ -26,8 +26,6 @@
 //         val cdp_rdma2dp_ready = Input(Bool())
 //         val cdp_rdma2dp_pd = Output(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+25).W))
 
-//         val cq_rd_pvld = Input(Bool())
-//         val cq_rd_prdy = Output(Bool())
 //         val cq_rd_pd = Input(UInt(7.W))
 
 //         val pwrbus_ram_pd = Input(UInt(32.W))

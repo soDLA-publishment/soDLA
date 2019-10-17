@@ -5,7 +5,7 @@ import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 
 class NV_NVDLA_CMAC_CORE_macTests(c: NV_NVDLA_CMAC_CORE_mac) extends PeekPokeTester(c) {
  
-  implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
 
   for (t <- 0 until 1000) {
 
@@ -61,7 +61,6 @@ class NV_NVDLA_CMAC_CORE_macTester extends ChiselFlatSpec {
   behavior of "NV_NVDLA_CMAC_CORE_mac"
   backends foreach {backend =>
     it should s"correctly perform mac logic $backend" in {
-      implicit val conf: cmacConfiguration = new cmacConfiguration
       implicit val nvconf: nvdlaConfig = new nvdlaConfig
       Driver(() => new NV_NVDLA_CMAC_CORE_mac())(c => new NV_NVDLA_CMAC_CORE_macTests(c)) should be (true)
     }

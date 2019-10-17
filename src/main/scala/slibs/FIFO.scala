@@ -289,24 +289,49 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
         // READ SIDE
         //
 
-        val rd_pvld_p = withClock(clk_mgated){RegInit(false.B)} // data out of fifo is valid
-        val rd_pvld_int = if(ram_type == 2) Some(withClock(clk_mgated){RegInit(false.B)}) else None // internal copy of rd_req
-        
-        rd_popping := io.rd_pvld && io.rd_prdy
+        val rd_pvld_p = if(ram_type == 2) withClock(clk_mgated){RegInit(false.B)}
+                        else Wire(Bool()) // data out of fifo is valid
+        val rd_pvld_int = if((ram_type == 0)|(ram_type == 2)) Some(withClock(clk_mgated){RegInit(false.B)}) 
+                          else None // internal copy of rd_req
         val rd_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))}
         val rd_count_next_rd_popping = Mux(rd_pushing, rd_count, rd_count-1.U)
         val rd_count_next_no_rd_popping = Mux(rd_pushing, rd_count + 1.U, rd_count)
         val rd_count_next = Mux(rd_popping, rd_count_next_rd_popping, rd_count_next_no_rd_popping)
-
         when(rd_pushing || rd_popping){
             rd_count := rd_count_next
         }
 
+        if(ram_type == 0){  
+        
+            rd_pvld_p := rd_count =/= 0.U|rd_pushing
+            rd_popping := rd_pvld_p && !(rd_pvld_int.get && !io.rd_prdy)
+            
+            val rd_pd_reg = Reg(UInt(width.W)) // output data register
+            val rd_pvld_next = (rd_pvld_p || (rd_pvld_int.get && !io.rd_prdy))
+            rd_pvld_int.get := rd_pvld_next
+            rd_pd_reg := rd_pd_p
+
+            io.rd_pd := rd_pd_reg
+            io.rd_pvld := rd_pvld_int.get
+
+        }
+
+        if(ram_type == 1){
+            rd_pvld_p := rd_count =/= 0.U|rd_pushing
+            rd_popping := io.rd_pvld && io.rd_prdy
+
+            io.rd_pvld := rd_pvld_p
+            io.rd_pd := rd_pd_p
+        }
+
         if(ram_type == 2){
+            rd_popping := io.rd_pvld && io.rd_prdy
+
             val rd_count_p_next_rd_popping_not_0 = rd_count_next_rd_popping =/= 0.U
             val rd_count_p_next_no_rd_popping_not_0 = rd_count_next_no_rd_popping =/= 0.U
             val rd_count_p_next_not_0 = Mux(rd_popping, rd_count_p_next_rd_popping_not_0, rd_count_p_next_no_rd_popping_not_0)
             rd_enable.get := ((rd_count_p_next_not_0) && ((~rd_pvld_p) || rd_popping)); // anytime data's there and not stalled
+
             when(rd_pushing || rd_popping){
                 rd_pvld_p := rd_count_p_next_not_0
             }
@@ -314,13 +339,10 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
             rd_pvld_int.get := rd_pvld_next
 
             io.rd_pvld := rd_pvld_int.get
-        }
-        else{
-            io.rd_pvld := rd_count=/= 0.U|rd_pushing
+            io.rd_pd := rd_pd_p
         }
 
 
-        io.rd_pd := rd_pd_p
 
         //
         // Read-side Idle Calculation
@@ -355,6 +377,6 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
 
 
 object NV_NVDLA_fifoDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_fifo(depth = 1, width = 80, distant_wr_req = true, ram_type = 1))
+  chisel3.Driver.execute(args, () => new NV_NVDLA_fifo(depth = 20, width = 80, distant_wr_req = true, ram_type = 2))
 }
 

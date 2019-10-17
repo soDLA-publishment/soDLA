@@ -10,7 +10,7 @@
 //         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 //         //sdp2pdp
-//         val sdp2pdp_pd = Flipped(DecoupledIO(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W)))
+//         val sdp2pdp_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_BWPE*conf.SDP_THROUGHPUT).W)))
 //         //pre2cal1d
 //         val pre2cal1d_pd = DecoupledIO(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W))
 //         //config  
@@ -126,12 +126,12 @@
 
 //     ///////////////////////////
 //     val sdp2pdp_en = (onfly_en & (~waiting_for_op_en));
-//     val pipe0_i = Cat(io.sdp2pdp_pd, sdp2pdp_en)
+//     val pipe0_i = Cat(io.sdp2pdp_pd.bits, sdp2pdp_en)
 //     val sdp2pdp_ready_use = Wire(Bool())
 
 //     val is_pipe0 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_PDP_ONFLY_INPUT_BW + 1)}
 //     is_pipe0.io.clk := io.nvdla_core_clk
-//     is_pipe0.io.vi := io.sdp2pdp_valid
+//     is_pipe0.io.vi := io.sdp2pdp_pd.valid
 //     val sdp2pdp_ready_f = is_pipe0.io.ro
 //     is_pipe0.io.di := pipe0_i
 //     val sdp2pdp_valid_use_f = is_pipe0.io.vo
@@ -141,8 +141,8 @@
 //     val sdp2pdp_pd_use = pipe0_o(conf.NVDLA_PDP_ONFLY_INPUT_BW, 1)
 //     val sdp2pdp_en_sync = pipe0_o(0)
 
-//     val load_din = (io.sdp2pdp_valid & sdp2pdp_ready_f & sdp2pdp_en)
-//     io.sdp2pdp_ready := sdp2pdp_ready_f & sdp2pdp_en;
+//     val load_din = (io.sdp2pdp_pd.valid & sdp2pdp_ready_f & sdp2pdp_en)
+//     io.sdp2pdp_pd.ready := sdp2pdp_ready_f & sdp2pdp_en;
 //     val sdp2pdp_valid_use = sdp2pdp_valid_use_f & sdp2pdp_en_sync
 
 //     ////////////////////////////////////////////////////////////////

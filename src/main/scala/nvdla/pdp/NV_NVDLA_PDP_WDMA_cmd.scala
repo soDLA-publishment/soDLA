@@ -28,7 +28,6 @@ class NV_NVDLA_PDP_WDMA_cmd(implicit val conf: nvdlaConfig) extends Module {
 
         // Read-only register input
         val op_load = Input(Bool())
-        val perf_read_stall = Input(UInt(32.W))
     })
 //     
 //          ┌─┐       ┌─┐
