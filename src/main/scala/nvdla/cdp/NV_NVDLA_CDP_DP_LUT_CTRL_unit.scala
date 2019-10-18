@@ -103,7 +103,7 @@
     
 //     val dec_offset_msb = RegInit(0.U((pPP_BW+1).W))
 //     val int_x_input_uflow_msb = RegInit(false.B)
-//     when(load_in_intX){
+//     when(load_in_intx){
 //         when(less_than_win_s){
 //             dec_offset_msb := 0.U((pPP_BW+1).W)
 //             int_x_input_uflow_msb := true.B
