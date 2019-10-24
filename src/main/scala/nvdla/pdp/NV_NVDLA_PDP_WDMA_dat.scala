@@ -14,7 +14,7 @@ class NV_NVDLA_PDP_WDMA_dat(implicit val conf: nvdlaConfig) extends Module {
         val dp2wdma_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_PDP_BWPE).W)))
 
         // dat_fifo
-        val dat_fifo_rd_pd = Vec(conf.ATMM_NUM, Vec(conf.PDP_NUM, DecoupledIO(UInt(conf.PDPBW.W))))
+        val dat_fifo_rd_pd = Vec(conf.ATMM_NUM, Vec(conf.BATCH_PDP_NUM, DecoupledIO(UInt(conf.PDPBW.W))))
 
         // config
         val reg2dp_cube_out_channel = Input(UInt(13.W))
@@ -116,7 +116,7 @@ withClock(io.nvdla_core_clk){
         }
     }
 
-    is_last_b := count_b === (conf.PDP_NUM - 1).U
+    is_last_b := count_b === (conf.BATCH_PDP_NUM - 1).U
 
     //==============
     // COUNT W
@@ -172,10 +172,10 @@ withClock(io.nvdla_core_clk){
     //==============
     // Data FIFO WRITE contrl
     //==============
-    val u_dat_fifo = Array.fill(conf.ATMM_NUM){Array.fill(conf.PDP_NUM){Module(new NV_NVDLA_fifo(depth = 32, width = conf.PDPBW, ram_type = 0, distant_wr_req = false))}}
-    val u_dat_fifo_wr_prdy = Wire(Vec(conf.ATMM_NUM, Vec(conf.PDP_NUM, Bool())))
+    val u_dat_fifo = Array.fill(conf.ATMM_NUM){Array.fill(conf.BATCH_PDP_NUM){Module(new NV_NVDLA_fifo(depth = 32, width = conf.PDPBW, ram_type = 0, distant_wr_req = false))}}
+    val u_dat_fifo_wr_prdy = Wire(Vec(conf.ATMM_NUM, Vec(conf.BATCH_PDP_NUM, Bool())))
     for(i <- 0 to conf.ATMM_NUM-1){
-        for(j <- 0 to conf.PDP_NUM-1){
+        for(j <- 0 to conf.BATCH_PDP_NUM-1){
             // DATA FIFO WRITE SIDE
             // is last_b, then fifo idx large than count_b will need a push to fill in fake data to make up a full atomic_m
             u_dat_fifo(i)(j).io.clk := io.nvdla_core_clk

@@ -11,9 +11,9 @@ class NV_NVDLA_PDP_CORE_cal1d(implicit val conf: nvdlaConfig) extends Module {
         val pwrbus_ram_pd = Input(UInt(32.W))
 
         //pdp_rdma2dp
-        val pdp_rdma2dp_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+14).W)))
+        val pdp_rdma2dp_pd = Flipped(DecoupledIO(UInt((conf.PDPBW+14).W)))
         //sdp2pdp
-        val sdp2pdp_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+14).W)))
+        val sdp2pdp_pd = Flipped(DecoupledIO(UInt((conf.PDPBW+14).W)))
         //pooling
         val pooling1d_pd = DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+6)).W))
 
@@ -108,18 +108,18 @@ withClock(io.nvdla_core_clk){
     // 1 cycle pipeline for DW timing closure inside unit1d sub modudle
     // DW has replaced by normal hls fp17 adder, this pipeline keep here
     //---------------------------------------------------------------conf.NVDLA_MEMORY_ATOMIC_SIZE
-    val posc_last = pdp_datin_pd_f_0(conf.DBW+8, conf.DBW+4) === conf.ENUM.U
+    val posc_last = pdp_datin_pd_f_0(conf.PDPBW+8, conf.PDPBW+4) === conf.ENUM.U
     val pdp_din = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+3).W)))
     for(i <- 0 to conf.NVDLA_PDP_THROUGHPUT-1){
-        pdp_din(i) := Cat(Fill(3, pdp_datin_pd_f_0(conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+conf.NVDLA_BPE-1)), 
-                     pdp_datin_pd_f_0(conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+conf.NVDLA_BPE-1, conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE))
+        pdp_din(i) := Cat(Fill(3, pdp_datin_pd_f_0(conf.PDPBW+conf.NVDLA_BPE-1)), 
+                     pdp_datin_pd_f_0(conf.PDPBW+conf.NVDLA_BPE-1, conf.PDPBW))
     }
 
     val datain_ext = pdp_din.asUInt
 
     val pdp_datin_prdy = Wire(Bool())
-    val pdp_datin_pd_f0 = Cat(posc_last, pdp_datin_pd_f_0(conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+13, conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE), datain_ext)
-    val pipe_0 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3) + 15)}
+    val pdp_datin_pd_f0 = Cat(posc_last, pdp_datin_pd_f_0(conf.PDPBW+13, conf.PDPBW), datain_ext)
+    val pipe_0 = Module{new NV_NVDLA_IS_pipe(conf.PDP_UNIT1D_BW + 15)}
     pipe_0.io.clk := io.nvdla_core_clk
     pipe_0.io.vi := pdp_datin_pvld_f
     val pdp_datin_prdy_f0 = pipe_0.io.ro
@@ -143,9 +143,9 @@ withClock(io.nvdla_core_clk){
     //---------------------------------------------------------------
     val load_din = Wire(Bool())
     val splitw_end = Wire(Bool())
-    val bsync = pdp_datin_pd(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3)+9)
-    val splitw_end_sync = Mux(load_din, pdp_datin_pd(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3)+12), false.B)
-    val pdp_cube_sync = pdp_datin_pd(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3)+13)
+    val bsync = pdp_datin_pd(conf.PDP_UNIT1D_BW+9)
+    val splitw_end_sync = Mux(load_din, pdp_datin_pd(conf.PDP_UNIT1D_BW+12), false.B)
+    val pdp_cube_sync = pdp_datin_pd(conf.PDP_UNIT1D_BW+13)
     val pdp_cube_end = pdp_cube_sync & bsync & load_din
     val splitw_cnt = RegInit("b0".asUInt(8.W))
 
@@ -273,7 +273,7 @@ withClock(io.nvdla_core_clk){
 
     load_din := pdp_datin_prdy & pdp_datin_pvld
     val pooling_size_h = io.pooling_size_h_cfg +& 1.U
-    val pdp_din_lc = pdp_datin_pd(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3)+14)
+    val pdp_din_lc = pdp_datin_pd(conf.PDP_UNIT1D_BW+14)
     val strip_recieve_done = load_din & pdp_din_lc
     val stride_end = strip_recieve_done & (strip_xcnt_stride === io.pooling_stride_h_cfg)
     val init_cnt = line_last_stripe_done | io.pdp_op_start
@@ -701,7 +701,7 @@ withClock(io.nvdla_core_clk){
     val unit1d_prdy_uint = unit1d_prdy.asUInt
     val unit1d_pvld = Wire(Vec(8, Bool()))
     val pdp_info_in_prdy = Wire(Bool())
-    val datin_buf = pdp_datin_pd(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3)+10, 0)
+    val datin_buf = pdp_datin_pd(conf.PDP_UNIT1D_BW+10, 0)
     pdp_datin_prdy_1 := unit1d_prdy_uint.andR & pdp_info_in_prdy
     val pdp_full_pvld = pdp_datin_pvld | cur_datin_disable 
 
@@ -747,7 +747,7 @@ withClock(io.nvdla_core_clk){
     //assertion trace NVDLA_HLS_ADD17_LATENCY latency change from 4
     val unit1d = Array.fill(8){Module(new NV_NVDLA_PDP_CORE_unit1d)}
     val average_pooling_en = Wire(Bool())
-    val unit1d_out = Wire(Vec(8, UInt((conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3)+4).W)))
+    val unit1d_out = Wire(Vec(8, UInt((conf.PDP_UNIT1D_BW+4).W)))
     
     val unit1d_out_prdy = Wire(Vec(8, Bool()))
     for(i <- 0 to 7){
@@ -757,7 +757,7 @@ withClock(io.nvdla_core_clk){
 
         unit1d(i).io.pdma2pdp_pd.valid := unit1d_pvld(i)
         unit1d_prdy(i) := unit1d(i).io.pdma2pdp_pd.ready
-        unit1d(i).io.pdma2pdp_pd.bits := datin_buf(conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+3)+8, 0)
+        unit1d(i).io.pdma2pdp_pd.bits := datin_buf(conf.PDP_UNIT1D_BW+8, 0)
 
         unit1d_out_pvld(i) := unit1d(i).io.pooling_out.valid
         unit1d(i).io.pooling_out.ready := unit1d_out_prdy(i)

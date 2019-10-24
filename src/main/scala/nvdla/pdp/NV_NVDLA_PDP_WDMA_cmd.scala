@@ -26,7 +26,7 @@ class NV_NVDLA_PDP_WDMA_cmd(implicit val conf: nvdlaConfig) extends Module {
         val reg2dp_partial_width_out_mid = Input(UInt(10.W))
         val reg2dp_split_num = Input(UInt(8.W))
 
-        // Read-only register input
+        // 
         val op_load = Input(Bool())
     })
 //     

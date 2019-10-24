@@ -9,9 +9,9 @@ class NV_NVDLA_PDP_nan(implicit val conf: nvdlaConfig) extends Module {
         // clk
         val nvdla_core_clk = Input(Clock())
         //rdma2dp
-        val pdp_rdma2dp_pd = Flipped(DecoupledIO(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W)))
+        val pdp_rdma2dp_pd = Flipped(DecoupledIO(UInt((conf.PDPBW+14).W)))
         //preproc
-        val nan_preproc_pd = DecoupledIO(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W))
+        val nan_preproc_pd = DecoupledIO(UInt((conf.PDPBW+14).W))
         //config  
         val reg2dp_flying_mode = Input(Bool())
         val reg2dp_nan_to_zero = Input(Bool())
@@ -62,7 +62,7 @@ withClock(io.nvdla_core_clk){
     val op_en_d1 = RegInit(false.B)
 
     val op_en_load = io.reg2dp_op_en & (~op_en_d1);
-    val layer_end = Cat(io.pdp_rdma2dp_pd.bits((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+13), io.pdp_rdma2dp_pd.bits((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+9)).andR & load_din;
+    val layer_end = Cat(io.pdp_rdma2dp_pd.bits(conf.PDPBW+13), io.pdp_rdma2dp_pd.bits(conf.PDPBW+9)).andR & load_din;
     
     when(layer_end & (~onfly_en)){
         waiting_for_op_en := true.B
@@ -79,7 +79,7 @@ withClock(io.nvdla_core_clk){
     /////////////////////////////////////
     //NaN process mode control
     /////////////////////////////////////
-    val datin_d = RegInit("b0".asUInt((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT+14).W))
+    val datin_d = RegInit("b0".asUInt((conf.PDPBW+14).W))
 
     when(load_din){
         datin_d := io.pdp_rdma2dp_pd.bits
