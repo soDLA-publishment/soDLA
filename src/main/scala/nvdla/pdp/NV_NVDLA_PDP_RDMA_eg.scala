@@ -1,410 +1,302 @@
-// package nvdla
+package nvdla
 
-// import chisel3._
-// import chisel3.experimental._
-// import chisel3.util._
+import chisel3._
+import chisel3.experimental._
+import chisel3.util._
 
-// class NV_NVDLA_PDP_RDMA_eg(implicit val conf: nvdlaConfig) extends Module {
-//     val io = IO(new Bundle {
-//         val nvdla_core_clk = Input(Clock())
+class NV_NVDLA_PDP_RDMA_eg(implicit val conf: nvdlaConfig) extends Module {
+    val io = IO(new Bundle {
+        val nvdla_core_clk = Input(Clock())
 
-//         val mcif2cdp_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_PDP_MEM_RD_RSP.W)))
-//         val pdp2mcif_rd_cdt_lat_fifo_pop = Output(Bool())
+        val mcif2pdp_rd_rsp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_PDP_MEM_RD_RSP.W)))
+        val pdp2mcif_rd_cdt_lat_fifo_pop = Output(Bool())
 
-//         val cvif2pdp_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(conf.NVDLA_PDP_MEM_RD_RSP.W)) else None
-//         val pdp2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
+        val cvif2pdp_rd_rsp_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(UInt(conf.NVDLA_PDP_MEM_RD_RSP.W)))) else None
+        val pdp2cvif_rd_cdt_lat_fifo_pop = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Output(Bool())) else None
 
-//         val pdp_rdma2dp_pd = DecoupledIO(UInt((conf.PDPBW+14).W))
-//         val cq2eg_pd = Flipped(DecoupledIO(UInt(18.W)))
+        val pdp_rdma2dp_pd = DecoupledIO(UInt((conf.PDPBW+14).W))
+        val cq2eg_pd = Flipped(DecoupledIO(UInt(18.W)))
 
-//         val reg2dp_src_ram_type = Input(Bool())
-//         val dp2reg_done = Output(Bool())
-//         val eg2ig_done = Output(Bool())
-//         val rdma2wdma_done = Output(Bool())
+        val reg2dp_src_ram_type = Input(Bool())
+        val dp2reg_done = Output(Bool())
+        val eg2ig_done = Output(Bool())
+        val rdma2wdma_done = Output(Bool())
 
-//         val pwrbus_ram_pd = Input(UInt(32.W))
+        val pwrbus_ram_pd = Input(UInt(32.W))
 
-//     })
-// //     
-// //          ┌─┐       ┌─┐
-// //       ┌──┘ ┴───────┘ ┴──┐
-// //       │                 │
-// //       │       ───       │
-// //       │  ─┬┘       └┬─  │
-// //       │                 │
-// //       │       ─┴─       │
-// //       │                 │
-// //       └───┐         ┌───┘
-// //           │         │
-// //           │         │
-// //           │         │
-// //           │         └──────────────┐
-// //           │                        │
-// //           │                        ├─┐
-// //           │                        ┌─┘    
-// //           │                        │
-// //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-// //             │ ─┤ ─┤       │ ─┤ ─┤         
-// //             └──┴──┘       └──┴──┘ 
+    })
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘ 
 
-// withClock(io.nvdla_core_clk){
+withClock(io.nvdla_core_clk){
 
-//     ///////////////////////////////////////////////////////////////////////////////////
-//     val dma_rd_rsp_rdy = Wire(Bool())
-//     val nv_NVDLA_PDP_RDMA_rdrsp = Module(new NV_NVDLA_DMAIF_rdrsp(conf.NVDLA_PDP_MEM_RD_RSP))
-//     nv_NVDLA_CDP_RDMA_rdrsp.io.nvdla_core_clk := io.nvdla_core_clk
+    ///////////////////////////////////////////////////////////////////////////////////
+    val nv_NVDLA_PDP_RDMA_rdrsp = Module(new NV_NVDLA_DMAIF_rdrsp(conf.NVDLA_PDP_MEM_RD_RSP))
+    nv_NVDLA_PDP_RDMA_rdrsp.io.nvdla_core_clk := io.nvdla_core_clk
 
-//     nv_NVDLA_CDP_RDMA_rdrsp.io.mcif_rd_rsp_pd <> io.mcif2pdp_rd_rsp_pd
+    nv_NVDLA_PDP_RDMA_rdrsp.io.mcif_rd_rsp_pd <> io.mcif2pdp_rd_rsp_pd
 
-//     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         nv_NVDLA_CDP_RDMA_rdrsp.io.cvif_rd_rsp_pd.get <> io.cvif2cdp_rd_rsp_pd.get
-//     }
+    if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
+        nv_NVDLA_PDP_RDMA_rdrsp.io.cvif_rd_rsp_pd.get <> io.cvif2pdp_rd_rsp_pd.get
+    }
 
-//     ////////////////////////////////////
-//     val dma_rd_cdt_lat_fifo_pop = Wire(Bool())
-//     val dma_rd_rsp_ram_type = io.reg2dp_src_ram_type
-//     io.pdp2mcif_rd_cdt_lat_fifo_pop := RegNext(dma_rd_cdt_lat_fifo_pop & (dma_rd_rsp_ram_type === true.B), false.B)
+    ////////////////////////////////////
+    val dma_rd_cdt_lat_fifo_pop = Wire(Bool())
+    val dma_rd_rsp_ram_type = io.reg2dp_src_ram_type
+    io.pdp2mcif_rd_cdt_lat_fifo_pop := RegNext(dma_rd_cdt_lat_fifo_pop & (dma_rd_rsp_ram_type === true.B), false.B)
 
-//     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-//         io.pdp2cvif_rd_cdt_lat_fifo_pop.get := RegNext(dma_rd_cdt_lat_fifo_pop & (dma_rd_rsp_ram_type === false.B), false.B)
-//     }
+    if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
+        io.pdp2cvif_rd_cdt_lat_fifo_pop.get := RegNext(dma_rd_cdt_lat_fifo_pop & (dma_rd_rsp_ram_type === false.B), false.B)
+    }
 
-//     //pipe for timing closure
-//     val is_pipe0 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_PDP_MEM_RD_RSP))
-//     is_pipe0.io.clk := io.nvdla_core_clk
+    //pipe for timing closure
+    val is_pipe_egg = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_PDP_MEM_RD_RSP))
+    is_pipe_egg.io.clk := io.nvdla_core_clk
 
-//     is_pipe0.io.vi := nv_NVDLA_CDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.valid
-//     nv_NVDLA_CDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.ready := is_pipe0.io.ro
-//     is_pipe0.io.di := nv_NVDLA_CDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.bits
+    is_pipe_egg.io.vi := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.valid
+    nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.ready := is_pipe_egg.io.ro
+    is_pipe_egg.io.di := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.bits
 
-//     //==============
-//     // Latency FIFO to buffer return DATA
-//     //==============
+    //==============
+    // Latency FIFO to buffer return DATA
+    //==============
 
-//     val lat_rd_prdy = Wire(Bool())
-//     val u_lat_fifo = Module{new NV_NVDLA_fifo(
-//                         depth = conf.NVDLA_VMOD_PDP_RDMA_LATENCY_FIFO_DEPTH, 
-//                         width = conf.NVDLA_PDP_MEM_RD_RSP,
-//                         ram_type = 2, 
-//                         distant_wr_req = false)}
-//     u_lat_fifo.io.clk := io.nvdla_core_clk
-//     u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+    val lat_rd_prdy = Wire(Bool())
+    val u_lat_fifo = Module{new NV_NVDLA_fifo(
+                        depth = conf.NVDLA_VMOD_PDP_RDMA_LATENCY_FIFO_DEPTH, 
+                        width = conf.NVDLA_PDP_MEM_RD_RSP,
+                        ram_type = 2, 
+                        distant_wr_req = false)}
+    u_lat_fifo.io.clk := io.nvdla_core_clk
+    u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
-//     u_lat_fifo.io.wr_pvld := is_pipe0.io.vo
-//     is_pipe0.io.ri := u_lat_fifo.io.wr_prdy
-//     u_lat_fifo.io.wr_pd := is_pipe0.io.dout
+    u_lat_fifo.io.wr_pvld := is_pipe_egg.io.vo
+    is_pipe_egg.io.ri := u_lat_fifo.io.wr_prdy
+    u_lat_fifo.io.wr_pd := is_pipe_egg.io.dout
 
-//     val lat_rd_pvld = u_lat_fifo.io.rd_pvld 
-//     u_lat_fifo.io.rd_prdy := lat_rd_prdy
-//     val lat_rd_pd  = u_lat_fifo.io.rd_pd 
+    val lat_rd_pvld = u_lat_fifo.io.rd_pvld 
+    u_lat_fifo.io.rd_prdy := lat_rd_prdy
+    val lat_rd_pd  = u_lat_fifo.io.rd_pd 
 
-//     val lat_rd_data = lat_rd_pd(conf.NVDLA_PDP_DMAIF_BW-1, 0)
-//     val lat_rd_mask = lat_rd_pd(conf.NVDLA_DMA_RD_RSP-1, conf.NVDLA_PDP_DMAIF_BW)
+    val lat_rd_data = lat_rd_pd(conf.NVDLA_PDP_DMAIF_BW-1, 0)
+    val lat_rd_mask = lat_rd_pd(conf.NVDLA_DMA_RD_RSP-1, conf.NVDLA_PDP_DMAIF_BW)
 
-//     dma_rd_cdt_lat_fifo_pop := lat_rd_pvld & lat_rd_prdy
+    dma_rd_cdt_lat_fifo_pop := lat_rd_pvld & lat_rd_prdy
 
-//     // only care the rdy of ro-fifo which mask bit indidates
-//     val ro_wr_rdy = Wire(Vec(conf.ATMM_NUM, Bool()))
-//     val lat_rd_mask_func = VecInit((0 to conf.ATMM_NUM-1) map 
-//             {i => ~lat_rd_mask(i) | (lat_rd_mask(i) & ro_wr_rdy(i))})
-//     lat_rd_prdy := lat_rd_pvld & lat_rd_mask_func.asUInt.andR
+    // only care the rdy of ro-fifo which mask bit indidates
+    val ro_wr_rdy = Wire(Vec(conf.ATMM_NUM, Bool()))
+    val lat_rd_mask_func = VecInit((0 to conf.ATMM_NUM-1) map 
+            {i => ~lat_rd_mask(i) | (lat_rd_mask(i) & ro_wr_rdy(i))})
+    lat_rd_prdy := lat_rd_pvld & lat_rd_mask_func.asUInt.andR
 
-//     // when also need send to other group of ro-fifo, need clamp the vld if others are not ready
-//     val ro_wr_pvld = Wire(Vec(conf.ATMM_NUM, Bool()))
-//     for(i <- 0 until conf.ATMM_NUM){
-//         ro_wr_pvld(i) := lat_rd_pvld & (lat_rd_mask(i) & ro_wr_rdy(i)) & lat_rd_mask_func.drop(i).reduce(_ && _)
-//     }
+    // when also need send to other group of ro-fifo, need clamp the vld if others are not ready
+    val ro_wr_pvld = Wire(Vec(conf.ATMM_NUM, Bool()))
+    for(i <- 0 until conf.ATMM_NUM){
+        ro_wr_pvld(i) := lat_rd_pvld & (lat_rd_mask(i) & ro_wr_rdy(i)) & lat_rd_mask_func.drop(i).reduce(_ && _)
+    }
 
-//     val ro_wr_rdys = Wire(Vec(TOTAL_PDP_NUM))
+    val ro_wr_rdys = Wire(Vec(conf.ATMM_NUM, Vec(conf.BATCH_PDP_NUM, Bool())))
+    for(i <- 0 to conf.ATMM_NUM-1){
+        ro_wr_rdy(i) := ro_wr_rdys(i).asUInt.andR
+    }
 
-//     val u_ro_fifo = Array.fill((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)*(conf.ATMM_NUM+1)){
-//                     Module(new NV_NVDLA_fifo(depth = 32, width = conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE, ram_type = 0, distant_wr_req = false))}
+    val u_ro_fifo = Array.fill(conf.TOTAL_PDP_NUM){
+                    Module(new NV_NVDLA_fifo(
+                    depth = 32, 
+                    width = conf.PDPBW, 
+                    ram_type = 2, 
+                    distant_wr_req = false))}
 
+    val ro_wr_pd = VecInit((0 to conf.TOTAL_PDP_NUM-1) 
+                    map {i => lat_rd_data((conf.PDPBW*i + conf.PDPBW - 1), conf.PDPBW*i)})
+    val ro_rd_pvld = Wire(Vec(conf.TOTAL_PDP_NUM, Bool()))
+    val ro_rd_prdy = Wire(Vec(conf.TOTAL_PDP_NUM, Bool()))
+    val ro_rd_pd = Wire(Vec(conf.TOTAL_PDP_NUM, UInt(conf.PDPBW.W)))
+    for(i <- 0 to conf.ATMM_NUM-1){
+        for(j <- 0 to conf.BATCH_PDP_NUM-1){
 
-//     //==============
-//     // Re-Order FIFO to send data to CDP-core in DP order(read NVDLA PP uARCH for details)
-//     //==============
+                u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.clk := io.nvdla_core_clk
+                u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.pwrbus_ram_pd := io.pwrbus_ram_pd
+
+                u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.wr_pvld := ro_wr_pvld(i)
+                ro_wr_rdys(i)(j) := u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.wr_prdy
+                u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.wr_pd := ro_wr_pd(i*conf.BATCH_PDP_NUM + j)
+
+                ro_rd_pvld(i*conf.BATCH_PDP_NUM + j) := u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.rd_pvld
+                u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.rd_prdy := ro_rd_prdy(i*conf.BATCH_PDP_NUM + j)
+                ro_rd_pd(i*conf.BATCH_PDP_NUM + j) := u_ro_fifo(i*conf.BATCH_PDP_NUM + j).io.rd_pd
+        }
+    }
+
+    // DATA MUX out
+    val fifo_sel_cnt = RegInit("b0".asUInt(6.W))
+    val fifo_sel = fifo_sel_cnt
+
+    val dp_vld = WireInit(false.B)
+    val dp_rdy = Wire(Bool())
+    val dp_data = WireInit("b0".asUInt(conf.PDPBW.W))
+    val tran_cnt_idle = Wire(Bool())
+
+    for(i <- 0 to conf.TOTAL_PDP_NUM-1){
+        when(fifo_sel === i.U){
+            dp_vld := ro_rd_pvld(i) & (~tran_cnt_idle)
+            dp_data := ro_rd_pd(i)
+        }
+
+        ro_rd_prdy(i) := dp_rdy & (fifo_sel === i.U) & (~tran_cnt_idle)
+    }
+
+    //==============
+    // Context Queue: read
+    //==============
+
+    //==============
+    // Return Data Counting
+    //==============
+    // unpack from rd_pd, which should be the same order as wr_pd
+    val tran_rdy = Wire(Bool())
+    io.cq2eg_pd.ready := tran_rdy
+    val tran_vld = io.cq2eg_pd.valid
+
+    // PKT_UNPACK_WIRE( pdp_rdma_ig2eg ,  ig2eg_ ,  cq2eg_pd )
+    val ig2eg_size = io.cq2eg_pd.bits(12, 0)
+    val ig2eg_align = io.cq2eg_pd.bits(13)
+    val ig2eg_line_end = io.cq2eg_pd.bits(14)
+    val ig2eg_surf_end = io.cq2eg_pd.bits(15)
+    val ig2eg_split_end = io.cq2eg_pd.bits(16)
+    val ig2eg_cube_end = io.cq2eg_pd.bits(17)
+
+    val tran_num = Mux(io.cq2eg_pd.valid, ig2eg_size +& 1.U, "b0".asUInt(14.W))
+
+    val tran_cnt = RegInit("b0".asUInt(6.W))
+    val beat_cnt = RegInit("b0".asUInt(14.W))
+    val width_cnt = RegInit("b0".asUInt(14.W))
+    tran_cnt_idle := (tran_cnt === 0.U);
+    val is_last_tran = (tran_cnt === 1.U);
+    val is_last_beat = (beat_cnt === 1.U);
     
+    val fifo_rd_pvld = Wire(Vec(conf.TOTAL_PDP_NUM, Bool()))
+    for(i <- 0 to conf.TOTAL_PDP_NUM-1){
+        fifo_rd_pvld(i) := (fifo_sel === i.U) & ro_rd_pvld(i)
+    }
 
-//     val ro_wr_pvld = Wire(Vec(conf.ATMM_NUM, Bool()))
-//     for(i <- 0 until conf.ATMM_NUM){
-//         ro_wr_pvld(i) := lat_rd_pvld & lat_rd_mask_func.asUInt.andR & lat_rd_mask(i)
-//     }
-// // (lat_rd_mask[${i}] & ro${i}_wr_rdy) = (~lat_rd_mask[${i}] | (lat_rd_mask[${i}] & ro${i}_wr_rdy)) & lat_rd_mask[${i}]
+    val fifo_rd_pvld_active = fifo_rd_pvld.asUInt.orR
 
-//     val ro_wr_rdys = Wire(Vec(conf.ATMM_NUM, UInt((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT).W)))
+    tran_rdy := (tran_cnt_idle & fifo_rd_pvld_active) || (is_last_tran & is_last_beat & dp_rdy);
+    val tran_accept = tran_vld & tran_rdy; 
 
-// // (conf.NVDLA_CDP_DMAIF_BW/(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE)) / 
-// // (conf.NVDLA_CDP_DMAIF_BW/(conf.NVDLA_MEMORY_ATOMIC_SIZE*conf.NVDLA_BPE))
-//     val ro_wr_pd = Wire(Vec(conf.ATMM_NUM, UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE).W)))
-//     val u_ro_fifo = Array.fill(
-//         (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)*(conf.ATMM_NUM+1)
-//         ){Module(new NV_NVDLA_fifo(
-//                     depth = conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE, 
-//                     width = 32,
-//                     ram_type = 0, 
-//                     distant_wr_req = false))}
-//     val ro_rd_pvld = Wire(Vec(conf.ATMM_NUM, Bool()))
-//     val ro_rd_prdy = Wire(Vec(conf.ATMM_NUM, Bool()))
-//     val ro_rd_pd = Wire(Vec(conf.ATMM_NUM, UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE).W)))
-    
-//     for(i <- 0 until conf.ATMM_NUM){
-//         ro_wr_rdy(i) := ro_wr_rdys(i).asUInt.andR
-//         for(j <- 0 until (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)){
-//             val k = (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT) * i + j
-//             ro_wr_pd(k) := lat_rd_data(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE*(k+1)-1, conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE*k)
-//             u_ro_fifo(k).io.clk := io.nvdla_core_clk
-//             u_ro_fifo(k).io.pwrbus_ram_pd := io.pwrbus_ram_pd
-//             u_ro_fifo(k).io.wr_pvld := ro_wr_pvld(i)
-//             ro_wr_rdys(j)(i) := u_ro_fifo(k).io.wr_prdy
-//             u_ro_fifo(k).io.wr_pd := ro_wr_pd(k)
-//             ro_rd_pvld(k) := u_ro_fifo(k).io.rd_pvld
-//             u_ro_fifo(k).io.rd_prdy := ro_rd_prdy(k)
-//             ro_rd_pd(k) := u_ro_fifo(k).io.rd_pd
-//         }
-//     }
+    val is_cube_end = RegInit(false.B)
+    val is_b_sync = Wire(Bool())
+    when(is_cube_end & is_b_sync){
+        fifo_sel_cnt := 0.U
+    }
+    .elsewhen(tran_rdy){
+        fifo_sel_cnt := 0.U
+    }
+    .elsewhen(dp_rdy & fifo_rd_pvld_active){
+        fifo_sel_cnt := Mux(fifo_sel_cnt === (conf.TOTAL_PDP_NUM-1).U, 0.U, fifo_sel_cnt+1.U)
+    }
 
-//     val fbit = log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)
-//     val tran_cnt_idle = Wire(Bool())
-//     val tran_cnt = RegInit(0.U(6.W))
-//     when(conf.ATMM_NUM > 1){
-//         val beat_align = RegInit(0.U(log2Ceil(conf.ATMM_NUM).W))
-//     }.elsewhen{
-//         val beat_align = RegInit(false.B)
-//     }
+    when(is_cube_end & is_b_sync){
+        tran_cnt := 0.U
+        beat_cnt := 0.U
+    }
+    .elsewhen(tran_rdy){
+        when(tran_vld){
+            tran_cnt := conf.BATCH_PDP_NUM.U
+            beat_cnt := tran_num
+        }
+        .otherwise{
+            tran_cnt := 0.U
+            beat_cnt := 0.U
+        }
+    }
+    .elsewhen(dp_rdy & fifo_rd_pvld_active){
+        beat_cnt := Mux(beat_cnt === 1.U, width_cnt, beat_cnt - 1.U)
+        when(is_last_beat){
+            tran_cnt := tran_cnt - 1.U
+        }
+    }
 
-//     val fifo_sel = Wire(UInt(6.W))
-//     if(conf.ATMM_NUM > 1){
-//         fifo_sel := Mux(
-//             tran_cnt_idle, 
-//             0.U, 
-//             (((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT).asUInt(6.W)-tran_cnt) 
-//             + Cat(beat_align, Fill(log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT), false.B)))
-//             )
-//     } else {
-//         fifo_sel := Mux(
-//             tran_cnt_idle,
-//             0.U,
-//             ((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT).asUInt(6.W)-tran_cnt) 
-//         )
-//     }
+    val is_line_end = RegInit(false.B)
+    val is_surf_end = RegInit(false.B)
+    val is_split_end = RegInit(false.B)
+    when(tran_accept){
+        width_cnt := tran_num
+        is_line_end := ig2eg_line_end
+        is_surf_end := ig2eg_surf_end
+        is_split_end := ig2eg_split_end
+        is_cube_end := ig2eg_cube_end
+    }
 
-//     // DATA MUX out : not sure
-//     val dp_rdy = Wire(Bool())
-//     val dp_vld = RegInit(false.B)
-//     val dp_data = RegInit(0.U((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE).W))
-//     for(i <- 0 until conf.ATMM_NUM){
-//         for(j <- 0 until (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)){
-//             when(fifo_sel === ((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)*i+j).asUInt(6.W)){
-//                 dp_vld := ro_rd_pvld((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)*i+j) & (~tran_cnt_idle)
-//             }
-//             ro_rd_prdy((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)*i+j) := dp_rdy & (fifo_sel===((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)*i+j).asUInt) & (~tran_cnt_idle)
-//         }
-//     }
+    is_b_sync := is_last_beat & is_last_tran & dp_rdy;
+    val dp_pos_w = (width_cnt -& beat_cnt)(3, 0)
+    val dp_pos_c = Wire(UInt(5.W))
+    dp_pos_c := fifo_sel(log2Ceil(conf.BATCH_PDP_NUM)-1, 0)
 
-//     for(i <- 0 until conf.ATMM_NUM){
-//         when(fifo_sel === i.asUInt(6.W)){
-//             dp_data := ro_rd_pd(i)
-//         }
-//     }
+    val dp_b_sync  = is_b_sync;
+    val dp_line_end = is_line_end;
+    val dp_surf_end = is_surf_end;
+    val dp_split_end = is_split_end;
+    val dp_cube_end = is_cube_end;
 
-// //////////////////////
-// //replacd by 0 value in invalid position
-// //////////////////////
-//     val ele_in_channel = Wire(UInt(5.W))
-//     if(log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)==5){
-//         ele_in_channel := io.reg2dp_channel(log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)-1, 0)
-//     } else {
-//         ele_in_channel := Cat(
-//             Fill(5-log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE), false.B),
-//             io.reg2dp_channel(log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)-1, 0)
-//         )
-//     }
+    val dp2reg_done_f = is_cube_end & is_b_sync
+    val eg2ig_done_f = is_cube_end & is_b_sync
+    val rdma2wdma_done_f = is_cube_end & is_b_sync
 
-//     val rest_channel = 
-//         (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT).asUInt(6.W) - 
-//         ele_in_channel(log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)-1, log2Ceil(conf.NVDLA_CDP_THROUGHPUT))
-    
-//     val is_last_c = RegInit(false.B)
-//     val invalid_flag = RegInit(0.U(conf.NVDLA_CDP_THROUGHPUT.W))
+    //==============
+    // OUTPUT PACK and PIPE: To Data Processor
+    //==============
+    // PD Pack
 
-//     for(i <- 0 until conf.ATMM_NUM){
-//         when(fifo_sel === i.asUInt(6.W)){
-//             when(is_last_c){
-//                 when(tran_cnt < rest_channel){
-//                     invalid_flag := Fill(conf.NVDLA_CDP_THROUGHPUT, true.B)
-//                 }.elsewhen(tran_cnt > rest_channel){
-//                     invalid_flag := 0.U
-//                 }.otherwise{
-//                     if(conf.NVDLA_CDP_THROUGHPUT==1){
-//                         invalid_flag := 0.U
-//                     } else {
-//                         invalid_flag := 0.U 
-//                             // Fill(conf.NVDLA_CDP_THROUGHPUT, (ele_in_channel===0.U)) & Cat(Fill(conf.NVDLA_CDP_THROUGHPUT-1, true.B), false.B)
-// // print invalid_flag = {${tp}{ele_in_channel[${tpbw}-1:0]==${tpbw}'d0}} & {{(${tp}-1){1'b1}},1'b0}
-// // foreach my $i (0..$tp-2) {
-// // my $j = $i + 1;
-// // my $s = $j + 1;
-// // if($s < $tp){
-// // print  | {${tp}{ele_in_channel[${tpbw}-1:0]==${tpbw}'d${j}}} & {{(${tp}-${s}){1'b1}},${s}'b0}
-// // } else {
-// // print  | {${tp}{ele_in_channel[${tpbw}-1:0]==${tpbw}'d${j}}} & {${s}'b0} 
-// // }                
-//                     }
-//                 }
-//             }.otherwise{
-//                 invalid_flag := 0.U
-//             }
-//         }
-//     }
+    // PKT_PACK_WIRE( pdp_rdma2dp , dp_ , dp_pd )
+    val dp_pd = Cat(dp_cube_end, dp_split_end, dp_surf_end, dp_line_end, dp_b_sync, 
+                    dp_pos_c, dp_pos_w, dp_data)
+    val eg_out_pipe0_di = Cat(dp_pd, rdma2wdma_done_f, eg2ig_done_f, dp2reg_done_f)
 
-// //==============
-// // Return Data Counting
-// //==============
-// // unpack from rd_pd, which should be the same order as wr_pd
-//     val tran_rdy = Wire(Bool())
-//     io.cq_rd_prdy := tran_rdy
-//     val tran_vld = io.cq_rd_pvld
+    val is_pipe0 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT+17))
+    is_pipe0.io.clk := io.nvdla_core_clk
 
-//     val ig2eg_width = io.cq_rd_pd(2,0)
-//     val ig2eg_align   =     io.cq_rd_pd(3)
-//     val ig2eg_last_w  =     io.cq_rd_pd(4)
-//     val ig2eg_last_h  =     io.cq_rd_pd(5)
-//     val ig2eg_last_c  =     io.cq_rd_pd(6)
+    is_pipe0.io.vi := dp_vld
+    dp_rdy := is_pipe0.io.ro
+    is_pipe0.io.di := eg_out_pipe0_di
 
-//     val tran_num = ig2eg_width +& 1.U
-//     tran_cnt_idle := (tran_cnt===0.U)
-//     val is_last_tran  = (tran_cnt===1.U)
-//     val beat_cnt = RegInit(0.U(4.W))
-//     val is_last_beat  = (beat_cnt===1.U)
+    io.pdp_rdma2dp_pd.valid := is_pipe0.io.vo
+    is_pipe0.io.ri := io.pdp_rdma2dp_pd.ready
+    val eg_out_pipe0_do = is_pipe0.io.dout
 
-//     val fifo_rd_pvld = Wire(Vec(conf.ATMM_NUM, Bool()))
-//     for(i <- 0 until conf.ATMM_NUM){
-//         fifo_rd_pvld(i) := (fifo_sel===i.asUInt(6.W)) & ro_rd_pvld(i)
-//     }
-//     val fifo_rd_pvld_active = fifo_rd_pvld.asUInt.andR
+    io.pdp_rdma2dp_pd.bits := eg_out_pipe0_do(conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT+16, 3)
+    val rdma2wdma_done_flag = eg_out_pipe0_do(2)
+    val eg2ig_done_flag = eg_out_pipe0_do(1)
+    val dp2reg_done_flag = eg_out_pipe0_do(0)
 
-// //the first cq_rd_prdy should start when fifo have data to be read
+    io.rdma2wdma_done := Mux(io.pdp_rdma2dp_pd.valid & io.pdp_rdma2dp_pd.ready & rdma2wdma_done_flag, true.B, false.B)
+    io.eg2ig_done := Mux(io.pdp_rdma2dp_pd.valid & io.pdp_rdma2dp_pd.ready & eg2ig_done_flag, true.B, false.B)
+    io.dp2reg_done := Mux(io.pdp_rdma2dp_pd.valid & io.pdp_rdma2dp_pd.ready & dp2reg_done_flag, true.B, false.B)
 
-//     tran_rdy := (tran_cnt_idle & fifo_rd_pvld_active/*(|fifo_rd_pvld)*/) || (is_last_tran & is_last_beat & dp_rdy)
-//     val tran_accept = tran_vld & tran_rdy
-//     val is_cube_end = Wire(Bool())
-//     val width_cnt = RegInit(0.U(4.W))
-
-//     when(is_cube_end & tran_rdy){
-//         tran_cnt := 0.U
-//         beat_cnt := 0.U
-//     }.elsewhen(tran_rdy){
-//         when(tran_vld){
-//             tran_cnt := (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT).asUInt(6.W)
-//             beat_cnt := tran_num
-//         }.otherwise{
-//             tran_cnt := 0.U
-//             beat_cnt := 0.U
-//         }
-//     }.elsewhen(dp_rdy & fifo_rd_pvld_active){
-//         beat_cnt := Mux((beat_cnt===1.U), width_cnt, (beat_cnt - 1.U))
-//         when(is_last_beat){
-//             tran_cnt := tran_cnt - 1.U
-//         }
-//     }
-
-//     when(tran_rdy){
-//         beat_align := 0.U
-//     }.elsewhen(dp_rdy & fifo_rd_pvld_active){
-//         when(is_last_beat){
-//             beat_align := 0.U
-//         }.otherwise{
-//             beat_align := beat_align + true.B
-//         }
-//     }
-
-//     when(tran_accept === true.B){
-//         width_cnt := tran_num
-//     }
-
-//     val is_last_w = RegInit(false.B)
-//     val is_last_h = RegInit(false.B)
-//     when(is_cube_end & tran_rdy){
-//         is_last_w := false.B
-//         is_last_h := false.B
-//         is_last_c := false.B
-//     }.elsewhen(tran_accept){
-//         is_last_w := ig2eg_last_w
-//         is_last_h := ig2eg_last_h
-//         is_last_c := ig2eg_last_c
-//     }
-
-//     val is_b_sync = is_last_beat
-
-//     val dp_pos_w = width_cnt - beat_cnt //spyglass disable W484
-//     val dp_width = width_cnt //spyglass disable W484
-
-//     val dp_pos_c = (conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT).asUInt(6.W) - tran_cnt
-//     val dp_b_sync  = is_b_sync
-//     val dp_last_w = is_last_w
-//     val dp_last_h = is_last_h
-//     val dp_last_c = is_last_c
-
-//     is_cube_end := is_last_w & is_last_h & is_last_c
-//     val dp2reg_done_f = is_cube_end & tran_rdy
-//     val eg2ig_done_f  = is_cube_end & tran_rdy
-
-// //==============
-// // OUTPUT PACK and PIPE: To Data Processor
-// //==============
-// // PD Pack
-//     val dp_invalid = Wire(UInt(8.W))
-//     if(conf.NVDLA_CDP_THROUGHPUT==8){
-//         dp_invalid := invalid_flag
-//     } else{
-//         dp_invalid := Cat(Fill(8-conf.NVDLA_CDP_THROUGHPUT, false.B), invalid_flag)
-//     }
-
-// // PKT_PACK_WIRE( cdp_rdma2dp , dp_ , dp_pd )
-//     val dp_pd = Wire(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+25).W))
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE-1,0) := dp_data
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+3,conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE) := dp_pos_w
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+7,conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+4) := dp_width
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+12,conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+8) := dp_pos_c(4,0)
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+13) := dp_b_sync
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+14) := dp_last_w
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+15) := dp_last_h
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+16) := dp_last_c
-//     dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+24,conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+17) := dp_invalid(7,0)
-
-//     val cdp_rdma2dp_pd_i = Cat(dp_pd, dp2reg_done_f, eg2ig_done_f)
-
-// //: my $k=NVDLA_CDP_THROUGHPUT*NVDLA_BPE+27;
-// //: &eperl::pipe(" -wid $k -is -do cdp_rdma2dp_pd_o -vo cdp_rdma2dp_valid_f -ri cdp_rdma2dp_ready -di cdp_rdma2dp_pd_i  -vi dp_vld -ro dp_rdy_f ");
-//     val pipe_p1 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+27))
-//     pipe_p1.io.clk := io.nvdla_core_clk
-//     pipe_p1.io.vi := dp_vld
-//     val dp_rdy_f = pipe_p1.io.ro
-//     pipe_p1.io.di := cdp_rdma2dp_pd_i
-//     val cdp_rdma2dp_valid_f = pipe_p1.io.vo
-//     pipe_p1.io.ri := io.cdp_rdma2dp_ready
-//     val cdp_rdma2dp_pd_o = pipe_p1.io.dout
-
-//     dp_rdy := dp_rdy_f
-
-//     io.cdp_rdma2dp_pd := cdp_rdma2dp_pd_o(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE+26, 2)
-//     val dp2reg_done_flag = cdp_rdma2dp_pd_o(1)
-//     val eg2ig_done_flag = cdp_rdma2dp_pd_o(0)
-
-//     io.cdp_rdma2dp_valid := cdp_rdma2dp_valid_f
-//     io.dp2reg_done := Mux((cdp_rdma2dp_valid_f & io.cdp_rdma2dp_ready & dp2reg_done_flag), true.B, false.B)
-//     io.eg2ig_done  := Mux((cdp_rdma2dp_valid_f & io.cdp_rdma2dp_ready & eg2ig_done_flag), true.B, false.B)
-
-// //==============
-// //function points
-// //==============
-// // ...
-
-// }}
+}}
 
 
-// object NV_NVDLA_CDP_RDMA_egDriver extends App {
-//     implicit val conf: nvdlaConfig = new nvdlaConfig
-//     chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_RDMA_eg())
-// }
+object NV_NVDLA_PDP_RDMA_egDriver extends App {
+    implicit val conf: nvdlaConfig = new nvdlaConfig
+    chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_RDMA_eg())
+}

@@ -32,7 +32,6 @@ class NV_NVDLA_PDP_RDMA_ig(implicit conf: nvdlaConfig) extends Module {
         val reg2dp_src_surface_stride = Input(UInt(32.W))
         val dp2reg_d0_perf_read_stall = Output(UInt(32.W))
         val dp2reg_d1_perf_read_stall = Output(UInt(32.W))
-        val reg2dp_surf_stride = Output(UInt(32.W))
         val eg2ig_done = Input(Bool())
 
     })
