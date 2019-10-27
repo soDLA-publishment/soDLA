@@ -56,8 +56,7 @@ class NV_NVDLA_SDP_MRDMA_eg(implicit val conf: nvdlaConfig) extends Module {
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
-withClock(io.nvdla_core_clk)
-{
+withClock(io.nvdla_core_clk){
 
     val u_cmd = Module(new NV_NVDLA_SDP_MRDMA_EG_cmd)
     val u_din = Module(new NV_NVDLA_SDP_MRDMA_EG_din)

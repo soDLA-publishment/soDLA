@@ -5,7 +5,7 @@ import chisel3.iotesters.{PeekPokeTester, Driver, ChiselFlatSpec}
 
 class NV_NVDLA_CMAC_CORE_rt_outTests(c: NV_NVDLA_CMAC_CORE_rt_out) extends PeekPokeTester(c) {
  
-  implicit val conf: cmacConfiguration = new cmacConfiguration
+  implicit val conf: nvdlaConfig = new nvdlaConfig
 
   for (t <- 0 to 99) {
     //load random inputs
@@ -51,8 +51,7 @@ class NV_NVDLA_CMAC_CORE_rt_outTester extends ChiselFlatSpec {
   behavior of "NV_NVDLA_CMAC_CORE_rt_out"
   backends foreach {backend =>
     it should s"correctly retiming wt and dat $backend" in {
-      implicit val conf: cmacConfiguration = new cmacConfiguration
-      implicit val nvconf: nvdlaConfig = new nvdlaConfig
+      implicit val conf: nvdlaConfig = new nvdlaConfig
       Driver(() => new NV_NVDLA_CMAC_CORE_rt_out())(c => new NV_NVDLA_CMAC_CORE_rt_outTests(c)) should be (true)
     }
   }

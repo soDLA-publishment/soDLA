@@ -15,7 +15,7 @@ class NV_NVDLA_DMAIF_wr(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
 
         val cvif_wr_req_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(UInt(DMABW.W)))
                              else None
-        val cvif_wr_rsp_complete = Input(Bool())
+        val cvif_wr_rsp_complete = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Input(Bool())) else None
 
         val dmaif_wr_req_pd = Flipped(DecoupledIO(UInt(DMABW.W)))
         val dmaif_wr_rsp_complete = Output(Bool())
@@ -124,7 +124,7 @@ class NV_NVDLA_DMAIF_wr(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
 
     val cv_dma_wr_rsp_complete = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(RegInit(false.B)) else None
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-        cv_dma_wr_rsp_complete.get := io.cvif_wr_rsp_complete
+        cv_dma_wr_rsp_complete.get := io.cvif_wr_rsp_complete.get
     }
 
     val dmaif_wr_rsp_complete_out = RegInit(false.B)

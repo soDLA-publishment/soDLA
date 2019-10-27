@@ -9,12 +9,9 @@ class NV_NVDLA_SDP_HLS_X_int_relu extends Module {
         val nvdla_core_clk = Input(Clock())
 
         val trt_data_out = Flipped(DecoupledIO(UInt(32.W)))
-
         val relu_data_out = DecoupledIO(UInt(32.W))
 
-        val cfg_relu_bypass = Input(Bool())
-
-               
+        val cfg_relu_bypass = Input(Bool())     
     })
     //     
     //          ┌─┐       ┌─┐

@@ -48,8 +48,6 @@ class sdpConfiguration extends cdmaConfiguration
     val LUT_TABLE_LO_DEPTH = 257
     val LUT_TABLE_MAX_DEPTH = LUT_TABLE_LO_DEPTH
 
-
-
 }
 
 class lut_out_if extends Bundle{
@@ -58,7 +56,6 @@ class lut_out_if extends Bundle{
     val oflow = Output(Bool())
     val uflow = Output(Bool())
 }
-
 
 class sdp_rdma_reg_dual_flop_outputs extends Bundle{
     val bn_base_addr_high = Output(UInt(32.W))
@@ -109,7 +106,32 @@ class sdp_rdma_reg_dual_flop_outputs extends Bundle{
     val src_surface_stride = Output(UInt(32.W))
 }
 
+class sdp_reg_single_flop_outputs extends Bundle{
+
+    val lut_hybrid_priority = Output(Bool())
+    val lut_le_function = Output(Bool())
+    val lut_oflow_priority = Output(Bool())
+    val lut_uflow_priority = Output(Bool())
+    val lut_le_index_offset = Output(UInt(8.W))
+    val lut_le_index_select = Output(UInt(8.W))
+    val lut_lo_index_select = Output(UInt(8.W))
+
+    val lut_le_end = Output(UInt(32.W))
+    val lut_le_slope_oflow_scale = Output(UInt(16.W))
+    val lut_le_slope_uflow_scale = Output(UInt(16.W))
+    val lut_le_slope_oflow_shift = Output(UInt(5.W))
+    val lut_le_slope_uflow_shift = Output(UInt(5.W))
+    val lut_le_start = Output(UInt(32.W))
+    val lut_lo_end = Output(UInt(32.W))
+    val lut_lo_slope_oflow_scale = Output(UInt(16.W))
+    val lut_lo_slope_uflow_scale = Output(UInt(16.W))
+    val lut_lo_slope_oflow_shift = Output(UInt(5.W))
+    val lut_lo_slope_uflow_shift = Output(UInt(5.W))
+    val lut_lo_start = Output(UInt(32.W))
+}
+
 class sdp_reg_dual_flop_outputs extends Bundle{
+
     val cvt_offset = Output(UInt(32.W))
     val cvt_scale = Output(UInt(16.W))
     val cvt_shift = Output(UInt(6.W))
@@ -169,9 +191,9 @@ class sdp_reg_dual_flop_outputs extends Bundle{
     val dst_base_addr_low = Output(UInt(32.W))
     val dst_batch_stride = Output(UInt(32.W))
     val dst_ram_type = Output(Bool())
-
     val dst_line_stride = Output(UInt(32.W))
     val dst_surface_stride = Output(UInt(32.W))
+
     val batch_number = Output(UInt(5.W))
     val flying_mode = Output(Bool())
     val nan_to_zero = Output(Bool())

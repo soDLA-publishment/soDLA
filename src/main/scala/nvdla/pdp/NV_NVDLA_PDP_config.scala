@@ -22,9 +22,14 @@ class pdpConfiguration extends sdpConfiguration
 
     //redpanda3----------------
     val PDPBW = NVDLA_PDP_THROUGHPUT*NVDLA_PDP_BWPE
-    val PDP_NUM = ATMM/PDPBW
+    val NVDLA_PDP_UNIT1D_BWPE = NVDLA_PDP_BWPE + 3
+    val PDP_UNIT1D_BW = NVDLA_PDP_THROUGHPUT*NVDLA_PDP_UNIT1D_BWPE
+    val BATCH_PDP_NUM = ATMM/PDPBW
+    val TOTAL_PDP_NUM = NVDLA_PRIMARY_MEMIF_WIDTH/PDPBW    //total fifo num within pdp
 
     val NVDLA_HLS_ADD17_LATENCY = 4
+
+    val ENUM = NVDLA_MEMORY_ATOMIC_SIZE/NVDLA_PDP_THROUGHPUT-1
 
 }
 

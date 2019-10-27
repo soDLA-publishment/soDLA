@@ -14,7 +14,7 @@ class NV_NVDLA_glb(implicit val conf: nvdlaConfig) extends Module {
         val csb2glb_req_pvld = Input(Bool())  /* data valid */
         val csb2glb_req_prdy = Output(Bool())  /* data return handshake */
         val csb2glb_req_pd = Input(UInt(63.W))
-
+        
         val glb2csb_resp_valid = Output(Bool())  /* data valid */
         val glb2csb_resp_pd = Output(UInt(34.W))     /* pkt_id_width=1 pkt_widths=33,33  */
 

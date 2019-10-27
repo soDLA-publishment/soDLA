@@ -11,12 +11,9 @@ class NV_NVDLA_SDP_HLS_c(implicit conf: nvdlaConfig) extends Module {
         val cvt_pd_in = Flipped(DecoupledIO(UInt(conf.CV_IN_DW.W)))
         val cvt_pd_out = DecoupledIO(UInt((conf.CV_OUT_DW+conf.NVDLA_SDP_MAX_THROUGHPUT).W))
 
+        val cfg_cvt = Flipped(new sdp_c_int_cfg_cvt_if)
         val cfg_mode_eql = Input(Bool())
-        val cfg_offset = Input(UInt(32.W))
         val cfg_out_precision = Input(UInt(2.W))
-        val cfg_scale = Input(UInt(16.W))
-        val cfg_truncate = Input(UInt(6.W))
-
     })
     //     
     //          ┌─┐       ┌─┐
@@ -69,11 +66,9 @@ withClock(io.nvdla_core_clk){
         cvt_data_out_wire(i) := c_int(i).io.cvt_out.bits.data
         cvt_sat_out_wire(i) := c_int(i).io.cvt_out.bits.sat
 
+        c_int(i).io.cfg_cvt <> io.cfg_cvt
         c_int(i).io.cfg_mode_eql := io.cfg_mode_eql
-        c_int(i).io.cfg_offset := io.cfg_offset
         c_int(i).io.cfg_out_precision := io.cfg_out_precision
-        c_int(i).io.cfg_scale := io.cfg_scale
-        c_int(i).io.cfg_truncate := io.cfg_truncate
    
     }
 

@@ -5,12 +5,13 @@ import chisel3.experimental._
 import chisel3.util._
 
 //bubble collapse
-class NV_NVDLA_CSB_LOGIC extends Module {
+class NV_NVDLA_CSB_LOGIC(io_reg_rd_en:Boolean = false) extends Module {
     val io = IO(new Bundle {
 
         val clk = Input(Clock()) 
         val csb2dp = new csb2dp_if
         val reg = Flipped(new reg_control_if)
+        val reg_rd_en = if(io_reg_rd_en) Some(Output(Bool())) else None
 
     })
 
@@ -65,6 +66,9 @@ withClock(io.clk){
     io.reg.wr_data := req_wdat
     io.reg.wr_en := req_pvld & req_write
     val reg_rd_en = req_pvld & ~req_write
+    if(io_reg_rd_en){
+        io.reg_rd_en.get := reg_rd_en
+    }
 
     // PKT_PACK_WIRE_ID( nvdla_xx2csb_resp ,  dla_xx2csb_rd_erpt ,  csb_rresp_ ,  csb_rresp_pd_w )
     val csb_rresp_rdat = io.reg.rd_data

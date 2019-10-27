@@ -16,7 +16,7 @@ class nv_flopram(dep: Int, wid: Int, wr_reg: Boolean = false) extends Module{
         val di = Input(UInt(wid.W))
         val iwe = if(wr_reg) Some(Input(Bool())) else None
         val we = Input(Bool())
-        val wa = Input(UInt(log2Ceil(dep).W))
+        val wa = if(dep>1) Some(Input(UInt(log2Ceil(dep).W))) else None
         val ra = Input(UInt((log2Ceil(dep+1)).W))
         val dout = Output(UInt(wid.W))
 
@@ -59,11 +59,16 @@ else{
 withClock(internal_clk){
     val ram_ff = Seq.fill(dep)(Reg(UInt(wid.W))) :+ Wire(UInt(wid.W))
     when(io.we){
-        for(i <- 0 to dep-1){
-            when(io.wa === i.U){
-                ram_ff(i) := io.di
-            }
-        } 
+        if(dep>1){
+            for(i <- 0 to dep-1){
+                when(io.wa.get === i.U){
+                    ram_ff(i) := io.di
+                }
+            } 
+        }
+        else{
+            ram_ff(0) := io.di
+        }
     }   
     ram_ff(dep) := io.di
     io.dout := MuxLookup(io.ra, "b0".asUInt(wid.W), 

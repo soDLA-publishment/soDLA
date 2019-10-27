@@ -58,7 +58,7 @@ withClock(io.nvdla_core_clk){
     val is_last_h = dp_last_h
     val is_last_c = dp_last_c
 
-///////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
     val rdma2dp_ready_normal = Wire(Bool())
     val hold_here = RegInit(false.B)
     nvdla_cdp_rdma2dp_ready := rdma2dp_ready_normal & (~hold_here)
@@ -67,8 +67,8 @@ withClock(io.nvdla_core_clk){
     val vld = rdma2dp_valid_rebuild
     val load_din = vld & nvdla_cdp_rdma2dp_ready
     val load_din_full = rdma2dp_valid_rebuild & rdma2dp_ready_normal
-///////////////////////////////////////////////////
 
+    ///////////////////////////////////////////////////
     val is_last_pos_c = (is_pos_c === ((conf.NVDLA_MEMORY_ATOMIC_SIZE/conf.NVDLA_CDP_THROUGHPUT)-1).U)
 
     val wait :: normal_c :: first_c :: second_c :: cube_end :: Nil = Enum(5)
@@ -124,14 +124,14 @@ withClock(io.nvdla_core_clk){
         }
         is (cube_end) {
             when(cube_done){
-                stat_cur := wait
+                stat_nex := wait
             }
         }
     }
 
     stat_cur := stat_nex
 
-/////////////////////////////////////////
+    /////////////////////////////////////////
     val data_shift_valid = RegInit(false.B)
     val data_shift_ready = Wire(Bool())
     val buf_dat_vld = RegInit(false.B)
@@ -150,7 +150,7 @@ withClock(io.nvdla_core_clk){
 
     val data_shift_load_all = data_shift_ready & data_shift_valid
     val data_shift_load = data_shift_load_all & ((~hold_here_dly)  | (stat_cur_dly === cube_end))
-/////////////////////////////////
+    /////////////////////////////////
 
     val data_shift = RegInit(VecInit(Seq.fill(8)(
         VecInit(Seq.fill(3)(0.U((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE).W))))))
@@ -233,7 +233,7 @@ withClock(io.nvdla_core_clk){
         width_pre := is_width
     }
 
-    val width_cur_1 = Reg(UInt(4.W))
+    val width_cur_1 = Wire(UInt(4.W))
     when((stat_cur === first_c) & (is_pos_w === 0.U)){
         width_cur_1 := is_width
     }.otherwise{
@@ -241,18 +241,18 @@ withClock(io.nvdla_core_clk){
     }
 
     val width_cur_2 = RegInit(0.U(4.W))
-    when((stat_cur===first_c) & (is_pos_w === 0.U) & load_din){
+    when((stat_cur === first_c) & (is_pos_w === 0.U) & load_din){
         width_cur_2 := is_width
     }
 
-    val width_cur = Mux(((stat_cur===first_c) & (is_pos_w === 0.U)), width_cur_1, width_cur_2)
+    val width_cur = Mux(((stat_cur === first_c) & (is_pos_w === 0.U)), width_cur_1, width_cur_2)
 
-    more2less := (stat_cur===first_c) & (width_cur < width_pre)
-    val less2more = (stat_cur===first_c) & (width_cur > width_pre)
-    val l2m_1stC_vld = (stat_cur===first_c) & less2more & (is_pos_w <= width_pre)
+    more2less := (stat_cur === first_c) & (width_cur < width_pre)
+    val less2more = (stat_cur === first_c) & (width_cur > width_pre)
+    val l2m_1stC_vld = (stat_cur === first_c) & less2more & (is_pos_w <= width_pre)
 
-    when((stat_cur===first_c) & more2less){
-        when((is_pos_w===is_width) & load_din){
+    when((stat_cur === first_c) & more2less){
+        when((is_pos_w === is_width) & load_din){
             hold_here := true.B
         }.elsewhen((width_pre_cnt === width_pre) & rdma2dp_ready_normal){
             hold_here := false.B
@@ -263,8 +263,8 @@ withClock(io.nvdla_core_clk){
         hold_here := false.B
     }
 
-    when((stat_cur===first_c) & more2less){
-        when((is_pos_w===is_width) & load_din){
+    when((stat_cur === first_c) & more2less){
+        when((is_pos_w === is_width) & load_din){
             width_pre_cnt := is_width + 1.U
         }.elsewhen(hold_here & rdma2dp_ready_normal){
             width_pre_cnt := width_pre_cnt + 1.U
@@ -273,8 +273,9 @@ withClock(io.nvdla_core_clk){
         width_pre_cnt := 0.U
     }
 
-//the last block data need to be output in cube end
+    //the last block data need to be output in cube end
     val last_width = RegInit(0.U(4.W))
+
     when(normalC2CubeEnd & load_din){
         last_width := is_width
     }
@@ -291,9 +292,9 @@ withClock(io.nvdla_core_clk){
         }
     }
 
-    cube_done := (stat_cur===cube_end) && (cube_end_width_cnt === last_width) & rdma2dp_ready_normal
+    cube_done := (stat_cur === cube_end) && (cube_end_width_cnt === last_width) & rdma2dp_ready_normal
 
-//1pipe delay for buffer data generation
+    //1pipe delay for buffer data generation
     val more2less_dly = RegInit(false.B)
     val less2more_dly = RegInit(false.B)
     val is_pos_w_dly = RegInit(0.U(4.W))
@@ -315,8 +316,8 @@ withClock(io.nvdla_core_clk){
         is_pos_w_dly := is_pos_w
     }
 
-/////////////////////////////
-//buffer data generation for output data
+    /////////////////////////////
+    //buffer data generation for output data
 
     val buffer_data = RegInit(0.U((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE*3).W))
     when(((stat_cur_dly===normal_c) || (stat_cur_dly===second_c) || (stat_cur_dly===cube_end)) & data_shift_load){
@@ -378,11 +379,11 @@ withClock(io.nvdla_core_clk){
         buffer_data_vld := buf_dat_vld
     }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//output data_info generation
-///////////////////////////////////////////////////////////////////////////////////////////
-    val first_c_end = ((stat_cur===first_c) & (width_pre_cnt === width_pre) & more2less & rdma2dp_ready_normal)
-    val first_c_bf_end = ((stat_cur===first_c) & (width_pre_cnt < width_pre) & more2less)
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    //output data_info generation
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    val first_c_end = ((stat_cur === first_c) & (width_pre_cnt === width_pre) & more2less & rdma2dp_ready_normal)
+    val first_c_bf_end = ((stat_cur === first_c) & (width_pre_cnt < width_pre) & more2less)
 
     val width_align = RegInit(0.U(4.W))
     val last_w_align = RegInit(false.B)
@@ -422,7 +423,10 @@ withClock(io.nvdla_core_clk){
             }.otherwise{
                 pos_w_align := 0.U
             }
+        }.otherwise{
+            pos_w_align := 0.U
         }
+
     }.otherwise{
         pos_w_align := is_pos_w
     }
@@ -443,9 +447,9 @@ withClock(io.nvdla_core_clk){
         b_sync_align := (is_b_sync & load_din)
     }
 
-///////////////////
-//Two cycle delay
-///////////////////
+    ///////////////////
+    //Two cycle delay
+    ///////////////////
 
     val pos_w_dly1 = RegInit(0.U(4.W))
     val width_dly1 = RegInit(0.U(4.W))
@@ -524,14 +528,6 @@ withClock(io.nvdla_core_clk){
 
 /////////////////////////////////////////
 
-//: my $icvto = NVDLA_CDP_ICVTO_BWPE;
-//: my $tp = NVDLA_CDP_THROUGHPUT;
-//: my $k = (${tp}+8)*${icvto};
-//: if($tp ==4) {
-//:     print "     assign buffer_pd[${k}-1:0] = buffer_data;    \n";
-//: } else {
-//:     print "     assign buffer_pd[${k}-1:0] = buffer_data[${k}-1+4*${icvto}:4*${icvto}];    \n";
-//: }
     val buffer_pd = Wire(UInt(((conf.NVDLA_CDP_THROUGHPUT+8)*conf.NVDLA_CDP_ICVTO_BWPE+17).W))
     if(conf.NVDLA_CDP_THROUGHPUT == 4){
         buffer_pd := Cat(
@@ -549,8 +545,8 @@ withClock(io.nvdla_core_clk){
 
     val buffer_valid = buffer_data_vld
 
-/////////////////////////////////////////
-//output data pipe for register out
+    /////////////////////////////////////////
+    //output data pipe for register out
 
     val pipe_p2 = Module(new NV_NVDLA_IS_pipe((conf.NVDLA_CDP_THROUGHPUT+8)*conf.NVDLA_CDP_ICVTO_BWPE+17))
     pipe_p2.io.clk := io.nvdla_core_clk
@@ -559,22 +555,12 @@ withClock(io.nvdla_core_clk){
     pipe_p2.io.di := buffer_pd
     io.normalz_buf_data.valid := pipe_p2.io.vo
     pipe_p2.io.ri := io.normalz_buf_data.ready
-    io.normalz_buf_data := pipe_p2.io.dout
+    io.normalz_buf_data.bits := pipe_p2.io.dout
 
     buf_dat_rdy := buffer_ready
 
-/////////////////////////////////////////
 
-//==============
-//function points
-//==============
-
-
-
-
-
-}
-}
+}}
       
 
 

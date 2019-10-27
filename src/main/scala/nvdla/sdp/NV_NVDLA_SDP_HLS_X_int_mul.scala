@@ -4,6 +4,14 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+class sdp_x_int_mul_cfg_if extends Bundle{
+    val bypass = Output(Bool())
+    val op = Output(UInt(16.W))
+    val prelu = Output(Bool())
+    val src = Output(Bool())
+    val shift_value = Output(UInt(6.W))
+}
+
 class NV_NVDLA_SDP_HLS_X_int_mul extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -12,10 +20,7 @@ class NV_NVDLA_SDP_HLS_X_int_mul extends Module {
         val chn_mul_op = Flipped(DecoupledIO(UInt(16.W)))
         val mul_data_out = DecoupledIO(UInt(49.W))
 
-        val cfg_mul_bypass = Input(Bool())
-        val cfg_mul_op = Input(UInt(16.W))
-        val cfg_mul_prelu = Input(Bool())
-        val cfg_mul_src = Input(Bool())
+        val cfg_mul = Flipped(new sdp_x_int_mul_cfg_if)
 
         val bypass_trt_out = Output(Bool())
 
@@ -45,9 +50,9 @@ withClock(io.nvdla_core_clk){
 
     val mul_sync_prdy = Wire(Bool())
     val x_mul_sync2data = Module{new NV_NVDLA_HLS_sync2data(16, 33)}
-    x_mul_sync2data.io.chn1_en := io.cfg_mul_src & !io.cfg_mul_bypass
+    x_mul_sync2data.io.chn1_en := io.cfg_mul.src & !io.cfg_mul.bypass
     x_mul_sync2data.io.chn1_in <> io.chn_mul_op
-    x_mul_sync2data.io.chn2_en := !io.cfg_mul_bypass
+    x_mul_sync2data.io.chn2_en := !io.cfg_mul.bypass
     x_mul_sync2data.io.chn2_in.valid := io.alu_data_out.valid
     val alu_data_out_srdy = x_mul_sync2data.io.chn2_in.ready
     x_mul_sync2data.io.chn2_in.bits := io.alu_data_out.bits
@@ -56,13 +61,13 @@ withClock(io.nvdla_core_clk){
     val mul_op_sync = x_mul_sync2data.io.chn_out.bits.data1
     val mul_data_sync = x_mul_sync2data.io.chn_out.bits.data2
 
-    val bypass_trt = io.cfg_mul_prelu & !mul_data_sync(32)
+    val bypass_trt = io.cfg_mul.prelu & !mul_data_sync(32)
 
-    val mul_op_in = Mux(io.cfg_mul_src === 0.U, io.cfg_mul_op, mul_op_sync)
+    val mul_op_in = Mux(io.cfg_mul.src === 0.U, io.cfg_mul.op, mul_op_sync)
     val mul_data_in = mul_data_sync
 
     val x_mul_prelu = Module{new NV_NVDLA_SDP_HLS_prelu(33, 49, 16)}
-    x_mul_prelu.io.cfg_prelu_en := io.cfg_mul_prelu
+    x_mul_prelu.io.cfg_prelu_en := io.cfg_mul.prelu
     x_mul_prelu.io.data_in := mul_data_in
     x_mul_prelu.io.op_in := mul_op_in
     val mul_prelu_out = x_mul_prelu.io.data_out
@@ -81,11 +86,11 @@ withClock(io.nvdla_core_clk){
     val mul_data_final = pipe_p1_data_out(49, 1)
 
 
-    io.alu_data_out.ready := Mux(io.cfg_mul_bypass, io.mul_data_out.ready, alu_data_out_srdy)
-    mul_final_prdy := Mux(io.cfg_mul_bypass, true.B, io.mul_data_out.ready)
-    io.mul_data_out.valid := Mux(io.cfg_mul_bypass, io.alu_data_out.valid, mul_final_pvld)
-    io.bypass_trt_out := Mux(io.cfg_mul_bypass, false.B, bypass_trt_reg)
-    io.mul_data_out.bits := Mux(io.cfg_mul_bypass, Cat(Fill(16, io.alu_data_out.bits(32)), io.alu_data_out.bits), mul_data_final)
+    io.alu_data_out.ready := Mux(io.cfg_mul.bypass, io.mul_data_out.ready, alu_data_out_srdy)
+    mul_final_prdy := Mux(io.cfg_mul.bypass, true.B, io.mul_data_out.ready)
+    io.mul_data_out.valid := Mux(io.cfg_mul.bypass, io.alu_data_out.valid, mul_final_pvld)
+    io.bypass_trt_out := Mux(io.cfg_mul.bypass, false.B, bypass_trt_reg)
+    io.mul_data_out.bits := Mux(io.cfg_mul.bypass, Cat(Fill(16, io.alu_data_out.bits(32)), io.alu_data_out.bits), mul_data_final)
 
 }}
 

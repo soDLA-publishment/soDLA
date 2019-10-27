@@ -110,7 +110,7 @@ withClock(io.nvdla_core_clk){
     // CHANNEL Count:
     //==============
     val size_of_surf = Wire(UInt((14-conf.AM_AW).W))
-    val count_c = RegInit(0.U)
+    val count_c = RegInit(0.U((14-conf.AM_AW).W))
 
     when(cfg_proc_int8){
         size_of_surf := Cat(false.B, io.reg2dp_channel(12, conf.AM_AW))
@@ -133,7 +133,7 @@ withClock(io.nvdla_core_clk){
     // HEIGHT Count:
     //==============
     val size_of_height = io.reg2dp_height
-    val count_h = RegInit(0.U)
+    val count_h = RegInit(0.U(13.W))
 
     when(cmd_accept){
         when(is_surf_end){

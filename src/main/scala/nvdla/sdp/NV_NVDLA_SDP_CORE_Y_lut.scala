@@ -4,6 +4,38 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
+class sdp_y_lut_reg2dp_if extends Bundle{
+    val int_access_type = Output(Bool())  
+    val int_addr = Output(UInt(10.W))     
+    val int_data = Output(UInt(16.W))       
+    val int_data_wr = Output(Bool()) 
+    val int_table_id = Output(Bool())
+    val le_end = Output(UInt(32.W))      
+    val le_function = Output(Bool())  
+    val le_index_offset = Output(UInt(8.W))  
+    val le_slope_oflow_scale = Output(UInt(16.W))       
+    val le_slope_oflow_shift = Output(UInt(5.W))        
+    val le_slope_uflow_scale = Output(UInt(16.W))        
+    val le_slope_uflow_shift = Output(UInt(5.W))      
+    val le_start = Output(UInt(32.W))       
+    val lo_end = Output(UInt(32.W))     
+    val lo_slope_oflow_scale = Output(UInt(16.W))      
+    val lo_slope_oflow_shift = Output(UInt(5.W))       
+    val lo_slope_uflow_scale = Output(UInt(16.W))        
+    val lo_slope_uflow_shift = Output(UInt(5.W))       
+    val lo_start = Output(UInt(32.W)) 
+}
+
+class sdp_y_lut_dp2reg_if extends Bundle{
+    val hybrid = Output(UInt(32.W))    
+    val int_data = Output(UInt(16.W))   
+    val le_hit = Output(UInt(32.W))    
+    val lo_hit = Output(UInt(32.W))   
+    val oflow = Output(UInt(32.W))  
+    val uflow = Output(UInt(32.W))   
+}
+
+
 
 class NV_NVDLA_SDP_CORE_Y_lut(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
@@ -15,36 +47,11 @@ class NV_NVDLA_SDP_CORE_Y_lut(implicit val conf: nvdlaConfig) extends Module {
 
     //idx2lut interface  
     val idx2lut_pd = Flipped(DecoupledIO(UInt(conf.EW_LUT_OUT_DW.W)))
-  
-    //reg2dp interface
-    val reg2dp_lut_int_access_type = Input(Bool())
-    val reg2dp_lut_int_addr = Input(UInt(10.W))
-    val reg2dp_lut_int_data = Input(UInt(16.W))
-    val reg2dp_lut_int_data_wr = Input(Bool())
-    val reg2dp_lut_int_table_id = Input(Bool())
-    val reg2dp_lut_le_end = Input(UInt(32.W))
-    val reg2dp_lut_le_function = Input(Bool())
-    val reg2dp_lut_le_index_offset = Input(UInt(8.W))
-    val reg2dp_lut_le_slope_oflow_scale = Input(UInt(16.W))
-    val reg2dp_lut_le_slope_oflow_shift = Input(UInt(5.W))
-    val reg2dp_lut_le_slope_uflow_scale = Input(UInt(16.W))
-    val reg2dp_lut_le_slope_uflow_shift = Input(UInt(5.W))
-    val reg2dp_lut_le_start = Input(UInt(32.W))
-    val reg2dp_lut_lo_end = Input(UInt(32.W))
-    val reg2dp_lut_lo_slope_oflow_scale = Input(UInt(16.W))
-    val reg2dp_lut_lo_slope_oflow_shift = Input(UInt(5.W))
-    val reg2dp_lut_lo_slope_uflow_scale = Input(UInt(16.W))
-    val reg2dp_lut_lo_slope_uflow_shift = Input(UInt(5.W))
-    val reg2dp_lut_lo_start = Input(UInt(32.W))
-    val reg2dp_perf_lut_en = Input(Bool())
-    val reg2dp_proc_precision = Input(UInt(2.W))
 
-    val dp2reg_lut_hybrid = Output(UInt(32.W))
-    val dp2reg_lut_int_data = Output(UInt(16.W))
-    val dp2reg_lut_le_hit = Output(UInt(32.W))
-    val dp2reg_lut_lo_hit = Output(UInt(32.W))
-    val dp2reg_lut_oflow = Output(UInt(32.W))
-    val dp2reg_lut_uflow = Output(UInt(32.W))
+    //reg2dp interface
+    val reg2dp_lut = Flipped(new sdp_y_lut_reg2dp_if)
+    val reg2dp_perf_lut_en = Input(Bool())
+    val dp2reg_lut = new sdp_y_lut_dp2reg_if
 
     val pwrbus_ram_pd = Input(UInt(32.W))
     val op_en_load = Input(Bool())
@@ -60,13 +67,13 @@ withClock(io.nvdla_core_clk){
 //===========================================
 // LUT Programing
 //===========================================
-val lut_addr = io.reg2dp_lut_int_addr(9, 0)
-val lut_data = io.reg2dp_lut_int_data(15, 0)
-val lut_table_id = io.reg2dp_lut_int_table_id
-val lut_access_type = io.reg2dp_lut_int_access_type
+val lut_addr = io.reg2dp_lut.int_addr(9, 0)
+val lut_data = io.reg2dp_lut.int_data(15, 0)
+val lut_table_id = io.reg2dp_lut.int_table_id
+val lut_access_type = io.reg2dp_lut.int_access_type
 
 val lut_pd = Cat(lut_access_type,lut_table_id,lut_data,lut_addr)
-val pro2lut_valid = io.reg2dp_lut_int_data_wr
+val pro2lut_valid = io.reg2dp_lut.int_data_wr
 val pro2lut_pd   = lut_pd
 
 val pro_in_addr = pro2lut_pd(9, 0)
@@ -89,7 +96,7 @@ val le_lut_data = MuxLookup(pro_in_addr, "b0".asUInt(16.W),
 val lo_lut_data = MuxLookup(pro_in_addr, "b0".asUInt(16.W),
                   (0 to conf.LUT_TABLE_LO_DEPTH-1) map { i => i.U -> reg_lo(i) })
 
-io.dp2reg_lut_int_data := Mux(pro_in_select_le, le_lut_data, lo_lut_data)
+io.dp2reg_lut.int_data := Mux(pro_in_select_le, le_lut_data, lo_lut_data)
 //=======================================
 // WRITE LUT
 //=======================================
@@ -156,7 +163,7 @@ perf_oflow_counter.io.hit_add := perf_lut_oflow_add
 perf_oflow_counter.io.hit_sub := perf_lut_oflow_sub
 lut_oflow_cnt := perf_oflow_counter.io.hit_cnt
 
-io.dp2reg_lut_oflow := lut_oflow_cnt
+io.dp2reg_lut.oflow := lut_oflow_cnt
 
 
 //=======================================
@@ -177,7 +184,7 @@ perf_uflow_counter.io.hit_add := perf_lut_uflow_add
 perf_uflow_counter.io.hit_sub := perf_lut_uflow_sub
 lut_uflow_cnt := perf_uflow_counter.io.hit_cnt
 
-io.dp2reg_lut_uflow := lut_uflow_cnt
+io.dp2reg_lut.uflow := lut_uflow_cnt
 
 //=======================================
 // PERF STATISTIC
@@ -198,7 +205,7 @@ perf_hybrid_counter.io.hit_add := perf_lut_hybrid_add
 perf_hybrid_counter.io.hit_sub := perf_lut_hybrid_sub
 lut_hybrid_cnt := perf_hybrid_counter.io.hit_cnt
 
-io.dp2reg_lut_hybrid := lut_hybrid_cnt
+io.dp2reg_lut.hybrid := lut_hybrid_cnt
 
 //=======================================
 // PERF STATISTIC
@@ -218,7 +225,7 @@ perf_le_hit_counter.io.hit_add := perf_lut_le_hit_add
 perf_le_hit_counter.io.hit_sub := perf_lut_le_hit_sub
 lut_le_hit_cnt := perf_le_hit_counter.io.hit_cnt
 
-io.dp2reg_lut_le_hit := lut_le_hit_cnt
+io.dp2reg_lut.le_hit := lut_le_hit_cnt
 
 //=======================================
 // PERF STATISTIC
@@ -238,7 +245,7 @@ perf_lo_hit_counter.io.hit_add := perf_lut_lo_hit_add
 perf_lo_hit_counter.io.hit_sub := perf_lut_lo_hit_sub
 lut_lo_hit_cnt := perf_lo_hit_counter.io.hit_cnt
 
-io.dp2reg_lut_lo_hit := lut_lo_hit_cnt
+io.dp2reg_lut.lo_hit := lut_lo_hit_cnt
 
 //=======================================
 // rd addr mux 
@@ -360,34 +367,34 @@ val out_bias = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W)))
 for (i <- 0 to conf.NVDLA_SDP_EW_THROUGHPUT-1){
     when(out_uflow(i)){
         when(!out_sel(i)){
-            out_scale(i) := io.reg2dp_lut_le_slope_uflow_scale
-            out_shift(i) := io.reg2dp_lut_le_slope_uflow_shift
-            out_offset(i) := io.reg2dp_lut_le_start
-            when(!io.reg2dp_lut_le_function){
-                out_bias(i) := Mux(io.reg2dp_lut_le_index_offset(7), 0.U, 1.U << io.reg2dp_lut_le_index_offset)
+            out_scale(i) := io.reg2dp_lut.le_slope_uflow_scale
+            out_shift(i) := io.reg2dp_lut.le_slope_uflow_shift
+            out_offset(i) := io.reg2dp_lut.le_start
+            when(!io.reg2dp_lut.le_function){
+                out_bias(i) := Mux(io.reg2dp_lut.le_index_offset(7), 0.U, 1.U << io.reg2dp_lut.le_index_offset)
             }
             .otherwise{
                 out_bias(i) := 0.U
             }
         }
         .otherwise{
-            out_scale(i) := io.reg2dp_lut_lo_slope_uflow_scale
-            out_shift(i) := io.reg2dp_lut_lo_slope_uflow_shift
-            out_offset(i) := io.reg2dp_lut_lo_start
+            out_scale(i) := io.reg2dp_lut.lo_slope_uflow_scale
+            out_shift(i) := io.reg2dp_lut.lo_slope_uflow_shift
+            out_offset(i) := io.reg2dp_lut.lo_start
             out_bias(i) := 0.U
         }
     }
     .elsewhen(out_oflow(i)){
         when(!out_sel(i)){
-            out_scale(i) := io.reg2dp_lut_le_slope_oflow_scale
-            out_shift(i) := io.reg2dp_lut_le_slope_oflow_shift
-            out_offset(i) := io.reg2dp_lut_le_end
+            out_scale(i) := io.reg2dp_lut.le_slope_oflow_scale
+            out_shift(i) := io.reg2dp_lut.le_slope_oflow_shift
+            out_offset(i) := io.reg2dp_lut.le_end
             out_bias(i) := 0.U
         }
         .otherwise{
-            out_scale(i) := io.reg2dp_lut_lo_slope_oflow_scale
-            out_shift(i) := io.reg2dp_lut_lo_slope_oflow_shift
-            out_offset(i) := io.reg2dp_lut_lo_end
+            out_scale(i) := io.reg2dp_lut.lo_slope_oflow_scale
+            out_shift(i) := io.reg2dp_lut.lo_slope_oflow_shift
+            out_offset(i) := io.reg2dp_lut.lo_end
             out_bias(i) := 0.U           
         }
     }
