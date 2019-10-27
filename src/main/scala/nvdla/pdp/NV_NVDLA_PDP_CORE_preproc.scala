@@ -10,9 +10,9 @@
 //         val nvdla_core_clk = Input(Clock())
 //         val pwrbus_ram_pd = Input(UInt(32.W))
 //         //sdp2pdp
-//         val sdp2pdp_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_BWPE*conf.SDP_THROUGHPUT).W)))
+//         val sdp2pdp_pd = Flipped(DecoupledIO(UInt(conf.NVDLA_PDP_ONFLY_INPUT_BW.W)))
 //         //pre2cal1d
-//         val pre2cal1d_pd = DecoupledIO(UInt(((conf.NVDLA_PDP_BWPE*conf.NVDLA_PDP_THROUGHPUT)+14).W))
+//         val pre2cal1d_pd = DecoupledIO(UInt((conf.PDPBW+14).W))
 //         //config  
 //         val reg2dp_cube_in_channel = Input(UInt(13.W))
 //         val reg2dp_cube_in_height = Input(UInt(13.W))
@@ -62,7 +62,7 @@
     
 //     when(load_din){
 //        when(sdp2pdp_c_end){
-//            sdp2pdp_c_cnt := "b0".asUInt(5.W)
+//            sdp2pdp_c_cnt := 0.U
 //        }
 //        .otherwise{
 //            sdp2pdp_c_cnt := sdp2pdp_c_cnt + 1.U
@@ -71,7 +71,7 @@
 
 //     when(sdp2pdp_c_end){
 //         when(sdp2pdp_line_end){
-//             sdp2pdp_width_cnt := "b0".asUInt(13.W)
+//             sdp2pdp_width_cnt := 0.U
 //         }
 //         .otherwise{
 //             sdp2pdp_width_cnt := sdp2pdp_width_cnt + 1.U
@@ -105,9 +105,7 @@
 //     //waiting for op_en
 //     //////////////////////////////////////////////////////////////////////
 //     val op_en_d1 = RegInit(false.B)
-
 //     op_en_d1 := io.reg2dp_op_en
-
 //     val op_en_load = io.reg2dp_op_en & (~op_en_d1);
 //     val layer_end = sdp2pdp_cube_end;
 
@@ -147,7 +145,71 @@
 
 //     ////////////////////////////////////////////////////////////////
 //     ////////////////////////////////////////////////////////////////
-//     if(conf.)
+//     if(conf.SDP_THROUGHPUT > conf.NVDLA_PDP_THROUGHPUT){
+//         val k = conf.SDP_THROUGHPUT/conf.NVDLA_PDP_THROUGHPUT
+//         val selbw = log2Ceil(k)
+
+//         val ro_wr_vld = Wire(Vec(k, Bool()))
+//         val ro_wr_rdy = Wire(Vec(k, Bool()))
+//         val ro_wr_pd = VecInit((0 to k-1) 
+//                     map {i => sdp2pdp_pd_use(conf.PDPBW*i+conf.PDPBW-1, conf.PDPBW*i)})
+//         val ro_rd_vld = Wire(Vec(k, Bool()))
+//         val ro_rd_rdy = Wire(Vec(k, Bool()))
+//         val ro_rd_pd = Wire(Vec(k, UInt(conf.PDPBW.W)))
+//         val fifo_sel_cnt = RegInit("b0".asUInt(selbw.W))
+
+//         val u_ro_fifo = Array.fill(k){Module(new NV_NVDLA_fifo(
+//                                depth = 4,
+//                                width = conf.PDPBW,
+//                                ram_type = 0,
+//                                distant_wr_req = false))}
+//         for(i <- 0 to k-1){
+//             ro_wr_vld(i) := sdp2pdp_valid_use
+
+//             u_ro_fifo(i).io.clk := io.nvdla_core_clk
+//             u_ro_fifo(i).io.pwrbus_ram_pd := io.pwrbus_ram_pd
+
+//             u_ro_fifo(i).io.wr_pvld := ro_wr_vld(i)
+//             ro_wr_rdy(i) := u_ro_fifo(i).io.wr_prdy
+//             u_ro_fifo(i).io.wr_pd := ro_wr_pd(i)
+
+//             ro_rd_vld(i) := u_ro_fifo(i).io.rd_pvld
+//             u_ro_fifo(i).io.rd_prdy := ro_rd_rdy(i)
+//             ro_rd_pd(i) := u_ro_fifo(i).io.rd_pd
+
+//             ro_rd_rdy(i) := io.pre2cal1d_pd.ready & (fifo_sel_cnt === i.U)
+//         }
+//         val pre2cal1d_pvld_f = ro_rd_vld.asUInt.orR
+
+//         when(pre2cal1d_pvld_f){
+//             when(io.pre2cal1d_pd.ready){
+//                 when(fifo_sel_cnt === (k - 1).U){
+//                     fifo_sel_cnt := 0.U
+//                 }
+//                 .otherwise{
+//                     fifo_sel_cnt := fifo_sel_cnt + 1.U
+//                 }
+//             }
+//         }
+
+//         io.pre2cal1d_pd.bits := MuxLookup(fifo_sel_cnt, "b0".asUInt(conf.PDPBW.W),
+//                                          (0 to (k - 1)) map { i => ro_rd_pd(i) })
+//         io.pre2cal1d_pd.valid := pre2cal1d_pvld_f
+//     }
+//     else if(conf.SDP_THROUGHPUT < conf.NVDLA_PDP_THROUGHPUT){
+//         val k = conf.NVDLA_PDP_THROUGHPUT/conf.SDP_THROUGHPUT
+//         val selbw = log2Ceil(k)
+//         val input_sel_cnt = RegInit("b0".asUInt(selbw.W))
+
+//         when(sdp2pdp_valid_use & sdp2pdp_ready_use){
+//             when(input_sel_cnt === (k-1).U){
+//                 input_sel_cnt := 0.U
+//             }
+//             .otherwise{
+//                 input_sel_cnt := input_sel_cnt + 1.U
+//             }
+//         }
+//     }
 
 
 
