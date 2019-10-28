@@ -40,6 +40,7 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: nvdlaConfig) extends Module {
         val eg2ig_axi_vld_d = RegInit(false.B)
 
         val os_cnt_cur = RegInit(UInt(9.W), 0.U)
+        val os_cnt_nxt = Wire(Bool())
 
         val axi_cmd_rdy = Wire(Bool())
         val axi_cmd_vld = Wire(Bool())
@@ -53,7 +54,7 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: nvdlaConfig) extends Module {
         val os_cnt_sub_en = eg2ig_axi_vld_d
         val os_cnt_cen = os_cnt_add_en | os_cnt_sub_en
         val os_cnt_add = Mux(os_cnt_add_en, (axi_len +& 1.U), 0.U(3.W))
-        val os_cnt_sub = Mux(os_cnt_sub_en,  true,B, false.B)
+        val os_cnt_sub = Mux(os_cnt_sub_en,  true.B, false.B)
         val cfg_rd_os_cnt = io.reg2dp_rd_os_cnt
         val rd_os_cnt_ext = Cat(false.B, cfg_rd_os_cnt)
         val os_cnt_full = os_inp_nxt > (rd_os_cnt_ext +& 1.U)
@@ -98,7 +99,7 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: nvdlaConfig) extends Module {
         val os_cnt_ext = Cat(0.U(2.W), os_cnt_cur)
         val os_cnt_mod = os_cnt_cur +& os_cnt_add -& os_cnt_sub
         val os_cnt_new = Mux(os_adv, os_cnt_mod, os_cnt_ext)
-        val os_cnt_nxt = os_cnt_new
+        os_cnt_nxt := os_cnt_new
 
         val axi_cmd_pd = Cat(axi_axid,axi_addr,axi_len)
 
@@ -114,9 +115,9 @@ class NV_NVDLA_MCIF_READ_IG_cvt(implicit conf: nvdlaConfig) extends Module {
         val opipe_axi_vld = pipe_p1.io.vo
         pipe_p1.io.ri := opipe_axi_rdy
 
-        val opipe_axi_axid := opipe_axi_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+5, conf.NVDLA_MEM_ADDRESS_WIDTH+2)
-        val opipe_axi_addr := opipe_axi_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+1, 2)
-        val opipe_axi_len  := opipe_axi_pd(1, 0)
+        val opipe_axi_axid = opipe_axi_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+5, conf.NVDLA_MEM_ADDRESS_WIDTH+2)
+        val opipe_axi_addr = opipe_axi_pd(conf.NVDLA_MEM_ADDRESS_WIDTH+1, 2)
+        val opipe_axi_len  = opipe_axi_pd(1, 0)
 
         io.mcif2noc_axi_ar_arid    := Cat(0.U(4.W), opipe_axi_axid)
         io.mcif2noc_axi_ar_araddr  := opipe_axi_addr
