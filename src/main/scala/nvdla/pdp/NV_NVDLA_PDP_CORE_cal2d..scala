@@ -4,48 +4,50 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
+// class NV_NVDLA_PDP_CORE_cal2dIO(implicit conf: nvdlaConfig) extends Bundle{
+//     //clk
+//     val nvdla_core_clk = Input(Clock())
+//     val pwrbus_ram_pd = Input(UInt(32.W))
+
+//     //pdp_dp2wdma
+//     val pdp_dp2wdma_pd = DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+14).W))
+//     //pooling
+//     val pooling1d_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+6)).W)))
+
+//     //config 
+//     val padding_v_cfg = Input(UInt(3.W))
+//     val pdp_op_start = Intput(Bool())
+//     val pooling_channel_cfg = Input(UInt(13.W))
+//     val pooling_out_fwidth_cfg = Input(UInt(10.W))
+//     val pooling_out_lwidth_cfg = Input(UInt(10.W))
+//     val pooling_out_mwidth_cfg = Input(UInt(10.W))
+//     val pooling_size_v_cfg = Input(UInt(3.W))
+//     val pooling_splitw_num_cfg = Input(UInt(8.W))
+//     val pooling_stride_v_cfg = Input(UInt(4.W))
+//     val pooling_type_cfg = Input(UInt(2.W))
+//     val reg2dp_cube_in_height = Input(UInt(13.W))
+//     val reg2dp_cube_out_width = Input(UInt(13.W))
+//     val reg2dp_kernel_height = Input(UInt(3.W))
+//     val reg2dp_kernel_width = Input(UInt(3.W))
+//     val reg2dp_pad_bottom_cfg = Input(UInt(3.W))
+//     val reg2dp_pad_top = Input(UInt(3.W))
+//     val reg2dp_pad_value_1x_cfg = Input(UInt(19.W))
+//     val reg2dp_pad_value_2x_cfg = Input(UInt(19.W))
+//     val reg2dp_pad_value_3x_cfg = Input(UInt(19.W))
+//     val reg2dp_pad_value_4x_cfg = Input(UInt(19.W))
+//     val reg2dp_pad_value_5x_cfg = Input(UInt(19.W))
+//     val reg2dp_pad_value_6x_cfg = Input(UInt(19.W))
+//     val reg2dp_pad_value_7x_cfg = Input(UInt(19.W))
+//     val reg2dp_partial_width_out_first = Input(UInt(10.W))
+//     val reg2dp_partial_width_out_last = Input(UInt(10.W))
+//     val reg2dp_partial_width_out_mid = Input(UInt(10.W))
+//     val reg2dp_recip_height_cfg = Input(UInt(17.W))
+//     val reg2dp_recip_width_cfg = Input(UInt(17.W))
+// }
+
 // class NV_NVDLA_PDP_CORE_cal2d(implicit val conf: nvdlaConfig) extends Module {
-//     val io = IO(new Bundle {
-//         //clk
-//         val nvdla_core_clk = Input(Clock())
-//         val pwrbus_ram_pd = Input(UInt(32.W))
+//     val io = IO(new NV_NVDLA_PDP_CORE_cal2dIO)
 
-//         //pdp_dp2wdma
-//         val pdp_dp2wdma_pd = DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+14).W))
-//         //pooling
-//         val pooling1d_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+6)).W)))
-
-//         //config 
-//         val padding_v_cfg = Input(UInt(3.W))
-//         val pdp_op_start = Intput(Bool())
-//         val pooling_channel_cfg = Input(UInt(13.W))
-//         val pooling_out_fwidth_cfg = Input(UInt(10.W))
-//         val pooling_out_lwidth_cfg = Input(UInt(10.W))
-//         val pooling_out_mwidth_cfg = Input(UInt(10.W))
-//         val pooling_size_v_cfg = Input(UInt(3.W))
-//         val pooling_splitw_num_cfg = Input(UInt(8.W))
-//         val pooling_stride_v_cfg = Input(UInt(4.W))
-//         val pooling_type_cfg = Input(UInt(2.W))
-//         val reg2dp_cube_in_height = Input(UInt(13.W))
-//         val reg2dp_cube_out_width = Input(UInt(13.W))
-//         val reg2dp_kernel_height = Input(UInt(3.W))
-//         val reg2dp_kernel_width = Input(UInt(3.W))
-//         val reg2dp_pad_bottom_cfg = Input(UInt(3.W))
-//         val reg2dp_pad_top = Input(UInt(3.W))
-//         val reg2dp_pad_value_1x_cfg = Input(UInt(19.W))
-//         val reg2dp_pad_value_2x_cfg = Input(UInt(19.W))
-//         val reg2dp_pad_value_3x_cfg = Input(UInt(19.W))
-//         val reg2dp_pad_value_4x_cfg = Input(UInt(19.W))
-//         val reg2dp_pad_value_5x_cfg = Input(UInt(19.W))
-//         val reg2dp_pad_value_6x_cfg = Input(UInt(19.W))
-//         val reg2dp_pad_value_7x_cfg = Input(UInt(19.W))
-//         val reg2dp_partial_width_out_first = Input(UInt(10.W))
-//         val reg2dp_partial_width_out_last = Input(UInt(10.W))
-//         val reg2dp_partial_width_out_mid = Input(UInt(10.W))
-//         val reg2dp_recip_height_cfg = Input(UInt(17.W))
-//         val reg2dp_recip_width_cfg = Input(UInt(17.W))
-    
-//     })
 // //     
 // //          ┌─┐       ┌─┐
 // //       ┌──┘ ┴───────┘ ┴──┐

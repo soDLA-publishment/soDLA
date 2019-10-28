@@ -4,8 +4,6 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
-// //Implementation overview of ping-pong register file.
-
 // class fp16_4add extends Module {
 //     val io = IO(new Bundle {
 //         //general clock

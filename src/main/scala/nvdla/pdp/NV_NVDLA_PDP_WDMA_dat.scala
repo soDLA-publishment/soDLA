@@ -52,9 +52,9 @@ class NV_NVDLA_PDP_WDMA_dat(implicit val conf: nvdlaConfig) extends Module {
 //             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){
     val cfg_mode_split = (io.reg2dp_split_num =/= 0.U)
-//==============
-// CUBE DRAW
-//==============
+    //==============
+    // CUBE DRAW
+    //==============
     val is_last_b = Wire(Bool())
     val is_last_w = Wire(Bool())
     val is_last_h = Wire(Bool())
