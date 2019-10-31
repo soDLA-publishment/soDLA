@@ -78,14 +78,14 @@
 
 //     val arb_pd = MuxLookup(u_read_ig_arb.io.gnt(conf.RDMA_NUM-1, 0), "b0".asUInt(conf.RDMA_NUM.W),
 //                 Array(
-//                     "b00000001".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(0),
-//                     "b00000010".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(1),
-//                     "b00000100".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(2),
-//                     "b00001000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(3),
-//                     "b00010000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(4),
-//                     "b00100000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(5),
-//                     "b01000000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(6),
-//                     "b10000000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(7),
+//                     "b00000001".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(0).bits,
+//                     "b00000010".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(1).bits,
+//                     "b00000100".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(2).bits,
+//                     "b00001000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(3).bits,
+//                     "b00010000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(4).bits,
+//                     "b00100000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(5).bits,
+//                     "b01000000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(6).bits,
+//                     "b10000000".asUInt(conf.RDMA_NUM.W) -> io.bpt2arb_req_pd(7).bits,
 //                 ))
 
 //     val pipe_out = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_DMA_RD_IG_PW))
@@ -94,9 +94,9 @@
 //     pipe_out.io.vi := (u_read_ig_arb.io.gnt).asUInt().orR
 //     gnt_busy := !pipe_out.io.ro
 
-//     io.arb2spt_req_pd := pipe_out.io.dout
-//     io.arb2spt_req_valid := pipe_out.io.vo
-//     pipe_out.io.ri := io.arb2spt_req_ready
+//     io.arb2spt_req_pd.bits := pipe_out.io.dout
+//     io.arb2spt_req_pd.valid := pipe_out.io.vo
+//     pipe_out.io.ri := io.arb2spt_req_pd.ready
 // }
 // }
 
