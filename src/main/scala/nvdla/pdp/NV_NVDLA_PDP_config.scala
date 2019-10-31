@@ -29,8 +29,6 @@ class pdpConfiguration extends sdpConfiguration
 
     val NVDLA_HLS_ADD17_LATENCY = 4
 
-    val ENUM = NVDLA_MEMORY_ATOMIC_SIZE/NVDLA_PDP_THROUGHPUT-1
-
 }
 
 class pdp_reg_dual_flop_outputs extends Bundle{

@@ -10,7 +10,7 @@
 //     val pwrbus_ram_pd = Input(UInt(32.W))
 
 //     //pdp_dp2wdma
-//     val pdp_dp2wdma_pd = DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*conf.NVDLA_BPE+14).W))
+//     val pdp_dp2wdma_pd = DecoupledIO(UInt((conf.PDPBW+14).W))
 //     //pooling
 //     val pooling1d_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+6)).W)))
 
@@ -75,7 +75,7 @@
 //     //bank depth follows rule of 16 elements in width in worst case
 //     //it's 64 in t194
 //     //--------------------------------------------------------------
-//     val bank_depth = (NVDLA_MEMORY_ATOMIC_SIZE/NVDLA_PDP_THROUGHPUT*16-1).U
+//     val bank_depth = (conf.BATCH_PDP_NUM*16-1).U
 
 //     //==============================================================
 //     // buffer the input data from pooling 1D unit
@@ -84,6 +84,7 @@
 //     //--------------------------------------------------------------
 //     val cur_datin_disable = RegInit(false.B)
 //     val one_width_disable = RegInit(false.B)
+
 //     val pooling1d_norm_rdy = Wire(Bool())
 //     val one_width_norm_rdy := pooling1d_norm_rdy & (~one_width_disable)
 //     io.pooling1d_pd.ready := one_width_norm_rdy & (~cur_datin_disable)
@@ -104,7 +105,7 @@
 //             c_cnt := c_cnt + 1.U
 //         }
 //     }
-//     data_c_end := c_cnt === conf.ENUM.U
+//     data_c_end := c_cnt === (conf.BATCH_PDP_NUM-1).U
 //     //end of line
 //     val wr_line_dat_done = Wire(Bool())
 //     val pout_width_cur = Wire(UInt(13.W))
@@ -237,6 +238,7 @@
 //     val stride_end = wr_line_dat_done & (strip_ycnt_stride === io.pooling_stride_v_cfg);
 //     val init_cnt = middle_surface_trig | io.pdp_op_start;  
 
+//     //pooling stride in vertical direction
 //     when(init_cnt){
 //         strip_ycnt_stride_f := strip_ycnt_offset
 //     }

@@ -108,7 +108,7 @@ withClock(io.nvdla_core_clk){
     // 1 cycle pipeline for DW timing closure inside unit1d sub modudle
     // DW has replaced by normal hls fp17 adder, this pipeline keep here
     //---------------------------------------------------------------conf.NVDLA_MEMORY_ATOMIC_SIZE
-    val posc_last = pdp_datin_pd_f_0(conf.PDPBW+8, conf.PDPBW+4) === conf.ENUM.U
+    val posc_last = pdp_datin_pd_f_0(conf.PDPBW+8, conf.PDPBW+4) === (conf.BATCH_PDP_NUM-1).U
     val pdp_din = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+3).W)))
     for(i <- 0 to conf.NVDLA_PDP_THROUGHPUT-1){
         pdp_din(i) := Cat(Fill(3, pdp_datin_pd_f_0(conf.PDPBW+conf.NVDLA_BPE-1)), 
@@ -526,7 +526,7 @@ withClock(io.nvdla_core_clk){
     .otherwise{
         channel_cnt := 0.U
     }
-    last_c := (channel_cnt === conf.ENUM.U) & pdp_datin_prdy_1
+    last_c := (channel_cnt === (conf.BATCH_PDP_NUM-1).U) & pdp_datin_prdy_1
 
     val bubble_cnt = RegInit("b0".asUInt(3.W)) 
     when(cur_datin_disable){
