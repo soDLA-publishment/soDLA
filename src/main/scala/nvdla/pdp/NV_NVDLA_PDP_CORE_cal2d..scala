@@ -133,7 +133,8 @@
 
 //     val surface_num = io.pooling_channel_cfg(12, conf.ATMMBW)
 
-//     val surface_cnt_rd = RegInit("b0".asUInt((13-conf.ATMMBW).W))
+//     val surface_cnt_rd = RegInit("b0".asUInt((13-conf.ATMMBW).W));
+//     val wr_subcube_dat_done = Wire(Bool())
 //     when(wr_subcube_dat_done){
 //         surface_cnt_rd := 0.U
 //     }
@@ -144,8 +145,8 @@
 //     wr_subcube_dat_done := (surface_num === surface_cnt_rd) & wr_surface_dat_done
 
 //     //total cube done
-//     val wr_total_cube_done = Wire(Bool())
 //     val wr_splitc_cnt = RegInit("b0".asUInt(8.W))
+//     val wr_total_cube_done = Wire(Bool())
 //     when(wr_total_cube_done){
 //         wr_splitc_cnt := 0.U
 //     }
@@ -287,7 +288,7 @@
 
 //     val pooling_size = pooling_size_v
 //     val stride = pooling_stride_v
-//     val pad_l = padding_v_cfg
+//     val pad_l = io.padding_v_cfg
 //     val pad_r = io.reg2dp_pad_bottom_cfg
 
 //     //line num need flush at surface end
@@ -384,7 +385,7 @@
 
 //     val need_bubble = RegInit(false.B)
 //     val bubble_num_use = RegInit("b0".asUInt(3.W))
-//     val bubble_add = RegInit(0.U)
+//     val bubble_add = Wire(UInt(3.W))
 //     when(wr_subcube_dat_done){
 //        when(need_flush){
 //            need_bubble := true.B
@@ -413,58 +414,201 @@
 //     ///////////////////////////////////////////////////////////////////////
 //     //bubble control when next surface comming .  Beginning
 //     ///////////////////////////////////////////////////////////////////////
-//     when(io.pdp_op_start){
-//         when(flush_num >= first_out_num){
-//             bubble_num := flush_num -& first_out_num +& 1.U
-//         }
-//         .otherwise{
-//             bubble_num := 0.U
-//         }
+//     val up_pnum = Wire(Vec(6, Bool()))
+//     val u_bcontrol_begin = Module(new NV_NVDLA_PDP_CORE_CAL2D_bubble_control_begin)
+//     u_bcontrol_begin.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_bcontrol_begin.io.pdp_op_start := io.pdp_op_start
+//     u_bcontrol_begin.io.flush_num := flush_num
+//     u_bcontrol_begin.io.first_out_num := first_out_num 
+//     u_bcontrol_begin.io.up_pnum := up_pnum
+//     bubble_add := u_bcontrol_begin.io.bubble_add
+//     val flush_in_next_surf = u_bcontrol_begin.io.flush_in_next_surf
+
+//     //pooling No. in flush time
+//     val u_pnum_flush = Module(new NV_NVDLA_PDP_CORE_CAL2D_pnum_flush)
+//     val unit2d_cnt_pooling = RegInit("b0".asUInt(3.W))
+//     val unit2d_cnt_pooling_max = Wire(UInt(3.W))
+//     u_pnum_flush.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_pnum_flush.io.unit2d_cnt_pooling := unit2d_cnt_pooling
+//     u_pnum_flush.io.unit2d_cnt_pooling_max := unit2d_cnt_pooling_max
+//     u_pnum_flush.io.last_line_in = last_line_in
+//     val pnum_flush = u_pnum_flush.io.pnum_flush
+
+//     //-------------------------
+//     //update pooling No. in line2 of next surface
+//     //-------------------------
+//     val u_pnum_updt = Module(new NV_NVDLA_PDP_CORE_CAL2D_pnum_updt)
+//     u_pnum_updt.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_pnum_updt.io.padding_v_cfg = io.padding_v_cfg
+//     u_pnum_updt.io.stride = stride
+//     up_pnum := u_pnum_updt.io.up_pnum
+
+//     ///////////////////////////////////////////////////////////////////////
+//     //bubble control when next surface comming .  Ending
+//     ///////////////////////////////////////////////////////////////////////
+//     val is_one_width_in = Wire(Bool())
+//     val one_width_bubble_end = Wire(Bool())
+//     val subend_need_flush_flg = RegInit(false.B)
+//     when(wr_subcube_dat_done & need_flush & is_one_width_in){
+//         subend_need_flush_flg := true.B
+//     }
+//     .elsewhen(one_width_bubble_end){
+//         subend_need_flush_flg := false.B
 //     }
 
-//     val flush_in_next_surf = flush_num - bubble_num
-//     ///////////////
-//     val pnum_flush = Reg(Vec(7, UInt(3.W)))
-//     val next_pnum = Wire(Vec((0 to 7) map { i => Vec(i, UInt(3.W))}))
-//     //set next_pnum(0)(x) and  next_pnum(1)(x) to zero
-//     for(i <- 0 to 1){
-//         for(j <- 0 to i){
-//             next_pnum(i)(j) := 0.U
-//         }  
+//     val surfend_need_bubble_flg = RegInit(false.B)
+//     when(wr_surface_dat_done & need_bubble & is_one_width_in){
+//         surfend_need_bubble_flg := true.B
 //     }
-//     //begin
-//     for(i <- 2 to 7){
-//         when(flush_in_next_surf === i.U){
-//             for(j <- 0 to i-1){
-//                 next_pnum(i)(j) := pnum_flush(7-i+j)
+//     .elsewhen(one_width_bubble_end){
+//         surfend_need_bubble_flg := false.B
+//     }
+
+//     /////////////////////////////////////////
+//     val cur_datin_disable = RegInit(false.B)
+//     val one_width_bubble_end = Wire(Bool())
+//     val bubble_en_end = Wire(Bool())
+//     when((wr_subcube_dat_done & need_flush & (~is_one_width_in)) | (subend_need_flush_flg & one_width_bubble_end)){
+//         cur_datin_disable := true.B
+//     }
+//     .elsewhen((wr_subcube_dat_done & need_bubble & (~is_one_width_in)) | (subend_need_flush_flg & one_width_bubble_end)){
+//         cur_datin_disable := true.B
+//     }
+//     .elsewhen(bubble_en_end){
+//         cur_datin_disable := false.B
+//     }
+
+//     ///////////////////////////////////////////
+//     val pout_width_cur_latch = RegInit("b0".asUInt(13.W))
+//     when((wr_subcube_dat_done & need_flush) || (wr_surface_dat_done & need_bubble)){
+//         pout_width_cur_latch := pout_width_cur
+//     }
+
+//     val channel_cnt = RegInit("b0".asUInt(5.W))
+//     val last_c = Wire(Bool())
+//     when(cur_datin_disable){
+//         when(last_c){
+//             channel_cnt := 0.U
+//         }
+//         .elsewhen(one_width_norm_rdy){
+//             channel_cnt := channel_cnt + 1.U
+//         }
+//     }
+//     .otherwise{
+//         channel_cnt := 0.U
+//     }
+
+//     last_c := (channel_cnt === (conf.BATCH_PDP_NUM - 1).U) & one_width_norm_rdy
+
+//     val line_cnt = RegInit("b0".asUInt(13.W))
+//     val line_end = Wire(Bool())
+//     when(cur_datin_disable){
+//         when(line_end){
+//             line_cnt := 0.U
+//         }
+//         .elsewhen(last_c){
+//             line_cnt := line_cnt + 1.U
+//         }
+//     }
+//     .otherwise{
+//         line_cnt := 0.U
+//     }
+
+//     line_end := (line_cnt === pout_width_cur_latch) & last_c
+
+//     val bubble_cnt = RegInit("b0".asUInt(3.W))
+//     when(cur_datin_disable){
+//         when(bubble_en_end){
+//             bubble_cnt := 0.U
+//         }
+//         .elsewhen(line_end){
+//             bubble_cnt := bubble_cnt + 1.U
+//         }
+//     }
+//     .otherwise{
+//         bubble_cnt := 0.U
+//     }
+
+//     bubble_en_end := (bubble_cnt === (bubble_num_use -& 1.U)) & line_end;
+
+//     //////////////////////////////////////////////////////
+//     //last lines output en during new lines comming
+//     //----------------------------------------------------
+//     //cube end flag for last_out_en control in the cube end
+//     val cube_end_flag = RegInit(false.B)
+//     when(wr_subcube_dat_done){
+//         cube_end_flag := true.B
+//     }
+//     .elsewhen(load_din){
+//         cube_end_flag := false.B
+//     }
+
+//     val last_out_en = RegInit(false.B)
+//     val last_out_done = Wire(Bool())
+//     when(first_out_num =/= 1.U){
+//         when((need_bubble & bubble_en_end & (~cube_end_flag) & (bubble_add < flush_in_next_surf)) | (~need_bubble & need_flush & wr_surface_dat_done & (~wr_subcube_dat_done))){
+//             last_out_en := true.B
+//         }
+//         .elsewhen(last_out_done){
+//             last_out_en := false.B
+//         }
+//     }
+//     .otherwise{
+//         last_out_en := false.B
+//     }
+
+//     val first_out_num_dec2 = flush_num - bubble_num_use - 1.U   //first_out_num - 2'd2;
+//     val last_out_cnt = RegInit("b0".asUInt(3.W))
+//     val flush_num_dec1 = Wire(UInt(3.W))
+//     when(last_out_en){
+//         when(wr_line_dat_done){
+//             when(((last_out_cnt == first_out_num_dec2) & need_bubble) | (~need_bubble & (last_out_cnt === flush_num_dec1))){
+//                 last_out_cnt := 0.U
 //             }
-//             for(k <- 0 to (6-i)){
-//                 when(bubble_num === k.U){
-//                     for(j <- 0 to i-1){
-//                         next_pnum(i)(j) := pnum_flush(k+j)
-//                     }      
-//                 }        
-//             }
-
-//         }
-//         .otherwise{
-//             for(j <- 0 to i+2-1){
-//                 next_pnum(i)(j) := 0.U
+//             .otherwise{
+//                 last_out_cnt := last_out_cnt + 1.U
 //             }
 //         }
 //     }
+//     .otherwise{
+//         last_out_cnt := 0.U
+//     }
+//     flush_num_dec1 := flush_num - 1.U
 
-//     val bubble_add = RegInit("b0".asUInt(3.W))
-//     val up_pnum = Wire(UInt(3.W)) +: Reg(Bool()) +: Reg(UInt(2.W)) +: Reg(UInt(2.W)) +: Reg(UInt(3.W)) +: Reg(UInt(3.W))
+//     last_out_done := (((last_out_cnt === first_out_num_dec2) & need_bubble) | (~need_bubble & (last_out_cnt === flush_num_dec1))) & wr_line_dat_done & last_out_en;
 
-//     for(i <- 2 to 7){
-//         when(flush_in_next_surf === i.U){
+//     ///////////////////////////////////////////////////////////////////////
+//     //bubble control when input width is only 1 element in width
+//     ///////////////////////////////////////////////////////////////////////
+//     val is_one_width_in = Wire(Bool())
 
-//         }
-
+//     when(~splitw_enable){
+//         is_one_width_in := io.reg2dp_cube_out_width === 0.U
+//     }
+//     .elsewhen(first_splitw){
+//         is_one_width_in := io.reg2dp_partial_width_out_first === 0.U
+//     }
+//     .elsewhen(last_splitw){
+//         is_one_width_in := io.reg2dp_partial_width_out_first === 0.U
+//     }
+//     .otherwise{
+//         is_one_width_in := Mux(io.pooling_splitw_num_cfg > 1.U, io.reg2dp_partial_width_out_mid, false.B)
 //     }
 
-    
+//     /////////////
+//     val one_width_disable = RegInit(false.B)
+//     when(wr_line_dat_done & is_one_width_in){
+//         one_width_disable := true.B
+//     }
+//     .elsewhen(one_width_bubble_end){
+//         one_width_disable := false.B
+//     }
+
+//     /////////////
+//     val one_width_bubble_cnt = RegInit("b0".asUInt(3.W))
+//     when(one_width_disable){
+
+//     }
 
 // }}
 
