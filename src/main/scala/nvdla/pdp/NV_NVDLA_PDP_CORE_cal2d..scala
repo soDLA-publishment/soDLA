@@ -607,8 +607,183 @@
 //     /////////////
 //     val one_width_bubble_cnt = RegInit("b0".asUInt(3.W))
 //     when(one_width_disable){
-
+//        when(one_width_bubble_end){
+//            one_width_bubble_cnt := 0.U
+//        }
+//        .elsewhen(pooling1d_norm_rdy){
+//            one_width_bubble_cnt := one_width_bubble_cnt + 1.U
+//        }
 //     }
+//     .otherwise{
+//         one_width_bubble_cnt := 0.U
+//     }
+
+//     one_width_bubble_end := (one_width_bubble_cnt === (4-2).U) & pooling1d_norm_rdy
+
+//     //////////////////////////////////////////////////////
+
+//     pooling_2d_rdy = wr_line_dat_done & (strip_ycnt_psize === io.pooling_size_v_cfg)
+
+//     //=====================================================================
+//     //pooling 2D unit counter
+//     //
+//     //---------------------------------------------------------------------
+//     val unit2d_cnt_stride = RegInit("b0".asUInt(3.W))
+//     val stride_trig_end = Wire(Bool())
+//     when(init_cnt){
+//         unit2d_cnt_stride := padding_stride_num
+//     }
+//     .elsewhen(stride_end){
+//         when(stride_trig_end){
+//             unit2d_cnt_stride := 0.U
+//         }
+//         .otherwise{
+//             unit2d_cnt_stride := unit2d_cnt_stride + 1.U
+//         }
+//     }
+
+//     stride_trig_end := (unit2d_cnt_pooling_max === unit2d_cnt_stride)
+
+//     val unit2d_cnt_pooling = RegInit("b0".asUInt(3.W))
+//     val unit2d_cnt_pooling_end = Wire(Bool())
+//     when(init_cnt){
+//         unit2d_cnt_pooling := 0.U
+//     }
+//     .elsewhen(pooling_2d_rdy | wr_surface_dat_done){
+//         when(unit2d_cnt_pooling_end){
+//             unit2d_cnt_pooling := 0.U
+//         }
+//         .otherwise{
+//             unit2d_cnt_pooling := unit2d_cnt_pooling + 1.U
+//         }
+//     }
+
+//     unit2d_cnt_pooling_end := (unit2d_cnt_pooling === unit2d_cnt_pooling_max)
+
+//     unit2d_cnt_pooling_max := (buffer_lines_num - 1.U)(2, 0)
+
+//     //-------------------------
+//     //flag the last one pooling in height direction
+//     //-------------------------
+//     val rest_height = reg2dp_cube_in_height - wr_surface_dat_cnt
+//     val rest_height_use = rest_height +& reg2dp_pad_bottom_cfg
+//     val last_pooling_flag = rest_height_use <= io.pooling_size_v_cfg
+//     //unit2d pooling enable  
+//     val init_unit2d_set = VecInit((0 to 7) 
+//                     map {i => init_cnt & (padding_stride_num >= i.U)}) 
+//     val unit2d_set_trig = Wire(Vec(8, Bool()))
+//     unit2d_set_trig(0) := stride_end & stride_trig_end & (~last_pooling_flag)
+//     for(i <- 1 to 7){
+//         unit2d_set_trig(i) := stride_end & (unit2d_cnt_stride === (i-1).U) & (~stride_trig_end) & (~last_pooling_flag)
+//     }
+//     val unit2d_set = VecInit((0 to 7) 
+//                     map {i => unit2d_set_trig(i)|init_unit2d_set(i)}) 
+//     val unit2d_clr = VecInit((0 to 7) 
+//                     map {i => (pooling_2d_rdy & (unit2d_cnt_pooling === i.U)) | wr_surface_dat_done}) 
+//     val unit2d_en = RegInit(VecInit(Seq.fill(8)(false.B)))
+//     for(i <- 0 to 7){
+//         when(wr_total_cube_done){
+//             unit2d_en(i) := false.B
+//         }
+//         .elsewhen(unit2d_set(i)){
+//             unit2d_en(i) := true.B
+//         }
+//         .elsewhen(unit2d_clr(i)){
+//             unit2d_en(i) := false.B
+//         }
+//     }
+//     ///////////////////////////////////////////////////////////////////////
+//     ///////////////////////////////////////////////////////////////////////
+//     ///////////////////////////////////////////////////////////////////////
+//     val datin_buf = RegInit("b0".asUInt((conf.NVDLA_PDP_THROUGHPUT*(conf.NVDLA_BPE+6)).W))
+//     val wr_line_end_buf = RegInit(false.B)
+//     val wr_surface_dat_done_buf = RegInit(false.B)
+
+//     when(load_din){
+//         datin_buf := io.pooling1d_pd.bits
+//         wr_line_end_buf := wr_line_dat_done
+//         wr_surface_dat_done_buf := wr_surface_dat_done
+//     }
+
+//     //////////////////////////////////////////////////////////////////////
+//     //calculate the real pooling size within one pooling 
+//     //PerBeg
+//     val mem_re_sel = Wire(Vec(4, Bool()))
+//     val u_calculate_real_pooling_size = Module(new NV_NVDLA_PDP_CORE_CAL2D_calculate_real_pooling_size))
+//     u_calculate_real_pooling_size.io.nvdla_core_clk := io.nvdla_core_clk
+//     u_calculate_real_pooling_size.io.wr_line_dat_done := wr_line_dat_done
+//     u_calculate_real_pooling_size.io.mem_re_sel := mem_re_sel
+//     u_calculate_real_pooling_size.io.unit2d_set := unit2d_set
+//     u_calculate_real_pooling_size.io.unit2d_en := unit2d_en
+//     val unit2d_vsize_cnt_d = u_calculate_real_pooling_size.io.unit2d_vsize_cnt_d
+
+//     //============================================================
+//     val active_last_line = (strip_ycnt_psize === io.pooling_size_v_cfg) | last_line_in
+//     //============================================================
+//     //memory bank read/write controller
+//     //
+//     //------------------------------------------------------------
+//     //memory read
+//     //mem bank0 enable
+//     //
+//     val wr_sub_lbuf_cnt = RegInit("b0".asUInt(3.W))
+//     val u_mem_rd = Module(new NV_NVDLA_PDP_CORE_CAL2D_mem_rd)
+//     u_mem_rd.io.nvdla_core_clk = Input(Clock())
+//     u_mem_rd.io.load_din := load_din
+//     u_mem_rd.io.wr_line_dat_done := wr_line_dat_done
+//     u_mem_rd.io.unit2d_en := unit2d_en
+//     u_mem_rd.io.unit2d_set := unit2d_set
+//     u_mem_rd.io.buffer_lines_num := buffer_lines_num
+//     u_mem_rd.io.wr_sub_lbuf_cnt := wr_sub_lbuf_cnt
+//     val mem_re_vec = u_mem_rd.io.mem_re
+//     val mem_re_1st_vec = u_mem_rd.io.mem_re_1st
+//     mem_re_sel := u_mem_rd.io.mem_re_sel
+
+//     ///////////////////////////
+//     //shouldn't read data from mem for the first pooling line
+//     ///////////////////////////
+//     val sub_lbuf_dout_cnt = RegInit("b0".asUInt(9.W))
+//     val mem_re = mem_re_vec(0) | mem_re_vec(1) | mem_re_vec(2) | mem_re_vec(3)
+//     val mem_re_1st = mem_re_1st_vec(0) | mem_re_1st_vec(1) | mem_re_1st_vec(2) | mem_re_1st_vec(3)
+//     val mem_raddr = sub_lbuf_dout_cnt
+
+//     //line buffer counter
+//     val sub_lbuf_dout_done = Wire(Bool())
+//     val last_sub_lbuf_done = Wire(Bool())
+//     when(wr_line_dat_done | last_sub_lbuf_done | line_end){
+//         wr_sub_lbuf_cnt := 0.U
+//     }
+//     .elsewhen(sub_lbuf_dout_done){
+//         wr_sub_lbuf_cnt := wr_sub_lbuf_cnt + 1.U
+//     }
+//     last_sub_lbuf_done := ((bank_merge_num -& 1.U) === wr_sub_lbuf_cnt) & sub_lbuf_dout_done
+//     //--------------------------------------------------------------------
+//     when(sub_lbuf_dout_done | wr_line_dat_done | line_end){
+//         sub_lbuf_dout_cnt := 0.U
+//     }
+//     .elsewhen(load_din | (cur_datin_disable & one_width_norm_rdy)){
+//         sub_lbuf_dout_cnt := sub_lbuf_dout_cnt + 1.U
+//     }
+
+//     sub_lbuf_dout_done := (sub_lbuf_dout_cnt === bank_depth) & (load_din | (cur_datin_disable & one_width_norm_rdy))
+//     //==============================================================================================
+//     //buffer the data from memory  and from UNIT1D
+//     //
+//     //----------------------------------------------------------------------------------------------
+// val pool_fun_vld = load_din;
+// val int_pool_datin_ext = Mux(pool_fun_vld, datain_ext, 0.U)
+// val int_pool_cur_dat = Mux(pool_fun_vld, cur_pooling_dat, 0.U)
+// int_pooling := VecInit((0 to conf.NVDLA_PDP_THROUGHPUT - 1) map 
+// { i => 
+// Mux(io.pooling_type_cfg===2.U, pooling_SUM(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i)),
+// Mux(io.pooling_type_cfg===1.U, pooling_MIN(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i)),
+// Mux(io.pooling_type_cfg===0.U, pooling_MAX(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i)), 
+// 0.U)))}).asUInt
+
+
+
+
+
 
 // }}
 

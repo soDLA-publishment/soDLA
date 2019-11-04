@@ -857,14 +857,14 @@ withClock(io.nvdla_core_clk){
         pout_mem_data_sel_2_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
                                         mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 2.U) & io.mem_re_sel(2);
     }
-    for(i <- 4 to 5){
+    for(i <- 6 to 7){
         pout_mem_data_sel_2_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
                                         mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 3.U) & io.mem_re_sel(2);
     }
 
     //line buffer 5,6,7,8
     val pout_mem_data_sel_3_last = Wire(Vec(8, Bool()))
-    for(i <- 0 to 8){
+    for(i <- 0 to 7){
         pout_mem_data_sel_3_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
                                         mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === i.U) & io.mem_re_sel(3);
     }

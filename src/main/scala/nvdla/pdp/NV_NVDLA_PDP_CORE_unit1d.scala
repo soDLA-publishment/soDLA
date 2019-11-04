@@ -4,20 +4,21 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+//////////////////////////
 //=========================================================
 //POOLING FUNCTION DEFINITION
 //
 object pooling_MIN{
     // returns the minimum
-    def apply(data0:UInt, data1:UInt) = {
-        Mux(data1.asSInt>data0.asSInt, data0, data1)
+    def apply(data0:UInt, data1:UInt, data0_valid:Bool) = {
+        Mux((data1.asSInt>data0.asSInt)&data0_valid, data0, data1)
     }
 }
 
 object pooling_MAX{
     // returns the maxinum
-    def apply(data0:UInt, data1:UInt) = {
-        Mux(data0.asSInt>data1.asSInt, data0, data1)
+    def apply(data0:UInt, data1:UInt, data0_valid:Bool) = {
+        Mux((data0.asSInt>data1.asSInt)&data0_valid, data0, data1)
     }
 }
 
@@ -163,15 +164,16 @@ val cur_datin_disable_sync = pipe_out_pd(conf.PDP_UNIT1D_BW*2+7)
 val pooling_out_size_sync = pipe_out_pd(conf.PDP_UNIT1D_BW*2+10, conf.PDP_UNIT1D_BW*2+8)
 val pooling_din_last_sync = pipe_out_pd(conf.PDP_UNIT1D_BW*2+11)
 
-//////////////////////////
+
+///
 val pool_fun_vld = load_din;
 val int_pool_datin_ext = Mux(pool_fun_vld, datain_ext, 0.U)
 val int_pool_cur_dat = Mux(pool_fun_vld, cur_pooling_dat, 0.U)
 int_pooling := VecInit((0 to conf.NVDLA_PDP_THROUGHPUT - 1) map 
 { i => 
 Mux(io.pooling_type_cfg===2.U, pooling_SUM(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i)),
-Mux(io.pooling_type_cfg===1.U, pooling_MIN(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i)),
-Mux(io.pooling_type_cfg===0.U, pooling_MAX(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i)), 
+Mux(io.pooling_type_cfg===1.U, pooling_MIN(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), true.B),
+Mux(io.pooling_type_cfg===0.U, pooling_MAX(int_pool_cur_dat(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), int_pool_datin_ext(conf.NVDLA_PDP_UNIT1D_BWPE*i+conf.NVDLA_PDP_UNIT1D_BWPE-1, conf.NVDLA_PDP_UNIT1D_BWPE*i), true.B), 
 0.U)))}).asUInt
 
     
