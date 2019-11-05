@@ -51,7 +51,7 @@ withClock(io.nvdla_core_clk){
 
     val is_pos_w = dp_pos_w
     val is_width_f = dp_width
-    val is_width = is_width_f - 1.U
+    val is_width = is_width_f -& 1.U
     val is_pos_c = dp_pos_c
     val is_b_sync = dp_b_sync
     val is_last_w = dp_last_w

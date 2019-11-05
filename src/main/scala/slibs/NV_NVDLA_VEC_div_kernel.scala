@@ -12,7 +12,7 @@ class NV_NVDLA_VEC_DIV_kernel(vector_len:Int = 8, data_width:Int = 8+6) extends 
         val vec_in = Input(Vec(vector_len, UInt(data_width.W)))  
         val reg2dp_recip_width_or_height_use = Input(UInt(17.W))
         val average_pooling_en = Input(Bool())
-        val vec_out = Input(Vec(vector_len, UInt(round_width.W)))      
+        val vec_out = Output(Vec(vector_len, UInt(round_width.W)))      
     })
     //     
     //          ┌─┐       ┌─┐

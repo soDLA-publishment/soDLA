@@ -295,7 +295,7 @@ withClock(io.nvdla_core_clk){
     }
 
     for(i <- 0 to 5){
-        io.up_pnum := up_pnum_reg(i)
+        io.up_pnum(i) := up_pnum_reg(i)
     }
 
 }}
@@ -309,6 +309,7 @@ class NV_NVDLA_PDP_CORE_CAL2D_bubble_control_begin(implicit val conf: nvdlaConfi
         val flush_num = Input(UInt(3.W))
         val first_out_num = Input(UInt(3.W))
         val up_pnum = Input(Vec(6, Bool()))
+        val pnum_flush = Input(Vec(7, UInt(3.W)))
 
         val bubble_add = Output(UInt(3.W))
         val flush_in_next_surf = Output(UInt(3.W))
@@ -349,44 +350,33 @@ withClock(io.nvdla_core_clk){
 
     io.flush_in_next_surf := io.flush_num - bubble_num
     ///////////////
-    val pnum_flush = Wire(Vec(7, UInt(3.W)))
-    val next_pnum = Wire(Vec((0 to 7) map { i => Vec(i, UInt(3.W))}))
-    //set next_pnum(0)(x) and  next_pnum(1)(x) to zero
-    for(i <- 0 to 1){
-        for(j <- 0 to i){
-            next_pnum(i)(j) := 0.U
-        }  
-    }
-    //set next_pnum(x)(x) to zero
-    for(i <- 0 to 7){
-        next_pnum(i)(i) := 0.U
-    }
+    val next_pnum = MixedVecInit((0 to 7) map { i => VecInit(Seq.fill(i+1)("b0".asUInt(3.W)))})
 
     //begin
     when(io.flush_in_next_surf === 2.U){
         when(bubble_num === 0.U){
-            next_pnum(2)(1) := pnum_flush(1)
-            next_pnum(2)(0) := pnum_flush(0)
+            next_pnum(2)(1) := io.pnum_flush(1)
+            next_pnum(2)(0) := io.pnum_flush(0)
         }
         .elsewhen(bubble_num === 1.U){
-            next_pnum(2)(1) := pnum_flush(2)
-            next_pnum(2)(0) := pnum_flush(1)           
+            next_pnum(2)(1) := io.pnum_flush(2)
+            next_pnum(2)(0) := io.pnum_flush(1)           
         }
         .elsewhen(bubble_num === 2.U){
-            next_pnum(2)(1) := pnum_flush(3)
-            next_pnum(2)(0) := pnum_flush(2)           
+            next_pnum(2)(1) := io.pnum_flush(3)
+            next_pnum(2)(0) := io.pnum_flush(2)           
         }
         .elsewhen(bubble_num === 3.U){
-            next_pnum(2)(1) := pnum_flush(4)
-            next_pnum(2)(0) := pnum_flush(3)           
+            next_pnum(2)(1) := io.pnum_flush(4)
+            next_pnum(2)(0) := io.pnum_flush(3)           
         }
         .elsewhen(bubble_num === 4.U){
-            next_pnum(2)(1) := pnum_flush(5)
-            next_pnum(2)(0) := pnum_flush(4)           
+            next_pnum(2)(1) := io.pnum_flush(5)
+            next_pnum(2)(0) := io.pnum_flush(4)           
         }
         .otherwise{
-            next_pnum(2)(1) := pnum_flush(6)
-            next_pnum(2)(0) := pnum_flush(5)           
+            next_pnum(2)(1) := io.pnum_flush(6)
+            next_pnum(2)(0) := io.pnum_flush(5)           
         }
     }
     .otherwise{
@@ -396,29 +386,29 @@ withClock(io.nvdla_core_clk){
 
     when(io.flush_in_next_surf === 3.U){
         when(bubble_num === 0.U){
-            next_pnum(3)(2) := pnum_flush(2)
-            next_pnum(3)(1) := pnum_flush(1)
-            next_pnum(3)(0) := pnum_flush(0)
+            next_pnum(3)(2) := io.pnum_flush(2)
+            next_pnum(3)(1) := io.pnum_flush(1)
+            next_pnum(3)(0) := io.pnum_flush(0)
         }
         .elsewhen(bubble_num === 1.U){
-            next_pnum(3)(2) := pnum_flush(3)
-            next_pnum(3)(1) := pnum_flush(2)
-            next_pnum(3)(0) := pnum_flush(1)       
+            next_pnum(3)(2) := io.pnum_flush(3)
+            next_pnum(3)(1) := io.pnum_flush(2)
+            next_pnum(3)(0) := io.pnum_flush(1)       
         }
         .elsewhen(bubble_num === 2.U){
-            next_pnum(3)(2) := pnum_flush(4)
-            next_pnum(3)(1) := pnum_flush(3)
-            next_pnum(3)(0) := pnum_flush(2)   
+            next_pnum(3)(2) := io.pnum_flush(4)
+            next_pnum(3)(1) := io.pnum_flush(3)
+            next_pnum(3)(0) := io.pnum_flush(2)   
         }
         .elsewhen(bubble_num === 3.U){
-            next_pnum(3)(2) := pnum_flush(5)
-            next_pnum(3)(1) := pnum_flush(4)
-            next_pnum(3)(0) := pnum_flush(3)           
+            next_pnum(3)(2) := io.pnum_flush(5)
+            next_pnum(3)(1) := io.pnum_flush(4)
+            next_pnum(3)(0) := io.pnum_flush(3)           
         }
         .otherwise{
-            next_pnum(3)(2) := pnum_flush(6)
-            next_pnum(3)(1) := pnum_flush(5)
-            next_pnum(3)(0) := pnum_flush(4)            
+            next_pnum(3)(2) := io.pnum_flush(6)
+            next_pnum(3)(1) := io.pnum_flush(5)
+            next_pnum(3)(0) := io.pnum_flush(4)            
         }
     }
     .otherwise{
@@ -429,28 +419,28 @@ withClock(io.nvdla_core_clk){
 
     when(io.flush_in_next_surf === 4.U){
         when(bubble_num === 0.U){
-            next_pnum(4)(3) := pnum_flush(3)
-            next_pnum(4)(2) := pnum_flush(2)
-            next_pnum(4)(1) := pnum_flush(1)
-            next_pnum(4)(0) := pnum_flush(0)
+            next_pnum(4)(3) := io.pnum_flush(3)
+            next_pnum(4)(2) := io.pnum_flush(2)
+            next_pnum(4)(1) := io.pnum_flush(1)
+            next_pnum(4)(0) := io.pnum_flush(0)
         }
         .elsewhen(bubble_num === 1.U){
-            next_pnum(4)(3) := pnum_flush(4)
-            next_pnum(4)(2) := pnum_flush(3)
-            next_pnum(4)(1) := pnum_flush(2)
-            next_pnum(4)(0) := pnum_flush(1)    
+            next_pnum(4)(3) := io.pnum_flush(4)
+            next_pnum(4)(2) := io.pnum_flush(3)
+            next_pnum(4)(1) := io.pnum_flush(2)
+            next_pnum(4)(0) := io.pnum_flush(1)    
         }
         .elsewhen(bubble_num === 2.U){
-            next_pnum(4)(3) := pnum_flush(5)
-            next_pnum(4)(2) := pnum_flush(4)
-            next_pnum(4)(1) := pnum_flush(3)
-            next_pnum(4)(0) := pnum_flush(2) 
+            next_pnum(4)(3) := io.pnum_flush(5)
+            next_pnum(4)(2) := io.pnum_flush(4)
+            next_pnum(4)(1) := io.pnum_flush(3)
+            next_pnum(4)(0) := io.pnum_flush(2) 
         }
         .otherwise{
-            next_pnum(4)(3) := pnum_flush(6)
-            next_pnum(4)(2) := pnum_flush(5)
-            next_pnum(4)(1) := pnum_flush(4)
-            next_pnum(4)(0) := pnum_flush(3)        
+            next_pnum(4)(3) := io.pnum_flush(6)
+            next_pnum(4)(2) := io.pnum_flush(5)
+            next_pnum(4)(1) := io.pnum_flush(4)
+            next_pnum(4)(0) := io.pnum_flush(3)        
         }
     }
     .otherwise{
@@ -462,25 +452,25 @@ withClock(io.nvdla_core_clk){
 
     when(io.flush_in_next_surf === 5.U){
         when(bubble_num === 0.U){
-            next_pnum(5)(4) := pnum_flush(4)
-            next_pnum(5)(3) := pnum_flush(3)
-            next_pnum(5)(2) := pnum_flush(2)
-            next_pnum(5)(1) := pnum_flush(1)
-            next_pnum(5)(0) := pnum_flush(0)
+            next_pnum(5)(4) := io.pnum_flush(4)
+            next_pnum(5)(3) := io.pnum_flush(3)
+            next_pnum(5)(2) := io.pnum_flush(2)
+            next_pnum(5)(1) := io.pnum_flush(1)
+            next_pnum(5)(0) := io.pnum_flush(0)
         }
         .elsewhen(bubble_num === 1.U){
-            next_pnum(5)(4) := pnum_flush(5)
-            next_pnum(5)(3) := pnum_flush(4)
-            next_pnum(5)(2) := pnum_flush(3)
-            next_pnum(5)(1) := pnum_flush(2)
-            next_pnum(5)(0) := pnum_flush(1) 
+            next_pnum(5)(4) := io.pnum_flush(5)
+            next_pnum(5)(3) := io.pnum_flush(4)
+            next_pnum(5)(2) := io.pnum_flush(3)
+            next_pnum(5)(1) := io.pnum_flush(2)
+            next_pnum(5)(0) := io.pnum_flush(1) 
         }
         .otherwise{
-            next_pnum(5)(4) := pnum_flush(6)
-            next_pnum(5)(3) := pnum_flush(5)
-            next_pnum(5)(2) := pnum_flush(4)
-            next_pnum(5)(1) := pnum_flush(3)
-            next_pnum(5)(0) := pnum_flush(2)    
+            next_pnum(5)(4) := io.pnum_flush(6)
+            next_pnum(5)(3) := io.pnum_flush(5)
+            next_pnum(5)(2) := io.pnum_flush(4)
+            next_pnum(5)(1) := io.pnum_flush(3)
+            next_pnum(5)(0) := io.pnum_flush(2)    
         }
     }
     .otherwise{
@@ -493,20 +483,20 @@ withClock(io.nvdla_core_clk){
 
     when(io.flush_in_next_surf === 6.U){
         when(bubble_num === 0.U){
-            next_pnum(6)(5) := pnum_flush(5)
-            next_pnum(6)(4) := pnum_flush(4)
-            next_pnum(6)(3) := pnum_flush(3)
-            next_pnum(6)(2) := pnum_flush(2)
-            next_pnum(6)(1) := pnum_flush(1)
-            next_pnum(6)(0) := pnum_flush(0)
+            next_pnum(6)(5) := io.pnum_flush(5)
+            next_pnum(6)(4) := io.pnum_flush(4)
+            next_pnum(6)(3) := io.pnum_flush(3)
+            next_pnum(6)(2) := io.pnum_flush(2)
+            next_pnum(6)(1) := io.pnum_flush(1)
+            next_pnum(6)(0) := io.pnum_flush(0)
         }
         .otherwise{
-            next_pnum(6)(5) := pnum_flush(6)
-            next_pnum(6)(4) := pnum_flush(5)
-            next_pnum(6)(3) := pnum_flush(4)
-            next_pnum(6)(2) := pnum_flush(3)
-            next_pnum(6)(1) := pnum_flush(2)
-            next_pnum(6)(0) := pnum_flush(1)
+            next_pnum(6)(5) := io.pnum_flush(6)
+            next_pnum(6)(4) := io.pnum_flush(5)
+            next_pnum(6)(3) := io.pnum_flush(4)
+            next_pnum(6)(2) := io.pnum_flush(3)
+            next_pnum(6)(1) := io.pnum_flush(2)
+            next_pnum(6)(0) := io.pnum_flush(1)
         }
     }
     .otherwise{
@@ -519,13 +509,13 @@ withClock(io.nvdla_core_clk){
     }
 
     when(io.flush_in_next_surf === 7.U){
-        next_pnum(7)(6) := pnum_flush(6)
-        next_pnum(7)(5) := pnum_flush(5)
-        next_pnum(7)(4) := pnum_flush(4)
-        next_pnum(7)(3) := pnum_flush(3)
-        next_pnum(7)(2) := pnum_flush(2)
-        next_pnum(7)(1) := pnum_flush(1)
-        next_pnum(7)(0) := pnum_flush(0)
+        next_pnum(7)(6) := io.pnum_flush(6)
+        next_pnum(7)(5) := io.pnum_flush(5)
+        next_pnum(7)(4) := io.pnum_flush(4)
+        next_pnum(7)(3) := io.pnum_flush(3)
+        next_pnum(7)(2) := io.pnum_flush(2)
+        next_pnum(7)(1) := io.pnum_flush(1)
+        next_pnum(7)(0) := io.pnum_flush(0)
     }
     .otherwise{
         next_pnum(7)(6) := 0.U
@@ -664,7 +654,7 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-class NV_NVDLA_PDP_CORE_CAL2D_data_rd_control(implicit val conf: nvdlaConfig) extends Module {
+class NV_NVDLA_PDP_CORE_CAL2D_rd_control_in_disable_time(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clk
         val nvdla_core_clk = Input(Clock())
@@ -692,9 +682,10 @@ class NV_NVDLA_PDP_CORE_CAL2D_data_rd_control(implicit val conf: nvdlaConfig) ex
 
         val mem_re_sel = Input(Vec(4, Bool()))
         val mem_data_lst = Input(Vec(8, UInt((conf.NVDLA_PDP_THROUGHPUT * (conf.NVDLA_PDP_BWPE+6) + 3).W)))
-
+        val mem_re_last_2d = Output(UInt(8.W))
 
         val flush_read_en = Output(Bool())
+        val mem_re_last = Output(UInt(8.W))
         val pout_mem_data_last = Output(UInt((conf.NVDLA_PDP_THROUGHPUT * (conf.NVDLA_PDP_BWPE+6) + 3).W))
 
 
@@ -726,7 +717,7 @@ withClock(io.nvdla_core_clk){
     val mem_re2_sel_last = RegInit(false.B)
     val mem_re3_sel_last = RegInit(false.B)
 
-    val unit2d_cnt_pooling_last_end = Input(Bool())
+    val unit2d_cnt_pooling_last_end = Wire(Bool())
     when(io.wr_surface_dat_done){
         unit2d_cnt_pooling_last := Mux(io.unit2d_cnt_pooling === io.unit2d_cnt_pooling_max, "d0".asUInt(3.W), io.unit2d_cnt_pooling + 1.U)
         mem_re1_sel_last := io.mem_re_sel(1)
@@ -775,21 +766,21 @@ withClock(io.nvdla_core_clk){
         mem_re3_last(i) := unit2d_en_last(i) & (io.wr_sub_lbuf_cnt === 0.U) & mem_re3_sel_last
     }
 
-    val mem_re_last = mem_re1_last.asUInt | mem_re2_last.asUInt | mem_re3_last.asUInt
+    io.mem_re_last := mem_re1_last.asUInt | mem_re2_last.asUInt | mem_re3_last.asUInt
 
     val flush_read_en_d = RegInit(false.B) 
-    when((io.load_din & mem_re_last.orR)| (io.cur_datin_disable & io.one_width_norm_rdy)){
+    when((io.load_din & io.mem_re_last.orR)| (io.cur_datin_disable & io.one_width_norm_rdy)){
         flush_read_en_d := io.flush_read_en
     }
 
     val mem_re_last_d = RegInit("b0".asUInt(8.W))
     when((io.load_din)| (io.cur_datin_disable & io.one_width_norm_rdy)){
-        mem_re_last_d := mem_re_last
+        mem_re_last_d := io.mem_re_last
     }
     //2d
     val unit2d_cnt_pooling_last_d = RegInit("b0".asUInt(3.W))
 
-    when((io.load_din & mem_re_last.orR)| (io.cur_datin_disable & io.one_width_norm_rdy)){
+    when((io.load_din & io.mem_re_last.orR)| (io.cur_datin_disable & io.one_width_norm_rdy)){
         unit2d_cnt_pooling_last_d := unit2d_cnt_pooling_last
     }
 
@@ -801,10 +792,12 @@ withClock(io.nvdla_core_clk){
 
     val one_width_disable_d = RegInit(false.B)
 
-    val mem_re_last_2d = RegInit("b0".asUInt(8.W))
+    val mem_re_last_2d_reg = RegInit("b0".asUInt(8.W))
     when(io.load_wr_stage1|(cur_datin_disable_d & io.wr_data_stage0_prdy)){
-        mem_re_last_2d := mem_re_last_d
+        mem_re_last_2d_reg := mem_re_last_d
     }
+
+    io.mem_re_last_2d := mem_re_last_2d_reg
     //2d
     val unit2d_cnt_pooling_last_2d = RegInit("b0".asUInt(3.W))
     when((io.load_wr_stage1 & mem_re_last_d.orR)|(cur_datin_disable_d & io.wr_data_stage0_prdy)){
@@ -836,37 +829,37 @@ withClock(io.nvdla_core_clk){
     val pout_mem_data_sel_1_last = Wire(Vec(8, Bool()))
     for(i <- 0 to 3){
         pout_mem_data_sel_1_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
-                                        mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 0.U) & io.mem_re_sel(1);
+                                        mem_re_last_2d_reg(i) & (unit2d_cnt_pooling_last_2d === 0.U) & io.mem_re_sel(1);
     }
     for(i <- 4 to 7){
         pout_mem_data_sel_1_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
-                                        mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 1.U) & io.mem_re_sel(1);
+                                        mem_re_last_2d_reg(i) & (unit2d_cnt_pooling_last_2d === 1.U) & io.mem_re_sel(1);
     }
 
     //line buffer3, 4
     val pout_mem_data_sel_2_last = Wire(Vec(8, Bool()))
     for(i <- 0 to 1){
         pout_mem_data_sel_2_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
-                                        mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 0.U) & io.mem_re_sel(2);
+                                        mem_re_last_2d_reg(i) & (unit2d_cnt_pooling_last_2d === 0.U) & io.mem_re_sel(2);
     }
     for(i <- 2 to 3){
         pout_mem_data_sel_2_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
-                                        mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 1.U) & io.mem_re_sel(2);
+                                        mem_re_last_2d_reg(i) & (unit2d_cnt_pooling_last_2d === 1.U) & io.mem_re_sel(2);
     }
     for(i <- 4 to 5){
         pout_mem_data_sel_2_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
-                                        mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 2.U) & io.mem_re_sel(2);
+                                        mem_re_last_2d_reg(i) & (unit2d_cnt_pooling_last_2d === 2.U) & io.mem_re_sel(2);
     }
     for(i <- 6 to 7){
         pout_mem_data_sel_2_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
-                                        mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === 3.U) & io.mem_re_sel(2);
+                                        mem_re_last_2d_reg(i) & (unit2d_cnt_pooling_last_2d === 3.U) & io.mem_re_sel(2);
     }
 
     //line buffer 5,6,7,8
     val pout_mem_data_sel_3_last = Wire(Vec(8, Bool()))
     for(i <- 0 to 7){
         pout_mem_data_sel_3_last(i) := (io.load_wr_stage2 | (cur_datin_disable_2d & io.wr_data_stage1_prdy)) & 
-                                        mem_re_last_2d(i) & (unit2d_cnt_pooling_last_2d === i.U) & io.mem_re_sel(3);
+                                        mem_re_last_2d_reg(i) & (unit2d_cnt_pooling_last_2d === i.U) & io.mem_re_sel(3);
     }
 
     val pout_mem_data_sel_last = pout_mem_data_sel_3_last.asUInt | pout_mem_data_sel_2_last.asUInt | pout_mem_data_sel_1_last.asUInt

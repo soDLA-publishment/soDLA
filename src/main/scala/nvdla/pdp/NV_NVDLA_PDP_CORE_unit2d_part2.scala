@@ -106,7 +106,9 @@ withClock(io.nvdla_core_clk){
 
     val u_div_kwidth = Module(new NV_NVDLA_VEC_DIV_kernel(vector_len = conf.NVDLA_PDP_THROUGHPUT, 
                              data_width = conf.NVDLA_PDP_BWPE+6))
-    u_div_kwidth.io.vec_in := pout_data_0
+    for(i <- 0 to conf.NVDLA_PDP_THROUGHPUT-1){
+        u_div_kwidth.io.vec_in(i) := pout_data_0(i)
+    }
     u_div_kwidth.io.reg2dp_recip_width_or_height_use := reg2dp_recip_width_use
     u_div_kwidth.io.average_pooling_en := io.average_pooling_en
     val data_mult_stage0 = u_div_kwidth.io.vec_out
@@ -126,7 +128,9 @@ withClock(io.nvdla_core_clk){
     //stage1: (* /kernel_height)
     val u_div_kheight = Module(new NV_NVDLA_VEC_DIV_kernel(vector_len = conf.NVDLA_PDP_THROUGHPUT, 
                              data_width = conf.NVDLA_PDP_BWPE+3))
-    u_div_kheight.io.vec_in := pout_data_stage0
+    for(i <- 0 to conf.NVDLA_PDP_THROUGHPUT-1){
+        u_div_kheight.io.vec_in(i) := pout_data_stage0(i)
+    }
     u_div_kheight.io.reg2dp_recip_width_or_height_use := reg2dp_recip_height_use
     u_div_kheight.io.average_pooling_en := io.average_pooling_en
     val data_mult_stage1 = u_div_kheight.io.vec_out
@@ -142,8 +146,10 @@ withClock(io.nvdla_core_clk){
         pout_data_stage1 := pout_data_stage0
     }
   
-
-    io.pout_data := pout_data_stage1.asUInt
+    for(i <- 0 to conf.NVDLA_PDP_THROUGHPUT-1){
+        io.pout_data(i) := pout_data_stage1(i)
+    }
+    
 
  
 }}
@@ -247,3 +253,77 @@ withClock(io.nvdla_core_clk){
 
  
 }}
+
+
+class NV_NVDLA_PDP_CORE_CAL2D_bank_merge_num(implicit val conf: nvdlaConfig) extends Module {
+    val io = IO(new Bundle {
+        val nvdla_core_clk = Input(Clock())
+
+        val pdp_op_start = Input(Bool())
+        val pooling_size_v = Input(UInt(4.W))
+        val pooling_stride_v_cfg = Input(UInt(4.W))
+        val pooling_size_v_cfg = Input(UInt(3.W))
+
+        val buffer_lines_num = Output(UInt(4.W))
+        val bank_merge_num = Output(UInt(4.W))
+    })
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘
+withClock(io.nvdla_core_clk){
+    //maximum pooling output lines  need to be  buffer
+    //stride 1
+    val buffer_lines_0 = io.pooling_size_v  
+    //stride 2
+    val buffer_lines_1 = io.pooling_size_v(3, 1) +& io.pooling_size_v(0)
+    //stride 3
+    val buffer_lines_2 = Mux(5.U >= io.pooling_size_v_cfg, 2.U, 3.U)
+    //stride 4 5 6 7
+    val buffer_lines_3 = 2.U
+
+    val pooling_stride_big =  (io.pooling_stride_v_cfg >= io.pooling_size_v_cfg)
+
+    val buffer_lines_num_reg = RegInit("b0".asUInt(4.W))
+
+    when(io.pdp_op_start){
+        when(pooling_stride_big){
+            buffer_lines_num_reg := 1.U
+        }
+        .otherwise{
+            buffer_lines_num_reg := MuxLookup(io.pooling_stride_v_cfg, buffer_lines_3,
+                                    Array(0.U -> buffer_lines_0,
+                                          1.U -> buffer_lines_1,
+                                          2.U -> buffer_lines_2))
+        }
+    }
+
+    io.buffer_lines_num := buffer_lines_num_reg
+
+    //memory bank merge num
+    io.bank_merge_num := MuxLookup(buffer_lines_num_reg, 1.U,
+                             Array(1.U -> 8.U,
+                                   2.U -> 4.U,
+                                   3.U -> 2.U,
+                                   4.U -> 3.U))
+
+ 
+}}
+
