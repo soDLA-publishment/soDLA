@@ -18,7 +18,7 @@ class NV_NVDLA_PDP_CORE_preproc(implicit val conf: nvdlaConfig) extends Module {
         val reg2dp_cube_in_height = Input(UInt(13.W))
         val reg2dp_cube_in_width = Input(UInt(13.W))
         val reg2dp_flying_mode = Input(Bool())
-        val reg2dp_op_en = Output(Bool())
+        val reg2dp_op_en = Input(Bool())
 
     })
 //     
@@ -160,6 +160,7 @@ withClock(io.nvdla_core_clk){
         val ro_rd_pd = Wire(Vec(k, UInt(conf.PDPBW.W)))
         val fifo_sel_cnt = RegInit("b0".asUInt(selbw.W))
 
+        sdp2pdp_ready_use := ro_rd_rdy.asUInt.andR
         val u_ro_fifo = Array.fill(k){Module(new NV_NVDLA_fifo(
                                depth = 4,
                                width = conf.PDPBW,
