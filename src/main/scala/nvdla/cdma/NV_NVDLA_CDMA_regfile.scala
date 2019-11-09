@@ -181,12 +181,12 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////////////////////////////
     val reg2dp_op_en_reg = RegInit("b0".asUInt(3.W))
     val reg2dp_d0_op_en_w = Mux(~reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), 
-                            Mux(io.dp2reg_done && dp2reg_consumer_out === false.B, false.B, reg2dp_d0_op_en))
+                            Mux(io.dp2reg_done && (dp2reg_consumer_out === false.B), false.B, reg2dp_d0_op_en))
 
     reg2dp_d0_op_en := reg2dp_d0_op_en_w
 
     val reg2dp_d1_op_en_w =  Mux(~reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), 
-                             Mux(io.dp2reg_done && dp2reg_consumer_out === true.B, false.B, reg2dp_d1_op_en))
+                             Mux(io.dp2reg_done && (dp2reg_consumer_out === true.B), false.B, reg2dp_d1_op_en))
 
     reg2dp_d1_op_en := reg2dp_d1_op_en_w
 

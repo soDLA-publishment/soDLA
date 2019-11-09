@@ -8,13 +8,8 @@
 //     val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 
-//         val sum2itp_pvld = Input(Bool())
-//         val sum2itp_prdy = Output(Bool())
-//         val sum2itp_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT * (conf.NVDLA_CDP_ICVTO_BWPE * 2 - 1 + 4)).W))
-
-//         val sum2sync_pvld = Output(Bool())
-//         val sum2sync_prdy = Input(Bool())
-//         val sum2sync_pd = Output(UInt((conf.NVDLA_CDP_THROUGHPUT * (conf.NVDLA_CDP_ICVTO_BWPE * 2 - 1 + 4)).W))
+//         val sum2itp_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT * (conf.NVDLA_CDP_ICVTO_BWPE * 2 - 1 + 4)).W)))
+//         val sum2sync_pd = DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT * (conf.NVDLA_CDP_ICVTO_BWPE * 2 - 1 + 4)).W))
 
 //         val dp2lut_pvld = Output(Bool())
 //         val dp2lut_prdy = Input(Bool())
@@ -23,16 +18,7 @@
 //         val dp2lut_Y_entry = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(10.W)))
 //         val dp2lut_Yinfo = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(18.W)))
 
-//         val reg2dp_sqsum_bypass = Input(Bool())
-//         val reg2dp_lut_le_function = Input(Bool())
-//         val reg2dp_lut_le_index_offset = Input(UInt(8.W))
-//         val reg2dp_lut_le_index_select = Input(UInt(8.W))
-//         val reg2dp_lut_le_start_high = Input(UInt(6.W))
-//         val reg2dp_lut_le_start_low = Input(UInt(32.W))
-//         val reg2dp_lut_lo_index_select = Input(UInt(8.W))
-//         val reg2dp_lut_lo_start_high = Input(UInt(6.W))
-//         val reg2dp_lut_lo_start_low = Input(UInt(32.W))
-
+//         val reg2dp = Flipped(new cdp_dp_lut_ctrl_reg2dp_if)
 //     })
 
 // withClock(io.nvdla_core_clk){

@@ -6,7 +6,6 @@ import chisel3.util._
 
 class NV_NVDLA_CDP_RDMA_eg(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
-
         val nvdla_core_clk = Input(Clock())
         val pwrbus_ram_pd = Input(UInt(32.W))
 
@@ -38,8 +37,6 @@ withClock(io.nvdla_core_clk){
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
         nv_NVDLA_CDP_RDMA_rdrsp.io.cvif_rd_rsp_pd.get <> io.cvif2cdp_rd_rsp_pd.get
     }
-
-
 
     val dma_rd_cdt_lat_fifo_pop = Wire(Bool())
 

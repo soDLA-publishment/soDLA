@@ -21,21 +21,16 @@ class NV_NVDLA_CDP_DP_bufferin(implicit val conf: nvdlaConfig) extends Module {
 
     /////////////////////////////////////////////////////////////
 withClock(io.nvdla_core_clk){
-
+    // pipe
     val nvdla_cdp_rdma2dp_ready = Wire(Bool())
-    val nvdla_cdp_rdma2dp_valid = RegInit(false.B)
-    io.cdp_rdma2dp_pd.ready := nvdla_cdp_rdma2dp_ready || (~nvdla_cdp_rdma2dp_valid)
-
-    when(io.cdp_rdma2dp_pd.valid){
-        nvdla_cdp_rdma2dp_valid := true.B
-    }.elsewhen(nvdla_cdp_rdma2dp_ready){
-        nvdla_cdp_rdma2dp_valid := false.B
-    }
-
-    val nvdla_cdp_rdma2dp_pd = RegInit(0.U((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+17).W))
-    when(io.cdp_rdma2dp_pd.valid & io.cdp_rdma2dp_pd.ready){
-        nvdla_cdp_rdma2dp_pd := io.cdp_rdma2dp_pd.bits
-    }
+    val pipe_p0 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+17))
+    pipe_p0.io.clk := io.nvdla_core_clk
+    pipe_p0.io.vi := io.cdp_rdma2dp_pd.valid
+    io.cdp_rdma2dp_pd.ready := pipe_p0.io.ro
+    pipe_p0.io.di := io.cdp_rdma2dp_pd.bits
+    val nvdla_cdp_rdma2dp_valid = pipe_p0.io.vo
+    pipe_p0.io.ri := nvdla_cdp_rdma2dp_ready
+    val nvdla_cdp_rdma2dp_pd = pipe_p0.io.dout
 
     //==============
     // INPUT UNPACK: from RDMA
@@ -51,7 +46,7 @@ withClock(io.nvdla_core_clk){
 
     val is_pos_w = dp_pos_w
     val is_width_f = dp_width
-    val is_width = is_width_f -& 1.U
+    val is_width = is_width_f - 1.U
     val is_pos_c = dp_pos_c
     val is_b_sync = dp_b_sync
     val is_last_w = dp_last_w

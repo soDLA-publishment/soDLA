@@ -20,7 +20,6 @@ withClock(io.nvdla_core_clk){
     /////////////////////////////////////////////////////////////
     //
     /////////////////////////////////////////////////////////////
-    // pipe
     val nvdla_cdp_rdma2dp_ready = Wire(Bool())
     val nvdla_cdp_rdma2dp_valid = RegInit(false.B)
     io.cdp_rdma2dp_pd.ready := nvdla_cdp_rdma2dp_ready || (~nvdla_cdp_rdma2dp_valid)
