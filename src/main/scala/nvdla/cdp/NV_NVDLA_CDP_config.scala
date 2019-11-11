@@ -31,6 +31,12 @@ class cdpConfiguration extends pdpConfiguration
     val NVDLA_CDP_MEM_WR_REQ = ( NVDLA_CDP_DMAIF_BW + NVDLA_CDP_MEM_MASK_BIT + 1 )
     val NVDLA_CDP_MEM_RD_REQ = ( NVDLA_MEM_ADDRESS_WIDTH + 15 )
 
+    val pINT8_BW = NVDLA_BPE + 1   //int8 bitwidth after icvt
+    val pPP_BW = (pINT8_BW + pINT8_BW) - 1 + 4  //(pINT8_BW * pINT8_BW) -1 is for int8 mode x^2, +4 is after 9 lrn
+
+
+
+
 }
 
 class cdp_rdma_reg_dual_flop_outputs extends Bundle{

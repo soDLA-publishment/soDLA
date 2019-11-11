@@ -4,103 +4,124 @@
 // import chisel3.experimental._
 // import chisel3.util._
 
+// class cdp_dp_lut_dp2lut_if extends Bundle{
+//     val x_info = Output(UInt(18.W))
+//     val x_pd = Output(UInt(10.W))
+//     val y_info = Output(UInt(18.W))
+//     val y_pd = Output(UInt(10.W))
+// }
+
+// class cdp_dp_lut_reg2dp_if extends Bundle{
+//     val lut_access_type = Output(Bool())
+//     val lut_addr = Output(UInt(10.W))
+//     val lut_data = Output(UInt(16.W))
+//     val lut_data_trigger = Output(Bool())
+//     val lut_hybrid_priority = Output(Bool())
+//     val lut_oflow_priority = Output(Bool())
+//     val lut_table_id = Output(Bool())
+//     val lut_uflow_priority = Output(Bool())
+
+// }
+
 // class NV_NVDLA_CDP_DP_lut(implicit val conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle {
 //         val nvdla_core_clk = Input(Clock())
 //         val nvdla_core_clk_orig = Input(Clock())
 
-//         val dp2lut_X_entry = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(10.W)))
-//         val dp2lut_Xinfo = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(18.W)))
-//         val dp2lut_Y_entry = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(10.W)))
-//         val dp2lut_Yinfo = Input(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(18.W)))
-//         val dp2lut_pvld = Input(Bool())
-//         val lut2intp_prdy = Input(Bool())
-//         val reg2dp_lut_access_type = Input(Bool())
-//         val reg2dp_lut_addr = Input(UInt(10.W))
-//         val reg2dp_lut_data = Input(UInt(16.W))
-//         val reg2dp_lut_data_trigger = Input(Bool())
-//         val reg2dp_lut_hybrid_priority = Input(Bool())
-//         val reg2dp_lut_oflow_priority = Input(Bool())
-//         val reg2dp_lut_table_id = Input(Bool())
-//         val reg2dp_lut_uflow_priority = Input(Bool())
-//         val dp2lut_prdy = Output(Bool())
+//         val dp2lut = Flipped(DecoupledIO(new cdp_dp_lut_dp2lut_if))
+//         val reg2dp = Flipped(new cdp_dp_lut_reg2dp_if)  
 //         val dp2reg_lut_data = Output(UInt(16.W))
-//         val lut2intp_X_data_0 = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(32.W)))
-//         val lut2intp_X_data_0_17b = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(17.W)))
-//         val lut2intp_X_data_1 = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(32.W)))
-//         val lut2intp_X_info = Output(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(20.W)))
-//         val lut2intp_X_sel = Output(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
-//         val lut2intp_Y_sel = Output(UInt(conf.NVDLA_CDP_THROUGHPUT.W))
-//         val lut2intp_pvld = Output(Bool())
+
+//         val lut2intp = DecoupledIO(Vec(conf.NVDLA_CDP_THROUGHPUT, new cdp_dp_intp_lut2intp_in_if)))
 //     })
 // ////////////////////////////////////////////////////////////////////////////
-// //==============
-// // Work Processing
-// //==============
-//     val lut_wr_en = io.reg2dp_lut_access_type && io.reg2dp_lut_data_trigger
-//     val raw_select = (io.reg2dp_lut_table_id === false.B)
-
-// //==========================================
-// //LUT write 
-// //------------------------------------------
+// //     
+// //          ┌─┐       ┌─┐
+// //       ┌──┘ ┴───────┘ ┴──┐
+// //       │                 │
+// //       │       ───       │
+// //       │  ─┬┘       └┬─  │
+// //       │                 │
+// //       │       ─┴─       │
+// //       │                 │
+// //       └───┐         ┌───┘
+// //           │         │
+// //           │         │
+// //           │         │
+// //           │         └──────────────┐
+// //           │                        │
+// //           │                        ├─┐
+// //           │                        ┌─┘    
+// //           │                        │
+// //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+// //             │ ─┤ ─┤       │ ─┤ ─┤         
+// //             └──┴──┘       └──┴──┘ 
 // withClock(io.nvdla_core_clk){
-//     val raw_reg = withClock(io.nvdla_core_clk_orig){RegInit(VecInit(Seq.fill(65)(0.U(16.W))))}
+//     //==============
+//     // Work Processing
+//     //==============
+//     val lut_wr_en = (io.reg2dp.lut_access_type === 1.U) && io.reg2dp.lut_data_trigger
+//     val raw_select = (io.reg2dp.lut_table_id === 0.U)
 
-    
-//     for(i <- 0 until 65){
+//     //==========================================
+//     //LUT write 
+//     //------------------------------------------
+//     //need update foreach value if LUT depth update
+//     val raw_reg = withClock(io.nvdla_core_clk_orig){RegInit(VecInit(Seq.fill(65)(0.U(16.W))))}
+//     for(i <- 0 to 64){
 //         when(lut_wr_en & raw_select){
-//             when(io.reg2dp_lut_addr === i.asUInt){
-//                 raw_reg(i) := io.reg2dp_lut_data
+//             when(io.reg2dp_lut_addr === i.U){
+//                 raw_reg(i) := io.reg2dp.lut_data
 //             }
 //         }
 //     }
 
 //     val density_reg = withClock(io.nvdla_core_clk_orig){RegInit(VecInit(Seq.fill(257)(0.U(16.W))))}
-//     for(i <- 0 until 257){
+//     for(i <- 0 to 256){
 //         when(lut_wr_en & (~raw_select)){
 //             when(io.reg2dp_lut_addr === i.asUInt){
-//                 density_reg(i) := io.reg2dp_lut_data
+//                 density_reg(i) := io.reg2dp.lut_data
 //             }
 //         }
 //     }
 
-// //==========================================
-// //LUT read
-// //------------------------------------------
+//     //==========================================
+//     //LUT read
+//     //------------------------------------------
 //     val raw_out = withClock(io.nvdla_core_clk_orig){RegInit(0.U(16.W))}
-//     for(i <- 0 until 65){
-//         when(io.reg2dp_lut_addr === i.asUInt){
+//     for(i <- 0 to 64){
+//         when(io.reg2dp_lut_addr === i.U){
 //             raw_out := raw_reg(i)
 //         }
 //     }
 
 //     val density_out = withClock(io.nvdla_core_clk_orig){RegInit(0.U(16.W))}
-//     for(i <- 0 until 257){
-//         when(io.reg2dp_lut_addr === i.asUInt){
+//     for(i <- 0 to 256){
+//         when(io.reg2dp_lut_addr === i.U){
 //             density_out := density_reg(i)
 //         }
 //     }
 //     io.dp2reg_lut_data := Mux(raw_select, raw_out, density_out)
 
-// //==========================================
-// //data to DP
-// //------------------------------------------
-//     val dp2lut_prdy_f = ~io.lut2intp_pvld | io.lut2intp_prdy
-//     val load_din = io.dp2lut_pvld & dp2lut_prdy_f
-//     io.dp2lut_prdy := dp2lut_prdy_f
+//     //==========================================
+//     //data to DP
+//     //------------------------------------------
+//     val dp2lut_prdy_f = ~io.lut2intp.valid | io.lut2intp.ready
+//     val load_din = io.dp2lut.valid & dp2lut_prdy_f
+//     io.dp2lut.ready := dp2lut_prdy_f
 
-// /////////////////////////////////
-// //lut look up select control
-// /////////////////////////////////
-//     val both_hybrid_sel = (io.reg2dp_lut_hybrid_priority === true.B)
-//     val both_of_sel = (io.reg2dp_lut_oflow_priority === true.B)
-//     val both_uf_sel = (io.reg2dp_lut_uflow_priority === true.B)
+//     /////////////////////////////////
+//     //lut look up select control
+//     /////////////////////////////////
+//     val both_hybrid_sel = (io.reg2dp.lut_hybrid_priority === true.B)
+//     val both_of_sel = (io.reg2dp.lut_oflow_priority === true.B)
+//     val both_uf_sel = (io.reg2dp.lut_uflow_priority === true.B)
 
 //     val lut_X_sel = withClock(io.nvdla_core_clk_orig){Reg(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))}
    
 //     for(i <- 0 until conf.NVDLA_CDP_THROUGHPUT){
 //         lut_X_sel(i) := MuxLookup(
-//             Cat(io.dp2lut_Xinfo(i)(17,16), io.dp2lut_Yinfo(i)(17,16)),
+//             Cat(io.dp2lut.bits.xinfo(i)(17,16), io.dp2lut.yinfo(i)(17,16)),
 //             false.B,
 //             Array(
 //                 "b0000".asUInt(4.W) -> ~both_hybrid_sel,
@@ -116,11 +137,11 @@
 //         )
 //     }
 
-//     val lut_Y_sel = withClock(io.nvdla_core_clk_orig){Reg(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))}
+//     val lut_y_sel = withClock(io.nvdla_core_clk_orig){Reg(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))}
    
 //     for(i <- 0 until conf.NVDLA_CDP_THROUGHPUT){
-//         lut_Y_sel(i) := MuxLookup(
-//             Cat(io.dp2lut_Xinfo(i)(17,16), io.dp2lut_Yinfo(i)(17,16)),
+//         lut_y_sel(i) := MuxLookup(
+//             Cat(io.dp2lut_xinfo(i)(17,16), io.dp2lut_yinfo(i)(17,16)),
 //             false.B,
 //             Array(
 //                 "b0000".asUInt(4.W) -> both_hybrid_sel,
@@ -147,10 +168,8 @@
 //                 lut_X_data_0(i) := raw_reg(64)
 //                 lut_X_data_1(i) := raw_reg(64)
 //             }.otherwise{
-//                 lut_X_data_0(i) := MuxLookup(
-//                                         io.dp2lut_X_entry(i),
-//                                         raw_reg(0),
-//                                         Array(
+//                 lut_X_data_0(i) := MuxLookup(io.dp2lut_X_entry(i), raw_reg(0),
+//             Array(
 //                 0.U -> raw_reg(0),
 //                1.U -> raw_reg(1),
 //                2.U -> raw_reg(2),
@@ -831,10 +850,10 @@
 //     }
 
 // ////////////////
-//     val lut_X_info = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U(18.W))))
+//     val lut_x_info = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U(18.W))))
 //     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
 //         when(load_din){
-//             lut_X_info(i) := io.dp2lut_Xinfo(i)
+//             lut_x_info(i) := io.dp2lut_Xinfo(i)
 //         }
 //     }
     
@@ -862,9 +881,9 @@
 //     val lutX_info = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt(16.W)))
 
 //     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
-//         lutX_data_0(i) := Mux(lutX_sel(i), lut_X_data_0(i), Mux(lutY_sel(i), lut_Y_data_0(i), 0.U))
-//         lutX_data_1(i) := Mux(lutX_sel(i), lut_X_data_1(i), Mux(lutY_sel(i), lut_Y_data_1(i), 0.U))
-//         lutX_info(i) := Mux(lutX_sel(i), lut_X_info(i), Mux(lutY_sel(i), lut_Y_info(i), 0.U))
+//         lutX_data_0(i) := Mux(lutx_sel(i), lut_x_data_0(i), Mux(lutY_sel(i), lut_Y_data_0(i), 0.U))
+//         lutX_data_1(i) := Mux(lutx_sel(i), lut_x_data_1(i), Mux(lutY_sel(i), lut_Y_data_1(i), 0.U))
+//         lutX_info(i) := Mux(lutx_sel(i), lut_x_info(i), Mux(lutY_sel(i), lut_Y_info(i), 0.U))
 //     }
 
 //     val lut2intp_pvld_out = RegInit(false.B)
@@ -880,7 +899,7 @@
 // ///////////////////////////////////////////////////////////////
 
 //     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
-//         io.lut2intp_X_data_0(i) := Cat(Fill(16, lutX_data_0(i)(15)), lutX_data_0(i))
+//         io.lut2intp.x_data_0(i) := Cat(Fill(16, lutX_data_0(i)(15)), lutX_data_0(i))
 //         io.lut2intp_X_data_1(i) := Cat(Fill(16, lutX_data_1(i)(15)), lutX_data_1(i))
 //         io.lut2intp_X_data_0_17b(i) := Cat(lutX_data_0(i)(15), lutX_data_0(i))
 //         io.lut2intp_X_info(i) := Cat(lut_Y_info(i)(17,16), lut_X_info(i)(17,16), lutX_info(i))
