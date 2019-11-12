@@ -56,9 +56,9 @@ withClock(io.nvdla_core_clk){
         u_LUT_CTRL_unit(i).io.dp2lut.ready := dp2lut_rdy(i)
 
         io.dp2lut.bits(i).x_info := u_LUT_CTRL_unit(i).io.dp2lut.bits.x_info
-        io.dp2lut.bits(i).x_pd := u_LUT_CTRL_unit(i).io.dp2lut.bits.x_pd
+        io.dp2lut.bits(i).x_entry := u_LUT_CTRL_unit(i).io.dp2lut.bits.x_entry
         io.dp2lut.bits(i).y_info := u_LUT_CTRL_unit(i).io.dp2lut.bits.y_info
-        io.dp2lut.bits(i).y_pd := u_LUT_CTRL_unit(i).io.dp2lut.bits.y_pd
+        io.dp2lut.bits(i).y_entry := u_LUT_CTRL_unit(i).io.dp2lut.bits.y_entry
     }
 
     io.dp2lut.valid := dp2lut_vld.asUInt.andR

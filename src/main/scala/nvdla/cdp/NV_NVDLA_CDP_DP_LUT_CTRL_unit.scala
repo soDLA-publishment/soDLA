@@ -6,9 +6,9 @@ import chisel3.util._
 
 class cdp_dp_lut_ctrl_dp2lut_if extends Bundle{
     val x_info = Output(UInt(18.W))
-    val x_pd = Output(UInt(10.W))
+    val x_entry = Output(UInt(10.W))
     val y_info = Output(UInt(18.W))
-    val y_pd = Output(UInt(10.W))
+    val y_entry = Output(UInt(10.W))
 }
 
 class cdp_dp_lut_ctrl_reg2dp_if extends Bundle{
@@ -479,10 +479,10 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////////////////////
     io.dp2lut.valid := int_out_vld
 
-    io.dp2lut.bits.x_pd := x_index_msb
+    io.dp2lut.bits.x_entry := x_index_msb
     io.dp2lut.bits.x_info := x_dat_info
 
-    io.dp2lut.bits.y_pd := y_index_msb
+    io.dp2lut.bits.y_entry := y_index_msb
     io.dp2lut.bits.y_info := y_dat_info
 
 }}

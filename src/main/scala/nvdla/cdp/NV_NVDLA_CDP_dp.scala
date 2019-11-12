@@ -8,15 +8,14 @@
 //     val io = IO(new Bundle {
 
 //         val nvdla_core_clk = Input(Clock())
-//         val cdp_rdma2dp_valid = Input(Bool())
-//         val cdp_rdma2dp_ready = Output(Bool())
-//         val cdp_rdma2dp_pd = Input(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_BWPE+25).W))
-//         val cdp_dp2wdma_valid = Output(Bool())
-//         val cdp_dp2wdma_ready = Input(Bool())
-//         val cdp_dp2wdma_pd = Output(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_BWPE+17).W))
 //         val nvdla_core_clk_orig = Input(Clock())
-
 //         val pwrbus_ram_pd = Input(UInt(32.W))
+
+//         val cdp_rdma2dp_pd = Flipped(DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_BWPE+25).W)))
+//         val cdp_dp2wdma_pd = DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_BWPE+17).W))
+        
+
+        
 //         val dp2reg_done = Input(Bool())
 //         val reg2dp_datin_offset = Input(UInt(16.W))
 //         val reg2dp_datin_scale = Input(UInt(16.W))
