@@ -158,10 +158,10 @@ withClock(io.nvdla_core_clk){
     val reg2dp_op_en_reg = RegInit(0.U)
     val reg_wr_data = Wire(UInt(32.W))
     val reg2dp_d0_op_en_w = Mux(~reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), 
-                            Mux(io.dp2reg_done && dp2reg_consumer === false.B, false.B, reg2dp_d0_op_en))
+                            Mux(io.dp2reg_done && (dp2reg_consumer === false.B), false.B, reg2dp_d0_op_en))
     reg2dp_d0_op_en := reg2dp_d0_op_en_w
     val reg2dp_d1_op_en_w = Mux(~reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), 
-                            Mux(io.dp2reg_done && dp2reg_consumer === true.B, false.B, reg2dp_d1_op_en))
+                            Mux(io.dp2reg_done && (dp2reg_consumer === true.B), false.B, reg2dp_d1_op_en))
     reg2dp_d1_op_en := reg2dp_d1_op_en_w
     val reg2dp_op_en_ori = Mux(dp2reg_consumer, reg2dp_d1_op_en, reg2dp_d0_op_en)
     val reg2dp_op_en_reg_w = Mux(io.dp2reg_done,  0.U, Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori))

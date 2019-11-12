@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-//Implementation overview of ping-pong register file.
 
 class NV_NVDLA_MCIF_WRITE_IG_arb (implicit conf:nvdlaConfig) extends Module {
     val io = IO(new Bundle {
@@ -38,8 +37,8 @@ class NV_NVDLA_MCIF_WRITE_IG_arb (implicit conf:nvdlaConfig) extends Module {
         val reg2dp_wr_weight_pdp = Input(UInt(8.W))
         val reg2dp_wr_weight_rbk = Input(UInt(8.W))
         val reg2dp_wr_weight_sdp = Input(UInt(8.W))
-        })
+    })
 
-    withClock(io.nvdla_core_clk){
-    }
-}
+withClock(io.nvdla_core_clk){   
+
+}}

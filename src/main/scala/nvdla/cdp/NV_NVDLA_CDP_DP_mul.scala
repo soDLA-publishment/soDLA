@@ -13,7 +13,6 @@ class NV_NVDLA_CDP_DP_mul(implicit val conf: nvdlaConfig) extends Module {
         val mul2ocvt_pd = DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE+16)).W))
 
         val reg2dp_mul_bypass = Input(Bool())
-        
     })
 //     
 //          ┌─┐       ┌─┐

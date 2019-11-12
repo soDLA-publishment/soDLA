@@ -20,7 +20,6 @@ withClock(io.nvdla_core_clk){
     /////////////////////////////////////////////////////////////
     //
     /////////////////////////////////////////////////////////////
-    // pipe
     val nvdla_cdp_rdma2dp_ready = Wire(Bool())
     val nvdla_cdp_rdma2dp_valid = RegInit(false.B)
     io.cdp_rdma2dp_pd.ready := nvdla_cdp_rdma2dp_ready || (~nvdla_cdp_rdma2dp_valid)
@@ -40,23 +39,16 @@ withClock(io.nvdla_core_clk){
     //==============
     // INPUT UNPACK: from RDMA
     //==============
-    val dp_data = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE-1,0)
-    val dp_pos_w = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+3, conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE)
-    val dp_width = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+7, conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+4)
-    val dp_pos_c = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+12, conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+8)
-    val dp_b_sync = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+13)
-    val dp_last_w = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+14)
-    val dp_last_h = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+15)
-    val dp_last_c = nvdla_cdp_rdma2dp_pd(conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_ICVTO_BWPE+16)
-
-    val is_pos_w  = dp_pos_w
-    val is_width_f = dp_width
-    val is_width  = is_width_f - 1.U
-    val is_pos_c  = dp_pos_c
-    val is_b_sync = dp_b_sync
-    val is_last_w = dp_last_w
-    val is_last_h = dp_last_h
-    val is_last_c = dp_last_c
+    val u_unpack = Module(new NV_NVDLA_CDP_DP_BUFFERIN_unpack)
+    u_unpack.io.nvdla_cdp_rdma2dp_pd := nvdla_cdp_rdma2dp_pd
+    val dp_data = u_unpack.io.dp_data
+    val is_pos_w = u_unpack.io.is_pos_w
+    val is_width = u_unpack.io.is_width
+    val is_pos_c = u_unpack.io.is_pos_c
+    val is_b_sync = u_unpack.io.is_b_sync
+    val is_last_w = u_unpack.io.is_last_w
+    val is_last_h = u_unpack.io.is_last_h
+    val is_last_c = u_unpack.io.is_last_c
 
     ///////////////////////////////////////////////////
     val rdma2dp_ready_normal = Wire(Bool())
@@ -575,81 +567,36 @@ withClock(io.nvdla_core_clk){
     ///////////////////
     //Two cycle delay
     ///////////////////
-    //1st cycle
-    val pos_w_dly1 = RegInit(0.U(4.W))
-    val width_dly1 = RegInit(0.U(4.W))
-    val pos_c_dly1 = RegInit(0.U(5.W))
-    val b_sync_dly1 = RegInit(false.B)
-    val last_w_dly1 = RegInit(false.B)
-    val last_h_dly1 = RegInit(false.B)
-    val last_c_dly1 = RegInit(false.B)
-    when((((stat_cur===normal_c)||(stat_cur===second_c)) & load_din)
-      || ((stat_cur===cube_end) & rdma2dp_ready_normal)){
-        pos_w_dly1  :=  pos_w_align
-        width_dly1  :=  width_align
-        pos_c_dly1  :=  pos_c_align
-        b_sync_dly1 :=  b_sync_align
-        last_w_dly1 :=  last_w_align
-        last_h_dly1 :=  last_h_align
-        last_c_dly1 :=  last_c_align
-      }.elsewhen(stat_cur===first_c){
-          when(more2less & rdma2dp_ready_normal){
-              when(hold_here){
-                pos_w_dly1  :=  pos_w_align
-                width_dly1  :=  width_align
-                pos_c_dly1  :=  pos_c_align
-                b_sync_dly1 :=  b_sync_align
-                last_w_dly1 :=  last_w_align
-                last_h_dly1 :=  last_h_align
-                last_c_dly1 :=  last_c_align
-              }.elsewhen(load_din){
-                pos_w_dly1  :=  pos_w_align
-                width_dly1  :=  width_align
-                pos_c_dly1  :=  pos_c_align
-                b_sync_dly1 :=  b_sync_align
-                last_w_dly1 :=  last_w_align
-                last_h_dly1 :=  last_h_align
-                last_c_dly1 :=  last_c_align
-              }
-          }.elsewhen(less2more){
-              when(l2m_1stC_vld & load_din){
-                pos_w_dly1  :=  pos_w_align
-                width_dly1  :=  width_align
-                pos_c_dly1  :=  pos_c_align
-                b_sync_dly1 :=  b_sync_align
-                last_w_dly1 :=  last_w_align
-                last_h_dly1 :=  last_h_align
-                last_c_dly1 :=  last_c_align
-              }
-          }.elsewhen(load_din){
-                pos_w_dly1  :=  pos_w_align
-                width_dly1  :=  width_align
-                pos_c_dly1  :=  pos_c_align
-                b_sync_dly1 :=  b_sync_align
-                last_w_dly1 :=  last_w_align
-                last_h_dly1 :=  last_h_align
-                last_c_dly1 :=  last_c_align
-          }
-      }
-    //2nd cycle
-    val buffer_pos_w = RegInit(0.U(4.W))
-    val buffer_width = RegInit(0.U(4.W))
-    val buffer_pos_c = RegInit(0.U(5.W))
-    val buffer_b_sync = RegInit(false.B)
-    val buffer_last_w = RegInit(false.B)
-    val buffer_last_h = RegInit(false.B)
-    val buffer_last_c = RegInit(false.B)
+    val u_delay = Module(new NV_NVDLA_CDP_DP_BUFFERIN_two_cycle_delay)
+    u_delay.io.nvdla_core_clk := io.nvdla_core_clk
+    u_delay.io.load_din := load_din
+    u_delay.io.stat_cur := stat_cur
+    u_delay.io.first_c := first_c
+    u_delay.io.normal_c := normal_c
+    u_delay.io.second_c := second_c
+    u_delay.io.cube_end := cube_end
+    u_delay.io.rdma2dp_ready_normal := rdma2dp_ready_normal
+    u_delay.io.l2m_1stC_vld := l2m_1stC_vld
+    u_delay.io.data_shift_load_all := data_shift_load_all
+    u_delay.io.more2less := more2less
+    u_delay.io.less2more := less2more
+    u_delay.io.hold_here := hold_here
 
+    u_delay.io.pos_w_align := pos_w_align
+    u_delay.io.width_align := width_align
+    u_delay.io.pos_c_align := pos_c_align
+    u_delay.io.b_sync_align := b_sync_align
+    u_delay.io.last_w_align := last_w_align
+    u_delay.io.last_h_align := last_h_align
+    u_delay.io.last_c_align := last_c_align
 
-    when(data_shift_load_all){
-        buffer_pos_w := pos_w_dly1
-        buffer_width := width_dly1
-        buffer_pos_c := pos_c_dly1
-        buffer_b_sync := b_sync_dly1
-        buffer_last_w := last_w_dly1
-        buffer_last_h := last_h_dly1
-        buffer_last_c := last_c_dly1
-    }
+    val buffer_pos_w = u_delay.io.buffer_pos_w
+    val buffer_width = u_delay.io.buffer_width
+    val buffer_pos_c = u_delay.io.buffer_pos_c
+    val buffer_b_sync = u_delay.io.buffer_b_sync
+    val buffer_last_w = u_delay.io.buffer_last_w
+    val buffer_last_h = u_delay.io.buffer_last_h
+    val buffer_last_c = u_delay.io.buffer_last_c
 
     /////////////////////////////////////////
     val buffer_pd = Cat(
@@ -670,12 +617,6 @@ withClock(io.nvdla_core_clk){
     io.normalz_buf_data.bits := pipe_p1.io.dout
 
     buf_dat_rdy := buffer_ready
-
-    /////////////////////////////////////////
-
-    //==============
-    //function points
-    //==============
 }}
 
 object NV_NVDLA_CDP_DP_bufferin_tp1Driver extends App {

@@ -108,7 +108,7 @@ withClock(io.nvdla_core_clk){
     // 1 cycle pipeline for DW timing closure inside unit1d sub modudle
     // DW has replaced by normal hls fp17 adder, this pipeline keep here
     //---------------------------------------------------------------conf.NVDLA_MEMORY_ATOMIC_SIZE
-    val posc_last = pdp_datin_pd_f_0(conf.PDPBW+8, conf.PDPBW+4) === conf.ENUM.U
+    val posc_last = pdp_datin_pd_f_0(conf.PDPBW+8, conf.PDPBW+4) === (conf.BATCH_PDP_NUM-1).U
     val pdp_din = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+3).W)))
     for(i <- 0 to conf.NVDLA_PDP_THROUGHPUT-1){
         pdp_din(i) := Cat(Fill(3, pdp_datin_pd_f_0(conf.PDPBW+conf.NVDLA_BPE-1)), 
@@ -526,7 +526,7 @@ withClock(io.nvdla_core_clk){
     .otherwise{
         channel_cnt := 0.U
     }
-    last_c := (channel_cnt === conf.ENUM.U) & pdp_datin_prdy_1
+    last_c := (channel_cnt === (conf.BATCH_PDP_NUM-1).U) & pdp_datin_prdy_1
 
     val bubble_cnt = RegInit("b0".asUInt(3.W)) 
     when(cur_datin_disable){
@@ -909,23 +909,16 @@ withClock(io.nvdla_core_clk){
 
     val loading_en = unit1d_actv_out_pvld & unit1d_actv_out_prdy
 
-    val unit1d_actv_data_8bit = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+3).W)))
-    val unit1d_actv_data_8bit_ff = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+3).W)))
-    val unit1d_actv_data_8bit_with_mon = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+5).W)))
-    val unit1d_actv_data_8bit_ff_with_mon = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+5).W)))
-
     val padding_here_int8 = Wire(Bool())
+    val unit1d_actv_data_8bit = Wire(Vec(conf.NVDLA_PDP_THROUGHPUT, UInt((conf.NVDLA_BPE+3).W)))
+    val u_pad = Module(new NV_NVDLA_VEC_padder(vector_len = conf.NVDLA_PDP_THROUGHPUT, data_width = conf.NVDLA_BPE+3))
     for(i <- 0 to conf.NVDLA_PDP_THROUGHPUT-1){
-        unit1d_actv_data_8bit_ff_with_mon(i) := 
-        (Cat(unit1d_actv_out((conf.NVDLA_BPE+3)*i+(conf.NVDLA_BPE+3)-1), unit1d_actv_out((conf.NVDLA_BPE+3)*i+(conf.NVDLA_BPE+3)-1, (conf.NVDLA_BPE+3)*i)).asSInt 
-        +& Cat(pad_table_out(10), pad_table_out(10, 0)).asSInt).asUInt
-
-        unit1d_actv_data_8bit_with_mon(i) := 
-        Mux(padding_here_int8, unit1d_actv_data_8bit_ff_with_mon(i), unit1d_actv_out((conf.NVDLA_BPE+3)*i+(conf.NVDLA_BPE+3)-1, (conf.NVDLA_BPE+3)*i))
-
-        unit1d_actv_data_8bit_ff(i) := unit1d_actv_data_8bit_ff_with_mon(i)(conf.NVDLA_BPE+2, 0)
-        unit1d_actv_data_8bit(i) := unit1d_actv_data_8bit_with_mon(i)(conf.NVDLA_BPE+2, 0)
+        u_pad.io.vec_in(i) := unit1d_actv_out((conf.NVDLA_BPE+3)*i+(conf.NVDLA_BPE+3)-1, (conf.NVDLA_BPE+3)*i)
+        unit1d_actv_data_8bit(i) := u_pad.io.vec_out(i)
     }
+    u_pad.io.pad_value := pad_table_out(conf.NVDLA_BPE+3-1, 0)
+    u_pad.io.padding := padding_here_int8
+    
 
     val padding_here = (io.pooling_type_cfg === 0.U) & (unit1d_actv_out((conf.NVDLA_PDP_THROUGHPUT)*(conf.NVDLA_BPE+3)+2, (conf.NVDLA_PDP_THROUGHPUT)*(conf.NVDLA_BPE+3)) =/= io.pooling_size_h_cfg)
     padding_here_int8 := padding_here
