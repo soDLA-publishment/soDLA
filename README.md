@@ -44,7 +44,7 @@ TODO
 ----------------
 1. nocif rewrite.
 2. PeekPokeTester under chisel, and verification with formal verification tools.
-3. FPGA test(Thanks to [Di Zhao's Group](http://sourcedb.ict.cas.cn/cn/jssrck/201803/t20180309_4971421.html)).
+3. FPGA test(Thanks to [Professor Di Zhao's Group](http://sourcedb.ict.cas.cn/cn/jssrck/201803/t20180309_4971421.html)).
 4. soDLA doc page.
 5. Resume cora package.
 
