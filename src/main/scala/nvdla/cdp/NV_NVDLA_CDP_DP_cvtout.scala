@@ -4,6 +4,12 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+class cdp_dp_cvtout_reg2dp_if extends Bundle{
+    val offset = Output(UInt(32.W))
+    val scale = Output(UInt(16.W))
+    val shifter = Output(UInt(6.W))
+}
+
 class NV_NVDLA_CDP_DP_cvtout(implicit val conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
@@ -16,11 +22,8 @@ class NV_NVDLA_CDP_DP_cvtout(implicit val conf: nvdlaConfig) extends Module {
         val sync2ocvt_pd = Flipped(DecoupledIO(UInt(17.W)))
         //cvtout
         val cvtout_pd = DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_CDP_BWPE+17).W))
-
         //config
-        val reg2dp_datout_offset = Input(UInt(32.W))
-        val reg2dp_datout_scale = Input(UInt(16.W))
-        val reg2dp_datout_shifter = Input(UInt(6.W))
+        val reg2dp_datout = Flipped(new cdp_dp_cvtout_reg2dp_if)
 
     })
 //     
@@ -135,13 +138,13 @@ withClock(io.nvdla_core_clk){
         map {i => io.mul2ocvt_pd.bits(i*(conf.NVDLA_CDP_ICVTO_BWPE+16)+conf.NVDLA_CDP_ICVTO_BWPE+16-1, i*(conf.NVDLA_CDP_ICVTO_BWPE+16))})
 
     val reg2dp_datout_offset_use = RegInit(0.U(32.W))
-    reg2dp_datout_offset_use := io.reg2dp_datout_offset
+    reg2dp_datout_offset_use := io.reg2dp_datout.offset
 
     val reg2dp_datout_scale_use = RegInit(0.U(16.W))
-    reg2dp_datout_scale_use := io.reg2dp_datout_scale
+    reg2dp_datout_scale_use := io.reg2dp_datout.scale
 
     val reg2dp_datout_shifter_use = RegInit(0.U(6.W))
-    reg2dp_datout_shifter_use := io.reg2dp_datout_shifter
+    reg2dp_datout_shifter_use := io.reg2dp_datout.shifter
 
     val cdp_cvtout_output_rdys = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
     val cdp_cvtout_output_vlds = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))

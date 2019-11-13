@@ -17,20 +17,10 @@ class NV_NVDLA_CDP_reg extends Module {
 
         //reg2dp
         val dp2reg_d0_out_saturation = Input(UInt(32.W))
-        val dp2reg_d0_perf_lut_hybrid = Input(UInt(32.W))
-        val dp2reg_d0_perf_lut_le_hit = Input(UInt(32.W))
-        val dp2reg_d0_perf_lut_lo_hit = Input(UInt(32.W))
-        val dp2reg_d0_perf_lut_oflow = Input(UInt(32.W))
-        val dp2reg_d0_perf_lut_uflow = Input(UInt(32.W))
-        val dp2reg_d0_perf_write_stall = Input(UInt(32.W))
-
         val dp2reg_d1_out_saturation = Input(UInt(32.W))
-        val dp2reg_d1_perf_lut_hybrid = Input(UInt(32.W))
-        val dp2reg_d1_perf_lut_le_hit = Input(UInt(32.W))
-        val dp2reg_d1_perf_lut_lo_hit = Input(UInt(32.W))
-        val dp2reg_d1_perf_lut_oflow = Input(UInt(32.W))
-        val dp2reg_d1_perf_lut_uflow = Input(UInt(32.W))
+        val dp2reg_d0_perf_write_stall = Input(UInt(32.W))
         val dp2reg_d1_perf_write_stall = Input(UInt(32.W))
+        val dp2reg_perf = Flipped(new cdp_dp_intp_dp2reg_perf_lut_if)
 
         val dp2reg_done = Input(Bool())
         val dp2reg_inf_input_num = Input(UInt(32.W))
@@ -121,11 +111,11 @@ withClock(io.nvdla_core_clk){
     u_dual_reg_d0.io.nan_output_num := dp2reg_d0_nan_output_num
     u_dual_reg_d0.io.op_en := reg2dp_d0_op_en
     u_dual_reg_d0.io.out_saturation := io.dp2reg_d0_out_saturation
-    u_dual_reg_d0.io.perf_lut_hybrid := io.dp2reg_d0_perf_lut_hybrid
-    u_dual_reg_d0.io.perf_lut_le_hit := io.dp2reg_d0_perf_lut_le_hit
-    u_dual_reg_d0.io.perf_lut_lo_hit := io.dp2reg_d0_perf_lut_lo_hit
-    u_dual_reg_d0.io.perf_lut_oflow := io.dp2reg_d0_perf_lut_oflow
-    u_dual_reg_d0.io.perf_lut_uflow := io.dp2reg_d0_perf_lut_uflow
+    u_dual_reg_d0.io.perf_lut_hybrid := io.dp2reg_perf.d0_perf_lut_hybrid
+    u_dual_reg_d0.io.perf_lut_le_hit := io.dp2reg_perf.d0_perf_lut_le_hit
+    u_dual_reg_d0.io.perf_lut_lo_hit := io.dp2reg_perf.d0_perf_lut_lo_hit
+    u_dual_reg_d0.io.perf_lut_oflow := io.dp2reg_perf.d0_perf_lut_oflow
+    u_dual_reg_d0.io.perf_lut_uflow := io.dp2reg_perf.d0_perf_lut_uflow
     u_dual_reg_d0.io.perf_write_stall := io.dp2reg_d0_perf_write_stall
 
     val d1_reg_wr_en = Wire(Bool())
@@ -147,11 +137,11 @@ withClock(io.nvdla_core_clk){
     u_dual_reg_d1.io.nan_output_num := dp2reg_d1_nan_output_num
     u_dual_reg_d1.io.op_en := reg2dp_d1_op_en
     u_dual_reg_d1.io.out_saturation := io.dp2reg_d1_out_saturation
-    u_dual_reg_d1.io.perf_lut_hybrid := io.dp2reg_d1_perf_lut_hybrid
-    u_dual_reg_d1.io.perf_lut_le_hit := io.dp2reg_d1_perf_lut_le_hit
-    u_dual_reg_d1.io.perf_lut_lo_hit := io.dp2reg_d1_perf_lut_lo_hit
-    u_dual_reg_d1.io.perf_lut_oflow := io.dp2reg_d1_perf_lut_oflow
-    u_dual_reg_d1.io.perf_lut_uflow := io.dp2reg_d1_perf_lut_uflow
+    u_dual_reg_d1.io.perf_lut_hybrid := io.dp2reg_perf.d1_perf_lut_hybrid
+    u_dual_reg_d1.io.perf_lut_le_hit := io.dp2reg_perf.d1_perf_lut_le_hit
+    u_dual_reg_d1.io.perf_lut_lo_hit := io.dp2reg_perf.d1_perf_lut_lo_hit
+    u_dual_reg_d1.io.perf_lut_oflow := io.dp2reg_perf.d1_perf_lut_oflow
+    u_dual_reg_d1.io.perf_lut_uflow := io.dp2reg_perf.d1_perf_lut_uflow
     u_dual_reg_d1.io.perf_write_stall := io.dp2reg_d1_perf_write_stall
 
     ////////////////////////////////////////////////////////////////////////

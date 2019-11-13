@@ -12,7 +12,8 @@ class NV_NVDLA_CDP_DP_LUT_ctrl(implicit val conf: nvdlaConfig) extends Module {
         val sum2sync_pd = DecoupledIO(UInt((conf.NVDLA_CDP_THROUGHPUT * (conf.NVDLA_CDP_ICVTO_BWPE * 2 - 1 + 4)).W))
         val dp2lut = DecoupledIO(Vec(conf.NVDLA_CDP_THROUGHPUT, new cdp_dp_lut_ctrl_dp2lut_if))
 
-        val reg2dp = Flipped(new cdp_dp_lut_ctrl_reg2dp_if)
+        val reg2dp_lut = Flipped(new cdp_dp_lut_ctrl_reg2dp_lut_if)
+        val reg2dp_sqsum_bypass = Input(Bool())
     })
 
 withClock(io.nvdla_core_clk){
@@ -50,7 +51,8 @@ withClock(io.nvdla_core_clk){
         u_LUT_CTRL_unit(i).io.sum2itp_pd.valid := sum2itp_vld(i)
         sum2itp_rdy(i) := u_LUT_CTRL_unit(i).io.sum2itp_pd.ready
 
-        u_LUT_CTRL_unit(i).io.reg2dp <> io.reg2dp
+        u_LUT_CTRL_unit(i).io.reg2dp_lut <> io.reg2dp_lut
+        u_LUT_CTRL_unit(i).io.reg2dp_sqsum_bypass := io.reg2dp_sqsum_bypass
 
         dp2lut_vld(i) := u_LUT_CTRL_unit(i).io.dp2lut.valid
         u_LUT_CTRL_unit(i).io.dp2lut.ready := dp2lut_rdy(i)

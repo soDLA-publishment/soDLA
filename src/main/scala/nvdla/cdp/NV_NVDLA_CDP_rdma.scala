@@ -83,6 +83,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         io.cdp2cvif_rd_req_pd.get <> u_ig.io.cdp2cvif_rd_req_pd.get
     }
 
+    u_ig.io.reg2dp_input_data := field.input_data
     u_ig.io.reg2dp_channel := field.channel
     u_ig.io.reg2dp_height := field.height
     u_ig.io.reg2dp_width := field.cdp_width
@@ -124,6 +125,8 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     u_cq.io.rd_prdy := u_eg.io.cq_rd_pd.ready
     u_eg.io.cq_rd_pd.bits := u_cq.io.rd_pd
 
+    u_eg.io.reg2dp_input_data := field.input_data
+    u_eg.io.reg2dp_channel := field.channel
     u_eg.io.reg2dp_src_ram_type := field.src_ram_type
 
  
@@ -133,5 +136,5 @@ withClock(io.nvdla_clock.nvdla_core_clk){
 
 object NV_NVDLA_CDP_rdmaDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_rdma())
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_rdma())
 }

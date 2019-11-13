@@ -5,14 +5,14 @@ import chisel3.experimental._
 import chisel3.util._
 
 class cdp_dp_lut_reg2dp_if extends Bundle{
-    val lut_access_type = Output(Bool())
-    val lut_addr = Output(UInt(10.W))
-    val lut_data = Output(UInt(16.W))
-    val lut_data_trigger = Output(Bool())
-    val lut_hybrid_priority = Output(Bool())
-    val lut_oflow_priority = Output(Bool())
-    val lut_table_id = Output(Bool())
-    val lut_uflow_priority = Output(Bool())
+    val access_type = Output(Bool())
+    val addr = Output(UInt(10.W))
+    val data = Output(UInt(16.W))
+    val data_trigger = Output(Bool())
+    val hybrid_priority = Output(Bool())
+    val oflow_priority = Output(Bool())
+    val table_id = Output(Bool())
+    val uflow_priority = Output(Bool())
 
 }
 
@@ -22,7 +22,7 @@ class NV_NVDLA_CDP_DP_lut(implicit val conf: nvdlaConfig) extends Module {
         val nvdla_core_clk_orig = Input(Clock())
 
         val dp2lut = Flipped(DecoupledIO(Vec(conf.NVDLA_CDP_THROUGHPUT, new cdp_dp_lut_ctrl_dp2lut_if)))
-        val reg2dp = Flipped(new cdp_dp_lut_reg2dp_if)  
+        val reg2dp_lut = Flipped(new cdp_dp_lut_reg2dp_if)  
         val dp2reg_lut_data = Output(UInt(16.W))
 
         val lut2intp = DecoupledIO(Vec(conf.NVDLA_CDP_THROUGHPUT, new cdp_dp_intp_lut2intp_in_if))
@@ -53,8 +53,8 @@ withClock(io.nvdla_core_clk){
     //==============
     // Work Processing
     //==============
-    val lut_wr_en = (io.reg2dp.lut_access_type === 1.U) && io.reg2dp.lut_data_trigger
-    val raw_select = (io.reg2dp.lut_table_id === 0.U)
+    val lut_wr_en = (io.reg2dp_lut.access_type === 1.U) && io.reg2dp_lut.data_trigger
+    val raw_select = (io.reg2dp_lut.table_id === 0.U)
 
     //==========================================
     //LUT write 
@@ -64,8 +64,8 @@ withClock(io.nvdla_core_clk){
     val raw_reg = Wire(Vec(66, UInt(16.W)))
     for(i <- 0 to 64){
         when(lut_wr_en & raw_select){
-            when(io.reg2dp.lut_addr === i.U){
-                raw_reg_temp(i) := io.reg2dp.lut_data
+            when(io.reg2dp_lut.addr === i.U){
+                raw_reg_temp(i) := io.reg2dp_lut.data
             }
         }
         raw_reg(i) := raw_reg_temp(i)
@@ -76,8 +76,8 @@ withClock(io.nvdla_core_clk){
     val density_reg = Wire(Vec(258, UInt(16.W)))
     for(i <- 0 to 256){
         when(lut_wr_en & (~raw_select)){
-            when(io.reg2dp.lut_addr === i.U){
-                density_reg_temp(i) := io.reg2dp.lut_data
+            when(io.reg2dp_lut.addr === i.U){
+                density_reg_temp(i) := io.reg2dp_lut.data
             }
         }
         density_reg(i) := density_reg_temp(i)
@@ -89,14 +89,14 @@ withClock(io.nvdla_core_clk){
     //------------------------------------------
     val raw_out = withClock(io.nvdla_core_clk_orig){RegInit(0.U(16.W))}
     for(i <- 0 to 64){
-        when(io.reg2dp.lut_addr === i.U){
+        when(io.reg2dp_lut.addr === i.U){
             raw_out := raw_reg(i)
         }
     }
 
     val density_out = withClock(io.nvdla_core_clk_orig){RegInit(0.U(16.W))}
     for(i <- 0 to 256){
-        when(io.reg2dp.lut_addr === i.U){
+        when(io.reg2dp_lut.addr === i.U){
             density_out := density_reg(i)
         }
     }
@@ -112,9 +112,9 @@ withClock(io.nvdla_core_clk){
     /////////////////////////////////
     //lut look up select control
     /////////////////////////////////
-    val both_hybrid_sel = (io.reg2dp.lut_hybrid_priority === 1.U)
-    val both_of_sel = (io.reg2dp.lut_oflow_priority === 1.U)
-    val both_uf_sel = (io.reg2dp.lut_uflow_priority === 1.U)
+    val both_hybrid_sel = (io.reg2dp_lut.hybrid_priority === 1.U)
+    val both_of_sel = (io.reg2dp_lut.oflow_priority === 1.U)
+    val both_uf_sel = (io.reg2dp_lut.uflow_priority === 1.U)
 
     val lut_x_sel = withClock(io.nvdla_core_clk_orig){Reg(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))}
    
