@@ -87,3 +87,31 @@ class nocif_axi_rd_data_if(implicit val conf: nvdlaConfig) extends Bundle{
   val last = Output(Bool())
   val data = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
 }
+
+
+class mcif_reg_flop_outputs extends Bundle{
+
+  val rd_os_cnt = Output(UInt(8.W))
+  val rd_weight_bdma = Output(UInt(8.W))
+  val rd_weight_cdma_dat = Output(UInt(8.W))
+  val rd_weight_cdma_wt = Output(UInt(8.W))
+  val rd_weight_cdp = Output(UInt(8.W))
+  val rd_weight_pdp = Output(UInt(8.W))
+  val rd_weight_rbk = Output(UInt(8.W))
+  val rd_weight_rsv_0 = Output(UInt(8.W))
+  val rd_weight_rsv_1 = Output(UInt(8.W))
+  val rd_weight_sdp = Output(UInt(8.W))
+  val rd_weight_sdp_b = Output(UInt(8.W))
+  val rd_weight_sdp_e = Output(UInt(8.W))
+  val rd_weight_sdp_n = Output(UInt(8.W))
+
+  val wr_os_cnt = Output(UInt(8.W))
+  val wr_weight_bdma = Output(UInt(8.W))
+  val wr_weight_cdp = Output(UInt(8.W))
+  val wr_weight_pdp = Output(UInt(8.W))
+  val wr_weight_rbk = Output(UInt(8.W))
+  val wr_weight_rsv_0 = Output(UInt(8.W))
+  val wr_weight_rsv_1 = Output(UInt(8.W))
+  val wr_weight_rsv_2 = Output(UInt(8.W))
+  val wr_weight_sdp = Output(UInt(8.W))
+}

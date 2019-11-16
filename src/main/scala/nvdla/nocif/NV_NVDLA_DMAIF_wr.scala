@@ -44,7 +44,7 @@ class NV_NVDLA_DMAIF_wr(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘
-    withClock(io.nvdla_core_clk){
+withClock(io.nvdla_core_clk){
     //==============
     // DMA Interface
     //==============
