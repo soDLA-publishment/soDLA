@@ -203,3 +203,123 @@ withClock(io.clk){
     io.cvt_saturation_cnt := cvt_sat_cvt_sat_cnt_cur
 }}
 
+
+
+class NV_COUNTER_STAGE_os extends Module{
+
+    val io = IO(new Bundle{
+        val clk = Input(Clock())
+
+        val os_cnt_add = Input(UInt(3.W))
+        val os_cnt_sub = Input(Bool())
+        val os_cnt_cen = Input(Bool())
+
+        val os_cnt_cur = Output(UInt(9.W))
+
+    })
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘ 
+withClock(io.clk){
+
+    // os adv logic
+    val os_adv = io.os_cnt_add =/= io.os_cnt_sub
+
+    // os cnt logic
+    val os_cnt_cur_reg = RegInit("b0".asUInt(9.W))
+    val os_cnt_ext = Wire(UInt(11.W))
+    val os_cnt_mod = Wire(UInt(11.W))
+    val os_cnt_new = Wire(UInt(11.W))
+    val os_cnt_nxt = Wire(UInt(11.W))
+
+    os_cnt_ext := os_cnt_cur_reg
+    os_cnt_mod := os_cnt_cur_reg +& io.os_cnt_add -& io.os_cnt_sub
+    os_cnt_new := Mux(os_adv, os_cnt_mod, os_cnt_ext)
+    os_cnt_nxt := os_cnt_new
+
+    // os flops
+    when(io.os_cnt_cen){
+        os_cnt_cur_reg := os_cnt_nxt
+    }
+
+    io.os_cnt_cur := os_cnt_cur_reg
+
+
+}}
+
+class NV_COUNTER_STAGE_lat extends Module{
+
+    val io = IO(new Bundle{
+        val clk = Input(Clock())
+
+        val lat_cnt_inc = Input(UInt(3.W))
+        val lat_cnt_dec = Input(Bool())
+
+        val lat_cnt_cur = Output(UInt(9.W))
+
+    })
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘ 
+withClock(io.clk){
+
+    // lat adv logic
+    val lat_adv = io.lat_cnt_inc =/= io.lat_cnt_dec
+
+    // lat cnt logic
+    val lat_cnt_cur_reg = RegInit("b0".asUInt(9.W))
+    val lat_cnt_ext = Wire(UInt(11.W))
+    val lat_cnt_mod = Wire(UInt(11.W))
+    val lat_cnt_new = Wire(UInt(11.W))
+    val lat_cnt_nxt = Wire(UInt(11.W))
+
+    lat_cnt_ext := lat_cnt_cur_reg
+    lat_cnt_mod := lat_cnt_cur_reg +& io.lat_cnt_inc -& io.lat_cnt_dec
+    lat_cnt_new := Mux(lat_adv, lat_cnt_mod, lat_cnt_ext)
+    lat_cnt_nxt := lat_cnt_new
+
+    // lat flops
+    lat_cnt_cur_reg := lat_cnt_nxt
+
+    io.lat_cnt_cur := lat_cnt_cur_reg
+
+}}
+
+
+

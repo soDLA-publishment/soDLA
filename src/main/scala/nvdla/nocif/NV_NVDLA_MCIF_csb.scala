@@ -45,6 +45,11 @@ withClock(io.nvdla_core_clk){
     // GENERATE CSB TO REGISTER CONNECTION LOGIC                          //
     //                                                                    //
     ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    //                                                                    //
+    // Instantiate register                                               //
+    //                                                                    //
+    ////////////////////////////////////////////////////////////////////////
     val csb_logic = Module(new NV_NVDLA_CSB_LOGIC)
     val csb_reg = Module(new NV_NVDLA_MCIF_CSB_reg)
     csb_logic.io.clk := io.nvdla_core_clk

@@ -3,7 +3,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nvdlaConfig) extends Module {
+class NV_NVDLA_NOCIF_DRAM_READ_IG_bpt(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle{
         //general clock
         val nvdla_core_clk = Input(Clock())
@@ -73,31 +73,19 @@ withClock(io.nvdla_core_clk){
     val in_addr = in_vld_pd(conf.NVDLA_MEM_ADDRESS_WIDTH-1, 0)
     val in_size = in_vld_pd(conf.NVDLA_DMA_RD_REQ-1, conf.NVDLA_MEM_ADDRESS_WIDTH)
 
-    val ftran_size = Wire(UInt(3.W))
-    val ltran_size = Wire(UInt(3.W))
-    val mtran_num = Wire(UInt(conf.NVDLA_DMA_RD_SIZE.W))
+    val stt_offset = if(conf.NVDLA_MEMORY_ATOMIC_SIZE == log2Ceil(conf.NVDLA_PRIMARY_MEMIF_WIDTH)) in_addr(log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)+1, log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)) 
+                     else in_addr(log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)+2, log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)) 
+    val size_offset = if(conf.NVDLA_MEMORY_ATOMIC_SIZE == log2Ceil(conf.NVDLA_PRIMARY_MEMIF_WIDTH)) in_size(1, 0)
+                     else in_size(2, 0) 
 
-    val stt_offset = if(conf.NVDLA_MCIF_BURST_SIZE > 1) Some(in_addr(conf.NVDLA_MEMORY_ATOMIC_LOG2+conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, conf.NVDLA_MEMORY_ATOMIC_LOG2)) 
-                      else None
-    val is_single_tran = if(conf.NVDLA_MCIF_BURST_SIZE > 1) Some(Wire(Bool())) 
-                        else None
-    if(conf.NVDLA_MCIF_BURST_SIZE > 1){
-        val size_offset = in_size(conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, 0)
-        val end_offset = stt_offset.get + size_offset
+    val end_offset = stt_offset + size_offset
 
-        is_single_tran.get := (stt_offset.get +& in_size) < conf.NVDLA_MCIF_BURST_SIZE.U
-        val ftran_size_tmp = Mux(is_single_tran.get , size_offset ,(conf.NVDLA_MCIF_BURST_SIZE-1).U -& stt_offset.get)
-        val ltran_size_tmp = Mux(is_single_tran.get , 0.U, end_offset)
+    val is_single_tran = (stt_offset +& in_size) < (conf.NVDLA_MEM_MASK_BIT*4).U
+    val ftran_size = Mux(is_single_tran , size_offset , (conf.NVDLA_MEM_MASK_BIT*4).U -& stt_offset)
+    val ftran_num = ftran_size +& 1.U
 
-        ftran_size := ftran_size_tmp
-        ltran_size := ltran_size_tmp
-        mtran_num := in_size -& ftran_size -& ltran_size -& 1.U
-    }
-    else{
-        ftran_size := 0.U
-        ltran_size := 0.U
-        mtran_num := in_size -& 1.U
-    }
+    val ltran_size = Mux(is_single_tran, 0.U, end_offset)
+    val mtran_num = Mux(is_single_tran, 0.U, end_offset +& 1.U)
 
     //================
     // check the empty entry of lat.fifo
@@ -105,16 +93,24 @@ withClock(io.nvdla_core_clk){
     val is_ftran = Wire(Bool())
     val slot_needed = Wire(UInt(3.W))
     val out_size = Wire(UInt(3.W))
+    val out_swizzle = Wire(Bool())
 
-    if(conf.NVDLA_MCIF_BURST_SIZE > 1){
-        when(is_ftran | is_ltran){
-            slot_needed := out_size +& 1.U
-        } .otherwise {
-            slot_needed := conf.NVDLA_PRIMARY_MEMIF_MAX_BURST_LENGTH.U
-        }  
+    if(conf.NVDLA_MEMORY_ATOMIC_LOG2 == conf.NVDLA_PRIMARY_MEMIF_WIDTH_LOG2){
+        slot_needed := 1.U
     }
     else{
-        slot_needed := true.B
+        when(is_single_tran){
+            slot_needed := (out_size >> 1.U) +& 1.U
+        }
+        .elsewhen(is_ltran){
+            slot_needed := ((out_size +& out_swizzle) >> 1.U) +& 1.U
+        }
+        .elsewhen(is_ftran){
+            slot_needed := (out_size +& 1.U) >> 1.U
+        }
+        .otherwise{
+            slot_needed := 4.U
+        }
     }
     
 
@@ -136,25 +132,27 @@ withClock(io.nvdla_core_clk){
     //================
     // bsp out: swizzle
     //================
-    val out_swizzle = Wire(Bool())
     val out_odd = Wire(Bool())
 
-    if(conf.NVDLA_DMA_MASK_BIT == 2){
-        out_swizzle := (stt_offset.get(0) === true.B)
-        out_odd := (in_size(0) === false.B)
-    }
-    else{
+    if(conf.NVDLA_MEMORY_ATOMIC_LOG2 == conf.NVDLA_PRIMARY_MEMIF_WIDTH_LOG2){
         out_swizzle := false.B
         out_odd := false.B
+    }
+    else{
+        out_swizzle:= (stt_offset(0) === true.B)
+        out_odd := (in_size(0) === false.B)
     }
 
     //================
     // bsp out: size
     //================
     val is_mtran = Wire(Bool())
-    if(conf.NVDLA_MCIF_BURST_SIZE > 1) {
+    if(conf.NVDLA_MEMORY_ATOMIC_LOG2 == conf.NVDLA_PRIMARY_MEMIF_WIDTH_LOG2){
+        out_size := 0.U(3.W)
+    }
+    else{
         val out_size_tmp = Wire(UInt(3.W))
-        when(is_ftran ){
+        when(is_ftran){
             out_size_tmp := ftran_size
         } .elsewhen(is_mtran) {
             out_size_tmp := conf.NVDLA_MCIF_BURST_SIZE.U - 1.U
@@ -163,9 +161,13 @@ withClock(io.nvdla_core_clk){
         }
 
         out_size := out_size_tmp
-    } else {
-        out_size := 0.U(3.W)
     }
+
+    //================
+    // bsp out: USER: SIZE
+    //================
+    val out_inc = is_ftran & is_ltran & out_swizzle && !out_odd
+    val beat_size_NC = out_size(2, 1) + out_inc
 
     //================
     // bpt2arb: addr
@@ -173,35 +175,44 @@ withClock(io.nvdla_core_clk){
     val out_addr = Reg(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
     when(bpt2arb_accept){
         when(is_ftran){
-            if(conf.NVDLA_MCIF_BURST_SIZE > 1){
-                out_addr := in_addr +& ((ftran_size +& 1.U) << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
+            if(conf.NVDLA_MEMORY_ATOMIC_LOG2 == conf.NVDLA_PRIMARY_MEMIF_WIDTH_LOG2){
+                out_addr := in_addr +& (1.U << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
             }
             else{
-                out_addr := in_addr +& (1.U << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
+                out_addr := in_addr +& ((ftran_size +& 1.U) << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
             }
         }
         .otherwise{
-            out_addr := out_addr +& (conf.NVDLA_MCIF_BURST_SIZE.U << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
+            if(conf.NVDLA_MEMORY_ATOMIC_LOG2 == conf.NVDLA_PRIMARY_MEMIF_WIDTH_LOG2){
+                out_addr := out_addr +& (1.U << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
+            }
+            else{
+                out_addr := out_addr +& (8.U << (conf.NVDLA_MEMORY_ATOMIC_LOG2-1).U)
+            }
         }
     }
 
     //================
     // tran count
     //================
-    val req_num = Wire(UInt(conf.NVDLA_DMA_RD_SIZE.W))
-    if(conf.NVDLA_MCIF_BURST_SIZE > 1){
-        when(is_single_tran.get){
-            req_num := 0.U
-        }
-        .otherwise{
-            req_num := 1.U +& mtran_num(14, conf.NVDLA_MCIF_BURST_SIZE_LOG2)
-        }
+    val req_num = Wire(UInt(16.W))
+    if(conf.NVDLA_MEMORY_ATOMIC_LOG2 == conf.NVDLA_PRIMARY_MEMIF_WIDTH_LOG2){
+        req_num := in_size +& 1.U
     }
     else{
-        req_num := in_size
+        when(is_single_tran){
+            req_num := 1.U
+        }
+        .elsewhen(mtran_num === 0.U){
+            req_num := 2.U
+        }
+        .otherwise{
+            req_num := 2.U +& mtran_num(14, 3)
+        }
     }
 
-    val count_req = RegInit(0.U(15.W))
+
+    val count_req = RegInit(0.U(14.W))
     when(bpt2arb_accept){
         when(is_ltran){
             count_req := 0.U
@@ -212,8 +223,8 @@ withClock(io.nvdla_core_clk){
     }
 
     is_ftran := (count_req === 0.U)
-    is_mtran := (count_req > 0.U && count_req < req_num)
-    is_ltran := (count_req === req_num)
+    is_mtran := (count_req > 0.U && count_req < (req_num -& 1.U))
+    is_ltran := (count_req === (req_num -& 1.U))
 
     val bpt2arb_addr = Mux(is_ftran, in_addr, out_addr)
     val bpt2arb_size = out_size
@@ -228,10 +239,10 @@ withClock(io.nvdla_core_clk){
 
     io.bpt2arb_req_pd.valid := req_vld
     bpt2arb_accept := io.bpt2arb_req_pd.valid & req_rdy
-    io.bpt2arb_req_pd.bits := Cat(is_ftran, is_ltran, out_odd, out_swizzle, out_size, bpt2arb_addr, io.tieoff_axid)
+    io.bpt2arb_req_pd.bits := Cat(bpt2arb_ftran, bpt2arb_ltran, bpt2arb_odd, bpt2arb_swizzle, bpt2arb_size, bpt2arb_addr, bpt2arb_axid)
 }}
 
-object NV_NVDLA_MCIF_READ_IG_bptDriver extends App {
+object NV_NVDLA_NOCIF_DRAM_READ_IG_bptDriver extends App {
     implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_READ_IG_bpt())
+    chisel3.Driver.execute(args, () => new NV_NVDLA_NOCIF_DRAM_READ_IG_bpt())
 }
