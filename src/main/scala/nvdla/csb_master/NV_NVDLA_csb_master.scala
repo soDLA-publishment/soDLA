@@ -5,7 +5,7 @@
 // import chisel3.util._
 // import chisel3.iotesters.Driver
 
-// class NV_NVDLA_csb_master(implicit val conf: csbMasterConfiguration)  extends Module {
+// class NV_NVDLA_csb_master(implicit val conf: nvdlaConfig)  extends Module {
 //     val io = IO(new Bundle {
 //         //general clock
 //         val nvdla_core_clk = Input(Clock())
@@ -301,8 +301,7 @@
 // bdma_resp_valid.get := io.bdma2csb_resp_valid.get
 // when(io.bdma2csb_resp_valid.get){
 //     bdma_resp_pd.get := io.bdma2csb_resp_pd.get
-// }
-// }
+// }}
 
 // //////////////// for CDMA ////////////////
 // val cdma_req_pvld = RegInit(false.B)
@@ -776,6 +775,6 @@
 
 
 // object NV_NVDLA_csb_masterDriver extends App {
-//   implicit val conf: csbMasterConfiguration = new csbMasterConfiguration
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
 //   chisel3.Driver.execute(args, () => new NV_NVDLA_csb_master())
 // }

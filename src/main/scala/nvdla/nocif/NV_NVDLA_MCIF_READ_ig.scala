@@ -10,8 +10,8 @@ class NV_NVDLA_MCIF_READ_ig (implicit conf: nvdlaConfig) extends Module {
         val pwrbus_ram_pd = Input(UInt(32.W))
         
         //client2mcif
-        val rdmaclient2mcif_rd_cdt_lat_fifo_pop = Input(Vec(conf.RDMA_NUM, Bool()))
-        val rdmaclient2mcif_rd_req_pd = Flipped(Vec(conf.RDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))))
+        val client2mcif_rd_cdt_lat_fifo_pop = Input(Vec(conf.RDMA_NUM, Bool()))
+        val client2mcif_rd_req_pd = Flipped(Vec(conf.RDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))))
 
         //mcif2noc
         val eg2ig_axi_vld = Input(Bool())
@@ -48,8 +48,8 @@ withClock(io.nvdla_core_clk){
     for(i <- 0 until conf.RDMA_NUM){
         u_bpt(i).io.nvdla_core_clk := io.nvdla_core_clk
 
-        u_bpt(i).io.dma2bpt_cdt_lat_fifo_pop := io.rdmaclient2mcif_rd_cdt_lat_fifo_pop(i)
-        u_bpt(i).io.dma2bpt_req_pd <> io.rdmaclient2mcif_rd_req_pd(i)
+        u_bpt(i).io.dma2bpt_cdt_lat_fifo_pop := io.client2mcif_rd_cdt_lat_fifo_pop(i)
+        u_bpt(i).io.dma2bpt_req_pd <> io.client2mcif_rd_req_pd(i)
 
         u_bpt(i).io.tieoff_axid := conf.arr_tieoff_axid(i).asUInt(4.W)
         u_bpt(i).io.tieoff_lat_fifo_depth := conf.arr_tieoff_lat_fifo_depth(i).asUInt(9.W)

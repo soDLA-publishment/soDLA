@@ -12,7 +12,7 @@ class NV_NVDLA_MCIF_READ_eg(implicit conf: nvdlaConfig) extends Module {
 
         val eg2ig_axi_vld = Output(Bool())
 
-        val mcif2rdma_rd_rsp_pd = Vec(conf.RDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
+        val mcif2client_rd_rsp_pd = Vec(conf.RDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
 
         //noc2mcif
         val noc2mcif_axi_r = Flipped(Decoupled(new nocif_axi_rd_data_if))
@@ -67,9 +67,9 @@ withClock(io.nvdla_core_clk) {
         rq_rd_prdy(i) := pipe_out(i).io.ro
         pipe_out(i).io.di := Cat(rq_rd_pvld(i), rq_rd_pd(i))
 
-        io.mcif2rdma_rd_rsp_pd(i).valid := pipe_out(i).io.vo
-        pipe_out(i).io.ri := io.mcif2rdma_rd_rsp_pd(i).ready 
-        io.mcif2rdma_rd_rsp_pd(i).bits := pipe_out(i).io.dout
+        io.mcif2client_rd_rsp_pd(i).valid := pipe_out(i).io.vo
+        pipe_out(i).io.ri := io.mcif2client_rd_rsp_pd(i).ready 
+        io.mcif2client_rd_rsp_pd(i).bits := pipe_out(i).io.dout
         
     }
 }}

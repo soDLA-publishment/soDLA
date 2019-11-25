@@ -67,6 +67,11 @@ class xxifConfiguration extends cdpConfiguration{
   if(NVDLA_CDP_ENABLE)    {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
   if(NVDLA_RUBIK_ENABLE)  {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
   if(NVDLA_BDMA_ENABLE)   {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+
+
+  //redpanda3
+  val MCIF_WRITE_CQ_WIDTH = 3
+  val MCIF_WRITE_CQ_VEC_NUM = 5
 }
 
 
@@ -101,29 +106,16 @@ class nocif_axi_rd_data_if(implicit val conf: nvdlaConfig) extends Bundle{
 }
 
 
-class mcif_reg_flop_outputs extends Bundle{
+class mcif_reg_flop_outputs(implicit val conf: nvdlaConfig) extends Bundle{
 
   val rd_os_cnt = Output(UInt(8.W))
-  val rd_weight_bdma = Output(UInt(8.W))
-  val rd_weight_cdma_dat = Output(UInt(8.W))
-  val rd_weight_cdma_wt = Output(UInt(8.W))
-  val rd_weight_cdp = Output(UInt(8.W))
-  val rd_weight_pdp = Output(UInt(8.W))
-  val rd_weight_rbk = Output(UInt(8.W))
   val rd_weight_rsv_0 = Output(UInt(8.W))
   val rd_weight_rsv_1 = Output(UInt(8.W))
-  val rd_weight_sdp = Output(UInt(8.W))
-  val rd_weight_sdp_b = Output(UInt(8.W))
-  val rd_weight_sdp_e = Output(UInt(8.W))
-  val rd_weight_sdp_n = Output(UInt(8.W))
+  val rd_weight_client = Output(Vec(conf.RDMA_MAX_NUM, UInt(8.W)))
 
   val wr_os_cnt = Output(UInt(8.W))
-  val wr_weight_bdma = Output(UInt(8.W))
-  val wr_weight_cdp = Output(UInt(8.W))
-  val wr_weight_pdp = Output(UInt(8.W))
-  val wr_weight_rbk = Output(UInt(8.W))
   val wr_weight_rsv_0 = Output(UInt(8.W))
   val wr_weight_rsv_1 = Output(UInt(8.W))
   val wr_weight_rsv_2 = Output(UInt(8.W))
-  val wr_weight_sdp = Output(UInt(8.W))
+  val wr_weight_client = Output(Vec(conf.WDMA_MAX_NUM, UInt(8.W)))
 }
