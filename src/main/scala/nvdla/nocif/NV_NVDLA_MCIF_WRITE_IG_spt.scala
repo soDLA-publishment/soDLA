@@ -8,7 +8,6 @@ class NV_NVDLA_MCIF_WRITE_IG_spt(conf:nvdlaConfig) extends Module {
   val io = IO(new Bundle {
     //general clock
     val nvdla_core_clk = Input(Clock())
-    val nvdla_core_rstn = Input(Bool())
 
     val arb2spt_cmd_pd  = Flipped(DecoupledIO(UInt(77.W)))
 

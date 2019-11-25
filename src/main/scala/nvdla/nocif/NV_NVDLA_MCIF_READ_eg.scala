@@ -7,7 +7,7 @@ class NV_NVDLA_MCIF_READ_eg(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
-        val nvdla_core_rstn = Input(Bool())
+
         val pwrbus_ram_pd = Input(UInt(32.W))
 
         val eg2ig_axi_vld = Output(Bool())

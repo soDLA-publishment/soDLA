@@ -6,13 +6,7 @@ import chisel3.util._
 
 class xxifConfiguration extends cdpConfiguration{
 
-  val RDMA_MAX_NUM = 10
-  val WDMA_MAX_NUM = 5
-
   val FV_RAND_WR_PAUSE = false
-
-  val RDMA_NUM = NVDLA_NUM_DMA_READ_CLIENTS 
-  val WDMA_NUM = NVDLA_NUM_DMA_WRITE_CLIENTS
 
   val NVDLA_DMA_RD_IG_PW = NVDLA_MEM_ADDRESS_WIDTH+11
   val NVDLA_DMA_WR_IG_PW = NVDLA_MEM_ADDRESS_WIDTH+13
@@ -31,13 +25,39 @@ class xxifConfiguration extends cdpConfiguration{
   val tieoff_axid_cdma_wt = 9
 
   var arr_tieoff_axid = List(tieoff_axid_cdma_dat, tieoff_axid_cdma_wt, tieoff_axid_sdp)
-  if(NVDLA_SDP_BS_ENABLE) {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_b}
-  if(NVDLA_SDP_BN_ENABLE) {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_n}
-  if(NVDLA_SDP_EW_ENABLE) {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_e}
-  if(NVDLA_PDP_ENABLE)    {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_pdp}
-  if(NVDLA_CDP_ENABLE)    {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_cdp}
-  if(NVDLA_RUBIK_ENABLE)  {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_rbk}
-  if(NVDLA_BDMA_ENABLE)   {arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_bdma}
+  var awr_tieoff_axid = List(tieoff_axid_sdp)
+
+  val RDMA_MAX_NUM = 10
+  val WDMA_MAX_NUM = 5
+
+  if(NVDLA_SDP_BS_ENABLE){
+      arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_b
+  }
+  if(NVDLA_SDP_BN_ENABLE){
+      arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_n
+  }
+  if(NVDLA_SDP_EW_ENABLE){
+      arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_sdp_e
+  }
+  if(NVDLA_PDP_ENABLE){
+      arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_pdp
+      awr_tieoff_axid = awr_tieoff_axid :+ tieoff_axid_pdp
+  }
+  if(NVDLA_CDP_ENABLE){
+      arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_cdp
+      awr_tieoff_axid = awr_tieoff_axid :+ tieoff_axid_cdp
+  }
+  if(NVDLA_RUBIK_ENABLE){
+      arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_rbk
+      awr_tieoff_axid = awr_tieoff_axid :+ tieoff_axid_rbk
+  }
+  if(NVDLA_BDMA_ENABLE){
+      arr_tieoff_axid = arr_tieoff_axid :+ tieoff_axid_bdma
+      awr_tieoff_axid = awr_tieoff_axid :+ tieoff_axid_bdma
+  }
+
+  val RDMA_NUM = arr_tieoff_axid.length
+  val WDMA_NUM = awr_tieoff_axid.length
 
   var arr_tieoff_lat_fifo_depth = List(0, 0, 256)
   if(NVDLA_SDP_BS_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
@@ -52,13 +72,13 @@ class xxifConfiguration extends cdpConfiguration{
 
 
 
-class nocif_axi_wr_address_if(implicit val conf: nvdlaConfig) extends Bundle{
+class nocif_axi_wr_data_if(implicit val conf: nvdlaConfig) extends Bundle{
   val data = Output(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
   val strb = Output(UInt((conf.NVDLA_PRIMARY_MEMIF_WIDTH/8).W))
   val last = Output(Bool())
 }
 
-class nocif_axi_wr_data_if(implicit val conf: nvdlaConfig) extends Bundle{
+class nocif_axi_wr_address_if(implicit val conf: nvdlaConfig) extends Bundle{
   val id = Output(UInt(8.W))
   val len = Output(UInt(4.W))
   val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))

@@ -6,8 +6,7 @@ import chisel3.util._
 
 
 class NV_NVDLA_arb(n:Int, wt_width:Int, io_gnt_busy:Boolean) extends Module {
-    val io = IO(new Bundle() {
-
+    val io = IO(new Bundle{
         val clk = Input(Clock())
 
         val req = Input(Vec(n, Bool()))
@@ -49,7 +48,7 @@ withClock(io.clk) {
     //wrr_gnt wt_left
     val wrr_gnt = RegInit("b0".asUInt(n.W)) 
     val wt_left = RegInit("b0".asUInt(wt_width.W))
-    val wt_left_nxt = Wire(UInt(wt_width.W))
+    val wt_left_nxt = WireInit("b0".asUInt(wt_width.W))
 
     if(io_gnt_busy){
         when(!io.gnt_busy.get & req =/= 0.U){
@@ -67,9 +66,11 @@ withClock(io.clk) {
     //gnt_pre
     val gnt_pre = WireInit("b0".asUInt(n.W))
     when(wt_left === 0.U | !((req & wrr_gnt).orR)) {
-        for(i <- 0 to n-1){
-            gnt_pre := MuxCase(0.U(n.W), (i until i+n) map{ j => req(j % n) -> (1.U << (j % n))} )
-            wt_left_nxt := MuxCase(0.U(wt_width.W), (i until i+n) map{ j => req(j % n) -> new_wt_left(j % n)} )
+        for(i <- 0 to n){
+            when(wrr_gnt === ("b1".asUInt((n+1).W) << i.U)(n, 1)){
+                gnt_pre := MuxCase(0.U(n.W), (i until i+n) map{ j => req(j % n) -> (1.U << (j % n))})
+                wt_left_nxt := MuxCase(0.U(wt_width.W), (i until i+n) map{ j => req(j % n) -> new_wt_left(j % n)} )
+            }
         }
     }
     .otherwise {

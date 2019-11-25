@@ -6,35 +6,21 @@
 // class NV_NVDLA_MCIF_read(implicit conf: nvdlaConfig) extends Module {
 //     val io = IO(new Bundle{
 //         //general clock
-//         val nvdla_core_clk      = Input(Clock())
-//         val nvdla_core_rstn     = Input(Bool())
-//         val pwrbus_ram_pd       = Input(UInt(32.W))
-//         val reg2dp_rd_os_cnt    = Input(UInt(8.W))
+//         val nvdla_core_clk = Input(Clock())
+//         val pwrbus_ram_pd = Input(UInt(32.W))
 
-//         val reg2dp_rw_weight = Input(Vec(conf.RDMA_NUM, UInt(8.W)))
-
-//         // cdma_dat-0, cdma_wt-1, sdp-2, sdp_b-3, sdp_n-4, sdp_e-5, pdp-6, cdp-7
-//         val rdma2mcif_rd_cdt_lat_fifo_pop   = Input(Vec(conf.RDMA_NUM, Bool()))
-//         val rdma2mcif_rd_req_valid          = Input(Vec(conf.RDMA_NUM, Bool()))
-//         val rdma2mcif_rd_req_ready          = Output(Vec(conf.RDMA_NUM, Bool()))
-//         val rdma2mcif_rd_req_pd             = Input(Vec(conf.RDMA_NUM, UInt(conf.NVDLA_DMA_RD_REQ.W)))
-//         val mcif2rdma_rd_rsp_valid          = Output(Vec(conf.RDMA_NUM, Bool()))
-//         val mcif2rdma_rd_rsp_ready          = Input(Vec(conf.RDMA_NUM, Bool()))
-//         val mcif2rdma_rd_rsp_pd             = Output(Vec(conf.RDMA_NUM, UInt(conf.NVDLA_DMA_RD_RSP.W)))
+//         //client2mcif
+//         val client2mcif_rd_cdt_lat_fifo_pop = Input(Vec(conf.RDMA_NUM, Bool()))
+//         val client2mcif_rd_req_pd = Flipped(Vec(conf.RDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_RD_REQ.W))))
+//         val mcif2client_rd_rsp_pd = Vec(conf.RDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_RD_RSP.W)))
 
 //         //noc2mcif
-//         val noc2mcif_axi_r_rvalid = Input(Bool())
-//         val noc2mcif_axi_r_rready = Output(Bool())
-//         val noc2mcif_axi_r_rid = Input(UInt(8.W))
-//         val noc2mcif_axi_r_rlast = Input(Bool())
-//         val noc2mcif_axi_r_rdata = Input(UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W))
-
 //         //mcif2noc
-//         val mcif2noc_axi_ar_arvalid = Output(Bool())
-//         val mcif2noc_axi_ar_arready = Input(Bool())
-//         val mcif2noc_axi_ar_arid = Output(UInt(8.W))
-//         val mcif2noc_axi_ar_arlen = Output(UInt(4.W))
-//         val mcif2noc_axi_ar_araddr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+//         val noc2mcif_axi_r = Flipped(DecoupledIO(new nocif_axi_rd_data_if))
+//         val mcif2noc_axi_ar = DecoupledIO(new nocif_axi_rd_address_if)
+
+//         val reg2dp_rd_os_cnt    = Input(UInt(8.W))
+//         val reg2dp_rd_weight_client = Input(Vec(conf.RDMA_NUM, UInt(8.W)))
 //     })
 
 //     val eg2ig_axi_vld = Wire(Bool())

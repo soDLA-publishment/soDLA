@@ -12,7 +12,6 @@ class NV_NVDLA_XXIF_READ_IG_cvt(cq_enabled: Boolean)(implicit conf: nvdlaConfig)
     val io = IO(new Bundle{
         //general clock
         val nvdla_core_clk = Input(Clock())
-        val nvdla_core_rstn = Input(Bool())
 
         val reg2dp_rd_os_cnt = Input(UInt(8.W))
 
