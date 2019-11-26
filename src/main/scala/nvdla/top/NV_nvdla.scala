@@ -15,16 +15,9 @@
 //         val direct_reset_ = Input(Bool())
 //         val test_mode = Input(Bool())
 //         //csb2nvdla
-//         val csb2nvdla_valid = Input(Bool())
-//         val csb2nvdla_ready = Output(Bool())
-//         val csb2nvdla_addr = Input(UInt(16.W))
-//         val csb2nvdla_wdat = Input(UInt(32.W))
-//         val csb2nvdla_write = Input(Bool())
-//         val csb2nvdla_nposted = Input(Bool())
-//         val nvdla2csb_valid = Output(Bool())
-//         val nvdla2csb_data = Output(UInt(32.W))
+//         val csb2nvdla = Flipped(DecoupledIO(new csb2nvdla_if))
+//         val nvdla2csb = ValidIO(new nvdla2csb_if)
 //         val nvdla2csb_wr_complete = Output(Bool())
-
 //         ///////////////
 //         //axi
 //         //2dbb
@@ -46,7 +39,6 @@
 //         val nvdla_pwrbus_ram_p_pd = Input(UInt(32.W))
 //         val nvdla_pwrbus_ram_o_pd = Input(UInt(32.W))
 //         val nvdla_pwrbus_ram_a_pd = Input(UInt(32.W))
-
 //         val dla_intr = Output(Bool())
 //     }
 // //     
@@ -70,6 +62,11 @@
 // //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 // //             │ ─┤ ─┤       │ ─┤ ─┤         
 // //             └──┴──┘       └──┴──┘ 
+
+// if(NVDLA_SECONDARY_MEMIF_ENABLE){
+//     io.nvdla_core2cvsram_aw.valid := false.B
+//     io.
+// }
 
 // ////////////////////////////////////////////////////////////////////////
 // //  NVDLA Partition O                                                 //

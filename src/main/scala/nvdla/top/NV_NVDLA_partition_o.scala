@@ -280,15 +280,15 @@ class NV_NVDLA_partition_o(implicit val conf: nvdlaConfig) extends Module {
     }
 
     for(i <- 0 to conf.WDMA_NUM-1){
-        if(conf.arr_tieoff_axid(i) == 1){
+        if(conf.awr_tieoff_axid(i) == 1){
             u_NV_NVDLA_mcif.io.client2mcif_wr_req_pd(i) <> io.sdp2mcif_wr_req_pd
             io.mcif2sdp_wr_rsp_complete := u_NV_NVDLA_mcif.io.mcif2client_wr_rsp_complete(i)  
         }
-        if(conf.arr_tieoff_axid(i) == 3){
+        if(conf.awr_tieoff_axid(i) == 3){
             u_NV_NVDLA_mcif.io.client2mcif_wr_req_pd(i) <> u_NV_NVDLA_cdp.get.io.cdp2mcif_wr_req_pd
             u_NV_NVDLA_cdp.get.io.mcif2cdp_wr_rsp_complete := u_NV_NVDLA_mcif.io.mcif2client_wr_rsp_complete(i)          
         }
-        if(conf.arr_tieoff_axid(i) == 2){
+        if(conf.awr_tieoff_axid(i) == 2){
             u_NV_NVDLA_mcif.io.client2mcif_wr_req_pd(i) <> u_NV_NVDLA_pdp.get.io.pdp2mcif_wr_req_pd
             u_NV_NVDLA_pdp.get.io.mcif2pdp_wr_rsp_complete := u_NV_NVDLA_mcif.io.mcif2client_wr_rsp_complete(i)          
         }
