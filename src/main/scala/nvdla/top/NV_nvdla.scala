@@ -114,7 +114,7 @@ class NV_nvdla(implicit val conf: nvdlaConfig) extends Module {
     u_partition_p.io.mcif2sdp_rd_rsp_pd <> u_partition_o.io.mcif2sdp_rd_rsp_pd
     u_partition_o.io.sdp2mcif_rd_cdt_lat_fifo_pop := u_partition_p.io.sdp2mcif_rd_cdt_lat_fifo_pop
     u_partition_o.io.sdp2mcif_wr_req_pd <> u_partition_p.io.sdp2mcif_wr_req_pd
-    u_partition_o.io.mcif2sdp_wr_rsp_complete := u_partition_p.io.mcif2sdp_wr_rsp_complete
+    u_partition_p.io.mcif2sdp_wr_rsp_complete := u_partition_o.io.mcif2sdp_wr_rsp_complete
 
     if(conf.NVDLA_SDP_BS_ENABLE){
         u_partition_o.io.sdp_b2mcif_rd_req_pd.get <> u_partition_p.io.sdp_b2mcif_rd_req_pd.get
@@ -143,7 +143,7 @@ class NV_nvdla(implicit val conf: nvdlaConfig) extends Module {
         u_partition_p.io.cvif2sdp_rd_rsp_pd.get <> u_partition_o.io.cvif2sdp_rd_rsp_pd.get
         u_partition_o.io.sdp2cvif_rd_cdt_lat_fifo_pop.get := u_partition_p.io.sdp2cvif_rd_cdt_lat_fifo_pop.get
         u_partition_o.io.sdp2cvif_wr_req_pd.get <> u_partition_p.io.sdp2cvif_wr_req_pd.get
-        u_partition_o.io.cvif2sdp_wr_rsp_complete.get := u_partition_p.io.cvif2sdp_wr_rsp_complete.get
+        u_partition_p.io.cvif2sdp_wr_rsp_complete.get := u_partition_o.io.cvif2sdp_wr_rsp_complete.get
 
         if(conf.NVDLA_SDP_BS_ENABLE){
             u_partition_o.io.sdp_b2cvif_rd_req_pd.get <> u_partition_p.io.sdp_b2cvif_rd_req_pd.get
@@ -262,7 +262,7 @@ class NV_nvdla(implicit val conf: nvdlaConfig) extends Module {
 }
 
 
-object NV_NVDLADriver extends App {
+object NV_nvdlaDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_nvdla())
 }
