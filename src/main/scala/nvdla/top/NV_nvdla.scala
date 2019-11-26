@@ -163,14 +163,14 @@ class NV_nvdla(implicit val conf: nvdlaConfig) extends Module {
         
     }
 
-    io.nvdla_core2dbb_ar <> u_partition_o.io.mcif2noc_axi_ar
+    u_partition_o.io.mcif2noc_axi_ar <> io.nvdla_core2dbb_ar
     io.nvdla_core2dbb_aw <> u_partition_o.io.mcif2noc_axi_aw 
     io.nvdla_core2dbb_w <> u_partition_o.io.mcif2noc_axi_w 
     u_partition_o.io.noc2mcif_axi_b <> io.nvdla_core2dbb_b
     u_partition_o.io.noc2mcif_axi_r <> io.nvdla_core2dbb_r
 
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-        io.nvdla_core2cvsram_ar.get <> u_partition_o.io.cvif2noc_axi_ar.get
+        u_partition_o.io.cvif2noc_axi_ar.get <> io.nvdla_core2cvsram_ar.get
         io.nvdla_core2cvsram_aw.get <> u_partition_o.io.cvif2noc_axi_aw.get 
         io.nvdla_core2cvsram_w.get <> u_partition_o.io.cvif2noc_axi_w.get 
         u_partition_o.io.noc2cvif_axi_b.get <> io.nvdla_core2cvsram_b.get
