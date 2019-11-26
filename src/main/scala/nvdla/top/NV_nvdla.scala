@@ -7,8 +7,8 @@ import chisel3.util._
 class NV_nvdla(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
-        val dla_core_clk = Input(Bool())
-        val dla_csb_clk = Input(Bool())
+        val dla_core_clk = Input(Clock())
+        val dla_csb_clk = Input(Clock())
         val global_clk_ovr_on = Input(Clock())
         val tmc2slcg_disable_clock_gating = Input(Bool())
         val dla_reset_rstn = Input(Bool())
