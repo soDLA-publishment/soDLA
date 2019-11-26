@@ -24,13 +24,13 @@ class NV_nvdla(implicit val conf: nvdlaConfig) extends Module {
         val nvdla_core2dbb_aw = DecoupledIO(new nocif_axi_wr_address_if)
         val nvdla_core2dbb_w = DecoupledIO(new nocif_axi_wr_data_if)
         val nvdla_core2dbb_b = Flipped(DecoupledIO(new nocif_axi_wr_response_if))
-        val nvdla_core2dbb_ar = Flipped(DecoupledIO(new nocif_axi_rd_address_if))
+        val nvdla_core2dbb_ar = DecoupledIO(new nocif_axi_rd_address_if)
         val nvdla_core2dbb_r = Flipped(DecoupledIO(new nocif_axi_rd_data_if))
         //2cvsram
         val nvdla_core2cvsram_aw = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(new nocif_axi_wr_address_if)) else None
         val nvdla_core2cvsram_w = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(new nocif_axi_wr_data_if)) else None
         val nvdla_core2cvsram_b = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(new nocif_axi_wr_response_if))) else None
-        val nvdla_core2cvsram_ar = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(new nocif_axi_rd_address_if))) else None
+        val nvdla_core2cvsram_ar = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(DecoupledIO(new nocif_axi_rd_address_if)) else None
         val nvdla_core2cvsram_r = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Some(Flipped(DecoupledIO(new nocif_axi_rd_data_if))) else None
         //pwr_ram_pd
         val nvdla_pwrbus_ram_c_pd = Input(UInt(32.W))
@@ -163,14 +163,14 @@ class NV_nvdla(implicit val conf: nvdlaConfig) extends Module {
         
     }
 
-    u_partition_o.io.mcif2noc_axi_ar <> io.nvdla_core2dbb_ar
+    io.nvdla_core2dbb_ar <> u_partition_o.io.mcif2noc_axi_ar
     io.nvdla_core2dbb_aw <> u_partition_o.io.mcif2noc_axi_aw 
     io.nvdla_core2dbb_w <> u_partition_o.io.mcif2noc_axi_w 
     u_partition_o.io.noc2mcif_axi_b <> io.nvdla_core2dbb_b
     u_partition_o.io.noc2mcif_axi_r <> io.nvdla_core2dbb_r
 
     if(conf.NVDLA_SECONDARY_MEMIF_ENABLE){
-        u_partition_o.io.cvif2noc_axi_ar.get <> io.nvdla_core2cvsram_ar.get
+        io.nvdla_core2cvsram_ar.get <> u_partition_o.io.cvif2noc_axi_ar.get
         io.nvdla_core2cvsram_aw.get <> u_partition_o.io.cvif2noc_axi_aw.get 
         io.nvdla_core2cvsram_w.get <> u_partition_o.io.cvif2noc_axi_w.get 
         u_partition_o.io.noc2cvif_axi_b.get <> io.nvdla_core2cvsram_b.get
