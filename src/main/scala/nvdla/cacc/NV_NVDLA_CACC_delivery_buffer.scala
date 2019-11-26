@@ -30,14 +30,13 @@ class NV_NVDLA_CACC_delivery_buffer(implicit conf: nvdlaConfig) extends Module {
 
 
     })
-
 //     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐
 //       │                 │
 //       │       ───       │
 //       │  ─┬┘       └┬─  │
-//       │                 │                       
+//       │                 │
 //       │       ─┴─       │
 //       │                 │
 //       └───┐         ┌───┘
@@ -46,12 +45,12 @@ class NV_NVDLA_CACC_delivery_buffer(implicit conf: nvdlaConfig) extends Module {
 //           │         │
 //           │         └──────────────┐
 //           │                        │
-//           │                        ├─┐         
+//           │                        ├─┐
 //           │                        ┌─┘    
 //           │                        │
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘
+//             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){
 
 // Instance RAMs 

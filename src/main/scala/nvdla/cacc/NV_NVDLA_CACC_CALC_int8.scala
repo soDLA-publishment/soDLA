@@ -28,14 +28,13 @@ class NV_NVDLA_CACC_CALC_int8 extends Module {
         val out_partial_data = Output(UInt(34.W))
         val out_partial_valid = Output(Bool())
     })
-
 //     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐
 //       │                 │
 //       │       ───       │
 //       │  ─┬┘       └┬─  │
-//       │                 │                       
+//       │                 │
 //       │       ─┴─       │
 //       │                 │
 //       └───┐         ┌───┘
@@ -44,12 +43,12 @@ class NV_NVDLA_CACC_CALC_int8 extends Module {
 //           │         │
 //           │         └──────────────┐
 //           │                        │
-//           │                        ├─┐         
+//           │                        ├─┐
 //           │                        ┌─┘    
 //           │                        │
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘
+//             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){
     //====================
     // Addition

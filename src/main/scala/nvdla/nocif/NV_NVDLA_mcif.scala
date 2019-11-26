@@ -9,6 +9,7 @@ class NV_NVDLA_mcif(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
         val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
         val pwrbus_ram_pd = Input(UInt(32.W))
 
         val csb2mcif = new csb2dp_if
@@ -48,7 +49,7 @@ class NV_NVDLA_mcif(implicit conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘
-withClock(io.nvdla_core_clk){
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
     val u_csb = Module(new NV_NVDLA_MCIF_csb)
     val u_read = Module(new NV_NVDLA_MCIF_read)
     val u_write = Module(new NV_NVDLA_MCIF_write)

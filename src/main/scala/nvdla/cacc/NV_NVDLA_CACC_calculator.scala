@@ -44,7 +44,6 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
         val dp2reg_sat_count = Output(UInt(32.W))
 
     })
-
 //     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐
