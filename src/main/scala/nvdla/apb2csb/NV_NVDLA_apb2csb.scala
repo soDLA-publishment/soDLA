@@ -5,6 +5,18 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+
+class csb2nvdla_if extends Bundle{
+    val addr = Output(UInt(16.W))
+    val wdat = Output(UInt(32.W))
+    val write = Output(Bool())
+    val nposted = Output(Bool())
+}
+
+class nvdla2csb_if extends Bundle{
+    val data = Output(Bool())
+}
+
 class NV_NVDLA_apb2csb extends Module {
  
     //csb interface  
@@ -23,16 +35,9 @@ class NV_NVDLA_apb2csb extends Module {
       val pready = Output(Bool())
 
       //csb interface 
-      val csb2nvdla_ready = Input(Bool())
-      val csb2nvdla_valid = Output(Bool())
-      val csb2nvdla_addr  = Output(UInt(16.W))
-      val csb2nvdla_wdat  = Output(UInt(32.W))
-      val csb2nvdla_write  = Output(Bool())
-      val csb2nvdla_nposted = Output(Bool())
-
-      val nvdla2csb_valid = Input(Bool())
-      val nvdla2csb_data = Input(UInt(32.W))
-
+      val csb2nvdla = DecoupledIO(new csb2nvdla_if)
+      val nvdla2csb = Flipped(ValidIO(new nvdla2csb_if))
+    
     })
 
   //input  nvdla2csb_wr_complete
@@ -43,21 +48,21 @@ class NV_NVDLA_apb2csb extends Module {
     val wr_trans_vld = io.psel & io.penable & io.pwrite
     val rd_trans_vld = io.psel & io.penable & !io.pwrite 
 
-    when(io.nvdla2csb_valid & rd_trans_low){
+    when(io.nvdla2csb.valid & rd_trans_low){
       rd_trans_low := false.B
     } 
-    .elsewhen(io.csb2nvdla_ready & rd_trans_vld){
+    .elsewhen(io.csb2nvdla.ready & rd_trans_vld){
       rd_trans_low := true.B
     }    
 
-    io.csb2nvdla_valid := wr_trans_vld | rd_trans_vld & !rd_trans_low
-    io.csb2nvdla_addr := io.paddr(17,2)
-    io.csb2nvdla_wdat := io.pwdata(31,0)
-    io.csb2nvdla_write := io.pwrite
-    io.csb2nvdla_nposted := false.B
+    io.csb2nvdla.valid := wr_trans_vld | rd_trans_vld & !rd_trans_low
+    io.csb2nvdla.bits.addr := io.paddr(17,2)
+    io.csb2nvdla.bits.wdat := io.pwdata(31,0)
+    io.csb2nvdla.bits.write := io.pwrite
+    io.csb2nvdla.bits.nposted := false.B
 
-    io.prdata := io.nvdla2csb_data
-    io.pready := !(wr_trans_vld&(!io.csb2nvdla_ready)|rd_trans_vld&(!io.nvdla2csb_valid))
+    io.prdata := io.nvdla2csb.bits.data
+    io.pready := !(wr_trans_vld&(!io.csb2nvdla.ready)|rd_trans_vld&(!io.nvdla2csb.valid))
 
 }}
 
