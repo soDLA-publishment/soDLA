@@ -37,13 +37,14 @@ class NV_NVDLA_CACC_assembly_ctrl(implicit conf: nvdlaConfig) extends Module {
         //wait for op
         val wait_for_op_en = Output(Bool())
     })
+
 //     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐
 //       │                 │
 //       │       ───       │
 //       │  ─┬┘       └┬─  │
-//       │                 │
+//       │                 │                       
 //       │       ─┴─       │
 //       │                 │
 //       └───┐         ┌───┘
@@ -52,12 +53,12 @@ class NV_NVDLA_CACC_assembly_ctrl(implicit conf: nvdlaConfig) extends Module {
 //           │         │
 //           │         └──────────────┐
 //           │                        │
-//           │                        ├─┐
+//           │                        ├─┐        
 //           │                        ┌─┘    
 //           │                        │
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘ 
+//             └──┴──┘       └──┴──┘
 withClock(io.nvdla_core_clk){
 
 val accu_valid = RegNext(io.mac_a2accu_pd.valid, false.B)

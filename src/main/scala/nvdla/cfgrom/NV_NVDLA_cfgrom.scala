@@ -9,8 +9,7 @@ class NV_NVDLA_cfgrom extends Module {
 
     val io = IO(new Bundle {
         //general clock
-        val nvdla_core_clk = Input(Clock())  
-        val nvdla_core_rstn = Input(Bool())
+        val nvdla_core_clk = Input(Clock())     
 
         //csb2cfgrom
         val csb2cfgrom = new csb2dp_if
@@ -37,7 +36,7 @@ class NV_NVDLA_cfgrom extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
                 
-withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
+withClock(io.nvdla_core_clk) { 
     
 ////////////////////////////////////////////////////////////////////////
     val reg_offset = Wire(UInt(24.W))

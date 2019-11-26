@@ -11,9 +11,6 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
         val wr_clk = Input(Clock())
         val rd_clk = Input(Clock())
 
-        val wr_reset_ = Input(Bool())
-        val rd_reset_ = Input(Bool())
-
         //control signal
         val wr_ready = Output(Bool())
         val wr_req = Input(Bool())   
@@ -91,8 +88,8 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
 
     //dft gated
     val wr_reserving = Wire(Bool())
-    val wr_req_in = withClockAndReset(wr_clk_dft_mgated, !io.wr_reset_){RegInit(false.B)}// registered wr_req
-    val wr_busy_in = withClockAndReset(wr_clk_dft_mgated, !io.wr_reset_){RegInit(false.B)}// inputs being held this cycle?
+    val wr_req_in = withClock(wr_clk_dft_mgated){RegInit(false.B)}// registered wr_req
+    val wr_busy_in = withClock(wr_clk_dft_mgated){RegInit(false.B)}// inputs being held this cycle?
     io.wr_ready := !wr_busy_in
     val wr_busy_next = Wire(Bool())
 
@@ -108,10 +105,10 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     }
 
     //wr gated
-    val wr_busy_int = withClockAndReset(wr_clk_wr_mgated, !io.wr_reset_){RegInit(false.B)}		        	// copy for internal use
+    val wr_busy_int = withClock(wr_clk_wr_mgated){RegInit(false.B)}		        	// copy for internal use
     wr_reserving := wr_req_in && !wr_busy_int    // reserving write space?
     val wr_popping = Wire(Bool())	               // fwd: write side sees pop?
-    val wr_count = withClockAndReset(wr_clk_wr_mgated, !io.wr_reset_){RegInit("d0".asUInt(3.W))}	// write-side 
+    val wr_count = withClock(wr_clk_wr_mgated){RegInit("d0".asUInt(3.W))}	// write-side 
     
     val wr_count_next_wr_popping = Mux(wr_reserving, wr_count, (wr_count - "d1".U(1.W)))
     val wr_count_next_no_wr_popping = Mux(wr_reserving, wr_count + "d1".U(1.W), wr_count)
@@ -138,7 +135,7 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
 
     //RAM
 
-    val wr_adr = withClockAndReset(wr_clk_wr_mgated, !io.wr_reset_){RegInit("d0".asUInt(2.W))}				// current write address
+    val wr_adr = withClock(wr_clk_wr_mgated){RegInit("d0".asUInt(2.W))}				// current write address
 
 
     // spyglass disable_block W484
@@ -148,7 +145,7 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
         wr_adr := wr_adr_next
     }
 
-    val rd_adr = withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_){RegInit("d0".asUInt(2.W))}	
+    val rd_adr = withClock(rd_clk_rd_mgated){RegInit("d0".asUInt(2.W))}	
     val ram_we = wr_pushing
     val ram_iwe = !wr_busy_in && io.wr_req
 
@@ -248,8 +245,6 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     nv_AFIFO_wr_pushing_sync0.io.DST_CLK := rd_clk_dft_mgated
     nv_AFIFO_wr_pushing_sync0.io.ATPG_CTL := false.B
     nv_AFIFO_wr_pushing_sync0.io.TEST_MODE := false.B
-    nv_AFIFO_wr_pushing_sync0.io.SRC_CLRN := io.wr_reset_
-    nv_AFIFO_wr_pushing_sync0.io.DST_CLRN := io.rd_reset_
     val wr_pushing_gray_cntr_0 = nv_AFIFO_wr_pushing_sync0.io.SRC_D
     val wr_pushing_gray_cntr_sync_0 = nv_AFIFO_wr_pushing_sync0.io.DST_Q
 
@@ -259,8 +254,6 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     nv_AFIFO_wr_pushing_sync1.io.DST_CLK := rd_clk_dft_mgated
     nv_AFIFO_wr_pushing_sync1.io.ATPG_CTL := false.B
     nv_AFIFO_wr_pushing_sync1.io.TEST_MODE := false.B
-    nv_AFIFO_wr_pushing_sync1.io.SRC_CLRN := io.wr_reset_
-    nv_AFIFO_wr_pushing_sync1.io.DST_CLRN := io.rd_reset_
     val wr_pushing_gray_cntr_1 = nv_AFIFO_wr_pushing_sync1.io.SRC_D
     val wr_pushing_gray_cntr_sync_1 = nv_AFIFO_wr_pushing_sync1.io.DST_Q
 
@@ -270,8 +263,6 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     nv_AFIFO_wr_pushing_sync2.io.DST_CLK := rd_clk_dft_mgated
     nv_AFIFO_wr_pushing_sync2.io.ATPG_CTL := false.B
     nv_AFIFO_wr_pushing_sync2.io.TEST_MODE := false.B
-    nv_AFIFO_wr_pushing_sync2.io.SRC_CLRN := io.wr_reset_
-    nv_AFIFO_wr_pushing_sync2.io.DST_CLRN := io.rd_reset_
     val wr_pushing_gray_cntr_2 = nv_AFIFO_wr_pushing_sync2.io.SRC_D
     val wr_pushing_gray_cntr_sync_2 = nv_AFIFO_wr_pushing_sync2.io.DST_Q
 
@@ -313,8 +304,6 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     nv_AFIFO_rd_popping_sync0.io.DST_CLK := wr_clk_strict_rcv_gated
     nv_AFIFO_rd_popping_sync0.io.ATPG_CTL := false.B
     nv_AFIFO_rd_popping_sync0.io.TEST_MODE := false.B
-    nv_AFIFO_rd_popping_sync0.io.SRC_CLRN := io.rd_reset_
-    nv_AFIFO_rd_popping_sync0.io.DST_CLRN := io.wr_reset_
     val rd_popping_gray_cntr_0 = nv_AFIFO_rd_popping_sync0.io.SRC_D
     val rd_popping_gray_cntr_sync_0 = nv_AFIFO_rd_popping_sync0.io.DST_Q
 
@@ -324,8 +313,6 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     nv_AFIFO_rd_popping_sync1.io.DST_CLK := wr_clk_strict_rcv_gated
     nv_AFIFO_rd_popping_sync1.io.ATPG_CTL := false.B
     nv_AFIFO_rd_popping_sync1.io.TEST_MODE := false.B
-    nv_AFIFO_rd_popping_sync1.io.SRC_CLRN := io.rd_reset_
-    nv_AFIFO_rd_popping_sync1.io.DST_CLRN := io.wr_reset_
     val rd_popping_gray_cntr_1 = nv_AFIFO_rd_popping_sync1.io.SRC_D
     val rd_popping_gray_cntr_sync_1 = nv_AFIFO_rd_popping_sync1.io.DST_Q
 
@@ -335,8 +322,6 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     nv_AFIFO_rd_popping_sync2.io.DST_CLK := wr_clk_strict_rcv_gated
     nv_AFIFO_rd_popping_sync2.io.ATPG_CTL := false.B
     nv_AFIFO_rd_popping_sync2.io.TEST_MODE := false.B
-    nv_AFIFO_rd_popping_sync2.io.SRC_CLRN := io.rd_reset_
-    nv_AFIFO_rd_popping_sync2.io.DST_CLRN := io.wr_reset_
     val rd_popping_gray_cntr_2 = nv_AFIFO_rd_popping_sync2.io.SRC_D
     val rd_popping_gray_cntr_sync_2 = nv_AFIFO_rd_popping_sync2.io.DST_Q
 
@@ -355,10 +340,10 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
     // READ SIDE
     //
     val rd_req_p = Wire(Bool()) // data out of fifo is valid
-    val rd_req_int = withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_){RegInit(false.B)}  // internal copy of rd_req
+    val rd_req_int = withClock(rd_clk_rd_mgated){RegInit(false.B)}  // internal copy of rd_req
     io.rd_req := rd_req_int
     rd_popping := rd_req_p && !(rd_req_int && !io.rd_ready)
-    val rd_count_p = withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_){RegInit("b0".asUInt(3.W))}
+    val rd_count_p = withClock(rd_clk_rd_mgated){RegInit("b0".asUInt(3.W))}
     val rd_count_p_next_rd_popping = Mux(rd_pushing, rd_count_p, rd_count_p-1.U)
     val rd_count_p_next_no_rd_popping = Mux(rd_pushing, rd_count_p+1.U, rd_count_p)
 
@@ -369,7 +354,7 @@ class NV_NVDLA_CSB_MASTER_falcon2csb_fifo(implicit val conf: nvdlaConfig)  exten
         rd_count_p := rd_count_p_next
     }
 
-    val nv_AFIFO_rd_data = withClockAndReset(rd_clk_rd_mgated, !io.rd_reset_){Reg(UInt(50.W))}
+    val nv_AFIFO_rd_data = withClock(rd_clk_rd_mgated){Reg(UInt(50.W))}
     val rd_req_next = (rd_req_p || (rd_req_int && !io.rd_ready))
 
     rd_req_int := rd_req_next
