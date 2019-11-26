@@ -53,11 +53,3 @@ class NV_NVDLA_CDMA_WT_sp_arb extends Module {
     io.gnt1 := gnt_pre(1)&(!io.gnt_busy)
 }
 
-
-
-
-
-    
-object NV_NVDLA_CDMA_WT_sp_arbDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_WT_sp_arb())
-}

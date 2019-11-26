@@ -724,9 +724,3 @@ withClock(io.nvdla_core_clk){
 
 
 
-
-
-object NV_NVDLA_CDMA_wtDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_wt())
-}

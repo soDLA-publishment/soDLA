@@ -116,8 +116,3 @@ class NV_NVDLA_CMAC_CORE_rt_in(useRealClock:Boolean = false)(implicit val conf: 
     val rt_in = withClock(internal_clock){new rt_inImpl}
 
 }
-
-object NV_NVDLA_CMAC_CORE_rt_inDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_rt_in(useRealClock = true))
-}

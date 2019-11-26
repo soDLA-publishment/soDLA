@@ -304,7 +304,3 @@ ele_in_channel(conf.ATMMBW-1, conf.CDP_TPBW)
 }}
 
 
-object NV_NVDLA_CDP_RDMA_egDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_RDMA_eg())
-}

@@ -103,7 +103,3 @@ withClock(io.nvdla_core_clk){
     io.idx_out.bits.uflow := pipe_p3_data_out(45)
 }}
 
-
-object NV_NVDLA_SDP_HLS_lut_lineDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_lut_line())
-}

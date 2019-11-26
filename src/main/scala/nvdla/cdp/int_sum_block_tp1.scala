@@ -97,7 +97,3 @@ withClock(io.nvdla_core_clk){
     )
 }}
 
-
-object int_sum_block_tp1Driver extends App {
-    chisel3.Driver.execute(args, () => new int_sum_block_tp1())
-}

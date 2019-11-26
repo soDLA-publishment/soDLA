@@ -239,10 +239,3 @@ withClock(io.nvdla_core_clk){
     io.layer_end := io.sdp_rdma2dp_pd.valid & io.sdp_rdma2dp_pd.ready & io.sdp_rdma2dp_pd.bits(conf.AM_DW2)
 }}
 
-
-object NV_NVDLA_SDP_RDMA_EG_roDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_EG_ro())
-}
-
-/////////////////////

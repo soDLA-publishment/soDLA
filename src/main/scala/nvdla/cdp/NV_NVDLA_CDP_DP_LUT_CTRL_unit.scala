@@ -486,9 +486,3 @@ withClock(io.nvdla_core_clk){
     io.dp2lut.bits.y_info := y_dat_info
 
 }}
-
-
-object NV_NVDLA_CDP_DP_LUT_CTRL_unitDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig  
-    chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_LUT_CTRL_unit())
-}

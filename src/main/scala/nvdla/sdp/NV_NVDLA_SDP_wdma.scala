@@ -167,9 +167,4 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     io.sdp2glb_done_intr_pd := u_intr.io.sdp2glb_done_intr_pd
 }}
 
-object NV_NVDLA_SDP_wdmaDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_wdma())
-}
-
 

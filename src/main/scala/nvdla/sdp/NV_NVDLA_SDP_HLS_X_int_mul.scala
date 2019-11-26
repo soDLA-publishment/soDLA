@@ -93,6 +93,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-object NV_NVDLA_SDP_HLS_X_int_mulDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_X_int_mul)
-}

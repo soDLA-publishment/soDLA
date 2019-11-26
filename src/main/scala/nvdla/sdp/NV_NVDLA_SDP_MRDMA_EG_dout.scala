@@ -159,7 +159,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-object NV_NVDLA_SDP_MRDMA_EG_doutDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_MRDMA_EG_dout())
-}

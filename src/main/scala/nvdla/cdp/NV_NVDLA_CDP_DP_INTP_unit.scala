@@ -158,6 +158,3 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_CDP_DP_INTP_unitDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_INTP_unit())
-}

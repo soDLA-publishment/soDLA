@@ -69,7 +69,3 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: nvdlaC
 
 }
 
-object NV_NVDLA_CMAC_CORE_macDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_mac(useRealClock = true))
-}

@@ -82,7 +82,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_SDP_WDMA_unpackDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_WDMA_unpack())
-}

@@ -69,8 +69,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_MCIF_readDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_read())
-}

@@ -60,7 +60,3 @@ withClock(io.nvdla_core_clk){
     io.trt_data_out.bits := pipe_p1.io.dout
 
 }}
-
-object NV_NVDLA_SDP_HLS_X_int_trtDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_X_int_trt)
-}

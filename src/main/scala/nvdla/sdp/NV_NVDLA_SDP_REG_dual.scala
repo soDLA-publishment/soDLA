@@ -348,7 +348,4 @@ class NV_NVDLA_SDP_REG_dual extends Module{
 
 }}
 
-object NV_NVDLA_SDP_REG_dualDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_REG_dual())
-}
 

@@ -316,7 +316,3 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_PDP_CORE_preprocDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_CORE_preproc())
-}

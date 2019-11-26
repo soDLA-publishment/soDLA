@@ -111,8 +111,3 @@ withClock(io.nvdla_core_clk){
     io.mul_data_out.valid := Mux(io.cfg_mul.bypass, io.chn_mul_in.valid, mul_final_pvld)
     io.mul_data_out.bits := Mux(io.cfg_mul.bypass, io.chn_mul_in.bits, mul_data_final)
 }}
-
-
-object NV_NVDLA_SDP_HLS_Y_int_mulDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_mul)
-}

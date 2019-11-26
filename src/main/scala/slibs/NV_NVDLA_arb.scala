@@ -90,12 +90,3 @@ withClock(io.clk) {
     }
 }}
 
-
-object read_ig_arb_1Driver extends App {
-    chisel3.Driver.execute(args, () => new NV_NVDLA_arb(10, 8, true))
-}
-
-
-object read_eg_arb_1Driver extends App {
-    chisel3.Driver.execute(args, () => new NV_NVDLA_arb(10, 8, false))
-}

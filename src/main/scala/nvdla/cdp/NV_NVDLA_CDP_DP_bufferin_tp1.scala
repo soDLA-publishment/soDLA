@@ -618,8 +618,4 @@ withClock(io.nvdla_core_clk){
     buf_dat_rdy := buffer_ready
 }}
 
-object NV_NVDLA_CDP_DP_bufferin_tp1Driver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_bufferin_tp1())
-}
 

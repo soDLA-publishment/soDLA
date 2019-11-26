@@ -101,7 +101,3 @@ withClock(io.nvdla_core_clk){
     io.cvt_data_out.bits := pipe_p3.io.dout
 }}
 
-
-object NV_NVDLA_SDP_HLS_Y_int_cvtDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_cvt)
-}

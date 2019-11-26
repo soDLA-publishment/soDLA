@@ -179,7 +179,3 @@ withClock(io.nvdla_core_clk){
     io.reg2dp_field := Mux(dp2reg_consumer, reg2dp_d1_field, reg2dp_d0_field)
 }}
 
-
-object NV_NVDLA_CDP_RDMA_regDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_RDMA_reg())
-}

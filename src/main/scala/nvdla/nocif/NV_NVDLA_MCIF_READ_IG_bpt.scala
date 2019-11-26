@@ -233,7 +233,3 @@ withClock(io.nvdla_core_clk){
     io.bpt2arb_req_pd.bits := Cat(is_ftran, is_ltran, out_odd, out_swizzle, out_size, bpt2arb_addr, io.tieoff_axid)
 }}
 
-object NV_NVDLA_MCIF_READ_IG_bptDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_READ_IG_bpt())
-}

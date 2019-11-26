@@ -360,9 +360,3 @@ io.dp2reg_inf_data_num := "b0".asUInt(32.W)
 
 
 }}
-
-object NV_NVDLA_CDMA_cvtDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_cvt())
-}
-

@@ -185,10 +185,3 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
 }
 
 
-
-object NV_NVDLA_CMAC_CORE_activeDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_active(useRealClock = true))
-}
-
-

@@ -79,6 +79,3 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_SDP_CORE_packDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_pack())
-}

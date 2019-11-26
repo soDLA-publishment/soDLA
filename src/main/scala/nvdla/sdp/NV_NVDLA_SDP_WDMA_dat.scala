@@ -88,10 +88,3 @@ class NV_NVDLA_SDP_WDMA_dat(implicit val conf: nvdlaConfig) extends Module {
 }
 
 
- 
-object NV_NVDLA_SDP_WDMA_datDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_WDMA_dat())
-}
-
-

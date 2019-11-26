@@ -263,7 +263,3 @@ class NV_NVDLA_SDP_RDMA_REG_dual extends Module{
     io.field.src_surface_stride := RegEnable(io.reg.wr_data, "b0".asUInt(32.W), nvdla_sdp_rdma_d_src_surface_stride_0_wren)                                                               
 
 }}
-
-object NV_NVDLA_SDP_RDMA_REG_dualDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_REG_dual())
-}

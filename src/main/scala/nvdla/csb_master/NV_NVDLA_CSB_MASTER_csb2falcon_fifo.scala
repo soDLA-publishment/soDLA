@@ -406,8 +406,3 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr extends Module {
   }
 }
 
-
-object NV_NVDLA_CSB_MASTER_csb2falcon_fifoDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CSB_MASTER_csb2falcon_fifo())
-}

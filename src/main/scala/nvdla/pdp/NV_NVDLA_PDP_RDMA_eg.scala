@@ -293,9 +293,3 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_done := Mux(io.pdp_rdma2dp_pd.valid & io.pdp_rdma2dp_pd.ready & dp2reg_done_flag, true.B, false.B)
 
 }}
-
-
-object NV_NVDLA_PDP_RDMA_egDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_RDMA_eg())
-}

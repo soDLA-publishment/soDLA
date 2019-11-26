@@ -437,10 +437,6 @@ io.lut2inp_pd.bits := pipe_p2.io.dout
 
 
 
-object NV_NVDLA_SDP_CORE_Y_lutDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_Y_lut)
-}
 
 
 

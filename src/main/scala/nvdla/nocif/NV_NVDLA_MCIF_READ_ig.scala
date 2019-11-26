@@ -70,7 +70,3 @@ withClock(io.nvdla_core_clk){
     u_cvt.io.reg2dp_rd_os_cnt := io.reg2dp_rd_os_cnt
 }}
 
-object NV_NVDLA_MCIF_READ_igDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_MCIF_READ_ig())
-}
