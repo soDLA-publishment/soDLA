@@ -1,10 +1,8 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
-//NV_NVDLA_SDP_RDMA_ig.v
 
 class NV_NVDLA_SDP_RDMA_ig(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {

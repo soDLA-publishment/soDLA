@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class cdp_dp_cvtin_reg2dp_if extends Bundle{

@@ -2,7 +2,6 @@ package nvdla
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 import chisel3.iotesters.Driver
 
 class NV_NVDLA_SDP_cmux(implicit val conf: nvdlaConfig) extends Module {

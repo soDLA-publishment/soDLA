@@ -1,6 +1,5 @@
 package nvdla
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_NOCIF_DRAM_READ_IG_bpt(implicit conf: nvdlaConfig) extends Module {

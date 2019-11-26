@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class NV_NVDLA_SDP_RDMA_unpack(implicit val conf: nvdlaConfig) extends Module {
    val RATIO = 4*conf.AM_DW/conf.NVDLA_MEMIF_WIDTH

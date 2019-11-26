@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_HLS_prelu(IN_WIDTH:Int=32, OUT_WIDTH:Int=64, OP_WIDTH:Int=32) extends Module {

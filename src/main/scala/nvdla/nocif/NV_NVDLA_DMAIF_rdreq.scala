@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class NV_NVDLA_DMAIF_rdreq(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {

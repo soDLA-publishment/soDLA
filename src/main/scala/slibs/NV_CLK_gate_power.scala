@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.iotesters.Driver
 
 class NV_CLK_gate_power extends Module {

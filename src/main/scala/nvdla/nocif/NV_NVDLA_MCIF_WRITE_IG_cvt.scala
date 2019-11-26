@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_MCIF_WRITE_IG_cvt(implicit conf:nvdlaConfig)  extends Module {

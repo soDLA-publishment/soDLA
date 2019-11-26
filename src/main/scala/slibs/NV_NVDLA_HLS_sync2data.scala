@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class sync2data_out_if(DATA1_WIDTH:Int, DATA2_WIDTH:Int) extends Bundle{
     val data1 = Output(UInt(DATA1_WIDTH.W))

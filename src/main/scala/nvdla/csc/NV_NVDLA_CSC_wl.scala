@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_CSC_wlIO(implicit conf: nvdlaConfig) extends Bundle{
@@ -761,7 +760,7 @@ withClock(io.nvdla_core_clk){
         wt_rsp_sel_d1 := wt_rsp_sel_w
     }
     
-    val dec_input_sel = VecInit((0 to conf.CSC_ATOMK-1) map { i => wt_rsp_sel_d1(i).toBool})
+    val dec_input_sel = VecInit((0 to conf.CSC_ATOMK-1) map { i => wt_rsp_sel_d1(i).asBool})
 
     //////////////////////////////////// prepare other signals ////////////////////////////////////
     val dec_input_pipe_valid = RegInit(false.B)
@@ -804,8 +803,8 @@ withClock(io.nvdla_core_clk){
     val sc2mac_wt_b_sel_out = RegInit(VecInit(Seq.fill(conf.CSC_ATOMK_HF)(false.B)))
     val sc2mac_wt_a_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))
     val sc2mac_wt_b_data_out = Reg(Vec(conf.CSC_ATOMC, UInt(conf.CSC_BPE.W)))   
-    val sc2mac_out_a_mask = VecInit((0 to conf.CSC_ATOMC-1) map { i => sc2mac_out_mask(i).toBool&sc2mac_wt_a_pvld_w})
-    val sc2mac_out_b_mask = VecInit((0 to conf.CSC_ATOMC-1) map { i => sc2mac_out_mask(i).toBool&sc2mac_wt_b_pvld_w})
+    val sc2mac_out_a_mask = VecInit((0 to conf.CSC_ATOMC-1) map { i => sc2mac_out_mask(i).asBool&sc2mac_wt_a_pvld_w})
+    val sc2mac_out_b_mask = VecInit((0 to conf.CSC_ATOMC-1) map { i => sc2mac_out_mask(i).asBool&sc2mac_wt_b_pvld_w})
 
     sc2mac_wt_a_pvld_out := sc2mac_wt_a_pvld_w
     sc2mac_wt_b_pvld_out := sc2mac_wt_b_pvld_w

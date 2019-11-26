@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
@@ -326,7 +325,7 @@ withClock(io.nvdla_core_clk){
     val pixel_planar1_bundle_limit_w = "h10".asUInt(5.W)
     val pixel_planar1_bundle_limit_1st_w = "h11".asUInt(5.W)
 
-    val planar1_vld_w = pixel_planar_nxt.toBool
+    val planar1_vld_w = pixel_planar_nxt.asBool
     val pixel_planar0_lp_vld_w = pixel_planar0_lp_burst_w.orR
     val pixel_planar1_lp_vld_w = pixel_planar1_lp_burst_w.orR
     val pixel_planar0_rp_vld_w = pixel_planar0_rp_burst_w.orR

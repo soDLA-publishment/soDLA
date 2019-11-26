@@ -1,8 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
-
 
 class AN2D4PO4 extends Module {
   val io = IO(new Bundle{

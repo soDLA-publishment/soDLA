@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_sync3d_s extends Module {
@@ -34,7 +33,7 @@ class NV_NVDLA_sync3d_s extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
-val sync_ibus_preDFTxclamp = io.sync_i.asUInt.toBool
+val sync_ibus_preDFTxclamp = io.sync_i.asUInt.asBool
 
 val UJ_dft_xclamp_ctrl_hold_sync_i = Module(new NV_BLKBOX_SRC0)
 val dft_xclamp_hold_mux_s_sync_i = UJ_dft_xclamp_ctrl_hold_sync_i.io.Y
