@@ -156,7 +156,7 @@ withReset(!io.nvdla_core_rstn){
     u_delivery_buffer.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
 
-    u_delivery_buffer.io.cacc2sdp_pd <> io.cacc2sdp_pd
+    io.cacc2sdp_pd <> u_delivery_buffer.io.cacc2sdp_pd 
 
     u_delivery_buffer.io.dbuf_rd_addr := u_delivery_ctrl.io.dbuf_rd_addr
     u_delivery_buffer.io.dbuf_rd_layer_end := u_delivery_ctrl.io.dbuf_rd_layer_end
