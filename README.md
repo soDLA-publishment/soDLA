@@ -12,6 +12,7 @@ Generate Verilog Modules
     $ sbt run
     
 Most verilog sources are not verified yet, but welcome to test on firesim and send me the issues. Before you generate nv_large as a whole, you will need to increase heap space in java first, or 
+
     $ env JAVA_OPTS="-Xmx4g" sbt run
     
 
