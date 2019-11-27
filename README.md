@@ -19,12 +19,15 @@ Most verilog sources are not verified yet, but welcome to test on firesim and se
 New Update
 ----------------
 . Package data with valid/ready interface, data with valid interface, data bundle with valid/ready interface into DecoupledIO(UInt), ValidIO(UInt) and Decoupled(Bundle).
+
 . Package configuration data from ping-pong register into 'field' Bundle.
+
 . Wrap the basic reg_single in ping-pong register into NV_NVDLA_BASIC_REG_single, csb logic in ping-pong register into NV_NVDLA_CSB_LOGIC, input-skid pipe into NV_NVDLA_IS_pipe, bubble-collapse pipe into NV_NVDLA_BC_pipe, fifo generator(from ness) into NV_NVDLA_fifo, they are under slibs folder.
+
 . ODIF(open deep learning interface) is defined under nvdla/spec.
 
 //updt 11/27/2019
-. nv_large suport 
+.  nv_large suport 
 
 
 
