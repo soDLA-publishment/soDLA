@@ -19,7 +19,7 @@ class NV_NVDLA_cacc(implicit conf: nvdlaConfig) extends Module {
         val mac_b2accu = Flipped(ValidIO(new cmac2cacc_if))    /* data valid */
 
         //sdp
-        val cacc2sdp = DecoupledIO(new cacc2sdp_if)    /* data valid */
+        val cacc2sdp_pd = DecoupledIO(UInt((conf.NVDLA_SDP_MAX_THROUGHPUT*32+2).W))    /* data valid */
 
         //csc
         val accu2sc_credit_size = ValidIO((UInt(3.W)))
@@ -157,7 +157,7 @@ withReset(!io.nvdla_core_rstn){
     u_delivery_buffer.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
 
-    u_delivery_buffer.io.cacc2sdp <> io.cacc2sdp
+    io.cacc2sdp_pd <> u_delivery_buffer.io.cacc2sdp_pd 
 
     u_delivery_buffer.io.dbuf_rd_addr := u_delivery_ctrl.io.dbuf_rd_addr
     u_delivery_buffer.io.dbuf_rd_layer_end := u_delivery_ctrl.io.dbuf_rd_layer_end
@@ -191,4 +191,3 @@ object NV_NVDLA_caccDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_cacc())
 }
-
