@@ -134,7 +134,7 @@ withClock(io.nvdla_core_clk){
     //sub-unit output ready
     val cdp_cvtin_output_rdy_f = Wire(Bool())
     
-    for(i <- 0 to conf.NVDLA_CDP_THROUGHPUT-1){
+    for(i <- 0 to 7){
         cdp_cvtin_output_rdy(i) := cdp_cvtin_output_rdy_f & cdp_cvtin_output_vld.drop(i).reduce(_ && _)
     }       
 
