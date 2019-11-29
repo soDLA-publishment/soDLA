@@ -183,11 +183,6 @@ withClock(io.nvdla_core_clk){
                             data_1stC.get(k)(m) := 0.U
                         }
                     }
-                    for(m <- 0 to 7){
-                        for(k <- 0 to reg_num - reg_1stc_num -1){
-                            data_1stC.get(k + reg_1stc_num)(m) := 0.U
-                        }
-                    }
                 }
             }
         }
