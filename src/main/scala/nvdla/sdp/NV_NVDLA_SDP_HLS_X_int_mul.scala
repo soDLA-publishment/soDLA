@@ -66,7 +66,7 @@ withClock(io.nvdla_core_clk){
     val mul_op_in = Mux(io.cfg_mul.src === 0.U, io.cfg_mul.op, mul_op_sync)
     val mul_data_in = mul_data_sync
 
-    val x_mul_prelu = Module{new NV_NVDLA_SDP_HLS_prelu(33, 49, 16)}
+    val x_mul_prelu = Module{new NV_NVDLA_HLS_prelu(33, 49, 16)}
     x_mul_prelu.io.cfg_prelu_en := io.cfg_mul.prelu
     x_mul_prelu.io.data_in := mul_data_in
     x_mul_prelu.io.op_in := mul_op_in
