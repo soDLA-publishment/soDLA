@@ -382,22 +382,22 @@ withClock(io.nvdla_core_clk){
     ////////////////////////////////////////////////
 
     val layer_done = io.dp2reg_done
-    val both_hybrid_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-    val both_of_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-    val both_uf_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-    val only_le_hit = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
-    val only_lo_hit = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(false.B)))
+    val both_hybrid_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U)))
+    val both_of_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U)))
+    val both_uf_flag = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U)))
+    val only_le_hit = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U)))
+    val only_lo_hit = RegInit(VecInit(Seq.fill(conf.NVDLA_CDP_THROUGHPUT)(0.U)))
     for(i <- 0 to (conf.NVDLA_CDP_THROUGHPUT-1)){
         when(intp_pvld & intp_prdy){
-            both_hybrid_flag(i) :=  (Cat(x_info(i),y_info(i)) === "b0000".asUInt(4.W)) | 
+            both_hybrid_flag(i) :=  ((Cat(x_info(i),y_info(i)) === "b0000".asUInt(4.W)) | 
                                     (Cat(x_info(i),y_info(i)) === "b0110".asUInt(4.W)) | 
-                                    (Cat(x_info(i),y_info(i)) === "b1001".asUInt(4.W))
-            both_of_flag(i) := (Cat(x_info(i),y_info(i)) === "b1010".asUInt(4.W))
-            both_uf_flag(i) := (Cat(x_info(i),y_info(i)) === "b0101".asUInt(4.W))
-            only_le_hit(i)  :=  (Cat(x_info(i),y_info(i)) === "b0001".asUInt(4.W)) | 
-                                (Cat(x_info(i),y_info(i)) === "b0010".asUInt(4.W))
-            only_lo_hit(i)  :=  (Cat(x_info(i),y_info(i)) === "b0100".asUInt(4.W)) | 
-                                (Cat(x_info(i),y_info(i)) === "b1000".asUInt(4.W))
+                                    (Cat(x_info(i),y_info(i)) === "b1001".asUInt(4.W))).asUInt
+            both_of_flag(i) := (Cat(x_info(i),y_info(i)) === "b1010".asUInt(4.W)).asUInt
+            both_uf_flag(i) := (Cat(x_info(i),y_info(i)) === "b0101".asUInt(4.W)).asUInt
+            only_le_hit(i)  :=  ((Cat(x_info(i),y_info(i)) === "b0001".asUInt(4.W)) | 
+                                (Cat(x_info(i),y_info(i)) === "b0010".asUInt(4.W))).asUInt
+            only_lo_hit(i)  :=  ((Cat(x_info(i),y_info(i)) === "b0100".asUInt(4.W)) | 
+                                (Cat(x_info(i),y_info(i)) === "b1000".asUInt(4.W))).asUInt
         }
     }
 
