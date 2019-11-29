@@ -155,14 +155,14 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: nvdlaConfig)  exten
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
     
-    val ram = Module(new nv_flopram_internal_wr_reg(2, 34))
+    val ram = Module(new nv_flopram(dep = 2, wid = 34, wr_reg = true))
     ram.io.clk := wr_clk_dft_mgated
-    ram.io.clk_mgated := wr_clk_wr_mgated
+    ram.io.clk_mgated.get := wr_clk_wr_mgated
     ram.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     ram.io.di := io.wr_data
-    ram.io.iwe := ram_iwe
+    ram.io.iwe.get := ram_iwe
     ram.io.we := ram_we
-    ram.io.wa := wr_adr
+    ram.io.wa.get := wr_adr
     ram.io.ra := rd_adr
     val rd_data_p = ram.io.dout
 
