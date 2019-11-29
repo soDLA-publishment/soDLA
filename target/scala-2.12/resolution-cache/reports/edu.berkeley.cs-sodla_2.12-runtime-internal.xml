@@ -7,7 +7,7 @@
 		revision="3.2-SNAPSHOT"
 		conf="runtime-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190827205038"/>
+		date="20191128065702"/>
 	<dependencies>
 		<module organisation="edu.berkeley.cs" name="dsptools_2.12">
 			<revision name="1.1.6" status="release" pubdate="20181214154815" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://chisel.eecs.berkeley.edu/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="41">
