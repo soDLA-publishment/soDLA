@@ -264,8 +264,8 @@ val cvt_out_pad_vld_d1_d = Wire(Bool()) +:
 val cvt_out_sel_d1_d = if (conf.DMAIF < conf.ATMC) Some(Wire(UInt(log2Ceil(conf.ATMC/conf.DMAIF).W)) +: 
                     Seq.fill(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1)(RegInit("b0".asUInt(log2Ceil(conf.ATMC/conf.DMAIF).W))))
                     else None
-val cvt_out_reg_en_d1_d = Wire(UInt(log2Ceil(conf.ATMC/conf.DMAIF).W)) +: 
-                       Seq.fill(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1)(RegInit("b0".asUInt(log2Ceil(conf.ATMC/conf.DMAIF).W)))
+val cvt_out_reg_en_d1_d = Wire(Bool()) +: 
+                       Seq.fill(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1)(RegInit(false.B))
 val cvt_out_addr_d1_d = Wire(UInt(17.W)) +: 
                      Seq.fill(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1)(RegInit("b0".asUInt(17.W)))
 val cvt_out_nz_mask_d1_d = Wire(UInt(4.W)) +: 
