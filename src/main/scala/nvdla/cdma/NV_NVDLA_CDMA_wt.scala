@@ -499,9 +499,9 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////
     val wt_cbuf_flush_idx = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(18.W))}
     val wt_cbuf_flush_idx_w = wt_cbuf_flush_idx + 1.U
-    val wt_cbuf_flush_vld_w = ~wt_cbuf_flush_idx(log2Ceil(conf.ATMC/conf.DMAIF) + conf.KK - 1)
+    val wt_cbuf_flush_vld_w = ~wt_cbuf_flush_idx(log2Ceil(conf.NVDLA_CBUF_BANK_NUMBER * conf.NVDLA_CBUF_BANK_DEPTH) + conf.KK - 1)
 
-    io.dp2reg_wt_flush_done := wt_cbuf_flush_idx(log2Ceil(conf.ATMC/conf.DMAIF) + conf.KK - 1)
+    io.dp2reg_wt_flush_done := wt_cbuf_flush_idx(log2Ceil(conf.NVDLA_CBUF_BANK_NUMBER * conf.NVDLA_CBUF_BANK_DEPTH) + conf.KK - 1)
 
     when(wt_cbuf_flush_vld_w){
         wt_cbuf_flush_idx := wt_cbuf_flush_idx_w
