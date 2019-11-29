@@ -47,7 +47,7 @@ class NV_NVDLA_SDP_core(implicit val conf: nvdlaConfig) extends Module {
         val reg2dp_ew_bypass = if(conf.NVDLA_SDP_EW_ENABLE) Some(Input(Bool())) else None
         val reg2dp_lut = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Flipped(new sdp_y_lut_reg2dp_if)) else None
         val dp2reg_lut = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(new sdp_y_lut_dp2reg_if) else None
-        val reg2dp_idx = if(conf.NVDLA_SDP_LUT_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Flipped(new sdp_y_int_idx_cfg_if)) else None
+        val reg2dp_idx = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Flipped(new sdp_y_int_idx_cfg_if)) else None
         val reg2dp_lut_slcg_en = if(conf.NVDLA_SDP_EW_ENABLE&conf.NVDLA_SDP_LUT_ENABLE) Some(Input(Bool())) else None
 
         val reg2dp_ecore_slcg_op_en = Input(Bool())
