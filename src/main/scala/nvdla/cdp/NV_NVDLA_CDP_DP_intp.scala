@@ -401,15 +401,11 @@ withClock(io.nvdla_core_clk){
         }
     }
 
-    def fun_bit_sum_8(idata: UInt): UInt = (idata(0) +& idata(1) +& idata(2)) +&
-                                       (idata(3) +& idata(4) +& idata(5)) +&
-                                       (idata(6) +& idata(7))
-
-    val both_hybrid_ele = fun_bit_sum_8(both_hybrid_flag.asUInt)
-    val both_of_ele = fun_bit_sum_8(both_of_flag.asUInt)
-    val both_uf_ele = fun_bit_sum_8(both_uf_flag.asUInt)
-    val only_le_hit_ele = fun_bit_sum_8(only_le_hit.asUInt)
-    val only_lo_hit_ele = fun_bit_sum_8(only_lo_hit.asUInt)
+    val both_hybrid_ele = both_hybrid_flag.reduce(_+&_)
+    val both_of_ele = both_of_flag.reduce(_+&_)
+    val both_uf_ele = both_uf_flag.reduce(_+&_)
+    val only_le_hit_ele = only_le_hit.reduce(_+&_)
+    val only_lo_hit_ele = only_lo_hit.reduce(_+&_)
 
     val both_hybrid_counter = RegInit(0.U(32.W))
     val both_of_counter = RegInit(0.U(32.W))
