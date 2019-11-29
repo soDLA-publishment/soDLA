@@ -131,12 +131,8 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     u_mrdma.io.reg2dp_perf_dma_en := field.perf_dma_en
     u_mrdma.io.reg2dp_perf_nan_inf_count_en := field.perf_nan_inf_count_en
     val mrdma_done = u_mrdma.io.dp2reg_done 
-    if(conf.NVDLA_SDP_EW_ENABLE){
-        u_reg.io.dp2reg_mrdma_stall := u_mrdma.io.dp2reg_mrdma_stall
-    }
-    else{
-        u_reg.io.dp2reg_mrdma_stall := 0.U
-    }
+    u_reg.io.dp2reg_mrdma_stall := u_mrdma.io.dp2reg_mrdma_stall
+
     u_reg.io.dp2reg_status_inf_input_num := u_mrdma.io.dp2reg_status_inf_input_num 
     u_reg.io.dp2reg_status_nan_input_num := u_mrdma.io.dp2reg_status_nan_input_num
 
@@ -267,6 +263,9 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         u_erdma.get.io.reg2dp_perf_dma_en := field.perf_dma_en
         u_reg.io.dp2reg_erdma_stall := u_erdma.get.io.dp2reg_erdma_stall
         erdma_done := u_erdma.get.io.dp2reg_done
+    }
+    else{
+        u_reg.io.dp2reg_erdma_stall := 0.U
     }
     
     //=======================================
