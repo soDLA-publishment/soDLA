@@ -171,7 +171,9 @@ val cvt_out_pad_mask_d1 = RegInit("b0".asUInt(conf.BNUM.W))
 val cvt_out_sel_d1 = if(conf.DMAIF<conf.ATMC) 
                      Some(RegInit("b0".asUInt(2.W)))
                      else None
-val cvt_out_reg_en_d1 = RegInit("b0".asUInt(log2Ceil(conf.ATMC/conf.DMAIF).W))
+val cvt_out_reg_en_d1 = if(conf.DMAIF<conf.ATMC)  
+                        RegInit("b0".asUInt(log2Ceil(conf.ATMC/conf.DMAIF).W)) 
+                        else RegInit(false.B)
 
 cvt_wr_en_d1 :=  cvt_wr_en
 when(cvt_wr_en){
