@@ -30,6 +30,10 @@ New Update
 
 1. nv_large suport 
 
+//updt 11/28/2019
+
+1. nv_small without DRAM support
+
 
 
 
