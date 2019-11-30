@@ -259,20 +259,18 @@ withReset(!io.nvdla_core_rstn){
             u_reg.io.dp2reg_lut_oflow := u_core.io.dp2reg_lut.get.oflow 
             u_reg.io.dp2reg_lut_uflow := u_core.io.dp2reg_lut.get.uflow 
         }
-        else{
-            u_reg.io.dp2reg_lut_hybrid := 0.U
-            u_reg.io.dp2reg_lut_int_data := 0.U
-            u_reg.io.dp2reg_lut_le_hit := 0.U
-            u_reg.io.dp2reg_lut_lo_hit := 0.U
-            u_reg.io.dp2reg_lut_oflow := 0.U
-            u_reg.io.dp2reg_lut_uflow := 0.U
-        }
     }
     else{
         u_wdma.io.reg2dp_ew_alu_algo := "b0".asUInt(2.W)
         u_wdma.io.reg2dp_ew_alu_bypass := "b1".asUInt(1.W)
         u_wdma.io.reg2dp_ew_bypass := "b1".asUInt(1.W)
 
+        u_reg.io.dp2reg_lut_hybrid := 0.U
+        u_reg.io.dp2reg_lut_int_data := 0.U
+        u_reg.io.dp2reg_lut_le_hit := 0.U
+        u_reg.io.dp2reg_lut_lo_hit := 0.U
+        u_reg.io.dp2reg_lut_oflow := 0.U
+        u_reg.io.dp2reg_lut_uflow := 0.U
     }
     u_wdma.io.reg2dp_op_en := u_reg.io.reg2dp_op_en
     u_wdma.io.reg2dp_wdma_slcg_op_en := u_reg.io.reg2dp_wdma_slcg_op_en
