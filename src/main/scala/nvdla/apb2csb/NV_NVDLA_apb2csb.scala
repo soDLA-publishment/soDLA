@@ -14,7 +14,7 @@ class csb2nvdla_if extends Bundle{
 }
 
 class nvdla2csb_if extends Bundle{
-    val data = Output(Bool())
+    val data = Output(UInt(32.W))
 }
 
 class NV_NVDLA_apb2csb extends Module {
