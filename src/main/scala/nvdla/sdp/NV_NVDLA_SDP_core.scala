@@ -454,7 +454,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
 
     val bs_data_in_prdy = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
     val bs_data_in_pvld = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
-    val bs_data_in_pd = if(conf.NVDLA_SDP_BS_ENABLE) Wire(UInt(conf.BS_IN_DW.W)) else "b0".asUInt(conf.BS_IN_DW.W)
+    val bs_data_in_pd = sdp_cmux2dp_data
     val flop_bs_data_out_pvld = if(conf.NVDLA_SDP_BS_ENABLE) Wire(Bool()) else false.B
     val flop_bs_data_out_prdy = if(conf.NVDLA_SDP_BN_ENABLE) Mux(cfg_bn_en, bn_data_in_prdy.get, flop_bn_data_out_prdy) else flop_bn_data_out_prdy
     val flop_bs_data_out_pd = if(conf.NVDLA_SDP_BS_ENABLE) Wire(UInt(conf.BS_DOUT_DW.W)) else "b0".asUInt(conf.BS_DOUT_DW.W)
