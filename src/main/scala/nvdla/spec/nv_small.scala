@@ -19,8 +19,8 @@ class nv_small
   val PDP_ENABLE = true
   val CDP_ENABLE = true
   val RETIMING_ENABLE = false
-  val MAC_ATOMIC_C_SIZE = 8 
-  val MAC_ATOMIC_K_SIZE = 32
+  val MAC_ATOMIC_C_SIZE = 20 
+  val MAC_ATOMIC_K_SIZE = 8
   val MEMORY_ATOMIC_SIZE = 8
   val MAX_BATCH_SIZE = 0
   val CBUF_BANK_NUMBER = 32
