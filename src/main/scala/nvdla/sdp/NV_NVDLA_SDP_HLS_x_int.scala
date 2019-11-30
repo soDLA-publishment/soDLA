@@ -46,19 +46,19 @@ class NV_NVDLA_SDP_HLS_x_int(throughtput: Int)(implicit conf: nvdlaConfig) exten
     //             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){
 
-    val chn_alu_op_prdy_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, Bool()))
-    val chn_in_prdy_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, Bool()))
-    val chn_mul_op_prdy_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, Bool()))
-    val chn_out_pvld_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, Bool()))
-    val chn_data_out_wire = Wire(Vec(conf.NVDLA_SDP_BS_THROUGHPUT, UInt(32.W)))
+    val chn_alu_op_prdy_wire = Wire(Vec(throughtput, Bool()))
+    val chn_in_prdy_wire = Wire(Vec(throughtput, Bool()))
+    val chn_mul_op_prdy_wire = Wire(Vec(throughtput, Bool()))
+    val chn_out_pvld_wire = Wire(Vec(throughtput, Bool()))
+    val chn_data_out_wire = Wire(Vec(throughtput, UInt(32.W)))
 
-    val u_sdp_x_alu = Array.fill(conf.NVDLA_SDP_BS_THROUGHPUT){Module(new NV_NVDLA_SDP_HLS_X_int_alu)}
-    val u_sdp_x_mul = Array.fill(conf.NVDLA_SDP_BS_THROUGHPUT){Module(new NV_NVDLA_SDP_HLS_X_int_mul)}
-    val u_sdp_x_trt = Array.fill(conf.NVDLA_SDP_BS_THROUGHPUT){Module(new NV_NVDLA_SDP_HLS_X_int_trt)}
-    val u_sdp_x_relu = Array.fill(conf.NVDLA_SDP_BS_THROUGHPUT){Module(new NV_NVDLA_SDP_HLS_X_int_relu)}
+    val u_sdp_x_alu = Array.fill(throughtput){Module(new NV_NVDLA_SDP_HLS_X_int_alu)}
+    val u_sdp_x_mul = Array.fill(throughtput){Module(new NV_NVDLA_SDP_HLS_X_int_mul)}
+    val u_sdp_x_trt = Array.fill(throughtput){Module(new NV_NVDLA_SDP_HLS_X_int_trt)}
+    val u_sdp_x_relu = Array.fill(throughtput){Module(new NV_NVDLA_SDP_HLS_X_int_relu)}
 
-    for(i <- 0 to conf.NVDLA_SDP_BS_THROUGHPUT-1){
-
+    for(i <- 0 to throughtput-1){
+       
         //u_sdp_x_alu
         u_sdp_x_alu(i).io.nvdla_core_clk := io.nvdla_core_clk
 
