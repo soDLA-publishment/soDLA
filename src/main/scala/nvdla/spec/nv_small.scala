@@ -8,9 +8,9 @@ class nv_small
   val WINOGRAD_ENABLE = false
   val BATCH_ENABLE = false
   val SECONDARY_MEMIF_ENABLE = false
-  val SDP_LUT_ENABLE = true
+  val SDP_LUT_ENABLE = false
   val SDP_BS_ENABLE = true
-  val SDP_BN_ENABLE = true
+  val SDP_BN_ENABLE = false
   val SDP_EW_ENABLE = false
   val BDMA_ENABLE = false
   val RUBIK_ENABLE = false
