@@ -185,7 +185,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     val nrdma_slcg_op_en = Wire(Bool())
     val nrdma_disable = Wire(Bool())
     val nrdma_done = Wire(Bool())
-    val nrdma_op_en = if(conf.NVDLA_SDP_BS_ENABLE) Some(Wire(Bool())) else None
+    val nrdma_op_en = if(conf.NVDLA_SDP_BN_ENABLE) Some(Wire(Bool())) else None
     val u_nrdma = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_nrdma)) else None
     if(conf.NVDLA_SDP_BN_ENABLE){
         u_nrdma.get.io.nvdla_clock <> io.nvdla_clock
@@ -223,6 +223,9 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         u_nrdma.get.io.reg2dp_perf_dma_en := field.perf_dma_en
         u_reg.io.dp2reg_nrdma_stall := u_nrdma.get.io.dp2reg_nrdma_stall
         nrdma_done := u_nrdma.get.io.dp2reg_done
+    }
+    else{
+        u_reg.io.dp2reg_nrdma_stall := 0.U
     }
         
     val erdma_slcg_op_en = Wire(Bool())
