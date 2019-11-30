@@ -178,6 +178,9 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         u_reg.io.dp2reg_brdma_stall := u_brdma.get.io.dp2reg_brdma_stall
         brdma_done := u_brdma.get.io.dp2reg_done
     }
+    else{
+        u_reg.io.dp2reg_brdma_stall := 0.U
+    }
 
     val nrdma_slcg_op_en = Wire(Bool())
     val nrdma_disable = Wire(Bool())
