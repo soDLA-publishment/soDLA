@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 
@@ -18,7 +17,7 @@ class NV_NVDLA_csc(implicit val conf: nvdlaConfig) extends Module {
         val cdma2sc_wt_pending_ack = Input(Bool())
 
         val cdma2sc_dat_updt = Flipped(ValidIO(new updt_entries_slices_if))
-        val sc2cdma_dat_updt = ValidIO(new updt_entry_slices_if)
+        val sc2cdma_dat_updt = ValidIO(new updt_entries_slices_if)
         val cdma2sc_wt_updt = Flipped(ValidIO(new updt_entries_kernels_if))
         val sc2cdma_wt_updt = ValidIO(new updt_entries_kernels_if)  
         val sc2cdma_wmb_entries = Output(UInt(9.W))

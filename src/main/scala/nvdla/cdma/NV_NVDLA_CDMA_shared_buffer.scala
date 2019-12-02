@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
@@ -148,9 +147,3 @@ io.img2sbuf_p_rd(1).data := sbuf_p1_rdat_d2;
 
 
 }}
-
-object NV_NVDLA_CDMA_shared_bufferDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_shared_buffer())
-}
-

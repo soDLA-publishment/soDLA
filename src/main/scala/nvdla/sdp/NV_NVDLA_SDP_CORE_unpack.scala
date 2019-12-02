@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
@@ -72,7 +71,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_SDP_CORE_unpackDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_unpack())
-}

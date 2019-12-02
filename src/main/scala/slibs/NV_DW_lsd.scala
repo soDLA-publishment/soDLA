@@ -2,8 +2,6 @@ package nvdla
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
-import chisel3.iotesters.Driver
 
 class NV_DW_lsd(a_width:Int = 33) extends Module {
     val b_width = a_width-1

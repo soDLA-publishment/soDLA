@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_CDP_DP_sum(implicit val conf: nvdlaConfig) extends Module {
@@ -177,8 +176,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_CDP_DP_sumDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_sum())
-}

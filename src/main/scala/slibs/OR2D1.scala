@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 
 class OR2D1 extends Module {
   val io = IO(new Bundle {

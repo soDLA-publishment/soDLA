@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
@@ -28,14 +27,13 @@ class NV_NVDLA_CACC_CALC_int8 extends Module {
         val out_partial_data = Output(UInt(34.W))
         val out_partial_valid = Output(Bool())
     })
-
 //     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐
 //       │                 │
 //       │       ───       │
 //       │  ─┬┘       └┬─  │
-//       │                 │                       
+//       │                 │
 //       │       ─┴─       │
 //       │                 │
 //       └───┐         ┌───┘
@@ -44,12 +42,12 @@ class NV_NVDLA_CACC_CALC_int8 extends Module {
 //           │         │
 //           │         └──────────────┐
 //           │                        │
-//           │                        ├─┐         
+//           │                        ├─┐
 //           │                        ┌─┘    
 //           │                        │
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘
+//             └──┴──┘       └──┴──┘ 
 withClock(io.nvdla_core_clk){
     //====================
     // Addition
@@ -113,9 +111,5 @@ withClock(io.nvdla_core_clk){
     io.out_final_data := RegEnable(i_final_result, i_final_vld)
 
 }}
-
-object NV_NVDLA_CACC_CALC_int8Driver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_CALC_int8())
-}
 
 

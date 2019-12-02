@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class sdp_y_int_inp_in extends Bundle{
@@ -220,6 +219,3 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_SDP_HLS_Y_int_inpDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_inp)
-}

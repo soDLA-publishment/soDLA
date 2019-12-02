@@ -1,27 +1,26 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class cdp_dp_lut_ctrl_dp2lut_if extends Bundle{
     val x_info = Output(UInt(18.W))
-    val x_pd = Output(UInt(10.W))
+    val x_entry = Output(UInt(10.W))
     val y_info = Output(UInt(18.W))
-    val y_pd = Output(UInt(10.W))
+    val y_entry = Output(UInt(10.W))
 }
 
-class cdp_dp_lut_ctrl_reg2dp_if extends Bundle{
-    val lut_le_function = Output(Bool())
-    val lut_le_index_offset = Output(UInt(8.W))
-    val lut_le_index_select = Output(UInt(8.W))
-    val lut_le_start_high = Output(UInt(6.W))
-    val lut_le_start_low = Output(UInt(32.W))
-    val lut_lo_index_select = Output(UInt(8.W))
-    val lut_lo_start_high = Output(UInt(6.W))
-    val lut_lo_start_low = Output(UInt(32.W))
-    val sqsum_bypass = Output(Bool()) 
+class cdp_dp_lut_ctrl_reg2dp_lut_if extends Bundle{
+    val le_function = Output(Bool())
+    val le_index_offset = Output(UInt(8.W))
+    val le_index_select = Output(UInt(8.W))
+    val le_start_high = Output(UInt(6.W))
+    val le_start_low = Output(UInt(32.W))
+    val lo_index_select = Output(UInt(8.W))
+    val lo_start_high = Output(UInt(6.W))
+    val lo_start_low = Output(UInt(32.W))
 }
+
 
 
 class NV_NVDLA_CDP_DP_LUT_CTRL_unit(implicit val conf: nvdlaConfig) extends Module {
@@ -34,7 +33,8 @@ class NV_NVDLA_CDP_DP_LUT_CTRL_unit(implicit val conf: nvdlaConfig) extends Modu
         val sum2itp_pd = Flipped(DecoupledIO(UInt(pPP_BW.W)))
         val dp2lut = DecoupledIO(new cdp_dp_lut_ctrl_dp2lut_if)
 
-        val reg2dp = Flipped(new cdp_dp_lut_ctrl_reg2dp_if)
+        val reg2dp_lut = Flipped(new cdp_dp_lut_ctrl_reg2dp_lut_if)
+        val reg2dp_sqsum_bypass = Input(Bool())
         
     })
     //     
@@ -67,9 +67,9 @@ withClock(io.nvdla_core_clk){
     val y_shift_bits = RegInit(0.U(8.W))
     val sqsum_bypass_enable = RegInit(false.B)
 
-    x_exp := (io.reg2dp.lut_le_function === "h0".asUInt(1.W))
-    y_shift_bits := io.reg2dp.lut_lo_index_select
-    sqsum_bypass_enable := (io.reg2dp.sqsum_bypass === "h1".asUInt(1.W))
+    x_exp := (io.reg2dp_lut.le_function === "h0".asUInt(1.W))
+    y_shift_bits := io.reg2dp_lut.lo_index_select
+    sqsum_bypass_enable := (io.reg2dp_sqsum_bypass === "h1".asUInt(1.W))
 
     ///////////////////////////////////////
     val int_y_datin_prdy = Wire(Bool())
@@ -89,7 +89,7 @@ withClock(io.nvdla_core_clk){
     //=================================================
     //offset minus
     //=================================================
-    val reg2dp_x_offset = Cat(io.reg2dp.lut_le_start_high, io.reg2dp.lut_le_start_low)
+    val reg2dp_x_offset = Cat(io.reg2dp_lut.le_start_high, io.reg2dp_lut.le_start_low)
     val load_in_intx = int_x_proc_in_vld & int_y_datin_prdy
     val dec_offset_datin_msb_f0 = Cat(false.B, datin_int8)
     val dec_offset_datin_msb_f1 = Cat(datin_int8(pPP_BW-1), datin_int8)
@@ -177,7 +177,7 @@ withClock(io.nvdla_core_clk){
     int_stage1_prdy := ~int_stage2_pvld | int_stage2_prdy
     //===================================================================
     //exp index offset , only valid for exponent table
-    val reg2dp_x_index_offset = io.reg2dp.lut_le_index_offset
+    val reg2dp_x_index_offset = io.reg2dp_lut.le_index_offset
     val load_int_stage1 = int_stage1_pvld & int_stage1_prdy
     val int_stage2_in_vld = int_stage1_pvld
     val dec_xindex_datin_msb = log2_datout_msb
@@ -220,7 +220,7 @@ withClock(io.nvdla_core_clk){
     val load_int_stage2 = int_stage2_pvld & int_stage2_prdy
     //===================================================================
     //shift process for int8/int16, linear only, shift "0" when exponent x
-    val shift_bits = Mux(x_exp, 0.U, io.reg2dp.lut_le_index_select)
+    val shift_bits = Mux(x_exp, 0.U, io.reg2dp_lut.le_index_select)
 //note for int16 should be: assign shift_bits_inv1[5:0] = ~shift_bits[5:0];
 //note for int16 should be: assign shift_bits_int16_abs[6:0] = shift_bits[6]? (shift_bits_inv1[5:0]+1) : shift_bits[5:0];
 //note for int16 should be: assign {shift_int16_s[63:0],   shift_int16_f[38:0]   } = shift_bits[6]? ({64'd0,dec_xindex_lsb[38:0]}<<shift_bits_int16_abs) : ({25'd0,dec_xindex_lsb[38:0],39'd0}>>shift_bits_int16_abs);
@@ -303,7 +303,7 @@ withClock(io.nvdla_core_clk){
 //input offset
 //==================================================
 
-    val reg2dp_y_offset = Cat(io.reg2dp.lut_lo_start_high, io.reg2dp.lut_lo_start_low)
+    val reg2dp_y_offset = Cat(io.reg2dp_lut.lo_start_high, io.reg2dp_lut.lo_start_low)
 
     val load_din_inty = int_y_proc_in_vld & int_y_datin_prdy
 
@@ -479,16 +479,10 @@ withClock(io.nvdla_core_clk){
 ////////////////////////////////////////////////////////////////////////////////////////
     io.dp2lut.valid := int_out_vld
 
-    io.dp2lut.bits.x_pd := x_index_msb
+    io.dp2lut.bits.x_entry := x_index_msb
     io.dp2lut.bits.x_info := x_dat_info
 
-    io.dp2lut.bits.y_pd := y_index_msb
+    io.dp2lut.bits.y_entry := y_index_msb
     io.dp2lut.bits.y_info := y_dat_info
 
 }}
-
-
-object NV_NVDLA_CDP_DP_LUT_CTRL_unitDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig  
-    chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_LUT_CTRL_unit())
-}

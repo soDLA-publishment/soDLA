@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import scala.math._
 
@@ -51,7 +50,7 @@ class cdmaConfiguration extends caccConfiguration{
     val CBUF_BANK_SIZE = NVDLA_CBUF_BANK_WIDTH * NVDLA_CBUF_BANK_DEPTH
     val CDMA_ADDR_ALIGN = NVDLA_MEMORY_ATOMIC_SIZE
     val CBUF_BANK_FETCH_BITS = log2Ceil(CBUF_BANK_SIZE/CDMA_ADDR_ALIGN)
-    val BANK_DEPTH_BITS = log2Ceil(ATMC/DMAIF) + KK
+    val BANK_DEPTH_BITS = log2Ceil(NVDLA_CBUF_BANK_DEPTH) + KK
   
 
 

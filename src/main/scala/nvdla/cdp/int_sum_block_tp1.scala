@@ -2,7 +2,6 @@ package nvdla
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 
 class int_sum_block_tp1 extends Module {
     val pINT8_BW = 9
@@ -98,7 +97,3 @@ withClock(io.nvdla_core_clk){
     )
 }}
 
-
-object int_sum_block_tp1Driver extends App {
-    chisel3.Driver.execute(args, () => new int_sum_block_tp1())
-}

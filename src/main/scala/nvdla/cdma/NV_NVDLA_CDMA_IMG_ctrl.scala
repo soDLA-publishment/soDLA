@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
@@ -198,10 +197,10 @@ withClock(io.nvdla_core_clk){
     val pixel_order_nxt = WireInit("h1".asUInt(11.W))
     val pixel_packed_10b_nxt = WireInit("b0".asUInt(1.W))
 
-//pixel_planar0_sft_nxt  // log2(atmm/BytePerPixel(4 in RGB, 1 in YUV))
-//pixel_planar1_sft_nxt  // log2(atmm/BytePerPixel(useless in RGB, 2 in YUV))
-//pixel_planar0_mask_nxt // atmm/BytePerPixel -1
-//pixel_planar1_mask_nxt // atmm/BytePerPixel -1
+    //pixel_planar0_sft_nxt  // log2(atmm/BytePerPixel(4 in RGB, 1 in YUV))
+    //pixel_planar1_sft_nxt  // log2(atmm/BytePerPixel(useless in RGB, 2 in YUV))
+    //pixel_planar0_mask_nxt // atmm/BytePerPixel -1
+    //pixel_planar1_mask_nxt // atmm/BytePerPixel -1
     val p0_sft_rgb = log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE/4)
     val p0_mask_rgb = conf.NVDLA_MEMORY_ATOMIC_SIZE/4 - 1
     val p0_sft_yuv = log2Ceil(conf.NVDLA_MEMORY_ATOMIC_SIZE)
@@ -326,7 +325,7 @@ withClock(io.nvdla_core_clk){
     val pixel_planar1_bundle_limit_w = "h10".asUInt(5.W)
     val pixel_planar1_bundle_limit_1st_w = "h11".asUInt(5.W)
 
-    val planar1_vld_w = pixel_planar_nxt.toBool
+    val planar1_vld_w = pixel_planar_nxt.asBool
     val pixel_planar0_lp_vld_w = pixel_planar0_lp_burst_w.orR
     val pixel_planar1_lp_vld_w = pixel_planar1_lp_burst_w.orR
     val pixel_planar0_rp_vld_w = pixel_planar0_rp_burst_w.orR
@@ -361,9 +360,4 @@ withClock(io.nvdla_core_clk){
     io.pixel_planar1_bundle_limit_1st := RegEnable(pixel_planar1_bundle_limit_1st_w, "b0".asUInt(5.W), io.layer_st & planar1_vld_w)
 
 }}
-
-object NV_NVDLA_CDMA_IMG_ctrlDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_IMG_ctrl())
-}
 

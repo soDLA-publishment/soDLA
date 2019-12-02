@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class NV_NVDLA_DMAIF_wr(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
@@ -23,28 +21,28 @@ class NV_NVDLA_DMAIF_wr(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
         val reg2dp_dst_ram_type = Input(Bool())
 
     })
-    //     
-    //          ┌─┐       ┌─┐
-    //       ┌──┘ ┴───────┘ ┴──┐
-    //       │                 │
-    //       │       ───       │          
-    //       │  ─┬┘       └┬─  │
-    //       │                 │
-    //       │       ─┴─       │
-    //       │                 │
-    //       └───┐         ┌───┘
-    //           │         │
-    //           │         │
-    //           │         │
-    //           │         └──────────────┐
-    //           │                        │
-    //           │                        ├─┐
-    //           │                        ┌─┘    
-    //           │                        │
-    //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
-    //             │ ─┤ ─┤       │ ─┤ ─┤         
-    //             └──┴──┘       └──┴──┘
-    withClock(io.nvdla_core_clk){
+//     
+//          ┌─┐       ┌─┐
+//       ┌──┘ ┴───────┘ ┴──┐
+//       │                 │
+//       │       ───       │          
+//       │  ─┬┘       └┬─  │
+//       │                 │
+//       │       ─┴─       │
+//       │                 │
+//       └───┐         ┌───┘
+//           │         │
+//           │         │
+//           │         │
+//           │         └──────────────┐
+//           │                        │
+//           │                        ├─┐
+//           │                        ┌─┘    
+//           │                        │
+//           └─┐  ┐  ┌───────┬──┐  ┌──┘         
+//             │ ─┤ ─┤       │ ─┤ ─┤         
+//             └──┴──┘       └──┴──┘
+withClock(io.nvdla_core_clk){
     //==============
     // DMA Interface
     //==============

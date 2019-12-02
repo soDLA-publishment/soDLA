@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class cdp_dp_intp_interp_in_if extends Bundle{
@@ -159,6 +158,3 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_CDP_DP_INTP_unitDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_INTP_unit())
-}

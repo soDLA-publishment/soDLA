@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_core_reset extends Module {
@@ -49,8 +48,7 @@ class NV_NVDLA_core_reset extends Module {
     val synced_core_rstn = sync_reset_synced_core_rstn.io.outreset_  
 
     val combined_rstn = withClockAndReset(io.nvdla_clk, !synced_dla_rstn){
-                        RegInit(synced_dla_rstn & synced_core_rstn, false.B)
-                        }
+                        RegNext(synced_dla_rstn & synced_core_rstn, false.B)}
 
     val sync_reset_synced_rstn = Module(new sync_reset)
     sync_reset_synced_rstn.io.clk := io.nvdla_clk

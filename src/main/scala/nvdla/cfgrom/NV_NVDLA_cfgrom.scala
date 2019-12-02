@@ -1,15 +1,14 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class NV_NVDLA_cfgrom extends Module {
 
     val io = IO(new Bundle {
         //general clock
-        val nvdla_core_clk = Input(Clock())     
+        val nvdla_core_clk = Input(Clock())  
+        val nvdla_core_rstn = Input(Bool())
 
         //csb2cfgrom
         val csb2cfgrom = new csb2dp_if
@@ -36,7 +35,7 @@ class NV_NVDLA_cfgrom extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
                 
-withClock(io.nvdla_core_clk) { 
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
     
 ////////////////////////////////////////////////////////////////////////
     val reg_offset = Wire(UInt(24.W))

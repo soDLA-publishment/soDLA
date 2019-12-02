@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_SDP_REG_single extends Module{
@@ -155,8 +154,4 @@ class NV_NVDLA_SDP_REG_single extends Module{
     io.producer := RegEnable(io.reg.wr_data(0), false.B, nvdla_sdp_s_pointer_0_wren)
 
 }}
-
-object NV_NVDLA_SDP_REG_singleDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_REG_single())
-}
 

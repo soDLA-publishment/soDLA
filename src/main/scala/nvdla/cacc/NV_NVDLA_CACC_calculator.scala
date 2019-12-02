@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 //calculate accumulate data
@@ -44,7 +43,6 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
         val dp2reg_sat_count = Output(UInt(32.W))
 
     })
-
 //     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐

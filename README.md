@@ -22,6 +22,8 @@ My Progress
 | csb_master | Done | Not yet | Not yet |
 | cdma| Done | Not yet | Not yet |
 | sdp | Done | Not yet | Not yet |
+| cdp | Done | Not yet | Not yet |
+| pdp | Done | Not yet | Not yet |
 | cora(self-driving package) | Not yet | Not yet | Not yet |
 
 Generate Verilog Modules
@@ -40,9 +42,9 @@ New Update
 
 TODO
 ----------------
-1. cdp/nocif/pdp rewrite.
+1. nocif rewrite.
 2. PeekPokeTester under chisel, and verification with formal verification tools.
-3. FPGA test.
+3. FPGA test(Thanks to [Professor Di Zhao's Group](http://sourcedb.ict.cas.cn/cn/jssrck/201803/t20180309_4971421.html)).
 4. soDLA doc page.
 5. Resume cora package.
 

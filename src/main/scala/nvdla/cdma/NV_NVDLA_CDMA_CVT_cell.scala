@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
@@ -102,8 +101,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_CDMA_CVT_cellDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_CVT_cell())
-}

@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 //////////////////////////
@@ -28,8 +27,6 @@ object pooling_SUM{
         (data0.asSInt + data1.asSInt).asUInt
     }
 }
-
-
 
 class NV_NVDLA_PDP_CORE_unit1d(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
@@ -256,8 +253,3 @@ when(pooling_din_last_sync_use & (~cur_datin_disable_sync_use)){
 
 }}
 
-
-object NV_NVDLA_PDP_CORE_unit1dDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_PDP_CORE_unit1d())
-}

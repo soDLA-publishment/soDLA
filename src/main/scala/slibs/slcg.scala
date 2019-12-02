@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 
 class NV_NVDLA_slcg(input_num: Int = 1, io_slcg_disable: Boolean = false) extends Module {
    val io = IO(new Bundle {
@@ -29,8 +28,8 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         cfg_clk_en := io.slcg_en.asUInt.andR
     }
     
-    val nvdla_core_clk_slcg_en = cfg_clk_en | io.nvdla_clock.dla_clk_ovr_on_sync.asUInt.toBool |
-                                   (io.nvdla_clock.tmc2slcg_disable_clock_gating|io.nvdla_clock.global_clk_ovr_on_sync.asUInt.toBool)
+    val nvdla_core_clk_slcg_en = cfg_clk_en | io.nvdla_clock.dla_clk_ovr_on_sync.asUInt.asBool |
+                                   (io.nvdla_clock.tmc2slcg_disable_clock_gating|io.nvdla_clock.global_clk_ovr_on_sync.asUInt.asBool)
 
     val nvdla_core_clk_slcg = Module(new NV_CLK_gate_power)
     nvdla_core_clk_slcg.io.clk := io.nvdla_clock.nvdla_core_clk

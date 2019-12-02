@@ -2,8 +2,6 @@ package nvdla
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
-
 // 
 // Flop-Based RAM (with asynchronous wr_reg)
 //

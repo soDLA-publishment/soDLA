@@ -2,7 +2,6 @@ package nvdla
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 
 class NV_NVDLA_SDP_rdma(implicit conf: nvdlaConfig) extends Module {
 
@@ -342,7 +341,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
 
 object NV_NVDLA_SDP_rdmaDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_rdma())
+  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_rdma)
 }
 
 

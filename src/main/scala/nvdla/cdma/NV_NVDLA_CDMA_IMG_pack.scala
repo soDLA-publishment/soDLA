@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import scala.math._
 import chisel3.iotesters.Driver
@@ -768,7 +767,3 @@ io.pack_is_done := pack_is_done_out
 
 
     
-object NV_NVDLA_CDMA_IMG_packDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDMA_IMG_pack())
-}

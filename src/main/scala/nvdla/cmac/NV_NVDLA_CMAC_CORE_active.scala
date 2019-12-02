@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 
@@ -183,13 +182,6 @@ class NV_NVDLA_CMAC_CORE_active(useRealClock:Boolean = false)(implicit val conf:
 
   val active = withClock(internal_clock){new activeImpl} 
 
-}
-
-
-
-object NV_NVDLA_CMAC_CORE_activeDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_active(useRealClock = true))
 }
 
 

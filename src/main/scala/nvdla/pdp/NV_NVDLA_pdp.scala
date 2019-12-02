@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_pdp(implicit val conf: nvdlaConfig) extends Module {
@@ -71,7 +70,7 @@ withReset(!io.nvdla_core_rstn){
     //csb
     io.csb2pdp <> u_reg.io.csb2pdp
     //reg2dp
-    val field = new pdp_reg_dual_flop_outputs
+    val field = u_reg.io.reg2dp_field
 
     u_reg.io.dp2reg_d0_perf_write_stall := u_wdma.io.dp2reg_d0_perf_write_stall
     u_reg.io.dp2reg_d1_perf_write_stall := u_wdma.io.dp2reg_d1_perf_write_stall
@@ -222,7 +221,7 @@ withReset(!io.nvdla_core_rstn){
 
 object NV_NVDLA_pdpDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_sdp)
+  chisel3.Driver.execute(args, () => new NV_NVDLA_pdp)
 }
 
 

@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class sdp_y_int_cvt_cfg_if extends Bundle{
@@ -102,7 +101,3 @@ withClock(io.nvdla_core_clk){
     io.cvt_data_out.bits := pipe_p3.io.dout
 }}
 
-
-object NV_NVDLA_SDP_HLS_Y_int_cvtDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_cvt)
-}

@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 //Implementation overview of ping-pong register file.
@@ -274,7 +273,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_SDP_RDMA_regDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_reg())
-}

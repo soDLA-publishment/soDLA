@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_CDP_wdma(implicit val conf: nvdlaConfig) extends Module {
@@ -478,10 +477,3 @@ withClock(io.nvdla_core_clk){
     io.cdp2glb_done_intr_pd := Cat(cdp2glb_done_intr_pd_1, cdp2glb_done_intr_pd_0)
 
 }}
-
-
-
-object NV_NVDLA_CDP_wdmaDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_wdma())
-}

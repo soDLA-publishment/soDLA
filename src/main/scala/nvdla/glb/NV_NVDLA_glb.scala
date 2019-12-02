@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
@@ -11,13 +10,10 @@ class NV_NVDLA_glb(implicit val conf: nvdlaConfig) extends Module {
         val nvdla_core_clk = Input(Clock())
         val nvdla_falcon_clk = Input(Clock())
 
-        val csb2glb_req_pvld = Input(Bool())  /* data valid */
-        val csb2glb_req_prdy = Output(Bool())  /* data return handshake */
-        val csb2glb_req_pd = Input(UInt(63.W))
-        
-        val glb2csb_resp_valid = Output(Bool())  /* data valid */
-        val glb2csb_resp_pd = Output(UInt(34.W))     /* pkt_id_width=1 pkt_widths=33,33  */
+        val nvdla_core_rstn = Input(Bool())
+        val nvdla_falcon_rstn = Input(Bool())
 
+        val csb2glb = new csb2dp_if
         val core_intr = Output(Bool())
 
         //bdma
@@ -65,6 +61,8 @@ class NV_NVDLA_glb(implicit val conf: nvdlaConfig) extends Module {
     u_csb.io.nvdla_core_clk := io.nvdla_core_clk
     u_ic.io.nvdla_core_clk := io.nvdla_core_clk
     u_ic.io.nvdla_falcon_clk := io.nvdla_falcon_clk
+    u_ic.io.nvdla_core_rstn := io.nvdla_core_rstn
+    u_ic.io.nvdla_falcon_rstn := io.nvdla_falcon_rstn 
 
     if(conf.NVDLA_BDMA_ENABLE){
         u_csb.io.bdma_done_status0.get := u_ic.io.bdma_done_status0.get
@@ -117,12 +115,7 @@ class NV_NVDLA_glb(implicit val conf: nvdlaConfig) extends Module {
     u_ic.io.req_wdat := u_csb.io.req_wdat
 
 
-    io.csb2glb_req_prdy := u_csb.io.csb2glb_req_prdy
-    io.glb2csb_resp_pd := u_csb.io.glb2csb_resp_pd
-    io.glb2csb_resp_valid := u_csb.io.glb2csb_resp_valid
-
-    u_csb.io.csb2glb_req_pd := io.csb2glb_req_pd
-    u_csb.io.csb2glb_req_pvld := io.csb2glb_req_pvld
+    io.csb2glb <> u_csb.io.csb2glb
 
     u_ic.io.cacc2glb_done_intr_pd := io.cacc2glb_done_intr_pd
     u_ic.io.cdma_dat2glb_done_intr_pd := io.cdma_dat2glb_done_intr_pd

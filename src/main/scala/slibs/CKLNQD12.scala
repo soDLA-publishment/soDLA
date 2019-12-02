@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class CKLNQD12 extends Module {
@@ -13,9 +12,9 @@ class CKLNQD12 extends Module {
   })
 
 
-  withClock((!io.CP.asUInt.toBool).asClock) {
+  withClock((!io.CP.asUInt.asBool).asClock) {
     val qd = RegNext(io.TE|io.E)
-    io.Q := (io.CP.asUInt.toBool & qd).asClock 
+    io.Q := (io.CP.asUInt.asBool & qd).asClock 
   }
 }
 

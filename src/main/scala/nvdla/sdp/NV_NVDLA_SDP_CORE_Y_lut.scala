@@ -2,7 +2,6 @@ package nvdla
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 
 class sdp_y_lut_reg2dp_if extends Bundle{
     val int_access_type = Output(Bool())  
@@ -438,10 +437,6 @@ io.lut2inp_pd.bits := pipe_p2.io.dout
 
 
 
-object NV_NVDLA_SDP_CORE_Y_lutDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_CORE_Y_lut)
-}
 
 
 

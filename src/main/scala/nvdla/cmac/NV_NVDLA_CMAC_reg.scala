@@ -1,10 +1,8 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
-//Implementation overview of ping-pong register file.
 
 class NV_NVDLA_CMAC_reg(implicit val conf: nvdlaConfig, useRealClock:Boolean=false) extends Module {
     val io = IO(new Bundle {

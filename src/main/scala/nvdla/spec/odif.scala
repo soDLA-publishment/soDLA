@@ -2,7 +2,6 @@ package nvdla
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 
 
 class cdma2buf_wr_if(implicit val conf: nvdlaConfig) extends Bundle{

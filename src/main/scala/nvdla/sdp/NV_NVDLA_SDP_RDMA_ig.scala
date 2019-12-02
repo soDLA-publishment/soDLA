@@ -1,10 +1,8 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
-//NV_NVDLA_SDP_RDMA_ig.v
 
 class NV_NVDLA_SDP_RDMA_ig(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
@@ -289,13 +287,4 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_rdma_stall := u_histo_rdma.io.cnt_cur
 
 }}
-
-
-object NV_NVDLA_SDP_RDMA_igDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_ig)
-}
-
-
-
 

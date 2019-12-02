@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class NV_NVDLA_SDP_WDMA_unpack extends Module {
    val IW = 256
@@ -84,7 +82,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_SDP_WDMA_unpackDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_WDMA_unpack())
-}

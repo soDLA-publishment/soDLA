@@ -1,12 +1,10 @@
-//TODO: need to be repair
+
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-//Implementation overview of ping-pong register file.
 
 class NV_NVDLA_CACC_regfile extends Module {
    val io = IO(new Bundle {
@@ -223,6 +221,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-object NV_NVDLA_CACC_regDriver extends App {
- chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_regfile())
-}

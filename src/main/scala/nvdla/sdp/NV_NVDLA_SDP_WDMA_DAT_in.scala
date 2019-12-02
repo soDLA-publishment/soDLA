@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class NV_NVDLA_SDP_WDMA_DAT_in(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
@@ -115,10 +113,5 @@ withClock(io.nvdla_core_clk){
             
 }}
 
- 
-object NV_NVDLA_SDP_WDMA_DAT_inDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_WDMA_DAT_in())
-}
 
 

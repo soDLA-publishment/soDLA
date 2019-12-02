@@ -1,38 +1,89 @@
-// package nvdla
+package nvdla
 
-// import chisel3._
-// import chisel3.experimental._
-// import chisel3.util._
+import chisel3._
+import chisel3.util._
 
-// //Implementation overview of ping-pong register file.
 
-// class NV_NVDLA_MCIF_WRITE_eg (implicit conf: nvdlaConfig) extends Module {
-//     val io = IO(new Bundle {
-//         //general clock
-//         val nvdla_core_clk = Input(Clock())      
-//         val nvdla_core_rstn = Input(Bool())
+class NV_NVDLA_MCIF_WRITE_eg(implicit conf: nvdlaConfig) extends Module {
+    val io = IO(new Bundle {
+        //general clock
+        val nvdla_core_clk = Input(Clock())      
 
-//         val mcif2sdp_wr_rsp_complete = Output(Bool())
-//         val mcif2cdp_wr_rsp_complete = Output(Bool())
-//         val mcif2pdp_wr_rsp_complete = Output(Bool())
-//         val mcif2bdma_wr_rsp_complete = Output(Bool())
-//         val mcif2rbk_wr_rsp_complete = Output(Bool())
+        val mcif2client_wr_rsp_complete = Output(Vec(conf.WDMA_NUM, Bool()))
+        //cq_rd
+        val cq_rd_pd = Flipped(Vec(conf.WDMA_MAX_NUM, DecoupledIO(UInt(conf.MCIF_WRITE_CQ_WIDTH.W))))
+        //noc2mcif
+        val noc2mcif_axi_b = Flipped(Decoupled(new nocif_axi_wr_response_if))
+        //eg2ig
+        val eg2ig_axi_len = ValidIO(UInt(2.W))
+    })
+ //
+ //          ┌─┐       ┌─┐
+ //       ┌──┘ ┴───────┘ ┴──┐
+ //       │                 │
+ //       │       ───       │
+ //       │  ─┬┘       └┬─  │
+ //       │                 │
+ //       │       ─┴─       │
+ //       │                 │
+ //       └───┐         ┌───┘
+ //           │         │
+ //           │         │
+ //           │         │
+ //           │         └──────────────┐
+ //           │                        │
+ //           │                        ├─┐
+ //           │                        ┌─┘
+ //           │                        │
+ //           └─┐  ┐  ┌───────┬──┐  ┌──┘
+ //             │ ─┤ ─┤       │ ─┤ ─┤
+ //             └──┴──┘       └──┴──┘
+withClock(io.nvdla_core_clk){
 
-//         //cq_rd
-//         val cq_rd_pvld = Input(Vec(conf.WDMA_NUM, Bool()))
-//         val cq_rd_prdy = Output(Vec(conf.WDMA_NUM, Bool()))
-//         val cq_rd_pd = Input(Vec(conf.WDMA_NUM, UInt(3.W)))
+    val iflop_axi_rdy = Wire(Bool())
+    val u_pipe = Module(new NV_NVDLA_IS_pipe(3))
+    u_pipe.io.clk := io.nvdla_core_clk
 
-//         //noc2mcif
-//         val noc2mcif_axi_b_bvalid = Input(Bool())
-//         val noc2mcif_axi_b_bready = Output(Bool())
-//         val noc2mcif_axi_b_bid = Input(UInt(8.W))
+    u_pipe.io.vi := io.noc2mcif_axi_b.valid
+    io.noc2mcif_axi_b.ready := u_pipe.io.ro
+    u_pipe.io.di := io.noc2mcif_axi_b.bits.id
 
-//         //eq2ig
-//         val eq2ig_axi_len = Output(UInt(2.W))
-//         val eq2ig_axi_vld = Output(Bool())
-//     })
+    val iflop_axi_vld = u_pipe.io.vo
+    u_pipe.io.ri := iflop_axi_rdy
+    val iflop_axi_axid = u_pipe.io.dout
 
-//     withClock(io.nvdla_core_clk){
-//     }
-// }
+    val iflop_axi_rdy_vec = VecInit((0 to conf.WDMA_MAX_NUM-1) map{i => io.cq_rd_pd(i).valid & (u_pipe.io.dout === i.U)})
+    val iflop_axi_vld_vec = VecInit((0 to conf.WDMA_MAX_NUM-1) map{i => iflop_axi_vld & (u_pipe.io.dout === i.U)})
+    val cq_rd_len_vec = VecInit((0 to conf.WDMA_MAX_NUM-1) map{i => io.cq_rd_pd(i).bits(2, 1)})
+    for(i <- 0 to conf.WDMA_MAX_NUM-1){
+        io.cq_rd_pd(i).ready := iflop_axi_vld_vec(i)
+    }
+    
+    iflop_axi_rdy := iflop_axi_rdy_vec.asUInt.orR
+
+    io.eg2ig_axi_len.valid := iflop_axi_vld & iflop_axi_rdy 
+
+    val eg2ig_axi_len_temp = WireInit("b0".asUInt(2.W))
+    for(i <- 0 to conf.WDMA_MAX_NUM-1){
+        when(iflop_axi_vld_vec(i)){
+            eg2ig_axi_len_temp := cq_rd_len_vec(i)
+        }   
+    }
+
+    io.eg2ig_axi_len.bits := eg2ig_axi_len_temp
+
+
+    val client_cq_rd_pvld = Wire(Vec(conf.WDMA_NUM, Bool()))
+    val client_cq_rd_ack = Wire(Vec(conf.WDMA_NUM, Bool()))
+    val client_axi_vld = Wire(Vec(conf.WDMA_NUM, Bool()))
+    for(i <- 0 to conf.WDMA_NUM-1){
+        client_cq_rd_pvld(i) := MuxLookup(conf.arr_tieoff_axid(i).U, false.B,
+                                  (0 to conf.WDMA_MAX_NUM-1) map{j => j.U -> io.cq_rd_pd(j).valid})
+        client_cq_rd_ack(i) := MuxLookup(conf.arr_tieoff_axid(i).U, false.B,
+                            (0 to conf.WDMA_MAX_NUM-1) map{j => j.U -> io.cq_rd_pd(j).bits(0)})
+        client_axi_vld(i) := iflop_axi_vld & (iflop_axi_axid === conf.arr_tieoff_axid(i).U)
+        io.mcif2client_wr_rsp_complete(i) := RegNext(client_cq_rd_pvld(i)&client_cq_rd_ack(i)&client_axi_vld(i), false.B)
+    }
+
+}}
+

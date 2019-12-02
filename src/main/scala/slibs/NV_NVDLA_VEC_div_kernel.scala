@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 //calcate pooling data based on real pooling size --- (* 1/kernel_width or 1/kernel_height)

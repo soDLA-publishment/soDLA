@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_CDP_DP_mul(implicit val conf: nvdlaConfig) extends Module {
@@ -72,16 +71,16 @@ withClock(io.nvdla_core_clk){
     val mul_unit_rdy = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, Bool()))
     val mul_unit_pd = Wire(Vec(conf.NVDLA_CDP_THROUGHPUT, UInt((conf.NVDLA_CDP_ICVTO_BWPE+16).W)))
 
-    val u_mul_unit = Array.fill(conf.NVDLA_CDP_THROUGHPUT){Module(new NV_NVDLA_CDP_DP_MUL_unit)}
+    val u_mul_unit = Array.fill(conf.NVDLA_CDP_THROUGHPUT){Module(new NV_NVDLA_MUL_unit(pINA_BW = conf.NVDLA_CDP_ICVTO_BWPE, pINB_BW = conf.NVDLA_CDP_ICVTO_BWPE))}
     for(i <- 0 until conf.NVDLA_CDP_THROUGHPUT){
         u_mul_unit(i).io.nvdla_core_clk := io.nvdla_core_clk
-        u_mul_unit(i).io.mul_vld := mul_vld(i)
-        mul_rdy(i) := u_mul_unit(i).io.mul_rdy
-        u_mul_unit(i).io.mul_ina_pd := mul_ina_pd(i)
-        u_mul_unit(i).io.mul_inb_pd := mul_inb_pd(i)
-        mul_unit_vld(i) := u_mul_unit(i).io.mul_unit_vld
-        u_mul_unit(i).io.mul_unit_rdy := mul_unit_rdy(i)
-        mul_unit_pd(i) := u_mul_unit(i).io.mul_unit_pd
+        u_mul_unit(i).io.mul_in_pd.valid := mul_vld(i)
+        mul_rdy(i) := u_mul_unit(i).io.mul_in_pd.ready
+        u_mul_unit(i).io.mul_in_pd.bits.ina := mul_ina_pd(i)
+        u_mul_unit(i).io.mul_in_pd.bits.inb := mul_inb_pd(i)
+        mul_unit_vld(i) := u_mul_unit(i).io.mul_unit_pd.valid
+        u_mul_unit(i).io.mul_unit_pd.ready := mul_unit_rdy(i)
+        mul_unit_pd(i) := u_mul_unit(i).io.mul_unit_pd.bits
     }
 
     for(i <- 0 until conf.NVDLA_CDP_THROUGHPUT){
@@ -103,7 +102,3 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_CDP_DP_mulDriver extends App {
-    implicit val conf: nvdlaConfig = new nvdlaConfig
-    chisel3.Driver.execute(args, () => new NV_NVDLA_CDP_DP_mul())
-}

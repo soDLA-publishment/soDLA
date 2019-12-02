@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 
@@ -221,11 +220,6 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_SDP_MRDMA_igDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_MRDMA_ig)
-}
 
 
 

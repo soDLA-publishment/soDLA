@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_CDP_REG_dual extends Module{
@@ -87,7 +86,7 @@ class NV_NVDLA_CDP_REG_dual extends Module{
     io.op_en_trigger := nvdla_cdp_d_op_enable_0_wren
 
     //Output mux
-    val dst_compression_en = Wire(false.B)
+    val dst_compression_en = false.B
 
     io.reg.rd_data := MuxLookup(io.reg.offset, "b0".asUInt(32.W), 
     Seq(      

@@ -1,8 +1,7 @@
-//TODO: need to repair
+
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_CACC_dual_reg extends Module{

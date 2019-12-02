@@ -1,9 +1,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 class NV_NVDLA_SDP_RDMA_pack(IW: Int = 512, OW: Int = 256, CW: Int = 1)(implicit val conf: nvdlaConfig) extends Module {
    val RATIO = IW/OW
@@ -92,10 +90,4 @@ withClock(io.nvdla_core_clk){
                         (0 to RATIO-1) map {i => i.U -> pack_seg(i)})
 
     }
-}
-
-
-object NV_NVDLA_SDP_RDMA_packDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_RDMA_pack())
 }

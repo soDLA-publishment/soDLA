@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 
@@ -17,14 +16,13 @@ class NV_NVDLA_CACC_assembly_buffer(implicit conf: nvdlaConfig) extends Module {
 
         val pwrbus_ram_pd = Input(UInt(32.W))
     })
-
 //     
 //          ┌─┐       ┌─┐
 //       ┌──┘ ┴───────┘ ┴──┐
 //       │                 │
 //       │       ───       │
 //       │  ─┬┘       └┬─  │
-//       │                 │                       
+//       │                 │
 //       │       ─┴─       │
 //       │                 │
 //       └───┐         ┌───┘
@@ -33,12 +31,13 @@ class NV_NVDLA_CACC_assembly_buffer(implicit conf: nvdlaConfig) extends Module {
 //           │         │
 //           │         └──────────────┐
 //           │                        │
-//           │                        ├─┐        
+//           │                        ├─┐
 //           │                        ┌─┘    
 //           │                        │
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
-//             └──┴──┘       └──┴──┘
+//             └──┴──┘       └──┴──┘ 
+
 withClock(io.nvdla_core_clk){
 
     val u_accu_abuf_0 = Module(new nv_ram_rws(conf.CACC_ABUF_DEPTH, conf.CACC_ABUF_WIDTH))

@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_HLS_shiftrightusz(IN_WIDTH:Int, OUT_WIDTH:Int, FRAC_WIDTH:Int, SHIFT_WIDTH:Int) extends Module {

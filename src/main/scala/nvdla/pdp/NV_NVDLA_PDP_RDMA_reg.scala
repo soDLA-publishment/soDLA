@@ -1,10 +1,8 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
-//Implementation overview of ping-pong register file.
 
 class NV_NVDLA_PDP_RDMA_reg extends Module {
     val io = IO(new Bundle {

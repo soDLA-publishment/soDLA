@@ -2,9 +2,7 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
-import chisel3.iotesters.Driver
 
 //this module is to mac dat and wt
 
@@ -71,7 +69,3 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: nvdlaC
 
 }
 
-object NV_NVDLA_CMAC_CORE_macDriver extends App {
-  implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_mac(useRealClock = true))
-}

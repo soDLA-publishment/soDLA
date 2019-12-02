@@ -1,7 +1,6 @@
 package nvdla
 
 import chisel3._
-import chisel3.experimental._
 import chisel3.util._
 
 class NV_NVDLA_HLS_shiftrightsatsu(IN_WIDTH:Int = 49, OUT_WIDTH:Int = 32, SHIFT_WIDTH:Int = 6) extends Module {
