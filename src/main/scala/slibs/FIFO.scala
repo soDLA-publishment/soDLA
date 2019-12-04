@@ -330,7 +330,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
             val rd_count_p_next_rd_popping_not_0 = rd_count_next_rd_popping =/= 0.U
             val rd_count_p_next_no_rd_popping_not_0 = rd_count_next_no_rd_popping =/= 0.U
             val rd_count_p_next_not_0 = Mux(rd_popping, rd_count_p_next_rd_popping_not_0, rd_count_p_next_no_rd_popping_not_0)
-            rd_enable.get := ((rd_count_p_next_not_0) && ((~rd_pvld_p) || rd_popping)); // anytime data's there and not stalled
+            rd_enable.get := ((rd_count_p_next_not_0) && ((~rd_pvld_p).asBool() | rd_popping)); // anytime data's there and not stalled
 
             when(rd_pushing || rd_popping){
                 rd_pvld_p := rd_count_p_next_not_0
