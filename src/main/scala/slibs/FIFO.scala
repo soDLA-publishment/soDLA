@@ -54,7 +54,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘
-    withClock(if (useRealClock) io.clk else clock){
+
     // Master Clock Gating (SLCG)
     //
     // We gate the clock(s) when idle or stalled.
@@ -70,8 +70,10 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
     val clk_mgate = Module(new NV_CLK_gate_power)
     clk_mgate.io.clk := io.clk
     clk_mgate.io.clk_en := clk_mgated_enable
-    val clk_mgated = clk_mgate.io.clk_gated
+    val clk_mgated = if (useRealClock) clk_mgate.io.clk_gated else clock
 
+withClock(if (useRealClock) io.clk else clock){
+  
     if(depth == 0){
         // 
         // WRITE SIDE
