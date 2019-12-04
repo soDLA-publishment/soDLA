@@ -11,7 +11,8 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
                     io_wr_empty: Boolean = false, 
                     io_wr_idle: Boolean = false,
                     io_wr_count: Boolean = false,
-                    io_rd_idle: Boolean = false) extends Module {
+                    io_rd_idle: Boolean = false,
+                    useRealClock: Boolean = false) extends Module {
     val io = IO(new Bundle {
         //clk
         val clk = Input(Clock())
@@ -53,7 +54,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘
-    withClock(io.clk){
+    withClock(if (useRealClock) io.clk else clock){
     // Master Clock Gating (SLCG)
     //
     // We gate the clock(s) when idle or stalled.
@@ -330,7 +331,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
             val rd_count_p_next_rd_popping_not_0 = rd_count_next_rd_popping =/= 0.U
             val rd_count_p_next_no_rd_popping_not_0 = rd_count_next_no_rd_popping =/= 0.U
             val rd_count_p_next_not_0 = Mux(rd_popping, rd_count_p_next_rd_popping_not_0, rd_count_p_next_no_rd_popping_not_0)
-            rd_enable.get := ((rd_count_p_next_not_0) && ((~rd_pvld_p) || rd_popping)); // anytime data's there and not stalled
+            rd_enable.get := ((rd_count_p_next_not_0) && ((~rd_pvld_p).asBool() | rd_popping)); // anytime data's there and not stalled
 
             when(rd_pushing || rd_popping){
                 rd_pvld_p := rd_count_p_next_not_0

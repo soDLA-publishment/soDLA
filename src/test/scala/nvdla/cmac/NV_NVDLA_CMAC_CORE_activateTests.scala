@@ -12,7 +12,8 @@ class NV_NVDLA_CMAC_CORE_activateTest(c: NV_NVDLA_CMAC_CORE_active) extends Peek
     val mask = List.fill[Int](c.conf.NVDLA_MAC_ATOMIC_C_SIZE)(Random.nextInt(2))
     val data = List.fill[Int](c.conf.NVDLA_MAC_ATOMIC_C_SIZE)(Random.nextInt(256))
     val valid = List.fill[Int](1)(1)
-    (c.io.in_dat.bits.sel, sel).zipped.foreach(poke(_, _))
+    // TODO interface modifier, repair!!
+//    (c.io.in_dat.bits.sel, sel).zipped.foreach(poke(_, _))
     (c.io.in_dat.bits.mask, mask).zipped.foreach(poke(_, _))
     (c.io.in_dat.bits.data, data).zipped.foreach(poke(_, _))
     poke(c.io.in_dat.valid, valid(0))
