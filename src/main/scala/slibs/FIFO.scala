@@ -11,7 +11,8 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
                     io_wr_empty: Boolean = false, 
                     io_wr_idle: Boolean = false,
                     io_wr_count: Boolean = false,
-                    io_rd_idle: Boolean = false) extends Module {
+                    io_rd_idle: Boolean = false,
+                    useRealClock: Boolean = false) extends Module {
     val io = IO(new Bundle {
         //clk
         val clk = Input(Clock())
@@ -53,7 +54,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘
-    withClock(io.clk){
+    withClock(if (useRealClock) io.clk else clock){
     // Master Clock Gating (SLCG)
     //
     // We gate the clock(s) when idle or stalled.
