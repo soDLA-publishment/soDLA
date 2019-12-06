@@ -22,7 +22,8 @@ class NV_NVDLA_CACC_delivery_buffer(implicit conf: nvdlaConfig) extends Module {
         //dbuf
         val dbuf_wr = Flipped(new nvdla_wr_if(conf.CACC_DBUF_AWIDTH, conf.CACC_DBUF_WIDTH))
         val dbuf_rd_layer_end = Input(Bool())
-        val dbuf_rd_addr = Flipped(DecoupledIO(UInt(conf.CACC_ABUF_AWIDTH.W)))
+        val dbuf_rd_addr = Flipped(ValidIO(UInt(conf.CACC_ABUF_AWIDTH.W)))
+        val dbuf_rd_ready = Output(Bool())
 
         //pwrbus
         val pwrbus_ram_pd = Input(UInt(32.W))
@@ -81,7 +82,7 @@ val data_left_mask_pre = Mux(dbuf_rd_en_new, Fill(conf.CACC_DWIDTH_DIV_SWIDTH, t
                          Mux(io.cacc2sdp_pd.valid & io.cacc2sdp_pd.ready, data_left_mask<<1.U, data_left_mask))(conf.CACC_DWIDTH_DIV_SWIDTH-1, 0)
 data_left_mask := data_left_mask_pre
 io.cacc2sdp_pd.valid := data_left_mask.orR
-io.dbuf_rd_addr.ready := ~(data_left_mask.orR)
+io.dbuf_rd_ready := ~(data_left_mask.orR)
 
 val cacc2sdp_pd_data = VecInit((0 to conf.CACC_DWIDTH_DIV_SWIDTH-1) map 
                       { i => dbuf_rd_data(conf.CACC_SDP_DATA_WIDTH*(i+1)-1, conf.CACC_SDP_DATA_WIDTH*i)&Fill(conf.CACC_SDP_DATA_WIDTH, rd_data_mask(i))}).reduce(_|_)
