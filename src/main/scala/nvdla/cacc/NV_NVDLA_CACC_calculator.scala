@@ -28,7 +28,6 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
         val accu_ctrl_ram_valid = Input(Bool())
 
         //cfg
-        val cfg_in_en_mask = Input(Bool())
         val cfg_truncate = Input(UInt(5.W))
 
         //mac2cacc
@@ -93,8 +92,8 @@ withClock(io.nvdla_core_clk){
         calc_in_mask(i + conf.CACC_ATOMK/2) := io.mac_b2accu_mask(i)
     }
 
-    val calc_op_en = VecInit((0 to conf.CACC_ATOMK-1) map { i => calc_in_mask(i)&io.cfg_in_en_mask})
-    val calc_op1_vld = VecInit((0 to conf.CACC_ATOMK-1) map { i => calc_in_mask(i)&io.cfg_in_en_mask&io.accu_ctrl_ram_valid})
+    val calc_op_en = VecInit((0 to conf.CACC_ATOMK-1) map { i => calc_in_mask(i)})
+    val calc_op1_vld = VecInit((0 to conf.CACC_ATOMK-1) map { i => calc_in_mask(i)&io.accu_ctrl_ram_valid})
     val calc_dlv_valid = calc_valid & calc_channel_end
     val calc_wr_en = calc_valid & (~calc_channel_end)
 
