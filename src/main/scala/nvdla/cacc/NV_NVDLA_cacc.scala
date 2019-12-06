@@ -74,12 +74,10 @@ withReset(!io.nvdla_core_rstn){
     u_assembly_ctrl.io.mac_a2accu_pd.valid := io.mac_a2accu.valid
     u_assembly_ctrl.io.mac_a2accu_pd.bits := io.mac_a2accu.bits.pd
     
-    u_assembly_ctrl.io.reg2dp_op_en := u_regfile.io.reg2dp_op_en    
-    u_assembly_ctrl.io.reg2dp_conv_mode := field.conv_mode           
+    u_assembly_ctrl.io.reg2dp_op_en := u_regfile.io.reg2dp_op_en          
     u_assembly_ctrl.io.reg2dp_proc_precision := field.proc_precision
     u_assembly_ctrl.io.reg2dp_clip_truncate := field.clip_truncate
     
-
     //==========================================================
     // Assembly buffer
     //==========================================================
@@ -105,7 +103,6 @@ withReset(!io.nvdla_core_rstn){
     u_calculator.io.accu_ctrl_pd <> u_assembly_ctrl.io.accu_ctrl_pd
     u_calculator.io.accu_ctrl_ram_valid := u_assembly_ctrl.io.accu_ctrl_ram_valid
 
-    u_calculator.io.cfg_in_en_mask := u_assembly_ctrl.io.cfg_in_en_mask
     u_calculator.io.cfg_truncate := u_assembly_ctrl.io.cfg_truncate
 
     u_calculator.io.mac_a2accu_data := io.mac_a2accu.bits.data
@@ -130,19 +127,6 @@ withReset(!io.nvdla_core_rstn){
     u_delivery_ctrl.io.dlv_valid := u_calculator.io.dlv_valid
 
     u_delivery_ctrl.io.wait_for_op_en := u_assembly_ctrl.io.wait_for_op_en
-
-    u_delivery_ctrl.io.reg2dp_op_en := u_regfile.io.reg2dp_op_en
-    u_delivery_ctrl.io.reg2dp_conv_mode := field.conv_mode
-    u_delivery_ctrl.io.reg2dp_proc_precision := field.proc_precision
-    u_delivery_ctrl.io.reg2dp_dataout_width := field.dataout_width
-    u_delivery_ctrl.io.reg2dp_dataout_height := field.dataout_height
-    u_delivery_ctrl.io.reg2dp_dataout_channel := field.dataout_channel
-    u_delivery_ctrl.io.reg2dp_dataout_addr := field.dataout_addr(31, conf.NVDLA_MEMORY_ATOMIC_LOG2)
-    u_delivery_ctrl.io.reg2dp_line_packed := field.line_packed
-    u_delivery_ctrl.io.reg2dp_surf_packed := field.surf_packed
-    u_delivery_ctrl.io.reg2dp_batches := field.batches
-    u_delivery_ctrl.io.reg2dp_line_stride := field.line_stride
-    u_delivery_ctrl.io.reg2dp_surf_stride := field.surf_stride
 
     u_regfile.io.dp2reg_done := u_delivery_ctrl.io.dp2reg_done 
     u_assembly_ctrl.io.dp2reg_done := u_delivery_ctrl.io.dp2reg_done 
