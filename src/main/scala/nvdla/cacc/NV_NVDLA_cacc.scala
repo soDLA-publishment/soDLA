@@ -75,7 +75,6 @@ withReset(!io.nvdla_core_rstn){
     u_assembly_ctrl.io.mac_a2accu_pd.bits := io.mac_a2accu.bits.pd
     
     u_assembly_ctrl.io.reg2dp_op_en := u_regfile.io.reg2dp_op_en          
-    u_assembly_ctrl.io.reg2dp_proc_precision := field.proc_precision
     u_assembly_ctrl.io.reg2dp_clip_truncate := field.clip_truncate
     
     //==========================================================
