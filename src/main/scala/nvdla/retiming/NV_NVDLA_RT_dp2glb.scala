@@ -21,4 +21,4 @@ withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
     io.dp2glb_done_intr_dst_pd := ShiftRegister(io.dp2glb_done_intr_src_pd, delay, true.B)
 
-}
+}}
