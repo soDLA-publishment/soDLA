@@ -139,10 +139,12 @@ withReset(!io.nvdla_core_rstn){
     u_delivery_buffer.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
     u_delivery_buffer.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
+
     io.cacc2sdp_pd <> u_delivery_buffer.io.cacc2sdp_pd 
 
-    u_delivery_buffer.io.dbuf_rd_addr <> u_delivery_ctrl.io.dbuf_rd_addr
+    u_delivery_buffer.io.dbuf_rd_addr := u_delivery_ctrl.io.dbuf_rd_addr
     u_delivery_buffer.io.dbuf_rd_layer_end := u_delivery_ctrl.io.dbuf_rd_layer_end
+    u_delivery_ctrl.io.dbuf_rd_ready := u_delivery_buffer.io.dbuf_rd_ready
     u_delivery_buffer.io.dbuf_wr := u_delivery_ctrl.io.dbuf_wr
     
     io.cacc2glb_done_intr_pd := u_delivery_buffer.io.cacc2glb_done_intr_pd
