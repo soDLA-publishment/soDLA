@@ -13,8 +13,7 @@ class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Modu
         val nvdla_core_clk = Input(Clock())
 
         //dbuf
-        val dbuf_rd_ready = Input(Bool())
-        val dbuf_rd_addr = ValidIO(UInt(conf.CACC_DBUF_AWIDTH.W))
+        val dbuf_rd_addr = DecoupledIO(UInt(conf.CACC_DBUF_AWIDTH.W))
         val dbuf_rd_layer_end = Output(Bool())
         val dbuf_wr = new nvdla_wr_if(conf.CACC_ABUF_AWIDTH, conf.CACC_ABUF_WIDTH)
 
@@ -120,7 +119,7 @@ when(dlv_data_add_valid | dlv_data_sub_valid){
 ///// generate dbuf read request   
 val dbuf_rd_addr_cnt = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
 
-dlv_pop := io.dbuf_rd_addr.valid & io.dbuf_rd_ready
+dlv_pop := io.dbuf_rd_addr.valid & io.dbuf_rd_addr.ready
 val dbuf_rd_addr_cnt_inc = dbuf_rd_addr_cnt + 1.U
 val dbuf_empty = ~(dlv_data_avl.orR)
 io.dbuf_rd_addr.valid := ~dbuf_empty
