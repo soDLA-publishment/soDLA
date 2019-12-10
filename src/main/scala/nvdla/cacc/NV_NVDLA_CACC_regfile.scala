@@ -8,6 +8,8 @@ import chisel3.iotesters.Driver
 
 //Implementation overview of ping-pong register file.
 
+
+@chiselName
 class NV_NVDLA_CACC_regfile extends Module {
    val io = IO(new Bundle {
        //general clock

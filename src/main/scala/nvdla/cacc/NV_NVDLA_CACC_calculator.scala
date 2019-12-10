@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //calculate accumulate data
-
+@chiselName
 class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module {
 
     val io = IO(new Bundle {
