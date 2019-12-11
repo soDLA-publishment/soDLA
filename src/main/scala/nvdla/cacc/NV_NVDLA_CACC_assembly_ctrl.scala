@@ -121,3 +121,9 @@ io.accu_ctrl_pd.bits := Cat(accu_ctrl_dlv_elem_mask, accu_ctrl_layer_end, accu_c
 
 }}
 
+
+object NV_NVDLA_CACC_assembly_ctrlDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_assembly_ctrl())
+}
+

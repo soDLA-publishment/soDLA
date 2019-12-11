@@ -238,3 +238,10 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_sat_count := sat_count
 
 }}
+
+
+object NV_NVDLA_CACC_calculatorDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_calculator())
+}
+

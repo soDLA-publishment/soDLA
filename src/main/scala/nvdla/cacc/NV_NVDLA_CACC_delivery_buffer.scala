@@ -119,3 +119,8 @@ io.accu2sc_credit_size.valid := RegNext(io.cacc2sdp_pd.valid & io.cacc2sdp_pd.re
 
 
 }}
+
+object NV_NVDLA_CACC_calculatorDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_calculator())
+}

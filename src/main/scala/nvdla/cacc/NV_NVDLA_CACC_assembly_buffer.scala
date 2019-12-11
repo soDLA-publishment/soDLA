@@ -56,3 +56,9 @@ withClock(io.nvdla_core_clk){
     io.abuf_rd.data := RegEnable(abuf_rd_raw_data, abuf_rd_en_d1)
 
 }}
+
+
+object NV_NVDLA_CACC_assembly_bufferDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_assembly_buffer())
+}
