@@ -165,8 +165,8 @@ when(dlv_end_tag1_en){
 }}
 
 
-object NV_NVDLA_CACC_calculatorDriver extends App {
+object NV_NVDLA_CACC_delivery_ctrlDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_calculator())
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_delivery_ctrl())
 }
 
