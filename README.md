@@ -11,7 +11,7 @@ cora as an extension accelerator, will focus on the localization and control alg
 
 nvgen and cora shares the same design flow and library.
 
-[soDLA-equi](https://github.com/redpanda3/soDLA_equi) shows the unittest and equivalence checking results between NVDLA and soDLA.
+[soDLA_equi](https://github.com/redpanda3/soDLA_equi) shows the unittest and equivalence checking results between NVDLA and soDLA.
 
 
 Generate Verilog Modules
