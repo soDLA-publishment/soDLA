@@ -73,7 +73,7 @@ withClock(io.nvdla_core_clk){
     val accu_ctrl_pd_d1 = RegEnable(io.accu_ctrl_pd.bits, "b0".asUInt(13.W), io.accu_ctrl_pd.valid)
     val calc_valid_in = (io.mac_b2accu_pvld | io.mac_a2accu_pvld)
 
-    val calc_valid = ShiftRegister(calc_valid_in, 3, false.B, true.B)
+    val calc_valid = ShiftRegister(calc_valid_in, 3)
 
     // unpack pd form abuffer control
     val calc_addr = accu_ctrl_pd_d1(5, 0)
@@ -108,7 +108,7 @@ withClock(io.nvdla_core_clk){
     val calc_pout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
     val calc_fout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
 
-    val u_cell_int8 = Array.fill(conf.CACC_ATOMK){Module(new NV_NVDLA_CACC_CALC_int8)}
+    val u_cell_int8 = Array.fill(conf.CACC_ATOMK){Module(new NV_soDLA_CACC_CALC_int8)}
 
     for(i <- 0 to conf.CACC_ATOMK-1){
         u_cell_int8(i).io.nvdla_core_clk := io.nvdla_cell_clk
@@ -176,31 +176,21 @@ withClock(io.nvdla_core_clk){
     // Gather of accumulator result   
     val calc_pout = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
     for (i <- 0 to conf.CACC_ATOMK-1){
-        when(calc_pout_vld(i)){
-            calc_pout(i) := calc_pout_sum(i)
-        }
-        .otherwise{
-            calc_pout(i) := 0.U
-        }
+        calc_pout(i) := Fill(conf.CACC_PARSUM_WIDTH, calc_pout_vld(i)) & calc_pout_sum(i)
     }
     val calc_fout = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
     for (i <- 0 to conf.CACC_ATOMK-1){
-        when(calc_fout_vld(i)){
-            calc_fout(i) := calc_fout_sum(i)
-        }
-        .otherwise{
-            calc_fout(i) := 0.U
-        }
+        calc_fout(i) := Fill(conf.CACC_FINAL_WIDTH, calc_fout_vld(i)) & calc_fout_sum(i)
     }  
 
     // to abuffer, 1 pipe
 
     io.abuf_wr.addr.valid := RegNext(calc_wr_en_out, false.B)
-    io.abuf_wr.addr.bits := RegEnable(calc_addr_out, calc_wr_en_out)
+    io.abuf_wr.addr.bits := RegEnable(calc_addr_out, "b0".asUInt(conf.CACC_ABUF_AWIDTH.W), calc_wr_en_out)
     io.abuf_wr.data := RegEnable(calc_pout.asUInt, calc_wr_en_out)
 
     // to dbuffer, 1 pipe.
-    io.dlv_data := RegEnable(calc_fout, calc_dlv_valid_out)
+    io.dlv_data := RegEnable(calc_fout.asUInt, calc_dlv_valid_out)
     io.dlv_valid := RegNext(calc_dlv_valid_out, false.B)
     io.dlv_mask := RegNext(calc_dlv_valid_out, false.B)
     val dlv_stripe_end = RegEnable(calc_stripe_end_out, false.B, calc_dlv_valid_out)
@@ -228,7 +218,7 @@ withClock(io.nvdla_core_clk){
     val sat_count = RegInit("b0".asUInt(32.W))
     val sat_count_inc = (sat_count +& sat_sum)(31, 0)
     val sat_carry = (sat_count +& sat_sum)(32)
-    val sat_count_w = Mux(dlv_sat_clr_d1, Cat("b0".asUInt(24.W), sat_sum),
+    val sat_count_w = Mux(dlv_sat_clr_d1, sat_sum,
                       Mux(sat_carry, Fill(32, true.B), sat_count_inc))
     val sat_reg_en = dlv_sat_vld_d1 & ((sat_sum.orR) | dlv_sat_clr_d1);
     when(sat_reg_en){

@@ -112,10 +112,11 @@ when(accu_valid){
 val accu_ctrl_stripe_end = RegEnable(accu_stripe_end, false.B, accu_valid)
 val accu_ctrl_channel_end = RegEnable(accu_channel_end, false.B, accu_valid)
 val accu_ctrl_layer_end = RegEnable(accu_layer_end, false.B, accu_valid)
-val accu_ctrl_dlv_elem_mask = RegEnable(accu_layer_end, false.B, accu_valid)
+val accu_ctrl_dlv_elem_mask = RegEnable(accu_channel_end, false.B, accu_valid)
 
 io.accu_ctrl_pd.bits := Cat(accu_ctrl_dlv_elem_mask, accu_ctrl_layer_end, accu_ctrl_channel_end, 
                       accu_ctrl_stripe_end, "b1".asUInt(3.W), accu_ctrl_addr) //(8,6) digit is for reserve.
+
 
 
 }}

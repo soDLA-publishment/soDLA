@@ -53,7 +53,7 @@ class NV_NVDLA_CDP_REG_dual extends Module{
     //         └──┴──┘       └──┴──┘ 
     withClock(io.nvdla_core_clk){
 
-    // Address decode
+     // Address decode
     val nvdla_cdp_d_cya_0_wren = (io.reg.offset === "hb8".asUInt(32.W)) & io.reg.wr_en 
     val nvdla_cdp_d_data_format_0_wren = (io.reg.offset === "h68".asUInt(32.W)) & io.reg.wr_en 
     val nvdla_cdp_d_datin_offset_0_wren = (io.reg.offset === "h74".asUInt(32.W)) & io.reg.wr_en 
@@ -63,7 +63,7 @@ class NV_NVDLA_CDP_REG_dual extends Module{
     val nvdla_cdp_d_datout_scale_0_wren = (io.reg.offset === "h84".asUInt(32.W)) & io.reg.wr_en 
     val nvdla_cdp_d_datout_shifter_0_wren = (io.reg.offset === "h88".asUInt(32.W)) & io.reg.wr_en 
     val nvdla_cdp_d_dst_base_addr_high_0_wren = (io.reg.offset === "h54".asUInt(32.W)) & io.reg.wr_en 
-    val nvdla_cdp_d_dst_base_addr_low_0_wren = (io.reg.offset === "h54".asUInt(32.W)) & io.reg.wr_en 
+    val nvdla_cdp_d_dst_base_addr_low_0_wren = (io.reg.offset === "h50".asUInt(32.W)) & io.reg.wr_en 
     val nvdla_cdp_d_dst_compression_en_0_wren = (io.reg.offset === "h64".asUInt(32.W)) & io.reg.wr_en 
     val nvdla_cdp_d_dst_dma_cfg_0_wren = (io.reg.offset === "h60".asUInt(32.W)) & io.reg.wr_en 
     val nvdla_cdp_d_dst_line_stride_0_wren = (io.reg.offset === "h58".asUInt(32.W)) & io.reg.wr_en 
@@ -156,17 +156,17 @@ class NV_NVDLA_CDP_REG_dual extends Module{
     // Register: NVDLA_CDP_D_CYA_0    Field: cya
     io.field.cya := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_d_cya_0_wren)
     // Register: NVDLA_CDP_D_DATA_FORMAT_0    Field: input_data_type
-    io.field.input_data_type := RegEnable(io.reg.wr_data(1, 0), "b0".asUInt(2.W), nvdla_cdp_d_data_format_0_wren)
+    io.field.input_data_type := RegEnable(io.reg.wr_data(1, 0), "b01".asUInt(2.W), nvdla_cdp_d_data_format_0_wren)
     // Register: NVDLA_CDP_D_DATIN_OFFSET_0    Field: datin_offset
     io.field.datin_offset := RegEnable(io.reg.wr_data(15, 0), "b0".asUInt(16.W), nvdla_cdp_d_datin_offset_0_wren)
     // Register: NVDLA_CDP_D_DATIN_SCALE_0    Field: datin_scale
-    io.field.datin_scale := RegEnable(io.reg.wr_data(15, 0), "b0".asUInt(16.W), nvdla_cdp_d_datin_scale_0_wren)
+    io.field.datin_scale := RegEnable(io.reg.wr_data(15, 0), "b0000000000000001".asUInt(16.W), nvdla_cdp_d_datin_scale_0_wren)
     // Register: NVDLA_CDP_D_DATIN_SHIFTER_0    Field: datin_shifter
     io.field.datin_shifter := RegEnable(io.reg.wr_data(4, 0), "b0".asUInt(5.W), nvdla_cdp_d_datin_shifter_0_wren)
     // Register: NVDLA_CDP_D_DATOUT_OFFSET_0    Field: datout_offset
     io.field.datout_offset := RegEnable(io.reg.wr_data(31, 0), "b0".asUInt(32.W), nvdla_cdp_d_datout_offset_0_wren)
     // Register: NVDLA_CDP_D_DATOUT_SCALE_0    Field: datout_scale
-    io.field.datout_scale := RegEnable(io.reg.wr_data(15, 0), "b0".asUInt(16.W), nvdla_cdp_d_datout_scale_0_wren)
+    io.field.datout_scale := RegEnable(io.reg.wr_data(15, 0), "b0000000000000001".asUInt(16.W), nvdla_cdp_d_datout_scale_0_wren)
     // Register: NVDLA_CDP_D_DATOUT_SHIFTER_0    Field: datout_shifter
     io.field.datout_shifter := RegEnable(io.reg.wr_data(5, 0), "b0".asUInt(6.W), nvdla_cdp_d_datout_shifter_0_wren)
     // Register: NVDLA_CDP_D_DST_BASE_ADDR_HIGH_0    Field: dst_base_addr_high

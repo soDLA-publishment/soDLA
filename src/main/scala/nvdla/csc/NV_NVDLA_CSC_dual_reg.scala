@@ -119,7 +119,7 @@ class NV_NVDLA_CSC_dual_reg extends Module{
     //nvdla_csc_d_weight_size_ext_1_0_out
     "h30".asUInt(32.W)  -> Cat("b0".asUInt(3.W), io.field.weight_kernel, "b0".asUInt(3.W), io.field.weight_channel_ext), 
     //nvdla_csc_d_wmb_bytes_0_out
-    "h38".asUInt(32.W)  -> Cat("b0".asUInt(4.W), io.field.wmb_bytes, "b0".asUInt(7.W)), 
+    "h38".asUInt(32.W)  -> Cat("b0".asUInt(4.W), io.field.wmb_bytes), 
     //nvdla_csc_d_zero_padding_0_out
     "h54".asUInt(32.W)  -> Cat("b0".asUInt(11.W), io.field.pad_top, "b0".asUInt(11.W), io.field.pad_left),
     //nvdla_csc_d_zero_padding_value_0_out
@@ -202,5 +202,6 @@ class NV_NVDLA_CSC_dual_reg extends Module{
     io.field.pad_top := RegEnable(io.reg.wr_data(20,16), "b0".asUInt(5.W), nvdla_csc_d_zero_padding_0_wren)
     //Register: NVDLA_CSC_D_ZERO_PADDING_VALUE_0    Field: pad_value
     io.field.pad_value := RegEnable(io.reg.wr_data(15,0), "b0".asUInt(16.W), nvdla_csc_d_zero_padding_value_0_wren)                                                                   
+
 
 }}

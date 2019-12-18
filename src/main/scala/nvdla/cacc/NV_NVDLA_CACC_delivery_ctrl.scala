@@ -16,7 +16,7 @@ class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Modu
         val dbuf_rd_ready = Input(Bool())
         val dbuf_rd_addr = ValidIO(UInt(conf.CACC_DBUF_AWIDTH.W))
         val dbuf_rd_layer_end = Output(Bool())
-        val dbuf_wr = new nvdla_wr_if(conf.CACC_ABUF_AWIDTH, conf.CACC_ABUF_WIDTH)
+        val dbuf_wr = new nvdla_wr_if(conf.CACC_DBUF_AWIDTH, conf.CACC_DBUF_WIDTH)
 
         //reg2dp
         val dp2reg_done = Output(Bool())
@@ -66,7 +66,7 @@ val dlv_layer_end = io.dlv_pd(1)
 val dbuf_wr_addr_pre = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
 val dbuf_wr_addr_out = RegInit("b0".asUInt(conf.CACC_DBUF_AWIDTH.W))
 val dbuf_wr_en_out = RegInit(false.B)
-val dbuf_wr_data_out = Reg(UInt(conf.CACC_DBUF_WIDTH.W))
+val dbuf_wr_data_out = RegInit("b0".asUInt(conf.CACC_DBUF_WIDTH.W))
 
 val dbuf_wr_addr_w = dbuf_wr_addr_pre + 1.U
 
@@ -144,7 +144,7 @@ val dlv_end_set = io.dlv_valid & dlv_stripe_end & dlv_layer_end
 val dlv_end_addr_w = dbuf_wr_addr_pre
 val dlv_end_clr = dlv_pop & (io.dbuf_rd_addr.bits === dlv_end_tag0_addr) & dlv_end_tag0_vld
 val dlv_end_tag0_vld_w = Mux(dlv_end_tag1_vld | dlv_end_set, true.B, Mux(dlv_end_clr, false.B, dlv_end_tag0_vld))
-val dlv_end_tag1_vld_w = Mux(dlv_end_tag0_vld | dlv_end_set, true.B, Mux(dlv_end_clr, false.B, dlv_end_tag1_vld))
+val dlv_end_tag1_vld_w = Mux(dlv_end_tag0_vld & dlv_end_set, true.B, Mux(dlv_end_clr, false.B, dlv_end_tag1_vld))
 val dlv_end_tag0_en = (dlv_end_set & ~dlv_end_tag0_vld) | (dlv_end_set & dlv_end_clr) |(dlv_end_clr & dlv_end_tag1_vld);
 val dlv_end_tag1_en = (dlv_end_set & dlv_end_tag0_vld & ~dlv_end_clr);
 val dlv_end_tag0_addr_w = Mux(dlv_end_tag1_vld, dlv_end_tag1_addr, dlv_end_addr_w)
@@ -159,6 +159,7 @@ when(dlv_end_tag0_en){
 when(dlv_end_tag1_en){
     dlv_end_tag1_addr := dlv_end_tag1_addr_w
 }
+
 
 
 }}
