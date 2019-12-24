@@ -190,7 +190,7 @@ withClock(io.nvdla_core_clk){
     io.abuf_wr.data := RegEnable(calc_pout.asUInt, calc_wr_en_out)
 
     // to dbuffer, 1 pipe.
-    io.dlv_data := RegEnable(calc_fout.asUInt, calc_dlv_valid_out)
+    io.dlv_data := RegEnable(calc_fout, calc_dlv_valid_out)
     io.dlv_valid := RegNext(calc_dlv_valid_out, false.B)
     io.dlv_mask := RegNext(calc_dlv_valid_out, false.B)
     val dlv_stripe_end = RegEnable(calc_stripe_end_out, false.B, calc_dlv_valid_out)
