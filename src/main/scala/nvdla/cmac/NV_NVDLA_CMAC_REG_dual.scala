@@ -6,7 +6,7 @@ import chisel3.util._
 import chisel3.experimental.chiselName
 
 @chiselName
-class NV_NVDLA_CMAC_REG_dual(useRealClock: Boolean = false) extends Module {
+class NV_NVDLA_CMAC_REG_dual extends Module {
   val io = IO(new Bundle {
     // clk
     val nvdla_core_clk = Input(Clock())
@@ -42,11 +42,7 @@ class NV_NVDLA_CMAC_REG_dual(useRealClock: Boolean = false) extends Module {
   //           └─┐  ┐  ┌───────┬──┐  ┌──┘
   //             │ ─┤ ─┤       │ ─┤ ─┤
   //             └──┴──┘       └──┴──┘
-
-  val internal_clock = if (useRealClock) io.nvdla_core_clk else clock
-
-  class dualImp {
-
+withClock(io.nvdla_core_clk){
     // Address decode
     val nvdla_cmac_a_d_misc_cfg_0_wren = (io.reg.offset === "hc".asUInt(32.W)) & io.reg.wr_en
     val nvdla_cmac_a_d_op_enable_0_wren = (io.reg.offset === "h8".asUInt(32.W)) & io.reg.wr_en
@@ -71,6 +67,4 @@ class NV_NVDLA_CMAC_REG_dual(useRealClock: Boolean = false) extends Module {
     // and there must use  <"b01".asUInt(2.W)> instead of <"b01">, otherwise chisel will optimizate proc_precision to 1bit!
     io.field.proc_precision := RegEnable(io.reg.wr_data(13, 12), "b01".asUInt(2.W), nvdla_cmac_a_d_misc_cfg_0_wren)
   }
-
-  val dual = withClock(internal_clock){new dualImp}
 }

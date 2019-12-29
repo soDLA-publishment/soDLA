@@ -8,7 +8,7 @@ import chisel3.iotesters.Driver
 
 //this module is to mac dat and wt
 
-class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: nvdlaConfig) extends Module {
+class NV_NVDLA_CMAC_CORE_mac(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
@@ -42,12 +42,7 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: nvdlaC
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-
-    val internal_clock = if(useRealClock) io.nvdla_core_clk 
-                         else clock
-
-
-    class macImpl{
+withClock(io.nvdla_core_clk){
 
     val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(0.asSInt((2*conf.CMAC_BPE).W)))
 
@@ -67,11 +62,9 @@ class NV_NVDLA_CMAC_CORE_mac(useRealClock:Boolean = false)(implicit conf: nvdlaC
 
     }
 
-    val mac = withClock(internal_clock){new macImpl} 
-
-}
+}}
 
 object NV_NVDLA_CMAC_CORE_macDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_mac(useRealClock = true))
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_mac)
 }

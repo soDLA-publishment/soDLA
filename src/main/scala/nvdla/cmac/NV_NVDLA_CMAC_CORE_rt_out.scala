@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_CMAC_CORE_rt_out(useRealClock:Boolean = false)(implicit val conf: nvdlaConfig) extends Module {
+class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
@@ -37,9 +37,7 @@ class NV_NVDLA_CMAC_CORE_rt_out(useRealClock:Boolean = false)(implicit val conf:
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘
-    val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
-
-    class rt_outImpl{
+withClock(io.nvdla_core_clk){
     //==========================================================
     // Output retiming
     //==========================================================
@@ -90,13 +88,11 @@ class NV_NVDLA_CMAC_CORE_rt_out(useRealClock:Boolean = false)(implicit val conf:
     io.mac2accu.bits.data := out_rt_data_d(conf.CMAC_OUT_RT_LATENCY)
     io.dp2reg_done := dp2reg_done_d(conf.CMAC_OUT_RT_LATENCY)
   
-}
-    val rt_out = withClock(internal_clock){new rt_outImpl}
-}
+}}
 
 object NV_NVDLA_CMAC_CORE_rt_outDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_rt_out(useRealClock = true))
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CMAC_CORE_rt_out)
 }
 
     

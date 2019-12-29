@@ -45,6 +45,13 @@ class nv_flopram(dep: Int, wid: Int, wr_reg: Boolean = false) extends Module{
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
+// if(!conf.FPGA){
+//     val UJ_BBOX2UNIT_UNUSED_pwrbus = Array.fill(32){Module(new NV_BLKBOX_SINK)}
+//     for(i <- 0 to 31){
+//         UJ_BBOX2UNIT_UNUSED_pwrbus(i).io.A := io.pwrbus_ram_pd(i)
+//     }
+// }
+
 val di_d = if(wr_reg) withClock(io.clk){RegEnable(io.di, io.iwe.get)} // -wr_reg
             else io.di
 
@@ -62,7 +69,7 @@ withClock(internal_clk){
         if(dep>1){
             for(i <- 0 to dep-1){
                 when(io.wa.get === i.U){
-                    ram_ff(i) := io.di
+                    ram_ff(i) := di_d
                 }
             } 
         }
@@ -74,3 +81,9 @@ withClock(internal_clk){
     io.dout := MuxLookup(io.ra, "b0".asUInt(wid.W), 
         (0 to dep) map { i => i.U -> ram_ff(i)} )
 }}
+
+
+object NV_NVDLA_CSC_SG_dat_fifo_flopram_rwsa_4x33 extends App {
+//   implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new nv_flopram(dep = 4, wid = 33, wr_reg = true))
+}

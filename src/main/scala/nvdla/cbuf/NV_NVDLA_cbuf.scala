@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 
-class NV_NVDLA_cbuf(useRealClock:Boolean = true)(implicit val conf: nvdlaConfig) extends Module {
+class NV_NVDLA_cbuf((implicit val conf: nvdlaConfig) extends Module {
  
   val io = IO(new Bundle {
     //clock
@@ -23,11 +23,7 @@ class NV_NVDLA_cbuf(useRealClock:Boolean = true)(implicit val conf: nvdlaConfig)
 
   })
 
-
-   val internal_clock = if(useRealClock) io.nvdla_core_clk else clock
-
-
-class cbufImpl{
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 //////////step1:write handle  
     val bank_ram_wr_en_d0 = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(conf.CBUF_WR_PORT_NUMBER, Bool()))))
    
@@ -405,14 +401,10 @@ class cbufImpl{
         }
     }
 
-}
-
-    val cbuf = withClockAndReset(internal_clock, !io.nvdla_core_rstn){new cbufImpl} 
-
-}
+}}
 
 object NV_NVDLA_cbufDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig
-  chisel3.Driver.execute(args, () => new NV_NVDLA_cbuf(useRealClock = true))
+  chisel3.Driver.execute(args, () => new NV_NVDLA_cbuf)
 }
 

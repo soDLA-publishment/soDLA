@@ -44,9 +44,7 @@ class NV_NVDLA_CMAC_reg(implicit val conf: nvdlaConfig, useRealClock:Boolean=fal
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
-    val internal_clock = if (useRealClock) io.nvdla_core_clk else clock
-
-withClock(internal_clock){
+withClock(io.nvdla_core_clk){
 
     //Instance single register group
     val dp2reg_consumer = RegInit(false.B)
