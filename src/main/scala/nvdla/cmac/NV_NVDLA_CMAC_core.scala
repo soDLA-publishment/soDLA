@@ -50,7 +50,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     //==========================================================
     // input retiming logic
     //==========================================================
-    val u_rt_in = Module(new NV_NVDLA_CMAC_CORE_rt_in(useRealClock = true))
+    val u_rt_in = Module(new NV_NVDLA_CMAC_CORE_rt_in)
 
     u_rt_in.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF)
     u_rt_in.io.sc2mac_dat <> io.sc2mac_dat
@@ -59,7 +59,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     //==========================================================
     // input shadow and active pipeline
     //==========================================================
-    val u_active = Module(new NV_NVDLA_CMAC_CORE_active(useRealClock = true))
+    val u_active = Module(new NV_NVDLA_CMAC_CORE_active)
 
     u_active.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+1)
     u_active.io.in_dat <> u_rt_in.io.in_dat
@@ -70,8 +70,8 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     //==========================================================
     // MAC CELLs
     //==========================================================
-    val u_mac = Array.fill(conf.CMAC_ATOMK_HALF){Module(new NV_NVDLA_CMAC_CORE_mac(useRealClock = true))}
-    val u_rt_out = Module(new NV_NVDLA_CMAC_CORE_rt_out(useRealClock = true))  // use seq
+    val u_mac = Array.fill(conf.CMAC_ATOMK_HALF){Module(new NV_NVDLA_CMAC_CORE_mac)}
+    val u_rt_out = Module(new NV_NVDLA_CMAC_CORE_rt_out)  // use seq
 
     for(i<- 0 to conf.CMAC_ATOMK_HALF-1){
 
