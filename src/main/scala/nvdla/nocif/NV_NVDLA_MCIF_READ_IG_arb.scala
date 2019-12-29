@@ -45,7 +45,7 @@ withClock(io.nvdla_core_clk){
     val arb_src_rdy = Wire(Vec(conf.RDMA_NUM, Bool()))
     val arb_src_vld = Wire(Vec(conf.RDMA_NUM, Bool()))
 
-    val pipe_p = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_IS_pipe(conf.NVDLA_DMA_RD_IG_PW))}
+    val pipe_p = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_BC_OS_pipe(conf.NVDLA_DMA_RD_IG_PW))}
     for(i <- 0 to conf.RDMA_NUM-1){
         pipe_p(i).io.clk := io.nvdla_core_clk
 

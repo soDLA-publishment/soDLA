@@ -53,7 +53,7 @@ withClock(io.nvdla_core_clk){
     val src_dat_gnts = Wire(Vec(conf.WDMA_MAX_NUM, Bool()))
     val all_gnts = Wire(Vec(conf.WDMA_MAX_NUM, Bool()))
 
-    val u_pipe = Array.fill(conf.WDMA_NUM){Module(new NV_NVDLA_BC_pipe(conf.NVDLA_DMA_WR_IG_PW))}
+    val u_pipe = Array.fill(conf.WDMA_NUM){Module(new NV_NVDLA_BC_OS_pipe(conf.NVDLA_DMA_WR_IG_PW))}
     val u_dfifo = Array.fill(conf.WDMA_NUM){Module(new NV_NVDLA_fifo(depth = 4, width = conf.NVDLA_DMA_WR_REQ-1, ram_type = 0, io_wr_count = true))}
     for(i<- 0 to conf.WDMA_NUM-1){
         u_pipe(i).io.clk := io.nvdla_core_clk

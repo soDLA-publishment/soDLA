@@ -41,7 +41,7 @@ withClock(io.nvdla_core_clk){
     val cmux_in_en = RegInit(false.B)
     val cacc_rdy = Wire(Bool())
     val cmux2dp_prdy = Wire(Bool())
-    val pipe_p1 = Module(new NV_NVDLA_IS_pipe(conf.DP_IN_DW+2))
+    val pipe_p1 = Module(new NV_NVDLA_BC_OS_pipe(conf.DP_IN_DW+2))
     pipe_p1.io.clk := io.nvdla_core_clk
     pipe_p1.io.vi := io.cacc2sdp_pd.valid
     io.cacc2sdp_pd.ready := pipe_p1.io.ro
@@ -65,7 +65,7 @@ withClock(io.nvdla_core_clk){
 
     val cmux2dp_pd = cmux_pd(conf.DP_IN_DW-1, 0)
 
-    val pipe_p2 = Module(new NV_NVDLA_IS_pipe(conf.DP_IN_DW))
+    val pipe_p2 = Module(new NV_NVDLA_BC_IS_pipe(conf.DP_IN_DW))
     pipe_p2.io.clk := io.nvdla_core_clk
     pipe_p2.io.vi := cmux2dp_pvld
     cmux2dp_prdy := pipe_p2.io.ro
