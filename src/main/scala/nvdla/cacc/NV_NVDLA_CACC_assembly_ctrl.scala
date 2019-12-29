@@ -118,6 +118,6 @@ io.accu_ctrl_pd.bits := Cat(accu_ctrl_dlv_elem_mask, accu_ctrl_layer_end, accu_c
                       accu_ctrl_stripe_end, "b1".asUInt(3.W), accu_ctrl_addr) //(8,6) digit is for reserve.
 
 
-
 }}
+
 

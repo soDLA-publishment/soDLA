@@ -5,8 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //calculate accumulate data
-
-class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module {
+class NV_NVDLA_CACC_calculator(implicit val conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
         //clk
@@ -20,7 +19,7 @@ class NV_NVDLA_CACC_calculator(implicit conf: caccConfiguration) extends Module 
         //dlv buf
         val dlv_valid = Output(Bool())
         val dlv_mask = Output(Bool()) 
-        val dlv_data = Output(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
+        val dlv_data = Output(UInt((conf.CACC_ATOMK*conf.CACC_FINAL_WIDTH).W))
         val dlv_pd = Output(UInt(2.W))  
 
         //control
@@ -108,7 +107,7 @@ withClock(io.nvdla_core_clk){
     val calc_pout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
     val calc_fout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
 
-    val u_cell_int8 = Array.fill(conf.CACC_ATOMK){Module(new NV_soDLA_CACC_CALC_int8)}
+    val u_cell_int8 = Array.fill(conf.CACC_ATOMK){Module(new NV_NVDLA_CACC_CALC_int8)}
 
     for(i <- 0 to conf.CACC_ATOMK-1){
         u_cell_int8(i).io.nvdla_core_clk := io.nvdla_cell_clk
@@ -190,7 +189,7 @@ withClock(io.nvdla_core_clk){
     io.abuf_wr.data := RegEnable(calc_pout.asUInt, calc_wr_en_out)
 
     // to dbuffer, 1 pipe.
-    io.dlv_data := RegEnable(calc_fout, calc_dlv_valid_out)
+    io.dlv_data := RegEnable(calc_fout.asUInt, calc_dlv_valid_out)
     io.dlv_valid := RegNext(calc_dlv_valid_out, false.B)
     io.dlv_mask := RegNext(calc_dlv_valid_out, false.B)
     val dlv_stripe_end = RegEnable(calc_stripe_end_out, false.B, calc_dlv_valid_out)
@@ -218,8 +217,9 @@ withClock(io.nvdla_core_clk){
     val sat_count = RegInit("b0".asUInt(32.W))
     val sat_count_inc = (sat_count +& sat_sum)(31, 0)
     val sat_carry = (sat_count +& sat_sum)(32)
-    val sat_count_w = Mux(dlv_sat_clr_d1, sat_sum,
-                      Mux(sat_carry, Fill(32, true.B), sat_count_inc))
+    val sat_count_w = Wire(UInt(32.W))
+    sat_count_w := Mux(dlv_sat_clr_d1, sat_sum,
+                   Mux(sat_carry, Fill(32, true.B), sat_count_inc))
     val sat_reg_en = dlv_sat_vld_d1 & ((sat_sum.orR) | dlv_sat_clr_d1);
     when(sat_reg_en){
         sat_count := sat_count_w
@@ -228,3 +228,4 @@ withClock(io.nvdla_core_clk){
     io.dp2reg_sat_count := sat_count
 
 }}
+

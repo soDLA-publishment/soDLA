@@ -6,7 +6,7 @@ import chisel3.util._
 
 //this module is to process dat
 
-class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Module {
+class NV_NVDLA_CACC_delivery_ctrl(implicit val conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
         //clk
@@ -22,7 +22,7 @@ class NV_NVDLA_CACC_delivery_ctrl(implicit conf: caccConfiguration) extends Modu
         val dp2reg_done = Output(Bool())
 
         //dlv
-        val dlv_data = Input(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
+        val dlv_data = Input(UInt((conf.CACC_ATOMK*conf.CACC_FINAL_WIDTH).W))
         val dlv_mask = Input(Bool())
         val dlv_pd = Input(UInt(2.W))
         val dlv_valid = Input(Bool())
@@ -74,7 +74,7 @@ dbuf_wr_en_out := io.dlv_valid
 when(io.dlv_valid){
     dbuf_wr_addr_pre := dbuf_wr_addr_w
     dbuf_wr_addr_out := dbuf_wr_addr_pre
-    dbuf_wr_data_out := io.dlv_data.asUInt
+    dbuf_wr_data_out := io.dlv_data
 }
 
 io.dbuf_wr.addr.valid := dbuf_wr_en_out
@@ -161,5 +161,11 @@ when(dlv_end_tag1_en){
 }
 
 
-
 }}
+
+
+object NV_NVDLA_CACC_delivery_ctrlDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_delivery_ctrl())
+}
+

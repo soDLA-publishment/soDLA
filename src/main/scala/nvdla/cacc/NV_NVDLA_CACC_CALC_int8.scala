@@ -6,7 +6,6 @@ import chisel3.util._
 import chisel3.iotesters.Driver
 
 //this module is to process dat
-
 class NV_NVDLA_CACC_CALC_int8 extends Module {
 
     val io = IO(new Bundle {
@@ -112,9 +111,5 @@ withClock(io.nvdla_core_clk){
     io.out_final_data := RegEnable(i_final_result, i_final_vld)
 
 }}
-
-object NV_NVDLA_CACC_CALC_int8Driver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_CACC_CALC_int8())
-}
 
 
