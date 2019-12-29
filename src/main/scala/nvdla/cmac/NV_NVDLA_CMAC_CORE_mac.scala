@@ -60,7 +60,6 @@ withClock(io.nvdla_core_clk){
     io.mac_out.bits := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
     io.mac_out.valid := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
 
-    }
 
 }}
 
