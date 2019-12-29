@@ -472,7 +472,6 @@ withClock(io.nvdla_clock.nvdla_core_clk){
 
     if(conf.NVDLA_SDP_BS_ENABLE){
         bs_data_in_pvld.get := cfg_bs_en & sdp_cmux2dp_valid
-        bs_data_in_pd := sdp_cmux2dp_data
 
         //covert NVDLA_SDP_MAX_THROUGHPUT to NVDLA_SDP_BS_THROUGHPUT
         u_bs_dppack.get.io.nvdla_core_clk := nvdla_gated_bcore_clk
