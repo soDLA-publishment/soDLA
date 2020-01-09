@@ -49,20 +49,20 @@ TODO
 1. PeekPokeTester under chisel, and verification with formal verification tools.
 2. FPGA test(Thanks to [Professor Di Zhao's Group](http://sourcedb.ict.cas.cn/cn/jssrck/201803/t20180309_4971421.html)).
 3. soDLA doc page.
-4. Resume cora package.
-5. Chisel3.2 full support(soDLA_beta will face "OutofMemory" issue in the latest Chisel3.2). 
+4. Chisel3.2 full support(soDLA_beta will face "OutofMemory" issue in the latest Chisel3.2). 
 
 
-cora package
+cora(designed by the same flow as soDLA, closed-source forever, may post a demo version in the future)
 ----------------
 
 This is a accelerator of self-driving car with following features:
 
-1. 4-d or 6-d floating point matrix operations.
+1. basic kalman filter
+2. pid
+...(will add more functions in the future)
 
-2. cordic
-
-3. A pipeline of kalman-filter
+if you need it, please send me an email, or leave a comment on issue.
+Cora has been anchored on [decred timestamp server](https://timestamp.decred.org/). 
 
 
 
