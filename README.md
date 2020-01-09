@@ -52,19 +52,5 @@ TODO
 4. Chisel3.2 full support(soDLA_beta will face "OutofMemory" issue in the latest Chisel3.2). 
 
 
-cora
-----------------
-
-Designed by the same flow as soDLA, closed-source forever, may post a demo version in the future.
-
-This is a accelerator of self-driving car with following features:
-
-1. basic kalman filter
-2. pid
-...(will add more functions in the future)
-
-if you need it, please send me an email, or leave a comment on issue.
-Cora has been anchored on [decred timestamp server](https://timestamp.decred.org/). 
-
 
 
