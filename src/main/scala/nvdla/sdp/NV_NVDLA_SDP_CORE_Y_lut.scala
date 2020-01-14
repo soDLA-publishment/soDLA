@@ -291,9 +291,6 @@ val dat_fifo_wr_pd_0 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => 
 val dat_fifo_wr_pd_1 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_in_y1(i)}).asUInt
 val dat_fifo_wr_pd = Cat(dat_fifo_wr_pd_1, dat_fifo_wr_pd_0)
 
-val out_y0 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_wr_pd_0(16*i+15, 16*i)})
-val out_y1 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_wr_pd_1(16*i+15, 16*i)})
-
 val dat_fifo_rd_prdy = Wire(Bool())
 val lut_out_prdy = Wire(Bool())
 val u_dat = Module(new NV_NVDLA_fifo(depth = 2, width = 32*conf.NVDLA_SDP_EW_THROUGHPUT, ram_type = 0, distant_wr_req = false))
@@ -304,6 +301,9 @@ val dat_fifo_rd_pvld = u_dat.io.rd_pvld
 u_dat.io.rd_prdy := dat_fifo_rd_prdy
 val dat_fifo_rd_pd = u_dat.io.rd_pd
 u_dat.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+    
+val out_y0 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_rd_pd(16*i+15, 16*i)})
+val out_y1 = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => dat_fifo_rd_pd(16*conf.NVDLA_SDP_EW_THROUGHPUT+16*i+15, 16*i)})
 
 // dat fifo rd
 dat_fifo_rd_prdy := lut_out_prdy;
