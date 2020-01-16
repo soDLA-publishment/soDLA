@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.iotesters.Driver
 
-class NV_CLK_gate_power extends Module {
+class NV_CLK_gate_power(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //nvdla core clock
         val clk = Input(Clock())
@@ -15,7 +15,7 @@ class NV_CLK_gate_power extends Module {
 
     })
 
-    if(useFPGA){
+    if(conf.useFPGA){
         io.clk_gated := io.clk
     }
     else{
@@ -27,11 +27,6 @@ class NV_CLK_gate_power extends Module {
     
     }
  
-}
-
-
-object NV_CLK_gate_powerDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_CLK_gate_power)
 }
 
 
