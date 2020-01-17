@@ -3,7 +3,7 @@ package nvdla
 import chisel3._
 import chisel3.experimental._
 
-class NV_NVDLA_slcg(input_num: Int = 1, io_slcg_disable: Boolean = false) extends Module {
+class NV_NVDLA_slcg(input_num: Int = 1, io_slcg_disable: Boolean = false)(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //in clock
         val nvdla_clock = Flipped(new nvdla_clock_if)
@@ -19,6 +19,10 @@ class NV_NVDLA_slcg(input_num: Int = 1, io_slcg_disable: Boolean = false) extend
 
 withClock(io.nvdla_clock.nvdla_core_clk){  
 
+    if(conf.useFPGA){
+        io.nvdla_core_gated_clk := io.nvdla_clock.nvdla_core_clk
+    }
+    else{
     val slcg_enable = if(io_slcg_disable) Some(RegInit(false.B)) else None
     val cfg_clk_en = Wire(Bool())
     if(io_slcg_disable){
@@ -36,6 +40,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     nvdla_core_clk_slcg.io.clk := io.nvdla_clock.nvdla_core_clk
     nvdla_core_clk_slcg.io.clk_en := nvdla_core_clk_slcg_en
     io.nvdla_core_gated_clk := nvdla_core_clk_slcg.io.clk_gated
+    }
 }}
 
 
