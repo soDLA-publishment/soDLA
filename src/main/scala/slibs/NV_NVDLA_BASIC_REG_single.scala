@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_BASIC_REG_single(useRealClock: Boolean = false) extends Module {
+class NV_NVDLA_BASIC_REG_single extends Module {
     val io = IO(new Bundle {
       // clk
       val nvdla_core_clk = Input(Clock())
@@ -41,10 +41,7 @@ class NV_NVDLA_BASIC_REG_single(useRealClock: Boolean = false) extends Module {
   //           └─┐  ┐  ┌───────┬──┐  ┌──┘
   //             │ ─┤ ─┤       │ ─┤ ─┤
   //             └──┴──┘       └──┴──┘
-
-  val internal_clock = if (useRealClock) io.nvdla_core_clk else clock
-
-  class singleImp {
+withClock(io.nvdla_core_clk){
     // Address decode
     val s_pointer_0_wren = (io.reg.offset === "h4".asUInt(32.W)) & io.reg.wr_en
     val s_status_0_wren = (io.reg.offset === "h0".asUInt(32.W)) & io.reg.wr_en
@@ -60,9 +57,6 @@ class NV_NVDLA_BASIC_REG_single(useRealClock: Boolean = false) extends Module {
 
     // Register flop declarations
     io.producer := RegEnable(io.reg.wr_data(0), false.B, s_pointer_0_wren)
-  }
-
-  val single = withClock(internal_clock){new singleImp}
-}
+}}
 
 

@@ -58,23 +58,23 @@ withClock(io.nvdla_core_clk){
     val wt_pre_sel = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
 
     when(io.in_wt.valid){
-
         wt_pre_nz := io.in_wt.bits.mask
-        wt_pre_sel := io.in_wt.bits.sel
-
         for(i <- 0 to conf.CMAC_ATOMC-1){
             when(io.in_wt.bits.mask(i)){
                 wt_pre_data(i) := io.in_wt.bits.data(i)
             }
         }   
     } 
+    for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
+        wt_pre_sel(i) := io.in_wt.bits.sel(i) & io.in_wt.valid
+    }
 
     //dat
     val dat_pre_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))
     val dat_pre_data = Reg(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)))
     val dat_pre_pvld = RegInit(false.B) 
-    val dat_pre_stripe_st_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
-    val dat_pre_stripe_end_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
+    val dat_pre_stripe_st = RegInit(false.B) 
+    val dat_pre_stripe_end = RegInit(false.B) 
 
     dat_pre_pvld := io.in_dat.valid
     when(io.in_dat.valid){
@@ -84,12 +84,10 @@ withClock(io.nvdla_core_clk){
                 dat_pre_data(i):=io.in_dat.bits.data(i)
             }
         } 
-        for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-            dat_pre_stripe_st_out(i) := io.in_dat_stripe_st //strip start
-            dat_pre_stripe_end_out(i) := io.in_dat_stripe_end //strip end
-        }
     }
 
+    dat_pre_stripe_st := io.in_dat_stripe_st & io.in_dat.valid//strip start
+    dat_pre_stripe_end := io.in_dat_stripe_end & io.in_dat.valid //strip end
 
 //==========================================================
 // wt:pre --> sd  this is a push and pop, when strip end, push weight, when strip start, pop weight
@@ -99,10 +97,10 @@ withClock(io.nvdla_core_clk){
     val wt_sd_pvld = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
     val wt_sd_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
     val wt_sd_data = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
-    val dat_actv_stripe_end = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
+    val dat_actv_stripe_end = RegInit(false.B)
         
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-        wt_sd_pvld(i) := Mux(wt_pre_sel(i), true.B, Mux(dat_pre_stripe_st_out(i), false.B, wt_sd_pvld(i)))
+        wt_sd_pvld(i) := Mux(wt_pre_sel(i), true.B, Mux(dat_pre_stripe_st, false.B, wt_sd_pvld(i)))
         when(wt_pre_sel(i)){
             wt_sd_nz(i) := wt_pre_nz
             for (j <- 0 to conf.CMAC_ATOMC-1){
@@ -113,7 +111,7 @@ withClock(io.nvdla_core_clk){
         }
     } 
 
-    dat_actv_stripe_end := dat_pre_stripe_end_out 
+    dat_actv_stripe_end := dat_pre_stripe_end
 
 //==========================================================
 // wt:sd --> actv  this is a push and pop, when strip end, push weight, when strip start, pop weight
@@ -121,22 +119,19 @@ withClock(io.nvdla_core_clk){
     //pop weight from shadow when new stripe begin.
 
     val wt_actv_vld = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(false.B)))
-    val wt_actv_pvld_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
+    val wt_actv_pvld = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
     val wt_actv_pvld_w = Wire(Vec(conf.CMAC_ATOMK_HALF,Bool()))
-    val wt_actv_nz_out = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
-    val wt_actv_data_out = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
+    val wt_actv_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
+    val wt_actv_data = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
         
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
-        wt_actv_pvld_w(i) := Mux(dat_pre_stripe_st_out(i), wt_sd_pvld(i), Mux(dat_actv_stripe_end(i), false.B, wt_actv_vld(i)))
+        wt_actv_pvld_w(i) := Mux(dat_pre_stripe_st, wt_sd_pvld(i), Mux(dat_actv_stripe_end, false.B, wt_actv_vld(i)))
         wt_actv_vld(i) := wt_actv_pvld_w(i)
         for (j <- 0 to conf.CMAC_ATOMC-1){
-            wt_actv_pvld_out(i)(j) := wt_actv_pvld_w(i)
-            when(dat_pre_stripe_st_out(i)&wt_actv_pvld_w(i)){
-                wt_actv_nz_out(i)(j) := wt_sd_nz(i)(j)
-                when(wt_sd_nz(i)(j)){
-                    wt_actv_data_out(i)(j):=wt_sd_data(i)(j)
-                }
-
+            wt_actv_pvld(i)(j) := wt_actv_pvld_w(i)
+            when(dat_pre_stripe_st & wt_actv_pvld_w(i)){
+                wt_actv_nz(i)(j) := wt_sd_nz(i)(j)
+                wt_actv_data(i)(j) := Fill(conf.CMAC_BPE, wt_sd_nz(i)(j)) & wt_sd_data(i)(j)
             }
         }
     } 
@@ -144,19 +139,18 @@ withClock(io.nvdla_core_clk){
 //==========================================================
 // dat:pre --> actv
 //==========================================================  
-
-    val dat_actv_data_reg = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
-    val dat_actv_nz_reg = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
-    val dat_actv_pvld_reg = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
+    val dat_actv_pvld = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
+    val dat_actv_nz = RegInit(VecInit(Seq.fill(conf.CMAC_ATOMK_HALF)(VecInit(Seq.fill(conf.CMAC_ATOMC)(false.B)))))
+    val dat_actv_data = Reg(Vec(conf.CMAC_ATOMK_HALF, Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W))))
 
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
         for (j <- 0 to conf.CMAC_ATOMC-1){
-            dat_actv_pvld_reg(i)(j) := dat_pre_pvld
+            dat_actv_pvld(i)(j) := dat_pre_pvld
             when(dat_pre_pvld){
-                dat_actv_nz_reg(i)(j) := dat_pre_nz(j)     
-            }
-            when(dat_pre_pvld&dat_pre_nz(j)){
-                dat_actv_data_reg(i)(j) := dat_pre_data(j)            
+                dat_actv_nz(i)(j) := dat_pre_nz(j)   
+                when(dat_pre_nz(j)){
+                    dat_actv_data(i)(j) := dat_pre_data(j)    
+                }
             }
         }
     }
@@ -164,13 +158,13 @@ withClock(io.nvdla_core_clk){
 //assign output  
     for(i <- 0 to conf.CMAC_ATOMK_HALF-1){
         for (j <- 0 to conf.CMAC_ATOMC-1){
-            io.dat_actv(i)(j).valid := dat_actv_pvld_reg(i)(j)
-            io.dat_actv(i)(j).bits.nz := dat_actv_nz_reg(i)(j)
-            io.dat_actv(i)(j).bits.data := dat_actv_data_reg(i)(j)
+            io.dat_actv(i)(j).valid := dat_actv_pvld(i)(j)
+            io.dat_actv(i)(j).bits.nz := dat_actv_nz(i)(j)
+            io.dat_actv(i)(j).bits.data := dat_actv_data(i)(j)
 
-            io.wt_actv(i)(j).valid := wt_actv_pvld_out(i)(j)
-            io.wt_actv(i)(j).bits.nz := wt_actv_nz_out(i)(j)
-            io.wt_actv(i)(j).bits.data := wt_actv_data_out(i)(j)
+            io.wt_actv(i)(j).valid := wt_actv_pvld(i)(j)
+            io.wt_actv(i)(j).bits.nz := wt_actv_nz(i)(j)
+            io.wt_actv(i)(j).bits.data := wt_actv_data(i)(j)
         }
     }
 

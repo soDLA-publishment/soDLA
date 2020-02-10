@@ -134,7 +134,7 @@ withClock(io.nvdla_core_clk){
     reg2dp_op_en_reg := Mux(io.dp2reg_done, "b0".asUInt(3.W), Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori))
     io.reg2dp_op_en := reg2dp_op_en_reg(2)
 
-    io.slcg_op_en := ShiftRegister(Fill(11, reg2dp_op_en_ori), 3)
+    io.slcg_op_en := ShiftRegister(Fill(conf.CMAC_SLCG_NUM, reg2dp_op_en_ori), 3)
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
     // GENERATE ACCESS LOGIC TO EACH REGISTER GROUP                       //
