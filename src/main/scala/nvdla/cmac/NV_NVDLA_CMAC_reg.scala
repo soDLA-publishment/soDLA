@@ -56,7 +56,6 @@ withClock(io.nvdla_core_clk){
     val s_reg_wr_en = Wire(Bool())
 
     val u_single_reg = Module(new NV_NVDLA_BASIC_REG_single)
-
     u_single_reg.io.nvdla_core_clk := io.nvdla_core_clk
     u_single_reg.io.reg.offset := reg_offset
     u_single_reg.io.reg.wr_data := reg_wr_data 
@@ -134,7 +133,9 @@ withClock(io.nvdla_core_clk){
     reg2dp_op_en_reg := Mux(io.dp2reg_done, "b0".asUInt(3.W), Cat(reg2dp_op_en_reg(1,0), reg2dp_op_en_ori))
     io.reg2dp_op_en := reg2dp_op_en_reg(2)
 
-    io.slcg_op_en := ShiftRegister(Fill(conf.CMAC_SLCG_NUM, reg2dp_op_en_ori), 3)
+    io.slcg_op_en := ShiftRegister(Fill(conf.CMAC_SLCG_NUM, reg2dp_op_en_ori), 3, 
+    "b0".asUInt(conf.CMAC_SLCG_NUM.W), true.B)
+
     ////////////////////////////////////////////////////////////////////////
     //                                                                    //
     // GENERATE ACCESS LOGIC TO EACH REGISTER GROUP                       //
