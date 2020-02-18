@@ -97,7 +97,7 @@ withClock(io.nvdla_core_clk){
     val rsp_mc_in_pd = io.mcif2cdma_dat_rd_rsp_pd.bits
 
     val rsp_mc_out_prdy = Wire(Bool())
-    val pipe_p2 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_CDMA_MEM_RD_REQ)}
+    val pipe_p2 = Module{new NV_NVDLA_IS_pipe(conf.NVDLA_CDMA_MEM_RD_RSP)}
     pipe_p2.io.clk := io.nvdla_core_clk
     pipe_p2.io.vi := rsp_mc_in_pvld
     val rsp_mc_in_prdy = pipe_p2.io.ro
