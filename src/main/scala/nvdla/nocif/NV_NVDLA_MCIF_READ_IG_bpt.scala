@@ -116,7 +116,7 @@ withClock(io.nvdla_core_clk){
         }  
     }
     else{
-        slot_needed := true.B
+        slot_needed := 1.U
     }
     
 
