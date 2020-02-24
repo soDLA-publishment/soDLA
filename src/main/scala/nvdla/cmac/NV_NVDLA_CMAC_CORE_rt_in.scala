@@ -9,6 +9,7 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
 
         // odif
         // sc2mac dat&wt
@@ -41,7 +42,7 @@ class NV_NVDLA_CMAC_CORE_rt_in(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withClock(io.nvdla_core_clk){
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
     // retiming init
 
     val in_rt_dat_data_d = retiming(Vec(conf.CMAC_ATOMC, UInt(conf.CMAC_BPE.W)), conf.CMAC_IN_RT_LATENCY)

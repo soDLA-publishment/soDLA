@@ -11,6 +11,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
 
         // input_dat
         val in_dat = Flipped(ValidIO(new csc2cmac_data_if))  /* data valid */
@@ -48,7 +49,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withClock(io.nvdla_core_clk){
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 //==========================================================
 // wt&dat:in --> pre
 //==========================================================   

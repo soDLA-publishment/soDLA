@@ -10,6 +10,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_clock = Flipped(new nvdla_clock_if)
+        val nvdla_core_rstn = Input(Bool())
         val slcg_op_en = Input(UInt(conf.CMAC_SLCG_NUM.W))
 
         //odif
@@ -42,6 +43,8 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘
 //             │ ─┤ ─┤       │ ─┤ ─┤
 //             └──┴──┘       └──┴──┘
+withClockAndReset(io.nvdla_clock.nvdla_core_clk, !io.nvdla_core_rstn){
+
     //==========================================================
     // interface with register config
     //==========================================================
@@ -53,6 +56,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     val u_rt_in = Module(new NV_NVDLA_CMAC_CORE_rt_in)
 
     u_rt_in.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF)
+    u_rt_in.io.nvdla_core_rstn := io.nvdla_core_rstn
     u_rt_in.io.sc2mac_dat <> io.sc2mac_dat
     u_rt_in.io.sc2mac_wt <> io.sc2mac_wt
 
@@ -62,6 +66,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     val u_active = Module(new NV_NVDLA_CMAC_CORE_active)
 
     u_active.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+1)
+    u_active.io.nvdla_core_rstn := io.nvdla_core_rstn
     u_active.io.in_dat <> u_rt_in.io.in_dat
     u_active.io.in_dat_stripe_end := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_st_FIELD)                 //|< w
     u_active.io.in_dat_stripe_st := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)               //|< w
@@ -76,6 +81,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     for(i<- 0 to conf.CMAC_ATOMK_HALF-1){
 
         u_mac(i).io.nvdla_core_clk := nvdla_op_gated_clk(i)
+        u_mac(i).io.nvdla_core_rstn := io.nvdla_core_rstn
 
         u_mac(i).io.dat_actv <> u_active.io.dat_actv(i)
         u_mac(i).io.wt_actv <> u_active.io.wt_actv(i)
@@ -88,6 +94,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     // output retiming logic
     //==========================================================
     u_rt_out.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+2)
+    u_rt_out.io.nvdla_core_rstn := io.nvdla_core_rstn
     u_rt_out.io.out.valid := withClock(io.nvdla_clock.nvdla_core_clk){ShiftRegister(u_rt_in.io.in_dat.valid, conf.MAC_PD_LATENCY)}     //|< w
     u_rt_out.io.out.bits.pd := withClock(io.nvdla_clock.nvdla_core_clk){ShiftRegister(u_rt_in.io.in_dat.bits.pd, conf.MAC_PD_LATENCY, u_rt_in.io.in_dat.valid)}     //|< w
 
@@ -104,7 +111,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
         nvdla_op_gated_clk(i) := u_slcg_op(i).io.nvdla_core_gated_clk
     }
 
-}
+}}
 
 object NV_NVDLA_CMAC_coreDriver extends App {
   implicit val conf: nvdlaConfig = new nvdlaConfig

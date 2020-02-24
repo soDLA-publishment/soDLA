@@ -8,6 +8,7 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
 
         //input:(atomk_half, cmac_result)
         val out = Flipped(ValidIO(new cmac2cacc_if))  /* data valid */
@@ -37,7 +38,7 @@ class NV_NVDLA_CMAC_CORE_rt_out(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘
-withClock(io.nvdla_core_clk){
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
     //==========================================================
     // Output retiming
     //==========================================================

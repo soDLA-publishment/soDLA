@@ -39,8 +39,6 @@ class NV_NVDLA_cmac(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-
-withReset(!io.nvdla_core_rstn){
     
     //==========================================================
     // core
@@ -52,6 +50,7 @@ withReset(!io.nvdla_core_rstn){
     val u_reg = Module(new NV_NVDLA_CMAC_reg)
     //clk
     u_core.io.nvdla_clock <> io.nvdla_clock         //|< b
+    u_core.io.nvdla_core_rstn := io.nvdla_core_rstn
     u_reg.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk        //|< i
     u_core.io.slcg_op_en := u_reg.io.slcg_op_en           
     
@@ -62,7 +61,7 @@ withReset(!io.nvdla_core_rstn){
     u_reg.io.dp2reg_done := u_core.io.dp2reg_done       //|< i
     u_reg.io.csb2cmac_a <> io.csb2cmac_a        //|< b
 
-}}
+}
 
 
 object NV_NVDLA_cmacDriver extends App {

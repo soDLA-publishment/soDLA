@@ -12,6 +12,7 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
         val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
 
         //wt and dat
         val dat_actv = Vec(conf.CMAC_ATOMC, Flipped(ValidIO(new cmac_core_actv)))
@@ -42,7 +43,7 @@ class NV_NVDLA_CMAC_CORE_mac(implicit conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withClock(io.nvdla_core_clk){
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
     val mout = VecInit(Seq.fill(conf.CMAC_ATOMC)(0.asSInt((2*conf.CMAC_BPE).W)))
 
