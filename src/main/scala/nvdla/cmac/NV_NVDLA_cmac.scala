@@ -39,6 +39,8 @@ class NV_NVDLA_cmac(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
+
+withReset(!io.nvdla_core_rstn){
     
     //==========================================================
     // core
@@ -61,7 +63,7 @@ class NV_NVDLA_cmac(implicit val conf: nvdlaConfig) extends Module {
     u_reg.io.dp2reg_done := u_core.io.dp2reg_done       //|< i
     u_reg.io.csb2cmac_a <> io.csb2cmac_a        //|< b
 
-}
+}}
 
 
 object NV_NVDLA_cmacDriver extends App {
