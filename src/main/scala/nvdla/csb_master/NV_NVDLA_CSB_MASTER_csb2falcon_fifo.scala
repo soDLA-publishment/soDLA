@@ -325,6 +325,7 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: nvdlaConfig)  exten
 
     val wr_popping_gray = Module(new NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr)
     wr_popping_gray.io.clk := wr_clk_wr_mgated
+    wr_popping_gray.io.reset_ := io.wr_reset_
     wr_popping_gray.io.inc := wr_popping
     wr_popping_gray_cntr := wr_popping_gray.io.gray
 
@@ -390,14 +391,14 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr_strict(implicit val conf: nv
 }
 
 
-
 class NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr extends Module {
   val io = IO(new Bundle{
       val clk = Input(Clock())
+      val reset_ = Input(Bool())
       val inc = Input(Bool())
       val gray = Output(UInt(2.W))
   })
-  withClock(io.clk){
+  withClock(io.clk, !io.reset_){
       val gray_out = RegInit("b0".asUInt(2.W))  // gray counter
       val polarity = gray_out(0) ^ gray_out(1)   // polarity of gray counter bits
       when(io.inc){

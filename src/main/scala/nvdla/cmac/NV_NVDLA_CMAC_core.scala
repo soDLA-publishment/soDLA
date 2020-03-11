@@ -68,8 +68,8 @@ withClockAndReset(io.nvdla_clock.nvdla_core_clk, !io.nvdla_core_rstn){
     u_active.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+1)
     u_active.io.nvdla_core_rstn := io.nvdla_core_rstn
     u_active.io.in_dat <> u_rt_in.io.in_dat
-    u_active.io.in_dat_stripe_end := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_st_FIELD)                 //|< w
-    u_active.io.in_dat_stripe_st := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)               //|< w
+    u_active.io.in_dat_stripe_st := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_st_FIELD)                 //|< w
+    u_active.io.in_dat_stripe_end := u_rt_in.io.in_dat.bits.pd(conf.PKT_nvdla_stripe_info_stripe_end_FIELD)               //|< w
     u_active.io.in_wt <> u_rt_in.io.in_wt
 
     //==========================================================
