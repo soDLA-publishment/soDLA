@@ -59,12 +59,12 @@ class xxifConfiguration extends cdpConfiguration{
   val RDMA_NUM = arr_tieoff_axid.length
   val WDMA_NUM = awr_tieoff_axid.length
 
-  var arr_tieoff_lat_fifo_depth = List(0, 0, 256)
-  if(NVDLA_SDP_BS_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
-  if(NVDLA_SDP_BN_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
-  if(NVDLA_SDP_EW_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
-  if(NVDLA_PDP_ENABLE)    {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
-  if(NVDLA_CDP_ENABLE)    {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
+  var arr_tieoff_lat_fifo_depth = List(0, 0, NVDLA_VMOD_SDP_MRDMA_LATENCY_FIFO_DEPTH)
+  if(NVDLA_SDP_BS_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH}
+  if(NVDLA_SDP_BN_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ NVDLA_VMOD_SDP_NRDMA_LATENCY_FIFO_DEPTH}
+  if(NVDLA_SDP_EW_ENABLE) {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ NVDLA_VMOD_SDP_ERDMA_LATENCY_FIFO_DEPTH}
+  if(NVDLA_PDP_ENABLE)    {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ NVDLA_VMOD_PDP_RDMA_LATENCY_FIFO_DEPTH}
+  if(NVDLA_CDP_ENABLE)    {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ NVDLA_VMOD_CDP_RDMA_LATENCY_FIFO_DEPTH}
   if(NVDLA_RUBIK_ENABLE)  {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
   if(NVDLA_BDMA_ENABLE)   {arr_tieoff_lat_fifo_depth = arr_tieoff_lat_fifo_depth :+ 256}
 
