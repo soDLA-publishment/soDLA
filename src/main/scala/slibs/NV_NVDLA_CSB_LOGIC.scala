@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-//bubble collapse
 class NV_NVDLA_CSB_LOGIC(io_reg_rd_en:Boolean = false) extends Module {
     val io = IO(new Bundle {
 
