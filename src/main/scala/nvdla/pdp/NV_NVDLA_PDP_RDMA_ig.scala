@@ -396,7 +396,7 @@ withClock(io.nvdla_core_clk){
     val dma_rd_req_vld = op_process & io.ig2cq_pd.ready
 
     // PayLoad
-    val dma_rd_req_pd = Cat(dma_req_addr,  dma_req_size)
+    val dma_rd_req_pd = Cat(dma_req_size, dma_req_addr)
     val dma_rd_req_ram_type = io.reg2dp_src_ram_type;
 
     // Accept
