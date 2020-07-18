@@ -48,7 +48,6 @@ class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
     }
 
     io.dout := dout_r
-
 }}
 
 
