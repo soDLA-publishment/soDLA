@@ -58,8 +58,19 @@ withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
     //add retiming
     val pp_pvld_d0 = io.dat_actv(0).valid&io.wt_actv(0).valid
 
-    io.mac_out.bits := ShiftRegister(sum_out, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
-    io.mac_out.valid := ShiftRegister(pp_pvld_d0, conf.CMAC_OUT_RETIMING, pp_pvld_d0)
+    val pp_pvld_d = Wire(Bool()) +: 
+                    Seq.fill(conf.CMAC_OUT_RETIMING)(RegInit(false.B))
+    val sum_out_d = retiming(UInt(conf.CMAC_RESULT_WIDTH.W), conf.CMAC_OUT_RETIMING)
+
+    for(t <- 0 to conf.CMAC_OUT_RETIMING-1){
+        pp_pvld_d(t+1) := pp_pvld_d(t)
+        when(pp_pvld_d(t)){
+            sum_out_d(t+1) := sum_out_d(t)
+        }
+    }
+
+    io.mac_out.bits := pp_pvld_d(conf.CMAC_OUT_RETIMING)
+    io.mac_out.valid := sum_out_d(conf.CMAC_OUT_RETIMING)
 
 
 }}

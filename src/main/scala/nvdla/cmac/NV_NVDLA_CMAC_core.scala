@@ -95,8 +95,19 @@ withClockAndReset(io.nvdla_clock.nvdla_core_clk, !io.nvdla_core_rstn){
     //==========================================================
     u_rt_out.io.nvdla_core_clk := nvdla_op_gated_clk(conf.CMAC_ATOMK_HALF+2)
     u_rt_out.io.nvdla_core_rstn := io.nvdla_core_rstn
-    u_rt_out.io.out.valid := withClock(io.nvdla_clock.nvdla_core_clk){ShiftRegister(u_rt_in.io.in_dat.valid, conf.MAC_PD_LATENCY)}     //|< w
-    u_rt_out.io.out.bits.pd := withClock(io.nvdla_clock.nvdla_core_clk){ShiftRegister(u_rt_in.io.in_dat.bits.pd, conf.MAC_PD_LATENCY, u_rt_in.io.in_dat.valid)}     //|< w
+
+    val u_rt_valid_d = retiming(Bool(), conf.MAC_PD_LATENCY)
+    val u_rt_pd_d = retiming(UInt(conf.CMAC_RESULT_WIDTH.W), conf.MAC_PD_LATENCY)
+
+    for(t <- 0 to conf.MAC_PD_LATENCY-1){
+        u_rt_valid_d(t+1) := u_rt_valid_d(t)
+        when(u_rt_valid_d(t)){
+            u_rt_pd_d(t+1) := u_rt_pd_d(t)
+        }
+    }
+
+    u_rt_out.io.out.valid := u_rt_valid_d(conf.MAC_PD_LATENCY)
+    u_rt_out.io.out.bits.pd := u_rt_pd_d(conf.MAC_PD_LATENCY)
 
     io.dp2reg_done := u_rt_out.io.dp2reg_done                   //|> o
     io.mac2accu <> u_rt_out.io.mac2accu         //|> o )
