@@ -62,6 +62,9 @@ withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
                     Seq.fill(conf.CMAC_OUT_RETIMING)(RegInit(false.B))
     val sum_out_d = retiming(UInt(conf.CMAC_RESULT_WIDTH.W), conf.CMAC_OUT_RETIMING)
 
+    pp_pvld_d(0) := pp_pvld_d0
+    sum_out_d(0) := sum_out
+
     for(t <- 0 to conf.CMAC_OUT_RETIMING-1){
         pp_pvld_d(t+1) := pp_pvld_d(t)
         when(pp_pvld_d(t)){

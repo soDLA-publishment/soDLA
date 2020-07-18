@@ -99,6 +99,9 @@ withClockAndReset(io.nvdla_clock.nvdla_core_clk, !io.nvdla_core_rstn){
     val u_rt_valid_d = retiming(Bool(), conf.MAC_PD_LATENCY)
     val u_rt_pd_d = retiming(UInt(conf.CMAC_RESULT_WIDTH.W), conf.MAC_PD_LATENCY)
 
+    u_rt_valid_d(0) := u_rt_in.io.in_dat.valid
+    u_rt_pd_d(0) := u_rt_in.io.in_dat.bits.pd
+
     for(t <- 0 to conf.MAC_PD_LATENCY-1){
         u_rt_valid_d(t+1) := u_rt_valid_d(t)
         when(u_rt_valid_d(t)){
