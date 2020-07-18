@@ -271,6 +271,7 @@ class NV_NVDLA_CSB_MASTER_csb2falcon_fifo(implicit val conf: nvdlaConfig)  exten
 
     val rd_pushing_gray = Module(new NV_NVDLA_CSB_MASTER_csb2falcon_fifo_gray_cntr)
     rd_pushing_gray.io.clk := rd_clk_rd_mgated
+    rd_pushing_gray.io.reset_ := io.rd_reset_
     rd_pushing_gray.io.inc := rd_pushing
     rd_pushing_gray_cntr := rd_pushing_gray.io.gray
 
