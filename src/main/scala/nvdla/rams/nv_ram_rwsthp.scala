@@ -7,7 +7,7 @@ import chisel3.experimental._
 // this is a two clock read, synchronous-write memory, with bypass
 
 @chiselName
-class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
+class nv_ram_rwsthp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
 
     val io = IO(new Bundle {
         //clock
@@ -27,27 +27,48 @@ class nv_ram_rwsthp(dep: Int, wid: Int) extends Module{
         val di = Input(UInt(wid.W))
         val dout = Output(UInt(wid.W))
     })
+
  withClock(io.clk){
+     if(!asic){
+        // Create a synchronous-read, synchronous-write memory (like in FPGAs).
+        val mem = Reg(Vec(dep, UInt(wid.W)))
+        val ra_d = Reg(UInt(log2Ceil(dep).W))
+        // Create one write port and one read port.
+        when (io.we) { 
+            mem(io.wa) := io.di
+        }
+        when(io.re){
+            ra_d := io.ra
+        }
 
-    // Create a synchronous-read, synchronous-write memory (like in FPGAs).
-    val mem = Reg(Vec(dep, UInt(wid.W)))
-    val ra_d = Reg(UInt(log2Ceil(dep).W))
-    // Create one write port and one read port.
-    when (io.we) { 
-        mem(io.wa) := io.di
-    }
-    when(io.re){
-        ra_d := io.ra
-    }
+        val dout_ram = mem(ra_d)
+        val fbypass_dout_ram = Mux(io.byp_sel, io.dbyp, dout_ram)
+        val dout_r = Reg(UInt(wid.W))
+        when (io.ore){
+            dout_r := fbypass_dout_ram
+        }
 
-    val dout_ram = mem(ra_d)
-    val fbypass_dout_ram = Mux(io.byp_sel, io.dbyp, dout_ram)
-    val dout_r = Reg(UInt(wid.W))
-    when (io.ore){
-        dout_r := fbypass_dout_ram
+        io.dout := dout_r
     }
-
-    io.dout := dout_r
+    else{
+        // Create a synchronous-read, synchronous-write memory (like in FPGAs).
+        val mem = SyncReadMem(dep, UInt(wid.W))
+        // Create one write port and one read port.
+        when (io.we) { 
+            mem.write(io.wa, io.di) 
+            io.dout := DontCare
+        }
+        .otherwise{ 
+            val dout_ram = mem.read(io.ra, io.re)
+            val fbypass_dout_ram = Mux(io.byp_sel, io.dbyp, dout_ram)
+            when (io.ore){
+                io.dout := RegNext(fbypass_dout_ram)
+            }
+            .otherwise{
+                io.dout := DontCare       
+            }
+        }
+    }
 }}
 
 
