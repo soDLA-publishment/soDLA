@@ -197,7 +197,7 @@ withClock(io.nvdla_core_clk){
             out_addr := in_cmd_addr +& (ftran_size +& 1.U) << conf.NVDLA_MEMORY_ATOMIC_LOG2.U
         }
         .otherwise{
-            out_addr := out_addr +& (conf.NVDLA_MCIF_BURST_SIZE.U << conf.NVDLA_MCIF_BURST_SIZE.U)
+            out_addr := out_addr +& (conf.NVDLA_MCIF_BURST_SIZE.U << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
         }
     }
 
