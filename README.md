@@ -47,9 +47,8 @@ New Update
 TODO
 ----------------
 1. PeekPokeTester under chisel, and verification with formal verification tools.
-2. FPGA test(Thanks to [Professor Di Zhao's Group](http://sourcedb.ict.cas.cn/cn/jssrck/201803/t20180309_4971421.html)).
-3. soDLA doc page.
-4. Chisel3.2 full support(soDLA_beta will face "OutofMemory" issue in the latest Chisel3.2). 
+2. soDLA doc page.
+3. Chisel3.2 full support(soDLA_beta will face "OutofMemory" issue in the latest Chisel3.2). 
 
 
 
