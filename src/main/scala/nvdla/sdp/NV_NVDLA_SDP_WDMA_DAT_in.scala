@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_SDP_WDMA_DAT_in(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //in clock
@@ -68,7 +69,7 @@ withClock(io.nvdla_core_clk){
     val cmd2dat_spt_odd = io.cmd2dat_spt_pd.bits(14)
 
 
-    io.cmd2dat_spt_pd.ready := spt_rdy || !spt_vld
+    io.cmd2dat_spt_pd.ready := spt_rdy || ~spt_vld
     when(io.cmd2dat_spt_pd.ready){
         spt_vld := io.cmd2dat_spt_pd.valid
     }

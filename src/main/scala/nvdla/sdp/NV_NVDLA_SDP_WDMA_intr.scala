@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_SDP_WDMA_intr(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //in clock
@@ -60,7 +61,7 @@ withClock(io.nvdla_core_clk){
     //==============
     val u_NV_NVDLA_SDP_WDMA_DAT_DMAIF_intr_fifo = Module(new NV_NVDLA_fifo(depth = 0, width = 1))
     u_NV_NVDLA_SDP_WDMA_DAT_DMAIF_intr_fifo.io.clk := io.nvdla_core_clk
-    u_NV_NVDLA_SDP_WDMA_DAT_DMAIF_intr_fifo.io.wr_pvld := io.intr_req_ptr.valid & !cfg_mode_quite
+    u_NV_NVDLA_SDP_WDMA_DAT_DMAIF_intr_fifo.io.wr_pvld := io.intr_req_ptr.valid & ~cfg_mode_quite
     u_NV_NVDLA_SDP_WDMA_DAT_DMAIF_intr_fifo.io.wr_pd := io.intr_req_ptr.valid
     val intr_fifo_rd_pvld = u_NV_NVDLA_SDP_WDMA_DAT_DMAIF_intr_fifo.io.rd_pvld
     u_NV_NVDLA_SDP_WDMA_DAT_DMAIF_intr_fifo.io.rd_prdy := io.dma_wr_rsp_complete
@@ -84,7 +85,7 @@ withClock(io.nvdla_core_clk){
     //stall
     val stl = Module(new NV_COUNTER_STAGE_histogram(32))
     stl.io.clk := io.nvdla_core_clk
-    stl.io.rd_stall_inc := io.dma_wr_req_vld & !io.dma_wr_req_rdy
+    stl.io.rd_stall_inc := io.dma_wr_req_vld & ~io.dma_wr_req_rdy
     stl.io.rd_stall_dec := false.B
     stl.io.rd_stall_clr := io.op_load
     stl.io.rd_stall_cen := io.reg2dp_op_en & io.reg2dp_perf_dma_en  

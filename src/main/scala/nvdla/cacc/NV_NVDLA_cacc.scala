@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_cacc(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         // clk
@@ -49,7 +50,7 @@ class NV_NVDLA_cacc(implicit conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withReset(!io.nvdla_core_rstn){
+withReset(~io.nvdla_core_rstn){
 
     val nvdla_cell_gated_clk = Wire(Clock())
     val nvdla_op_gated_clk = Wire(Vec(3, Clock()))

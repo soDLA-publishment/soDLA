@@ -340,7 +340,7 @@ withClock(io.nvdla_core_clk){
     val dat_info_in = Cat(info_xin_pd, info_yin_pd)
     val info_in_pd = dat_info_in
 
-    val u_intpinfo_sync_fifo = Module(new NV_NVDLA_fifo(20, conf.NVDLA_CDP_THROUGHPUT*4))
+    val u_intpinfo_sync_fifo = Module(new NV_NVDLA_fifo_new(depth = 20, width = conf.NVDLA_CDP_THROUGHPUT*4, ram_type = 2, ram_bypass = true))
     u_intpinfo_sync_fifo.io.clk := io.nvdla_core_clk
     u_intpinfo_sync_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     u_intpinfo_sync_fifo.io.wr_pvld := info_in_vld

@@ -36,8 +36,8 @@ class cdmaConfiguration extends caccConfiguration{
     val ATMM = NVDLA_MEMORY_ATOMIC_SIZE*NVDLA_BPE
     val ATMMBW = log2Ceil(NVDLA_MEMORY_ATOMIC_SIZE) 
     val ATMKBW = log2Ceil(NVDLA_MAC_ATOMIC_C_SIZE) 
-    val DMAIF = NVDLA_MEMIF_WIDTH
-    val ATMC = NVDLA_MAC_ATOMIC_C_SIZE*NVDLA_BPE
+    val DMAIF = NVDLA_MEMIF_WIDTH         // small-64 large-256
+    val ATMC = NVDLA_MAC_ATOMIC_C_SIZE*NVDLA_BPE        // small C-8  large C-256  BPE-8
     val ATMM_NUM = DMAIF/ATMM
     val ATMC_NUM = ATMC/ATMM
     val BNUM = NVDLA_MEMIF_WIDTH/NVDLA_BPE

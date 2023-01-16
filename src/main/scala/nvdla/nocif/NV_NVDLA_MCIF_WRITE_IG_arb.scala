@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_MCIF_WRITE_IG_arb(implicit conf:nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -13,7 +13,7 @@ class NV_NVDLA_MCIF_WRITE_IG_arb(implicit conf:nvdlaConfig) extends Module {
 
         //bpt2arb
         val bpt2arb_cmd_pd = Flipped(Vec(conf.WDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_WR_IG_PW.W))))
-        val bpt2arb_dat_pd = Flipped(Vec(conf.WDMA_NUM, DecoupledIO(UInt(conf.NVDLA_DMA_WR_REQ.W))))
+        val bpt2arb_dat_pd = Flipped(Vec(conf.WDMA_NUM, DecoupledIO(UInt((conf.NVDLA_DMA_WR_REQ-1).W))))
 
         //arb2spt
         val arb2spt_cmd_pd = DecoupledIO(UInt(conf.NVDLA_DMA_WR_IG_PW.W))
@@ -50,11 +50,13 @@ withClock(io.nvdla_core_clk){
 
     val is_last_beat = Wire(Bool())
     val src_dat_rdy = Wire(Bool())
+    dontTouch(is_last_beat)
+    dontTouch(src_dat_rdy)
     val src_dat_gnts = Wire(Vec(conf.WDMA_MAX_NUM, Bool()))
     val all_gnts = Wire(Vec(conf.WDMA_MAX_NUM, Bool()))
 
     val u_pipe = Array.fill(conf.WDMA_NUM){Module(new NV_NVDLA_BC_OS_pipe(conf.NVDLA_DMA_WR_IG_PW))}
-    val u_dfifo = Array.fill(conf.WDMA_NUM){Module(new NV_NVDLA_fifo(depth = 4, width = conf.NVDLA_DMA_WR_REQ-1, ram_type = 0, io_wr_count = true))}
+    val u_dfifo = Array.fill(conf.WDMA_NUM){Module(new NV_NVDLA_fifo_new(depth = 4, width = conf.NVDLA_DMA_WR_REQ-1, ram_type = 0, io_wr_count = true))}
     for(i<- 0 to conf.WDMA_NUM-1){
         u_pipe(i).io.clk := io.nvdla_core_clk
 
@@ -163,7 +165,7 @@ withClock(io.nvdla_core_clk){
     io.arb2spt_dat_pd.valid := src_dat_vld
     src_dat_rdy := io.arb2spt_dat_pd.ready
 
-    spt_is_busy := !(io.arb2spt_cmd_pd.ready & io.arb2spt_dat_pd.ready) //fixme
+    spt_is_busy := ~(io.arb2spt_cmd_pd.ready & io.arb2spt_dat_pd.ready) //fixme
 }}
 
 

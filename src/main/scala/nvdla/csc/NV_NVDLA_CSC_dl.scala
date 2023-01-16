@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_CSC_dlIO(implicit conf: nvdlaConfig) extends Bundle{
     val nvdla_core_clk = Input(Clock())
     val nvdla_core_ng_clk = Input(Clock())
@@ -48,6 +49,7 @@ class NV_NVDLA_CSC_dlIO(implicit conf: nvdlaConfig) extends Bundle{
 
 }
 
+@chiselName
 class NV_NVDLA_CSC_dl(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new NV_NVDLA_CSC_dlIO)
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,7 +335,7 @@ for(t <- 0 to total_depth-1){
 }
 
 val dl_in_pvld = dl_in_pvld_d(total_depth)
-val dl_in_pd = dl_in_pvld_d(total_depth)
+val dl_in_pd = dl_in_pd_d(total_depth)
 
 //: my $pipe_depth = 4;
 val dl_pvld_d =  Wire(Bool()) +: 
@@ -593,7 +595,7 @@ when(dat_exec_valid){
     dat_req_sub_h_d1 := sub_h_cnt
     dat_req_sub_c_d1 := dat_req_sub_c_w
     dat_req_ch_end_d1 := is_last_channel
-    dat_req_dummy_d1 := dat_exec_valid
+    dat_req_dummy_d1 := dat_req_dummy
     dat_req_cur_sub_h_d1 := dl_cur_sub_h
     dat_req_flag_d1 := dat_req_flag_w
     dat_req_rls_d1 := dl_dat_release & is_stripe_equal & dat_pipe_valid
@@ -698,7 +700,7 @@ val dat_req_addr_sum = dat_req_base_d1 + c_bias_d1 + h_bias_d1 + w_bias_d1
 val is_dat_req_addr_wrap = dat_req_addr_sum >= Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, false.B))
 val dat_req_addr_wrap = dat_req_addr_sum - Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, false.B))
 val dat_req_addr_w = Mux(layer_st | dat_req_dummy_d1, Fill(conf.CBUF_ADDR_WIDTH, true.B), 
-                     Mux(is_dat_req_addr_wrap, dat_req_addr_wrap, dat_req_addr_sum))    //get the adress sends to cbuf
+                     Mux(is_dat_req_addr_wrap, dat_req_addr_wrap, dat_req_addr_sum))    //get the address sends to cbuf
 val dat_req_addr_minus1 = dat_req_addr_w - 1.U
 val is_dat_req_addr_minus1_wrap = (dat_req_addr_minus1 >= Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, false.B)))
 val dat_req_addr_minus1_wrap = Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, true.B))
@@ -1156,7 +1158,7 @@ when(dat_out_pvld | dl_out_pvld){
     dl_out_mask := dat_out_mask
 }
 when(dat_out_pvld){
-    dl_out_flag := dat_out_pvld
+    dl_out_flag := dat_out_flag
 }
 
 for(i <- 0 to conf.CSC_ATOMC-1){

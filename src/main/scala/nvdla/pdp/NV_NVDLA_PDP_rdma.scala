@@ -54,11 +54,11 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     val u_slcg = Module(new NV_NVDLA_slcg(1, false))
     val u_reg = Module(new NV_NVDLA_PDP_RDMA_reg)
     val u_ig = Module(new NV_NVDLA_PDP_RDMA_ig)
-    val u_cq = Module(new NV_NVDLA_fifo(
-                        depth = 256, 
+    val u_cq = Module(new NV_NVDLA_fifo_new(
+                        depth = 16, 
                         width = 18,
                         ram_type = 0,
-                        distant_wr_req = false))
+                        rd_reg=true))
     val u_eg = Module(new NV_NVDLA_PDP_RDMA_eg)
     //=======================================
     //        SLCG gen unit

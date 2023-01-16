@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-
+@chiselName
 class NV_NVDLA_CDMA_dma_mux(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {

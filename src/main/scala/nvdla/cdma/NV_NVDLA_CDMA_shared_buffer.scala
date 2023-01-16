@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-
+@chiselName
 class NV_NVDLA_CDMA_shared_buffer(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
@@ -132,9 +132,9 @@ val sbuf_p1_rd_en_d1 = RegNext(io.dc2sbuf_p_rd(1).addr.valid | io.img2sbuf_p_rd(
 ////////////////////////////////////////////////////////////////////////\n";
 
 val sbuf_p0_rdat = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {
-                        i => Fill(conf.CDMA_SBUF_NUMBER, sbuf_p0_re_norm_d1(i))&sbuf_rdat(i)}).reduce(_|_)
+                        i => Fill(conf.CDMA_SBUF_SDATA_BITS, sbuf_p0_re_norm_d1(i))&sbuf_rdat(i)}).reduce(_|_)
 val sbuf_p1_rdat = VecInit((0 to conf.CDMA_SBUF_NUMBER-1) map {
-                        i => Fill(conf.CDMA_SBUF_NUMBER, sbuf_p1_re_norm_d1(i))&sbuf_rdat(i)}).reduce(_|_)
+                        i => Fill(conf.CDMA_SBUF_SDATA_BITS, sbuf_p1_re_norm_d1(i))&sbuf_rdat(i)}).reduce(_|_)
 ////////////////////////////////////////////////////////////////////////\n";
 // RAMs to output port: stage2 register //\n";
 ////////////////////////////////////////////////////////////////////////\n";

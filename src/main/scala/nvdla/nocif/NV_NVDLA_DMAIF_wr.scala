@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_DMAIF_wr(DMABW: Int)(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clk
@@ -98,7 +99,7 @@ withClock(io.nvdla_core_clk){
     val ack_bot_rdy = Wire(Bool())
     val ack_bot_vld = RegInit(false.B)
     val ack_bot_id = RegInit(false.B)
-    val ack_raw_rdy = ack_bot_rdy || !ack_bot_vld
+    val ack_raw_rdy = ack_bot_rdy || ~ack_bot_vld
     when(ack_raw_vld & ack_raw_rdy){
         ack_bot_id := ack_raw_id
     }
@@ -109,7 +110,7 @@ withClock(io.nvdla_core_clk){
     val ack_top_vld = RegInit(false.B)
     val ack_top_id = RegInit(false.B)
     val ack_top_rdy = Wire(Bool())
-    ack_bot_rdy := ack_top_rdy || !ack_top_vld
+    ack_bot_rdy := ack_top_rdy || ~ack_top_vld
     when(ack_bot_vld & ack_bot_rdy){
         ack_top_id := ack_bot_id
     }

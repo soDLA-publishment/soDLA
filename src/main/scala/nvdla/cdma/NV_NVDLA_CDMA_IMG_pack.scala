@@ -6,6 +6,8 @@ import chisel3.util._
 import scala.math._
 import chisel3.iotesters.Driver
 
+
+@chiselName
 class NV_NVDLA_CDMA_IMG_pack(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {

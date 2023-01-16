@@ -48,7 +48,7 @@ class NV_NVDLA_core_reset extends Module {
     sync_reset_synced_core_rstn.io.test_mode := io.test_mode
     val synced_core_rstn = sync_reset_synced_core_rstn.io.outreset_  
 
-    val combined_rstn = withClockAndReset(io.nvdla_clk, !synced_dla_rstn){
+    val combined_rstn = withClockAndReset(io.nvdla_clk, ~synced_dla_rstn){
                         RegNext(synced_dla_rstn & synced_core_rstn, false.B)}
 
     val sync_reset_synced_rstn = Module(new sync_reset)

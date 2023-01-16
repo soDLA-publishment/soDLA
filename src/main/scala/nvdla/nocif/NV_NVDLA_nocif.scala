@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_nocif(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -66,7 +66,7 @@ class NV_NVDLA_nocif(implicit conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘
-withReset(!io.nvdla_core_rstn){
+withReset(~io.nvdla_core_rstn){
 
     val u_mcif = Module(new NV_NVDLA_mcif)
     u_mcif.io.nvdla_core_clk := io.nvdla_core_clk

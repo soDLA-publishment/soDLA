@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_CSC_sg(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clk
@@ -97,15 +98,19 @@ withClock(io.nvdla_core_clk){
         is (sIdle) {
         when (io.reg2dp_op_en & need_pending) { nxt_state := sPend }
         .elsewhen (io.reg2dp_op_en) { nxt_state := sBusy }
+        .otherwise{ nxt_state := sIdle }
         }
         is (sPend) {
         when (pending_done) { nxt_state := sBusy }
+        .otherwise{ nxt_state := sPend }
         }
         is (sBusy) {
         when (layer_done & fifo_is_clear & ~pkg_vld) { nxt_state := sDone }
+        .otherwise{ nxt_state := sBusy }
         }
         is (sDone) {
         when (io.dp2reg_done) { nxt_state := sIdle }
+        .otherwise{ nxt_state := sDone}
         }
     }
     cur_state := nxt_state
@@ -325,14 +330,16 @@ withClock(io.nvdla_core_clk){
         weight_s_up_cnt := Mux(layer_st, "b0".asUInt(5.W),
                             Mux(is_last_s, "b0".asUInt(5.W),
                             weight_s_up_cnt_inc))
+    }
+    when(layer_st | op_r_en){
         weight_r_up_cnt := Mux(layer_st, "b0".asUInt(5.W),
                             Mux(is_last_r, "b0".asUInt(5.W),
                             weight_r_up_cnt_inc(4, 0)))
     }
     //--------------------------- cbuf check logic -----------------------------//
-    val slices_avl = RegInit("b0".asUInt(14.W))
+    val slices_avl = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(14.W))}
     val required_kernels = RegInit("b0".asUInt(14.W))
-    val kernels_avl = RegInit("b0".asUInt(15.W))
+    val kernels_avl = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(15.W))}
 
     val dat_cbuf_ready = (slices_avl >= data_in_height)
     val required_kernels_inc = required_kernels + cur_kernel
@@ -405,8 +412,9 @@ withClock(io.nvdla_core_clk){
     val dat_pkg_pd = Cat(dat_pkg_dat_release, dat_pkg_layer_end, dat_pkg_group_end, dat_pkg_channel_end, dat_pkg_block_end,
                         dat_pkg_cur_sub_h(1, 0), dat_pkg_stripe_length(6, 0), dat_pkg_channel_size(6, 0), 
                         dat_pkg_h_offset(4, 0), dat_pkg_w_offset(4, 0))
-
+    dontTouch(dat_pkg_pd)
     val dat_push_data = Cat(pkg_idx, dat_pkg_pd)
+    dontTouch(dat_push_data)
 
     when(pkg_adv){
         wt_pkg_kernel_size := cur_kernel
@@ -421,8 +429,9 @@ withClock(io.nvdla_core_clk){
     // PKT_PACK_WIRE( csc_wt_pkg ,  wt_pkg_ ,  wt_pkg_pd )
     val wt_pkg_pd = Cat(wt_pkg_wt_release, wt_pkg_group_end, wt_pkg_channel_end, 
                         wt_pkg_cur_sub_h(1, 0), wt_pkg_kernel_size(5, 0), wt_pkg_weight_size)
-
+    dontTouch(wt_pkg_pd)
     val wt_push_data = Cat(pkg_idx, wt_pkg_pd)
+    dontTouch(wt_push_data)
     ////////////////////////////////////////////////////////////////////////
     //  package fifos                                                     //
     ////////////////////////////////////////////////////////////////////////
@@ -430,8 +439,8 @@ withClock(io.nvdla_core_clk){
     val wt_push_req = pkg_vld & dat_push_ready
     val wt_pop_ready = Wire(Bool())
 
-    val u_dat_fifo = Module(new NV_NVDLA_fifo(depth = 4, width = 33,
-                        ram_type = 2, distant_wr_req = true,
+    val u_dat_fifo = Module(new NV_NVDLA_fifo_new(depth = 4, width = 33,
+                        ram_type = 1, wr_reg = true, ram_bypass = true,
                         io_wr_empty = true ))
     u_dat_fifo.io.clk := io.nvdla_core_clk
     u_dat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -441,10 +450,11 @@ withClock(io.nvdla_core_clk){
     dat_pop_req := u_dat_fifo.io.rd_pvld
     u_dat_fifo.io.rd_prdy := dat_pop_ready
     val dat_pop_data = u_dat_fifo.io.rd_pd
+    dontTouch(dat_pop_data)
     dat_push_empty := u_dat_fifo.io.wr_empty.get
 
-    val u_wt_fifo = Module(new NV_NVDLA_fifo(depth = 4, width = 20,
-                        ram_type = 2, distant_wr_req = true,
+    val u_wt_fifo = Module(new NV_NVDLA_fifo_new(depth = 4, width = 20,
+                        ram_type = 1, wr_reg = true, ram_bypass = true, 
                         io_wr_empty = true ))
     u_wt_fifo.io.clk := io.nvdla_core_clk
     u_wt_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -460,9 +470,13 @@ withClock(io.nvdla_core_clk){
     //  issue control logic                                               //
     ////////////////////////////////////////////////////////////////////////
     val dat_pop_idx = dat_pop_data(32, 31)
+    dontTouch(dat_pop_idx)
     val dat_pop_pd = dat_pop_data(30, 0)
+    dontTouch(dat_pop_pd)
     val wt_pop_idx = wt_pop_data(19, 18)
+    dontTouch(wt_pop_idx)
     val wt_pop_pd = wt_pop_data(17, 0)
+    dontTouch(wt_pop_pd)
 
     // PKT_UNPACK_WIRE( csc_dat_pkg ,  sg2dat_ ,  dat_pop_pd )
     val sg2dat_w_offset = dat_pop_pd(4, 0)

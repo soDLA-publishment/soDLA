@@ -70,11 +70,11 @@ withClock(io.nvdla_core_clk){
 
     //////////////////////////////////////////////
     //////////////////////////////////////////////
-    val u_data_sync_fifo = Module{new NV_NVDLA_fifo(
+    val u_data_sync_fifo =  Module{new NV_NVDLA_fifo_new(
                             depth = 80, 
                             width = conf.NVDLA_CDP_THROUGHPUT * conf.NVDLA_CDP_ICVTO_BWPE,
                             ram_type = 2, 
-                            distant_wr_req = false)}
+                            ram_bypass = true)}
 
     u_data_sync_fifo.io.clk := io.nvdla_core_clk
     u_data_sync_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
@@ -88,11 +88,11 @@ withClock(io.nvdla_core_clk){
     io.sync2mul_pd.bits := u_data_sync_fifo.io.rd_pd 
 
     ///////////////////////////////////////////
-    val u_info_sync_fifo = Module{new NV_NVDLA_fifo(
+    val u_info_sync_fifo = Module{new NV_NVDLA_fifo_new(
                             depth = 80, 
                             width = 17,
                             ram_type = 2, 
-                            distant_wr_req = false)}
+                            ram_bypass = true)}
     u_info_sync_fifo.io.clk := io.nvdla_core_clk
     u_info_sync_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
@@ -105,11 +105,11 @@ withClock(io.nvdla_core_clk){
     io.sync2ocvt_pd.bits := u_info_sync_fifo.io.rd_pd 
 
     ///////////////////////////////////////////
-    val u_sumpd_sync_fifo = Module{new NV_NVDLA_fifo(
+    val u_sumpd_sync_fifo = Module{new NV_NVDLA_fifo_new(
                             depth = 80, 
                             width = conf.NVDLA_CDP_THROUGHPUT*(conf.NVDLA_CDP_ICVTO_BWPE*2+3),
                             ram_type = 2, 
-                            distant_wr_req = false)}
+                            ram_bypass = true)}
     u_sumpd_sync_fifo.io.clk := io.nvdla_core_clk
     u_sumpd_sync_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 

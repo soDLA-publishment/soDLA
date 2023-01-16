@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_MCIF_WRITE_IG_bpt(implicit conf:nvdlaConfig)  extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -108,7 +108,9 @@ withClock(io.nvdla_core_clk){
     val ftran_size = Wire(UInt(3.W))
     val ltran_size = Wire(UInt(3.W))
     val mtran_num = Wire(UInt(conf.NVDLA_DMA_WR_SIZE.W))
-
+    dontTouch(ftran_size)
+    dontTouch(ltran_size)
+    dontTouch(mtran_num)
     val is_single_tran = if(conf.NVDLA_MCIF_BURST_SIZE > 1) Some(Wire(Bool())) else None
     if(conf.NVDLA_MCIF_BURST_SIZE > 1){
         val stt_offset = in_cmd_addr(conf.NVDLA_MEMORY_ATOMIC_LOG2+conf.NVDLA_MCIF_BURST_SIZE_LOG2-1, conf.NVDLA_MEMORY_ATOMIC_LOG2)
@@ -194,7 +196,7 @@ withClock(io.nvdla_core_clk){
     val out_addr = Reg(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
     when(bpt2arb_cmd_accept){
         when(is_ftran){
-            out_addr := in_cmd_addr +& (ftran_size +& 1.U) << conf.NVDLA_MEMORY_ATOMIC_LOG2.U
+            out_addr := in_cmd_addr +& ((ftran_size +& 1.U) << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)
         }
         .otherwise{
             out_addr := out_addr +& (conf.NVDLA_MCIF_BURST_SIZE.U << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)

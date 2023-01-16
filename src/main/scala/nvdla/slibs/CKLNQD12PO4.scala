@@ -13,7 +13,7 @@ class CKLNQD12PO4 extends Module {
   })
 
 
-  withClock((!io.CP.asUInt.toBool).asClock){
+  withClock((~io.CP.asUInt.toBool).asClock){
     val qd = RegNext(io.TE|io.E)
     io.Q := (io.CP.asUInt.toBool & qd).asClock 
   }

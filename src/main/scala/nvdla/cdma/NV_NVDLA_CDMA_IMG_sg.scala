@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-
+@chiselName
 class NV_NVDLA_CDMA_IMG_sg(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
@@ -464,9 +464,7 @@ withClock(io.nvdla_core_clk){
     val dma_req_fifo_req = Wire(Bool())
     val dma_req_fifo_data = Wire(UInt(11.W))
     val dma_rsp_fifo_ready = Wire(Bool())
-    val u_NV_NVDLA_CDMA_IMG_fifo = Module{new NV_NVDLA_fifo(depth = 128, width = 11,
-                                    ram_type = 2, 
-                                    distant_wr_req = true)}
+    val u_NV_NVDLA_CDMA_IMG_fifo = Module{new NV_NVDLA_fifo_new(depth = 128, width = 11, ram_type = 2, wr_reg = true)}
     u_NV_NVDLA_CDMA_IMG_fifo.io.clk := io.nvdla_core_clk
     u_NV_NVDLA_CDMA_IMG_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     u_NV_NVDLA_CDMA_IMG_fifo.io.wr_pvld := dma_req_fifo_req
@@ -726,9 +724,9 @@ withClock(io.nvdla_core_clk){
     io.sg2pack_img_pd.bits := sg2pack_pop_data
     val sg2pack_pop_ready = io.sg2pack_img_pd.ready
 
-    val u_NV_NVDLA_CDMA_IMG_sg2pack_fifo = Module{new NV_NVDLA_fifo(depth = 128, width = 11,
+    val u_NV_NVDLA_CDMA_IMG_sg2pack_fifo = Module{new NV_NVDLA_fifo_new(depth = 128, width = 11,
                                             ram_type = 1, 
-                                            distant_wr_req = false)}
+                                            wr_reg = true, rd_reg = true, ram_bypass = true)}
     u_NV_NVDLA_CDMA_IMG_sg2pack_fifo.io.clk := io.nvdla_core_clk
     u_NV_NVDLA_CDMA_IMG_sg2pack_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 

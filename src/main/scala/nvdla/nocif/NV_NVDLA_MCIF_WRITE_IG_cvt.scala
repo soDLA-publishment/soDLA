@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_MCIF_WRITE_IG_cvt(implicit conf:nvdlaConfig)  extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -70,7 +71,7 @@ withClock(io.nvdla_core_clk){
     val dat_pd = pipe_p2.io.dout
 
     val os_cnt_full = Wire(Bool())
-    val os_cmd_vld = cmd_vld & !os_cnt_full
+    val os_cmd_vld = cmd_vld & ~os_cnt_full
 
     val all_downs_rdy = Wire(Bool())
     val axi_dat_rdy = Wire(Bool())
@@ -78,7 +79,7 @@ withClock(io.nvdla_core_clk){
     //IG_cvt=== push into the cq on first beat of data
     dat_rdy := Mux(is_first_beat, os_cmd_vld & all_downs_rdy, axi_dat_rdy)
     //IG_cvt=== will release cmd on the acception of last beat of data
-    cmd_rdy := is_first_beat & dat_vld & all_downs_rdy & !os_cnt_full
+    cmd_rdy := is_first_beat & dat_vld & all_downs_rdy & ~os_cnt_full
 
     //IG_cvt===UNPACK after ipipe
     val cmd_vld_pd = Fill(conf.NVDLA_DMA_WR_IG_PW, cmd_vld) & cmd_pd
@@ -168,7 +169,7 @@ withClock(io.nvdla_core_clk){
 
     //IG_cvt=== PIPE for $NOC DATA Channel
     // first beat of data also need cq and cmd rdy, this is because we also need push ack/cmd into cq fifo and cmd pipe on first beat of data
-    val axi_dat_vld = dat_vld & (!is_first_beat || (os_cmd_vld & io.cq_wr_pd.ready & axi_cmd_rdy))
+    val axi_dat_vld = dat_vld & (~is_first_beat || (os_cmd_vld & io.cq_wr_pd.ready & axi_cmd_rdy))
     val axi_dat_pd = Wire(UInt((conf.NVDLA_PRIMARY_MEMIF_WIDTH + conf.NVDLA_PRIMARY_MEMIF_STRB+1).W))
     val pipe_p4 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_PRIMARY_MEMIF_WIDTH+conf.NVDLA_PRIMARY_MEMIF_STRB+1))
     pipe_p4.io.clk := io.nvdla_core_clk
@@ -207,7 +208,7 @@ withClock(io.nvdla_core_clk){
     //=====================================
     // IG_cvt===valid for axi_cmd and oq, inter-lock
 
-    io.cq_wr_pd.valid := is_first_cmd_dat_vld & axi_both_rdy & !os_cnt_full;
+    io.cq_wr_pd.valid := is_first_cmd_dat_vld & axi_both_rdy & ~os_cnt_full;
     val cq_wr_require_ack = cmd_ltran & cmd_require_ack;
     val cq_wr_len = axi_len
 

@@ -110,7 +110,7 @@ withClock(io.nvdla_core_clk){
 
     is_fspt := cfg_mode_split & is_first_wg
     is_lspt := cfg_mode_split & is_last_wg
-    is_mspt := cfg_mode_split & !is_fspt & !is_lspt
+    is_mspt := cfg_mode_split & ~is_fspt & ~is_lspt
 
     //==============
     // COUNT SURF
@@ -176,7 +176,7 @@ withClock(io.nvdla_core_clk){
     // CMD FIFO WRITE 
     //==============
     val cmd_fifo_wr_pd = Wire(UInt(80.W))
-    val u_fifo = Module{new NV_NVDLA_fifo(depth = 1, width = 80, ram_type = 1, distant_wr_req = true)}
+    val u_fifo = Module{new NV_NVDLA_fifo_new(depth = 1, width = 80, ram_type = 1, wr_reg = true, ram_bypass = true)}
     u_fifo.io.clk := io.nvdla_core_clk
     u_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     u_fifo.io.wr_pvld := cmd_fifo_wr_pvld

@@ -12,7 +12,7 @@ class p_SSYNC2DO_C_PP extends Module {
         val q = Output(Bool())
         val clr_ = Input(Bool())
     })
-withClockAndReset(io.clk, !io.clr_){
+withClockAndReset(io.clk, ~io.clr_){
 
     val q_out = RegInit(false.B)
     val d0_out = RegInit(false.B)

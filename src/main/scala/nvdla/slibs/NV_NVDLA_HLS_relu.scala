@@ -33,7 +33,7 @@ class NV_NVDLA_HLS_relu(DATA_WIDTH:Int = 32) extends Module {
 
     val data_in_sign = io.data_in(DATA_WIDTH-1)
 
-    when(!data_in_sign){
+    when(~data_in_sign){
         io.data_out := io.data_in
     }
     .otherwise{

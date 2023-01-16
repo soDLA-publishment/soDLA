@@ -6,6 +6,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
@@ -43,7 +44,7 @@ class NV_NVDLA_CMAC_core(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘
 //             │ ─┤ ─┤       │ ─┤ ─┤
 //             └──┴──┘       └──┴──┘
-withClockAndReset(io.nvdla_clock.nvdla_core_clk, !io.nvdla_core_rstn){
+withClockAndReset(io.nvdla_clock.nvdla_core_clk, ~io.nvdla_core_rstn){
 
     //==========================================================
     // interface with register config

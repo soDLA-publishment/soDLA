@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_SDP_RDMA_EG_ro(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -52,16 +53,20 @@ withClock(io.nvdla_core_clk){
     val rod_wr_prdy = Wire(Vec(4, Bool()))
     val rod_wr_mask_prdy = Wire(Vec(4, Bool()))
     for(i <- 0 to 3){
-        rod_wr_mask_prdy(i) := io.rod_wr_mask(i) & !rod_wr_prdy(i)
+        rod_wr_mask_prdy(i) := io.rod_wr_mask(i) & ~rod_wr_prdy(i)
     }
 
-    io.rod_wr_pd.ready := !( rod_wr_mask_prdy.asUInt.orR )
+    io.rod_wr_pd.ready := ~( rod_wr_mask_prdy.asUInt.orR )
                         
     val rod_wr_pvld = Wire(Vec(4, Bool()))
-
-    for(i <- 0 to 3){
-        rod_wr_pvld(i) := io.rod_wr_pd.valid & io.rod_wr_mask(i) & !(rod_wr_mask_prdy.drop(i).reduce(_||_))
-    }
+    dontTouch(rod_wr_pvld)
+    // for(i <- 0 to 3){
+    //     rod_wr_pvld(i) := io.rod_wr_pd.valid & io.rod_wr_mask(i) & ~(rod_wr_mask_prdy.drop(i).reduce(_||_))
+    // }
+    rod_wr_pvld(0) := io.rod_wr_pd.valid & io.rod_wr_mask(0) & ~(io.rod_wr_mask(1) & ~rod_wr_prdy(1) | io.rod_wr_mask(2) & ~rod_wr_prdy(2) | io.rod_wr_mask(3) & ~rod_wr_prdy(3))
+    rod_wr_pvld(1) := io.rod_wr_pd.valid & io.rod_wr_mask(1) & ~(io.rod_wr_mask(0) & ~rod_wr_prdy(0) | io.rod_wr_mask(2) & ~rod_wr_prdy(2) | io.rod_wr_mask(3) & ~rod_wr_prdy(3))
+    rod_wr_pvld(2) := io.rod_wr_pd.valid & io.rod_wr_mask(2) & ~(io.rod_wr_mask(0) & ~rod_wr_prdy(0) | io.rod_wr_mask(1) & ~rod_wr_prdy(1) | io.rod_wr_mask(3) & ~rod_wr_prdy(3))
+    rod_wr_pvld(3) := io.rod_wr_pd.valid & io.rod_wr_mask(3) & ~(io.rod_wr_mask(0) & ~rod_wr_prdy(0) | io.rod_wr_mask(1) & ~rod_wr_prdy(1) | io.rod_wr_mask(2) & ~rod_wr_prdy(2))
     
     val rod_rd_prdy = Wire(Vec(4,Bool()))
     val rod_rd_pvld = Wire(Vec(4,Bool()))
@@ -69,7 +74,7 @@ withClock(io.nvdla_core_clk){
     
     val u_rod = Array.fill(4){Module(new NV_NVDLA_IS_pipe(conf.AM_DW))}
     for(i <- 0 to 3){
-        u_rod(i).io.clk    := io.nvdla_core_clk
+        u_rod(i).io.clk := io.nvdla_core_clk
         u_rod(i).io.vi  := rod_wr_pvld(i)
         rod_wr_prdy(i)  := u_rod(i).io.ro
         u_rod(i).io.di  := io.rod_wr_pd.bits(i)
@@ -93,18 +98,18 @@ withClock(io.nvdla_core_clk){
     val out_rdy = Wire(Bool())
 
     val rod_sel_vec = Wire(Vec(4,Bool()))
-    rod_rd_prdy(0) := out_rdy & rodx_rd_en & rod_sel_vec(0) & !(rod_sel_vec(1) & !rod_rd_pvld(1))
-    rod_rd_prdy(1) := out_rdy & rodx_rd_en & rod_sel_vec(1) & !(rod_sel_vec(0) & !rod_rd_pvld(0))
-    rod_rd_prdy(2) := out_rdy & rodx_rd_en & rod_sel_vec(2) & !(rod_sel_vec(3) & !rod_rd_pvld(3))
-    rod_rd_prdy(3) := out_rdy & rodx_rd_en & rod_sel_vec(3) & !(rod_sel_vec(2) & !rod_rd_pvld(2))
+    rod_rd_prdy(0) := out_rdy & rodx_rd_en & rod_sel_vec(0) & ~(rod_sel_vec(1) & ~rod_rd_pvld(1))
+    rod_rd_prdy(1) := out_rdy & rodx_rd_en & rod_sel_vec(1) & ~(rod_sel_vec(0) & ~rod_rd_pvld(0))
+    rod_rd_prdy(2) := out_rdy & rodx_rd_en & rod_sel_vec(2) & ~(rod_sel_vec(3) & ~rod_rd_pvld(3))
+    rod_rd_prdy(3) := out_rdy & rodx_rd_en & rod_sel_vec(3) & ~(rod_sel_vec(2) & ~rod_rd_pvld(2))
 
     //==============
     // CMD FIFO
     //==============
     val roc_rd_prdy = Wire(Bool())
-    val u_roc = Module(new NV_NVDLA_fifo(depth = 4, width = 2, ram_type = 0, distant_wr_req = false))
-    u_roc.io.clk := io.nvdla_core_clk
+    val u_roc = Module(new NV_NVDLA_fifo_new(depth = 4, width = 2, ram_type = 0, rd_reg = true, ram_bypass = true))   
     u_roc.io.pwrbus_ram_pd := io.pwrbus_ram_pd
+    u_roc.io.clk := io.nvdla_core_clk
     u_roc.io.wr_pvld := io.roc_wr_pd.valid
     io.roc_wr_pd.ready := u_roc.io.wr_prdy
     u_roc.io.wr_pd := io.roc_wr_pd.bits
@@ -169,7 +174,7 @@ withClock(io.nvdla_core_clk){
     //==============
     // BEAT CNT: used to foreach 1~4 16E rod FIFOs
     //==============
-    val size_of_elem = Mux(io.cfg_dp_size_1byte | !io.cfg_dp_8, 1.U, 2.U)
+    val size_of_elem = Mux(io.cfg_dp_size_1byte | ~io.cfg_dp_8, 1.U, 2.U)
     val beat_cnt = RegInit(0.U(2.W))                      
     val beat_cnt_nxt = beat_cnt + size_of_elem
 
@@ -192,9 +197,9 @@ withClock(io.nvdla_core_clk){
     is_last_beat := (beat_cnt_nxt === size_of_beat)
     val rod_sel = beat_cnt
     rod_sel_vec(0) := beat_cnt === 0.U
-    rod_sel_vec(1) := Mux(io.cfg_dp_size_1byte | !io.cfg_dp_8, beat_cnt === 1.U, beat_cnt === 0.U) 
+    rod_sel_vec(1) := Mux(io.cfg_dp_size_1byte | ~io.cfg_dp_8, beat_cnt === 1.U, beat_cnt === 0.U) 
     rod_sel_vec(2) := beat_cnt === 2.U
-    rod_sel_vec(3) := Mux(io.cfg_dp_size_1byte | !io.cfg_dp_8, beat_cnt === 3.U, beat_cnt === 2.U)
+    rod_sel_vec(3) := Mux(io.cfg_dp_size_1byte | ~io.cfg_dp_8, beat_cnt === 3.U, beat_cnt === 2.U)
 
     ////dp int8 one byte per element or int16 two bytes per elment/////////// 
     val out_data_1bpe = MuxLookup(rod_sel, 0.U,
@@ -222,9 +227,9 @@ withClock(io.nvdla_core_clk){
         ))
 
     ////mux out data ////
-    val out_vld = Mux(io.cfg_dp_size_1byte | !io.cfg_dp_8, out_vld_1bpe, out_vld_2bpe)
+    val out_vld = Mux(io.cfg_dp_size_1byte | ~io.cfg_dp_8, out_vld_1bpe, out_vld_2bpe)
     val out_pd = Cat(is_cube_end, 
-                 Mux(!io.cfg_dp_8, Cat(0.U(conf.AM_DW.W), out_data_1bpe(conf.AM_DW-1, 0)),
+                 Mux(~io.cfg_dp_8, Cat(0.U(conf.AM_DW.W), out_data_1bpe(conf.AM_DW-1, 0)),
                  Mux(io.cfg_dp_size_1byte, out_data_1bpe_ext(conf.AM_DW2-1, 0), out_data_2bpe(conf.AM_DW2-1, 0))))
     out_accept := out_vld & out_rdy
 

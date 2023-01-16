@@ -161,11 +161,12 @@ withClock(io.nvdla_core_clk){
         val fifo_sel_cnt = RegInit("b0".asUInt(selbw.W))
 
         sdp2pdp_ready_use := ro_rd_rdy.asUInt.andR
-        val u_ro_fifo = Array.fill(k){Module(new NV_NVDLA_fifo(
+        val u_ro_fifo = Array.fill(k){Module(new NV_NVDLA_fifo_new(
                                depth = 4,
                                width = conf.PDPBW,
                                ram_type = 0,
-                               distant_wr_req = false))}
+                               rd_reg = true,
+                               ram_bypass = true))}
         for(i <- 0 to k-1){
             ro_wr_vld(i) := sdp2pdp_valid_use
 

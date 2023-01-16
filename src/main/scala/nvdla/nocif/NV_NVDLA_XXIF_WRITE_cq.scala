@@ -5,7 +5,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_XXIF_WRITE_cq(vec_num: Int, width: Int)(implicit conf:nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -62,11 +62,11 @@ withClock(io.clk){
     val wr_popping = Wire(Bool())
     val cq_wr_busy_int = withClock(clk_mgated){RegInit(false.B)}  // copy for internal use
    
-    io.cq_wr_pd.ready := !cq_wr_busy_int
-    wr_reserving := io.cq_wr_pd.valid && !cq_wr_busy_int   // reserving write space?
+    io.cq_wr_pd.ready := ~cq_wr_busy_int
+    wr_reserving := io.cq_wr_pd.valid && ~cq_wr_busy_int   // reserving write space?
 
     val cq_wr_count = withClock(clk_mgated){RegInit("b0".asUInt(9.W))} // write-side count
-    val wr_reserving_and_not_bypassing = wr_reserving && !wr_bypassing
+    val wr_reserving_and_not_bypassing = wr_reserving && ~wr_bypassing
 
     val wr_count_next_wr_popping = Mux(wr_reserving_and_not_bypassing, cq_wr_count, cq_wr_count-1.U)
     val wr_count_next_no_wr_popping = Mux(wr_reserving_and_not_bypassing, cq_wr_count+1.U, cq_wr_count)
@@ -84,7 +84,7 @@ withClock(io.clk){
         cq_wr_count := wr_count_next
     }
 
-    val wr_pushing = wr_reserving && !wr_bypassing // data pushed same cycle as cq_wr_pvld
+    val wr_pushing = wr_reserving && ~wr_bypassing // data pushed same cycle as cq_wr_pvld
     val wr_pushing_thread_id = io.cq_wr_thread_id; // thread being written
 
     //
@@ -101,7 +101,7 @@ withClock(io.clk){
     // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
     // Fifogen handles this by ignoring the data on the ram data out for that cycle.
 
-    val ram = Module(new nv_ram_rws(255, width))
+    val ram = Module(new nv_ram_rws(256, width))
     ram.io.clk := io.clk
     ram.io.wa := cq_wr_adr
     ram.io.we := wr_pushing
@@ -145,7 +145,7 @@ withClock(io.clk){
         when(rd_popping && (rd_popping_adr === i.U)){
             free_adr_mask_next(i) := true.B
         }
-        .elsewhen(wr_adr_popping && (rd_popping_adr === i.U)){
+        .elsewhen(wr_adr_popping && (free_adr_index === i.U)){
             free_adr_mask_next(i) := false.B
         }
     }
@@ -159,14 +159,14 @@ withClock(io.clk){
     val flag_l5 = VecInit((0 to 2) map { i => flag_l4(2*i+1)|flag_l4(2*i)})
     val flag_l6_0 = flag_l5(1) | flag_l5(0)
     //index
-    val index_l0 = VecInit((0 to 127) map { i => !free_adr_mask(2*i)})
-    val index_l1 = VecInit((0 to 63) map { i => Cat(!flag_l0(2*i),Mux(flag_l0(2*i), index_l0(2*i), index_l0(2*i+1)))})
-    val index_l2 = VecInit((0 to 31) map { i => Cat(!flag_l1(2*i),Mux(flag_l1(2*i), index_l1(2*i), index_l1(2*i+1)))})
-    val index_l3 = VecInit((0 to 15) map { i => Cat(!flag_l2(2*i),Mux(flag_l2(2*i), index_l2(2*i), index_l2(2*i+1)))})
-    val index_l4 = VecInit((0 to 7) map { i => Cat(!flag_l3(2*i),Mux(flag_l3(2*i), index_l3(2*i), index_l3(2*i+1)))})
-    val index_l5 = VecInit((0 to 3) map { i => Cat(!flag_l4(2*i),Mux(flag_l4(2*i), index_l4(2*i), index_l4(2*i+1)))})
-    val index_l6 = VecInit((0 to 1) map { i => Cat(!flag_l5(2*i),Mux(flag_l5(2*i), index_l5(2*i), index_l5(2*i+1)))})
-    val index_l7_0 = Cat(!flag_l6_0,Mux(flag_l6_0, index_l6(0), index_l6(1)))
+    val index_l0 = VecInit((0 to 127) map { i => ~free_adr_mask(2*i)})
+    val index_l1 = VecInit((0 to 63) map { i => Cat(~flag_l0(2*i),Mux(flag_l0(2*i), index_l0(2*i), index_l0(2*i+1)))})
+    val index_l2 = VecInit((0 to 31) map { i => Cat(~flag_l1(2*i),Mux(flag_l1(2*i), index_l1(2*i), index_l1(2*i+1)))})
+    val index_l3 = VecInit((0 to 15) map { i => Cat(~flag_l2(2*i),Mux(flag_l2(2*i), index_l2(2*i), index_l2(2*i+1)))})
+    val index_l4 = VecInit((0 to 7) map { i => Cat(~flag_l3(2*i),Mux(flag_l3(2*i), index_l3(2*i), index_l3(2*i+1)))})
+    val index_l5 = VecInit((0 to 3) map { i => Cat(~flag_l4(2*i),Mux(flag_l4(2*i), index_l4(2*i), index_l4(2*i+1)))})
+    val index_l6 = VecInit((0 to 1) map { i => Cat(~flag_l5(2*i),Mux(flag_l5(2*i), index_l5(2*i), index_l5(2*i+1)))})
+    val index_l7_0 = Cat(~flag_l6_0,Mux(flag_l6_0, index_l6(0), index_l6(1)))
     free_adr_index := index_l7_0
     wr_popping := rd_popping 
 
@@ -189,8 +189,8 @@ withClock(io.clk){
     val rd_pushing_vec = VecInit((0 to vec_num-1) map { i => (rd_pushing && (rd_pushing_thread_id === i.U))})
     val rd_take = VecInit((0 to vec_num-1) map { i => (cq_rd_take && (cq_rd_take_thread_id === i.U))})
 
-    val head = Reg(Vec(vec_num, UInt(8.W))) // thread head pointer
-    val tail = Reg(Vec(vec_num, UInt(8.W))) // thread tail pointer
+    val head = withClock(clk_mgated){Reg(Vec(vec_num, UInt(8.W)))} // thread head pointer
+    val tail = withClock(clk_mgated){Reg(Vec(vec_num, UInt(8.W)))} // thread tail pointer
 
     val rd_take_n_dly = withClock(clk_mgated){RegInit(VecInit(Seq.fill(vec_num)(false.B)))}
     val rd_take_dly_cg = withClock(clk_mgated){RegInit(false.B)}
@@ -209,8 +209,8 @@ withClock(io.clk){
     val adr_ram_rd_enable = Wire(Bool())
 
     val cq_rd_count = withClock(clk_mgated){RegInit(VecInit(Seq.fill(vec_num)("b0".asUInt(9.W))))}
-    val rd_count_next = VecInit((0 to vec_num-1) map { i => Mux(rd_pushing_vec(i), Cat(rd_take(i), cq_rd_count(i), cq_rd_count(i) +& 1.U),
-                                                                Cat(rd_take(i), cq_rd_count(i) -& 1.U, cq_rd_count(i)))})
+    val rd_count_next = VecInit((0 to vec_num-1) map { i => Mux(rd_pushing_vec(i), Mux(rd_take(i), cq_rd_count(i), cq_rd_count(i) +& 1.U),
+                                                                Mux(rd_take(i), cq_rd_count(i) -& 1.U, cq_rd_count(i)))})
     for(i <- 0 to vec_num-1){
         when(rd_pushing_vec(i)^rd_take(i)){
             cq_rd_count(i) := rd_count_next(i)
@@ -229,7 +229,7 @@ withClock(io.clk){
             tail(i) := rd_pushing_adr
         }
         when((rd_pushing_vec(i) && (cq_rd_count(i) === 0.U)) || 
-            (rd_pushing_vec(i) && rd_take(i) && (cq_rd_count(i) === i.U))){
+            (rd_pushing_vec(i) && rd_take(i) && (cq_rd_count(i) === 1.U))){
             head(i) := rd_pushing_adr
         }
         .elsewhen(update_head(i)){
@@ -296,21 +296,21 @@ withClock(io.clk){
         io.cq_rd_pd(i).valid := rd_skid_0_vld(i) || rd_pre_bypassing(i)
         io.cq_rd_pd(i).bits := Mux(rd_skid_0_vld(i), rd_skid_0(i), io.cq_wr_pd.bits)
 
-        when((rd_bypassing(i)||rd_take_n_dly(i)) && (!rd_skid_0_vld(i)||(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready && !rd_skid_1_vld(i)))){
+        when((rd_bypassing(i)||rd_take_n_dly(i)) && (~rd_skid_0_vld(i)||(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready && ~rd_skid_1_vld(i)))){
             rd_skid_0(i) := Mux(rd_take_n_dly(i), cq_rd_pd_p, io.cq_wr_pd.bits)
         }
         .elsewhen(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready && rd_skid_1_vld(i)){
             rd_skid_0(i) := rd_skid_1(i)
         }
 
-        when((rd_bypassing(i)||rd_take_n_dly(i)) && (!rd_skid_1_vld(i)||(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready && !rd_skid_2_vld(i)))){
+        when((rd_bypassing(i)||rd_take_n_dly(i)) && (~rd_skid_1_vld(i)||(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready && ~rd_skid_2_vld(i)))){
             rd_skid_1(i) := Mux(rd_bypassing(i), io.cq_wr_pd.bits, cq_rd_pd_p)
         }
         .elsewhen(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready && rd_skid_2_vld(i)){
             rd_skid_1(i) := rd_skid_2(i)
         }
 
-        when((rd_bypassing(i) || rd_take_n_dly(i)) && rd_skid_0_vld(i) && rd_skid_1_vld(i) && (rd_skid_2_vld(i) || !(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready))){
+        when((rd_bypassing(i) || rd_take_n_dly(i)) && rd_skid_0_vld(i) && rd_skid_1_vld(i) && (rd_skid_2_vld(i) || ~(io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready))){
             rd_skid_2(i) := Mux(rd_bypassing(i), io.cq_wr_pd.bits, cq_rd_pd_p)
         }
 
@@ -337,10 +337,10 @@ withClock(io.clk){
         cq_rd_credits_wo_take_next(i) := cq_rd_credits(i) +& cq_rd_credit(i)
         cq_rd_credits_next(i) := Mux(rd_take(i), cq_rd_credits_w_take_next(i), cq_rd_credits_wo_take_next(i))
 
-        cq_rd_take_elig(i) := (cq_rd_prdy_d(i) || !rd_skid_0_vld(i) || !rd_skid_1_vld(i) || (!rd_skid_2_vld(i) && !rd_take_n_dly(i))) && (cq_rd_credit(i) || cq_rd_credits_ne0(i))
+        cq_rd_take_elig(i) := (cq_rd_prdy_d(i) || ~rd_skid_0_vld(i) || ~rd_skid_1_vld(i) || (~rd_skid_2_vld(i) && ~rd_take_n_dly(i))) && (cq_rd_credit(i) || cq_rd_credits_ne0(i))
 
-        rd_pre_bypassing(i) := io.cq_wr_pd.valid && !cq_wr_busy_int && (io.cq_wr_thread_id === i.U) && cq_rd_credits(i) === i.U && !cq_rd_credit(i) && (!rd_take_n_dly(i) || rd_skid_0_vld(i)); // split this up to avoid combinatorial loop when full bypass is in effect
-        rd_bypassing(i) := rd_pre_bypassing(i) && (!rd_skid_2_vld(i) || !rd_skid_1_vld(i) || !(!cq_rd_prdy_d(i) && rd_skid_0_vld(i) && rd_skid_1_vld(i))) && !rd_take_n_dly(i)
+        rd_pre_bypassing(i) := io.cq_wr_pd.valid && ~cq_wr_busy_int && (io.cq_wr_thread_id === i.U) && cq_rd_credits(i) === 0.U && ~cq_rd_credit(i) && (~rd_take_n_dly(i) || rd_skid_0_vld(i)); // split this up to avoid combinatorial loop when full bypass is in effect
+        rd_bypassing(i) := rd_pre_bypassing(i) && (~rd_skid_2_vld(i) || ~rd_skid_1_vld(i) || ~(~cq_rd_prdy_d(i) && rd_skid_0_vld(i) && rd_skid_1_vld(i))) && ~rd_take_n_dly(i)
 
         when(cq_rd_credit(i) | rd_take(i)){
             cq_rd_credits(i) := cq_rd_credits_next(i)
@@ -372,24 +372,25 @@ withClock(io.clk){
         } 
 
         cq_rd_take_thread_id_is(i)((std_num+vec_num-1)%vec_num) := 
-        cq_rd_take_elig(i) && (cq_rd_take_thread_id_last === ((std_num+vec_num-1)%vec_num).U) && !cq_rd_take_elig(std_num)
+        cq_rd_take_elig(i) && (cq_rd_take_thread_id_last === ((std_num+vec_num-1)%vec_num).U) && ~cq_rd_take_elig(std_num)
 
         if(vec_num > 2){
-            for(j <- 0 to vec_num-2){
+            for(j <- 0 to vec_num-3){
                 cq_rd_take_thread_id_is(i)((std_num+vec_num-2-j)%vec_num) := 
                 cq_rd_take_elig(i) && (cq_rd_take_thread_id_last === ((std_num+vec_num-2-j)%vec_num).U) &&
-                (VecInit((0 to vec_num-2) map{k => !cq_rd_take_elig((std_num+vec_num-1-k)%vec_num)}).asUInt.andR)                                                                                             
+                ~cq_rd_take_elig(std_num) &&
+                (VecInit((0 to j) map{k => ~cq_rd_take_elig((std_num+vec_num-1-k)%vec_num)}).asUInt.andR)                                                                                             
             }  
         }
     }
 
     val cq_rd_take_thread_id_vec = Wire(Vec(log2Ceil(vec_num), Bool()))
     for(i <- 0 to log2Ceil(vec_num)-1){
-        var cq_rd_take_thread_id_list = new ListBuffer[UInt]()
+        var cq_rd_take_thread_id_list = List.fill(vec_num)(0.U).toBuffer // new ListBuffer[UInt]()
         for(j <- 1 to vec_num-1){
-               when((j.U)(i) === 1.U){
-                   cq_rd_take_thread_id_list += cq_rd_take_thread_id_is(j).asUInt
-               }    
+               if((j & (1 << i)) != 0){
+                   cq_rd_take_thread_id_list(j) = cq_rd_take_thread_id_is(j).asUInt
+               }
         }
 
         cq_rd_take_thread_id_vec(i) := Cat(cq_rd_take_thread_id_list.toList).orR
@@ -402,7 +403,7 @@ withClock(io.clk){
 
     wr_bypassing := rd_bypassing.asUInt.orR
 
-    clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || (io.cq_wr_pd.valid && !cq_wr_busy_int) || (cq_wr_busy_int =/= cq_wr_busy_next) || rd_popping) || (rd_pushing || cq_rd_take || (cq_rd_credit.asUInt =/= 0.U) || rd_take_dly))
+    clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping || (io.cq_wr_pd.valid && ~cq_wr_busy_int) || (cq_wr_busy_int =/= cq_wr_busy_next) || rd_popping) || (rd_pushing || cq_rd_take || (cq_rd_credit.asUInt =/= 0.U) || rd_take_dly))
 
     clk_mgated_skid_enable := clk_mgated_enable || 
                               VecInit((0 to vec_num-1) map {i => (io.cq_rd_pd(i).valid && io.cq_rd_pd(i).ready)||rd_bypassing(i)}).asUInt.orR

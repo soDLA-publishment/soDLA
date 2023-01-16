@@ -15,6 +15,6 @@ class oneHotClk_async_read_clock extends Module {
     val one_hot_enable = UJ_dft_xclamp_ctrl_asyncfifo_onehotclk_read.io.Y
     val tp = UJ_dft_xclamp_scan_asyncfifo_onehotclk_read.io.Y
 
-    io.enable_r := (!one_hot_enable) || (!tp) 
+    io.enable_r := (~one_hot_enable) || (~tp) 
 
 }

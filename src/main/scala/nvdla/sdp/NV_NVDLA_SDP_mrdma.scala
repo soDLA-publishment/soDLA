@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
+@chiselName
 class NV_NVDLA_SDP_mrdma(implicit conf: nvdlaConfig) extends Module {
 
 val io = IO(new Bundle {
@@ -76,7 +77,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     //==============
     val layer_process = RegInit(false.B)
     val eg_done = Wire(Bool())
-    val op_load = io.reg2dp_op_en & !layer_process
+    val op_load = io.reg2dp_op_en & ~layer_process
     when(op_load){
         layer_process := true.B
     }

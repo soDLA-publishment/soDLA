@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_CDMA_WT_sp_arb extends Module {
     val io = IO(new Bundle {
         val req0 = Input(Bool())
@@ -50,8 +51,8 @@ class NV_NVDLA_CDMA_WT_sp_arb extends Module {
     }
 
 
-    io.gnt0 := gnt_pre(0)&(!io.gnt_busy)
-    io.gnt1 := gnt_pre(1)&(!io.gnt_busy)
+    io.gnt0 := gnt_pre(0)&(~io.gnt_busy)
+    io.gnt1 := gnt_pre(1)&(~io.gnt_busy)
 }
 
 

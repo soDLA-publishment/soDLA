@@ -11,7 +11,7 @@ class sdp_y_int_alu_cfg_if extends Bundle{
     val src = Output(Bool())
 }
 
-
+@chiselName
 class NV_NVDLA_SDP_HLS_Y_int_alu extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -48,8 +48,8 @@ withClock(io.nvdla_core_clk){
 
     val alu_sync_prdy = Wire(Bool())
     val y_alu_sync2data = Module{new NV_NVDLA_HLS_sync2data(32, 32)}
-    y_alu_sync2data.io.chn1_en := io.cfg_alu.src & !io.cfg_alu.bypass
-    y_alu_sync2data.io.chn2_en := !io.cfg_alu.bypass
+    y_alu_sync2data.io.chn1_en := io.cfg_alu.src & ~io.cfg_alu.bypass
+    y_alu_sync2data.io.chn2_en := ~io.cfg_alu.bypass
     y_alu_sync2data.io.chn1_in <> io.chn_alu_op
     y_alu_sync2data.io.chn2_in.valid := io.alu_data_in.valid
     val alu_in_srdy = y_alu_sync2data.io.chn2_in.ready

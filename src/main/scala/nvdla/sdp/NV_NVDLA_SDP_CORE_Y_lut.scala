@@ -36,7 +36,7 @@ class sdp_y_lut_dp2reg_if extends Bundle{
 }
 
 
-
+@chiselName
 class NV_NVDLA_SDP_CORE_Y_lut(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
     //general clock
@@ -190,7 +190,7 @@ io.dp2reg_lut.uflow := lut_uflow_cnt
 // PERF STATISTIC
 // HYBRID
 //=======================================
-val lut_in_hybrid = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => Cat(!(lut_in_oflow(i)|lut_in_uflow(i)))})
+val lut_in_hybrid = VecInit((0 to conf.NVDLA_SDP_EW_THROUGHPUT-1) map { i => Cat(~(lut_in_oflow(i)|lut_in_uflow(i)))})
 val lut_hybrid_sum = lut_in_hybrid.reduce(_+&_)
 val lut_hybrid_cnt = Wire(UInt(32.W))
 
@@ -293,7 +293,7 @@ val dat_fifo_wr_pd = Cat(dat_fifo_wr_pd_1, dat_fifo_wr_pd_0)
 
 val dat_fifo_rd_prdy = Wire(Bool())
 val lut_out_prdy = Wire(Bool())
-val u_dat = Module(new NV_NVDLA_fifo(depth = 2, width = 32*conf.NVDLA_SDP_EW_THROUGHPUT, ram_type = 0, distant_wr_req = false))
+val u_dat = Module(new NV_NVDLA_fifo_new(depth = 2, width = 32*conf.NVDLA_SDP_EW_THROUGHPUT, ram_type = 0, rd_reg = true, ram_bypass = true))
 u_dat.io.clk := io.nvdla_core_clk
 u_dat.io.wr_pvld := dat_fifo_wr_pvld
 u_dat.io.wr_pd := dat_fifo_wr_pd
@@ -340,7 +340,7 @@ lut_in_prdy := cmd_fifo_wr_prdy
 
 // cmd fifo inst:
 
-val u_cmd = Module{new NV_NVDLA_fifo(depth = 2, width = 70*conf.NVDLA_SDP_EW_THROUGHPUT, ram_type = 0, distant_wr_req = false)}
+val u_cmd = Module{new NV_NVDLA_fifo_new(depth = 2, width = 70*conf.NVDLA_SDP_EW_THROUGHPUT, ram_type = 0, rd_reg = true, ram_bypass = true)}
 u_cmd.io.clk := io.nvdla_core_clk
 u_cmd.io.wr_pvld := cmd_fifo_wr_pvld
 cmd_fifo_wr_prdy := u_cmd.io.wr_prdy
@@ -366,11 +366,11 @@ val out_bias = Wire(Vec(conf.NVDLA_SDP_EW_THROUGHPUT, UInt(32.W)))
 
 for (i <- 0 to conf.NVDLA_SDP_EW_THROUGHPUT-1){
     when(out_uflow(i)){
-        when(!out_sel(i)){
+        when(~out_sel(i)){
             out_scale(i) := io.reg2dp_lut.le_slope_uflow_scale
             out_shift(i) := io.reg2dp_lut.le_slope_uflow_shift
             out_offset(i) := io.reg2dp_lut.le_start
-            when(!io.reg2dp_lut.le_function){
+            when(~io.reg2dp_lut.le_function){
                 out_bias(i) := Mux(io.reg2dp_lut.le_index_offset(7), 0.U, 1.U << io.reg2dp_lut.le_index_offset)
             }
             .otherwise{
@@ -385,7 +385,7 @@ for (i <- 0 to conf.NVDLA_SDP_EW_THROUGHPUT-1){
         }
     }
     .elsewhen(out_oflow(i)){
-        when(!out_sel(i)){
+        when(~out_sel(i)){
             out_scale(i) := io.reg2dp_lut.le_slope_oflow_scale
             out_shift(i) := io.reg2dp_lut.le_slope_oflow_shift
             out_offset(i) := io.reg2dp_lut.le_end

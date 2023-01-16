@@ -6,7 +6,7 @@ import chisel3.util._
 
 
 //this module is to active dat and wt
-
+@chiselName
 class NV_NVDLA_CMAC_CORE_active(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
@@ -49,7 +49,7 @@ class NV_NVDLA_CMAC_CORE_active(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+withClockAndReset(io.nvdla_core_clk, ~io.nvdla_core_rstn){
 //==========================================================
 // wt&dat:in --> pre
 //==========================================================   

@@ -44,7 +44,7 @@ class NV_NVDLA_HLS_shiftrightusz(IN_WIDTH:Int, OUT_WIDTH:Int, FRAC_WIDTH:Int, SH
 
     frac_shift := (Cat(io.data_in, Fill(FRAC_WIDTH, false.B)) >> io.shift_num)(FRAC_WIDTH-1, 0)
 
-    right_shift_sat := !shift_sign & data_shift_r(IN_WIDTH-1, OUT_WIDTH).orR
+    right_shift_sat := ~shift_sign & data_shift_r(IN_WIDTH-1, OUT_WIDTH).orR
 
     data_max := Fill(OUT_WIDTH, true.B)
 

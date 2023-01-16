@@ -11,9 +11,9 @@ class sdp_y_ew_reg2dp_if extends Bundle{
     val alu = new sdp_y_int_alu_cfg_if
     val mul = new sdp_y_int_mul_cfg_if
     val lut_bypass = Output(Bool())
-    
 }
 
+@chiselName
 class NV_NVDLA_SDP_CORE_y(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
 

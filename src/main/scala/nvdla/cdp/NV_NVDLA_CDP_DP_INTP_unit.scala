@@ -52,7 +52,7 @@ withClock(io.nvdla_core_clk){
     val int_vld_d0 = RegInit(false.B)
     val int_rdy_d0 = Wire(Bool())
     val int_in_vld = io.interp_in.valid;
-    int_in_rdy := !int_vld_d0 | int_rdy_d0;
+    int_in_rdy := ~int_vld_d0 | int_rdy_d0;
     val int_in_load = int_in_vld & int_in_rdy;
 
     ///////////////////
@@ -76,7 +76,7 @@ withClock(io.nvdla_core_clk){
 
     val int_vld_d1 = RegInit(false.B)
     val int_rdy_d1 = Wire(Bool())
-    int_rdy_d0 := !int_vld_d1 | int_rdy_d1
+    int_rdy_d0 := ~int_vld_d1 | int_rdy_d1
     val int_in_load_d0 = int_vld_d0 & int_rdy_d0
     ///////////////////
     //(X1-X0)*frac
@@ -106,7 +106,7 @@ withClock(io.nvdla_core_clk){
 
     when(int_mul_shift_int(56)){
         when(int_mul_shift_frac(31)){
-            when(!(int_mul_shift_frac(30,0).orR)){
+            when(~(int_mul_shift_frac(30,0).orR)){
                 int_mul_for_Rshift := Cat(int_mul_shift_int(56), int_mul_shift_int(56,0))
             }.otherwise{
                 int_mul_for_Rshift := ((int_mul_shift_int(56,0)).asSInt +& 1.S).asUInt
@@ -128,7 +128,7 @@ withClock(io.nvdla_core_clk){
 
     val int_vld_d2 = RegInit(false.B)
     val int_rdy_d2 = Wire(Bool())
-    int_rdy_d1 := !int_vld_d2 | int_rdy_d2
+    int_rdy_d1 := ~int_vld_d2 | int_rdy_d2
     val int_in_load_d1 = int_vld_d1 & int_rdy_d1
 
     //Xo = X0+[(X1-X0)*frac>>16]

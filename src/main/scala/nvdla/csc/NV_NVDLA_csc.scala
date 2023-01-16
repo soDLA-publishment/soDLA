@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_csc(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -67,7 +67,7 @@ class NV_NVDLA_csc(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withReset(!io.nvdla_core_rstn){
+withReset(~io.nvdla_core_rstn){
 
     val nvdla_op_gated_clk = Wire(Vec(3, Clock()))
     //==========================================================

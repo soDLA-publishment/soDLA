@@ -4,7 +4,8 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class NV_NVDLA_SDP_MRDMA_EG_cmd extends Module {
+@chiselName
+class NV_NVDLA_SDP_MRDMA_EG_cmd(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
         val pwrbus_ram_pd = Input(UInt(32.W))
@@ -56,7 +57,7 @@ withClock(io.nvdla_core_clk){
 
     val cmd_vld = RegInit(false.B)
     val cmd_rdy = Wire(Bool())
-    io.cq2eg_pd.ready := !cmd_vld || cmd_rdy
+    io.cq2eg_pd.ready := ~cmd_vld || cmd_rdy
     when(io.cq2eg_pd.ready){
         cmd_vld := io.cq2eg_pd.valid
     }
@@ -121,5 +122,6 @@ withClock(io.nvdla_core_clk){
 
 
 object NV_NVDLA_SDP_MRDMA_EG_cmdDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_MRDMA_EG_cmd)
 }

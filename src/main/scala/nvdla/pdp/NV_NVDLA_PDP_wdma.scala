@@ -115,7 +115,7 @@ withClock(io.nvdla_core_clk){
     // Work Processing
     //==============
     val op_prcess = RegInit(false.B)
-    op_load := io.reg2dp_op_en & !op_prcess;
+    op_load := io.reg2dp_op_en & ~op_prcess;
     val is_last_beat = Wire(Bool())
     val reg_cube_last = RegInit(false.B)
     val dat_accept = Wire(Bool())
@@ -412,7 +412,7 @@ withClock(io.nvdla_core_clk){
     val intr_fifo_wr_pvld = Wire(Bool())
     val intr_fifo_rd_prdy = Wire(Bool())
     val intr_fifo_wr_pd = Wire(Bool())
-    val u_intr_fifo = Module{new NV_NVDLA_fifo(depth = 0, width = 1)}
+    val u_intr_fifo = Module{new NV_NVDLA_fifo_new(depth = 0, width = 1)}
     u_intr_fifo.io.clk := io.nvdla_core_clk
     u_intr_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 

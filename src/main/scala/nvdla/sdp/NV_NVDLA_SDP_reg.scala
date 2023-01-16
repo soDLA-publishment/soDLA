@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //Implementation overview of ping-pong register file.
-
+@chiselName
 class NV_NVDLA_SDP_reg extends Module {
     val io = IO(new Bundle {
         //clk
@@ -207,11 +207,11 @@ withClock(io.nvdla_core_clk){
     val reg2dp_op_en_reg = RegInit(0.U(3.W))
     val reg_wr_data = Wire(UInt(32.W))
 
-    val reg2dp_d0_op_en_w = Mux(!reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), 
+    val reg2dp_d0_op_en_w = Mux(~reg2dp_d0_op_en & reg2dp_d0_op_en_trigger, reg_wr_data(0), 
                             Mux(io.dp2reg_done && (dp2reg_consumer === false.B), false.B, reg2dp_d0_op_en))
     reg2dp_d0_op_en := reg2dp_d0_op_en_w
 
-    val reg2dp_d1_op_en_w = Mux(!reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), 
+    val reg2dp_d1_op_en_w = Mux(~reg2dp_d1_op_en & reg2dp_d1_op_en_trigger, reg_wr_data(0), 
                             Mux(io.dp2reg_done && (dp2reg_consumer === true.B), false.B, reg2dp_d1_op_en))
     reg2dp_d1_op_en := reg2dp_d1_op_en_w
 
@@ -238,8 +238,8 @@ withClock(io.nvdla_core_clk){
 
     val reg_wr_en = Wire(Bool())
     s_reg_wr_en := reg_wr_en & select_s
-    d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
-    d1_reg_wr_en := reg_wr_en & select_d1 & !reg2dp_d1_op_en
+    d0_reg_wr_en := reg_wr_en & select_d0 & ~reg2dp_d0_op_en
+    d1_reg_wr_en := reg_wr_en & select_d1 & ~reg2dp_d1_op_en
 
     s_reg_offset := reg_offset
     d0_reg_offset := reg_offset
@@ -345,12 +345,12 @@ withClock(io.nvdla_core_clk){
 //////// Dual Flop Write Control////////
 //===================================================
     
-    val dp2reg_d0_set = reg2dp_d0_op_en & !reg2dp_d0_op_en_w
-    val dp2reg_d0_clr = !reg2dp_d0_op_en & reg2dp_d0_op_en_w
+    val dp2reg_d0_set = reg2dp_d0_op_en & ~reg2dp_d0_op_en_w
+    val dp2reg_d0_clr = ~reg2dp_d0_op_en & reg2dp_d0_op_en_w
     val dp2reg_d0_reg = reg2dp_d0_op_en ^ reg2dp_d0_op_en_w
 
-    val dp2reg_d1_set = reg2dp_d1_op_en & !reg2dp_d1_op_en_w
-    val dp2reg_d1_clr = !reg2dp_d1_op_en & reg2dp_d1_op_en_w
+    val dp2reg_d1_set = reg2dp_d1_op_en & ~reg2dp_d1_op_en_w
+    val dp2reg_d1_clr = ~reg2dp_d1_op_en & reg2dp_d1_op_en_w
     val dp2reg_d1_reg = reg2dp_d1_op_en ^ reg2dp_d1_op_en_w
 
     //////// for overflow counting register ////////

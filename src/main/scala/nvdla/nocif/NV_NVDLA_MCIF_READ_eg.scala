@@ -3,6 +3,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_MCIF_READ_eg(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -41,7 +42,8 @@ withClock(io.nvdla_core_clk) {
         rq_wr_pvld(i) := ipipe_axi_vld & (ipipe_axi_axid === conf.arr_tieoff_axid(i).asUInt(4.W))
     }
 
-    val lat_fifo = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_fifo(depth = 4,width = conf.NVDLA_PRIMARY_MEMIF_WIDTH, ram_type = 0))}
+    val lat_fifo = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_fifo_new(depth = 4,width = conf.NVDLA_PRIMARY_MEMIF_WIDTH, ram_type = 0))}
+
     val rq_rd_prdy = Wire(Vec(conf.RDMA_NUM, Bool()))
     val rq_rd_pvld = Wire(Vec(conf.RDMA_NUM, Bool()))
     val rq_rd_pd   = Wire(Vec(conf.RDMA_NUM, UInt(conf.NVDLA_PRIMARY_MEMIF_WIDTH.W)))

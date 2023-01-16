@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
+@chiselName
 class NV_NVDLA_SDP_brdma(implicit conf: nvdlaConfig) extends Module {
 
 val io = IO(new Bundle {
@@ -73,7 +74,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     // Layer Switch
     val layer_process = RegInit(false.B)
     val eg_done = Wire(Bool())
-    val op_load = io.reg2dp_op_en & !layer_process
+    val op_load = io.reg2dp_op_en & ~layer_process
     when(op_load){
         layer_process := true.B
     }
@@ -109,7 +110,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     u_ig.io.reg2dp_surface_stride := io.reg2dp_bs_surface_stride
     io.dp2reg_brdma_stall := u_ig.io.dp2reg_rdma_stall
 
-    val u_cq = Module(new NV_NVDLA_fifo(depth = conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, width = 16, distant_wr_req = false, ram_type = 2))
+    val u_cq = Module(new NV_NVDLA_fifo_new(depth = conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, width = 16, ram_type = 2))
     u_cq.io.clk := nvdla_gated_clk
     u_cq.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
@@ -143,7 +144,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     u_eg.io.reg2dp_rdma_data_use := io.reg2dp_brdma_data_use
 
 
-    val u_lat_fifo = Module(new NV_NVDLA_fifo(depth = conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, width = conf.NVDLA_DMA_RD_RSP, distant_wr_req = false, ram_type = 2))
+    val u_lat_fifo = Module(new NV_NVDLA_fifo_new(depth = conf.NVDLA_VMOD_SDP_BRDMA_LATENCY_FIFO_DEPTH, width = conf.NVDLA_DMA_RD_RSP, ram_type = 2))    
     u_lat_fifo.io.clk := nvdla_gated_clk
     u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 

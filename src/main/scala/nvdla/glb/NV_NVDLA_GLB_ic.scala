@@ -96,7 +96,7 @@ class NV_NVDLA_GLB_ic(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+withClockAndReset(io.nvdla_core_clk, ~io.nvdla_core_rstn){
 
     val done_wr_clr = Mux(io.sdp_done_status0_trigger, Cat(io.req_wdat(21, 16), io.req_wdat(9, 0)), "b0".asUInt(14.W))
     val done_set = Mux(io.sdp_done_set0_trigger, Cat(io.req_wdat(21, 16), io.req_wdat(9, 0)), "b0".asUInt(14.W))
@@ -314,7 +314,7 @@ withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
     
     val core_intr_d = RegNext(core_intr_w, false.B)
 
-    io.core_intr := withClockAndReset(io.nvdla_falcon_clk, !io.nvdla_falcon_rstn){ShiftRegister(core_intr_d, 3, false.B)}
+    io.core_intr := withClockAndReset(io.nvdla_falcon_clk, ~io.nvdla_falcon_rstn){ShiftRegister(core_intr_d, 3, false.B)}
 
 
 

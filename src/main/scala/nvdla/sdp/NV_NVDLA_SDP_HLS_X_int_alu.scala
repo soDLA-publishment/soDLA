@@ -12,6 +12,7 @@ class sdp_x_int_alu_cfg_if extends Bundle{
     val src = Output(Bool())
 }
 
+@chiselName
 class NV_NVDLA_SDP_HLS_X_int_alu extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -47,14 +48,17 @@ class NV_NVDLA_SDP_HLS_X_int_alu extends Module {
 withClock(io.nvdla_core_clk){
 
     val alu_sync_prdy = Wire(Bool())
+    dontTouch(alu_sync_prdy)
     val x_alu_sync2data = Module{new NV_NVDLA_HLS_sync2data(16, 32)}
-    x_alu_sync2data.io.chn1_en := io.cfg_alu.src & !io.cfg_alu.bypass
-    x_alu_sync2data.io.chn2_en := !io.cfg_alu.bypass
+    x_alu_sync2data.io.chn1_en := io.cfg_alu.src & ~io.cfg_alu.bypass
+    x_alu_sync2data.io.chn2_en := ~io.cfg_alu.bypass
     x_alu_sync2data.io.chn1_in <> io.chn_alu_op
     x_alu_sync2data.io.chn2_in.valid := io.alu_data_in.valid
     val alu_in_srdy = x_alu_sync2data.io.chn2_in.ready
+    dontTouch(alu_in_srdy)
     x_alu_sync2data.io.chn2_in.bits := io.alu_data_in.bits
-    val alu_sync_pvld = x_alu_sync2data.io.chn_out.valid   
+    val alu_sync_pvld = x_alu_sync2data.io.chn_out.valid
+    dontTouch(alu_sync_pvld)
     x_alu_sync2data.io.chn_out.ready := alu_sync_prdy
     val alu_op_sync = x_alu_sync2data.io.chn_out.bits.data1
     val alu_data_sync = x_alu_sync2data.io.chn_out.bits.data2
@@ -67,6 +71,7 @@ withClock(io.nvdla_core_clk){
     val alu_op_shift = x_alu_shiftleft_su.io.data_out
 
     val alu_shift_prdy = Wire(Bool())
+    dontTouch(alu_shift_prdy)
     val pipe_p1_data_in = Cat(alu_op_shift, alu_data_sync)
     val pipe_p1 = Module{new NV_NVDLA_BC_pipe(64)}
     pipe_p1.io.clk := io.nvdla_core_clk
@@ -74,6 +79,7 @@ withClock(io.nvdla_core_clk){
     alu_sync_prdy := pipe_p1.io.ro
     pipe_p1.io.di := pipe_p1_data_in
     val alu_shift_pvld = pipe_p1.io.vo
+    dontTouch(alu_shift_pvld)
     pipe_p1.io.ri := alu_shift_prdy
     val pipe_p1_data_out = pipe_p1.io.dout
 
@@ -96,7 +102,8 @@ withClock(io.nvdla_core_clk){
     }
 
     val alu_final_prdy = Wire(Bool())
-    val pipe_p2 = Module{new NV_NVDLA_BC_pipe(32)}
+    dontTouch(alu_final_prdy)
+    val pipe_p2 = Module{new NV_NVDLA_BC_pipe(33)}
     pipe_p2.io.clk := io.nvdla_core_clk
     pipe_p2.io.vi := alu_shift_pvld
     alu_shift_prdy := pipe_p2.io.ro

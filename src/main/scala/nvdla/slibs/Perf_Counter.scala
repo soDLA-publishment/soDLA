@@ -55,8 +55,8 @@ withClock(io.clk){
     cnt_ext := cnt_cur_reg
     cnt_inc := cnt_cur_reg +& 1.U
     cnt_dec := cnt_cur_reg -& 1.U
-    cnt_mod := Mux(io.rd_stall_inc && !io.rd_stall_dec, cnt_inc, 
-                  Mux(!io.rd_stall_inc && io.rd_stall_dec, cnt_dec,
+    cnt_mod := Mux(io.rd_stall_inc && ~io.rd_stall_dec, cnt_inc, 
+                  Mux(~io.rd_stall_inc && io.rd_stall_dec, cnt_dec,
                   cnt_ext))
     cnt_new := Mux(adv, cnt_mod, cnt_ext)
     cnt_nxt := Mux(io.rd_stall_clr, 0.U, cnt_new)
@@ -211,7 +211,7 @@ class NV_COUNTER_STAGE_os extends Module{
         val clk = Input(Clock())
 
         val os_cnt_add = Input(UInt(3.W))
-        val os_cnt_sub = Input(Bool())
+        val os_cnt_sub = Input(UInt(3.W))
         val os_cnt_cen = Input(Bool())
 
         val os_cnt_cur = Output(UInt(9.W))

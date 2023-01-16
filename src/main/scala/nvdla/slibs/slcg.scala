@@ -26,7 +26,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     val slcg_enable = if(io_slcg_disable) Some(RegInit(false.B)) else None
     val cfg_clk_en = Wire(Bool())
     if(io_slcg_disable){
-        slcg_enable.get := !io.slcg_disable.get
+        slcg_enable.get := ~io.slcg_disable.get
         cfg_clk_en := io.slcg_en.asUInt.andR & slcg_enable.get
     }
     else{

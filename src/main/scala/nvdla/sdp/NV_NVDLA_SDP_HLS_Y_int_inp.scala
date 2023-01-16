@@ -16,6 +16,7 @@ class sdp_y_int_inp_in extends Bundle{
     val y1 = Output(UInt(16.W))
 }
 
+@chiselName
 class NV_NVDLA_SDP_HLS_Y_int_inp extends Module {
    val io = IO(new Bundle {
         //clk
@@ -175,14 +176,14 @@ withClock(io.nvdla_core_clk){
 
     val inp_flow_prdy = Wire(Bool())
     val inp_in_fvld =  io.inp_in.bits.flow & inp_flow_prdy & io.inp_in.valid;
-    inp_in_mvld := !io.inp_in.bits.flow & inp_flow_prdy & io.inp_in.valid;
+    inp_in_mvld := ~io.inp_in.bits.flow & inp_flow_prdy & io.inp_in.valid;
     val inp_flow_pvld = Mux(io.inp_in.bits.flow, inp_in_frdy, inp_in_prdy0 & inp_in_prdy1) & io.inp_in.valid
     io.inp_in.ready := Mux(io.inp_in.bits.flow, inp_in_frdy, inp_in_prdy0 & inp_in_prdy1) & inp_flow_prdy
 
     val flow_in_pipe3 = Wire(Bool())
     val flow_pipe3_pvld = Wire(Bool())
     inp_fout_prdy :=  flow_in_pipe3 & flow_pipe3_pvld & io.inp_data_out.ready;
-    inp_mout_prdy := !flow_in_pipe3 & flow_pipe3_pvld & io.inp_data_out.ready;
+    inp_mout_prdy := ~flow_in_pipe3 & flow_pipe3_pvld & io.inp_data_out.ready;
     val flow_pipe3_prdy = Mux(flow_in_pipe3, inp_fout_pvld, inp_mout_pvld) & io.inp_data_out.ready;
 
     io.inp_data_out.valid := Mux(flow_in_pipe3, inp_fout_pvld, inp_mout_pvld) & flow_pipe3_pvld

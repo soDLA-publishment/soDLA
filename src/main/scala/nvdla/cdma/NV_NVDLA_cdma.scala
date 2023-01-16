@@ -57,6 +57,7 @@ class NV_NVDLA_cdmaIO(implicit val conf: nvdlaConfig) extends Bundle{
 
 }
 
+@chiselName
 class NV_NVDLA_cdma(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new NV_NVDLA_cdmaIO)
 //     
@@ -81,7 +82,7 @@ class NV_NVDLA_cdma(implicit val conf: nvdlaConfig) extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
 
-withReset(io.nvdla_core_rstn){
+withReset(~io.nvdla_core_rstn){
 
     val u_regfile = Module(new NV_NVDLA_CDMA_regfile)
     val u_wt = Module(new NV_NVDLA_CDMA_wt)   
@@ -230,10 +231,10 @@ withReset(io.nvdla_core_rstn){
     u_dc.io.reg2dp_datain_channel := field.datain_channel
     u_dc.io.reg2dp_datain_ram_type := field.datain_ram_type
     u_dc.io.reg2dp_datain_addr_high_0 := field.datain_addr_high_0
-    u_dc.io.reg2dp_datain_addr_low_0 := field.datain_addr_low_0(31-conf.ATMMBW, 0)
-    u_dc.io.reg2dp_line_stride := field.line_stride(31-conf.ATMMBW, 0)
-    u_dc.io.reg2dp_surf_stride := field.surf_stride(31-conf.ATMMBW, 0)
-    u_dc.io.reg2dp_batch_stride := field.batch_stride(31-conf.ATMMBW, 0)
+    u_dc.io.reg2dp_datain_addr_low_0 := field.datain_addr_low_0(31, conf.ATMMBW)
+    u_dc.io.reg2dp_line_stride := field.line_stride(31, conf.ATMMBW)
+    u_dc.io.reg2dp_surf_stride := field.surf_stride(31, conf.ATMMBW)
+    u_dc.io.reg2dp_batch_stride := field.batch_stride(31, conf.ATMMBW)
     u_dc.io.reg2dp_line_packed := field.line_packed
     u_dc.io.reg2dp_surf_packed := field.surf_packed
     u_dc.io.reg2dp_batches := field.batches

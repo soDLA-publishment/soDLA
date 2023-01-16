@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_CSC_wlIO(implicit conf: nvdlaConfig) extends Bundle{
 
     //clock
@@ -36,9 +37,9 @@ class NV_NVDLA_CSC_wlIO(implicit conf: nvdlaConfig) extends Bundle{
     val reg2dp_wmb_bytes = Input(UInt(28.W))
     val reg2dp_data_bank = Input(UInt(5.W))
     val reg2dp_weight_bank = Input(UInt(5.W)) 
-
 }
 
+@chiselName
 class NV_NVDLA_CSC_wl(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new NV_NVDLA_CSC_wlIO)
     //     
@@ -65,7 +66,7 @@ class NV_NVDLA_CSC_wl(implicit val conf: nvdlaConfig) extends Module {
 withClock(io.nvdla_core_clk){
     val sc2buf_wmb_rd_valid = false.B
     val sc2buf_wmb_rd_data = Fill(conf.CBUF_ENTRY_BITS, false.B)
-
+    dontTouch(sc2buf_wmb_rd_data)
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Pipeline of Weight loader, for both compressed weight and uncompressed weight
     //
@@ -219,24 +220,23 @@ withClock(io.nvdla_core_clk){
     //////////////////////////////////////////////////////////////
     ///// input data package                                 /////
     //////////////////////////////////////////////////////////////
-    val wl_in_pvld_d = Wire(Bool()) +: 
-                       Seq.fill(conf.CSC_WL_PIPELINE_ADDITION)(RegInit(false.B))
-    val wl_in_pd_d = Wire(Bool()) +: 
-                   Seq.fill(conf.CSC_WL_PIPELINE_ADDITION)(RegInit("b0".asUInt(18.W)))
+    val wl_in_pvld_d = Seq.fill(conf.CSC_WL_PIPELINE_ADDITION)(RegInit(false.B))
+    val wl_in_pd_d = Seq.fill(conf.CSC_WL_PIPELINE_ADDITION)(RegInit("b0".asUInt(18.W)))
 
     wl_in_pvld_d(0) := io.sg2wl.pd.valid
     wl_in_pd_d(0) := io.sg2wl.pd.bits
 
-    for(t <- 0 to conf.CSC_WL_PIPELINE_ADDITION-1){
+    for(t <- 0 to conf.CSC_WL_PIPELINE_ADDITION-2){
         wl_in_pvld_d(t+1) := wl_in_pvld_d(t)
         when(wl_in_pvld_d(t)){
             wl_in_pd_d(t+1) := wl_in_pd_d(t)
         }
     }
 
-    val wl_pvld = wl_in_pvld_d(conf.CSC_WL_PIPELINE_ADDITION)
-    val wl_pd = wl_in_pd_d(conf.CSC_WL_PIPELINE_ADDITION)
-
+    val wl_pvld = wl_in_pvld_d(conf.CSC_WL_PIPELINE_ADDITION-1)
+    dontTouch(wl_pvld)
+    val wl_pd = wl_in_pd_d(conf.CSC_WL_PIPELINE_ADDITION-1)
+    dontTouch(wl_pd)
     // PKT_UNPACK_WIRE( csc_wt_pkg ,  wl_ ,  wl_pd )
     val wl_weight_size = wl_pd(6, 0)
     val wl_kernel_size = wl_pd(12, 7)
@@ -433,13 +433,17 @@ withClock(io.nvdla_core_clk){
     val wt_req_emask = RegInit(Fill(conf.CSC_ATOMC, false.B))
     val wmb_emask_remain = RegInit(Fill(conf.CBUF_ENTRY_BITS, false.B))
 
-    val wmb_emask_rd_ls = Mux(~sc2buf_wmb_rd_valid, "b0".asUInt(conf.CSC_ATOMC.W), sc2buf_wmb_rd_data(conf.CSC_ATOMC-1, 0) << wmb_rsp_bit_remain(6, 0))
+    val temp_sc2buf_wmb_rd_data = sc2buf_wmb_rd_data << wmb_rsp_bit_remain(6, 0)
+    val wmb_emask_rd_ls = Mux(~sc2buf_wmb_rd_valid, "b0".asUInt(conf.CSC_ATOMC.W), temp_sc2buf_wmb_rd_data(conf.CSC_ATOMC-1, 0))
+    dontTouch(wmb_emask_rd_ls)
     val wmb_rsp_emask_in = (wmb_emask_rd_ls | wmb_emask_remain(conf.CSC_ATOMC-1, 0) | Fill(conf.CSC_ATOMC, ~is_compressed_d1)) //wmb for current atomic op
-    val wmb_rsp_vld_s = ~(Fill(conf.CSC_ATOMC, true.B) << wmb_rsp_element)
+    
+    val temp_wmb_rsp_vld_s = ~(Fill(conf.CSC_ATOMC, true.B) << wmb_rsp_element)
+    val wmb_rsp_vld_s = temp_wmb_rsp_vld_s(conf.CSC_ATOMC-1, 0)
     val wmb_rsp_emask = wmb_rsp_emask_in(conf.CSC_ATOMC-1, 0) & wmb_rsp_vld_s //the mask needed
 
     when(wmb_rsp_pipe_pvld){
-        wt_req_emask := wmb_rsp_emask
+        wt_req_emask := wmb_rsp_emask(conf.CSC_ATOMC-1, 0)
     }
 
     //////////////////////////////////// generate local remain masks ////////////////////////////////////
@@ -493,6 +497,7 @@ withClock(io.nvdla_core_clk){
 
     ////CAUSION! wt_req_bmask is byte mask, not elemnet mask!////
     val wt_req_bmask = Wire(Vec(conf.CSC_ATOMC, UInt(1.W)))
+    dontTouch(wt_req_bmask)
     for(i <- 0 to conf.CSC_ATOMC-1){
         wt_req_bmask(i) := wt_req_emask(i).asUInt
     }
@@ -500,7 +505,7 @@ withClock(io.nvdla_core_clk){
 
     //////////////////////////////////// generate element mask for decoding////////////////////////////////////
     val wt_req_mask_d1 = RegInit("b0".asUInt(conf.CSC_ATOMC.W))
-
+    dontTouch(wt_req_mask_d1)
     //valid bit for each sub h line 
     val wt_req_vld_bit = ~(Fill(conf.CSC_ATOMC, true.B) << wt_req_ori_element)
 
@@ -601,6 +606,7 @@ withClock(io.nvdla_core_clk){
     val wt_req_bytes_d1 = RegInit("b0".asUInt(8.W))
 
     val wt_req_mask_en_d1 = RegInit(false.B)
+    dontTouch(wt_req_mask_en_d1)
     val wt_req_wmb_rls_entries_d1 = RegInit("b0".asUInt(9.W))
     val wt_req_wt_rls_entries_d1 = RegInit("b0".asUInt(conf.CSC_ENTRIES_NUM_WIDTH.W))
 
@@ -635,7 +641,7 @@ withClock(io.nvdla_core_clk){
     ///// sideband pipeline for wmb read                     /////
     //////////////////////////////////////////////////////////////
     val wt_req_pipe_pvld = wt_req_pipe_valid_d1
-
+    dontTouch(wt_req_pipe_pvld)
     val wt_req_d1_stripe_end = wt_req_stripe_end_d1
     val wt_req_d1_channel_end = wt_req_channel_end_d1
     val wt_req_d1_group_end = wt_req_group_end_d1
@@ -648,7 +654,7 @@ withClock(io.nvdla_core_clk){
     val wt_req_pipe_pd = Cat(wt_req_d1_rls, wt_req_d1_group_end, wt_req_d1_channel_end
                             , wt_req_d1_stripe_end, wt_req_d1_wt_rls_entries(14, 0), wt_req_d1_wmb_rls_entries(8, 0)
                             , wt_req_d1_bytes(7, 0))
-
+    dontTouch(wt_req_pipe_pd)
     //delay chain
     val wt_rsp_pipe_pvld_d = Wire(Bool()) +: 
                              Seq.fill(conf.NVDLA_CBUF_READ_LATENCY)(RegInit(false.B))
@@ -658,7 +664,7 @@ withClock(io.nvdla_core_clk){
                            Seq.fill(conf.NVDLA_CBUF_READ_LATENCY)(RegInit(false.B))
     val wt_rsp_mask_d = Wire(UInt(conf.CSC_ATOMC.W)) +: 
                             Seq.fill(conf.NVDLA_CBUF_READ_LATENCY)(RegInit("b0".asUInt(conf.CSC_ATOMC.W)))
-    
+
     wt_rsp_pipe_pvld_d(0) := wt_req_pipe_pvld
     wt_rsp_pipe_pd_d(0) := wt_req_pipe_pd
     wt_rsp_mask_en_d(0) := wt_req_mask_en_d1
@@ -750,10 +756,10 @@ withClock(io.nvdla_core_clk){
 
 
     //////////////////////////////////// generate select signal ////////////////////////////////////
-    val wt_rsp_last_stripe_end = RegInit(false.B)
+    val wt_rsp_last_stripe_end = RegInit(true.B)
     val wt_rsp_sel_d1 = RegInit("b1".asUInt(conf.CSC_ATOMK.W))
 
-    val wt_rsp_sel_w = Mux(wt_rsp_last_stripe_end, "b1".asUInt(conf.CSC_ATOMK.W), 
+    val wt_rsp_sel_w = Mux(wt_rsp_last_stripe_end, Cat("b0".asUInt((conf.CSC_ATOMK-1).W), "b1".asUInt(1.W)), 
                        Cat(wt_rsp_sel_d1(conf.CSC_ATOMK-2, 0), wt_rsp_sel_d1(conf.CSC_ATOMK-1))
                        )
     when(wt_rsp_pipe_pvld){

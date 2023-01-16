@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_CACC_assembly_buffer(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {

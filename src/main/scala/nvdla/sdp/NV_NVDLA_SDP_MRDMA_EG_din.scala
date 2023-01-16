@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_SDP_MRDMA_EG_din(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //clk
@@ -120,26 +121,26 @@ withClock(io.nvdla_core_clk){
     val pfifo_wr_prdy = Wire(Vec(4, Bool())) 
     val pfifo_wr_pvld = Wire(Vec(4, Bool())) 
 
-    pfifo_wr_rdy := !(pfifo_wr_mask(0) & !pfifo_wr_prdy(0) | 
-                    pfifo_wr_mask(1) & !pfifo_wr_prdy(1) | 
-                    pfifo_wr_mask(2) & !pfifo_wr_prdy(2) | 
-                    pfifo_wr_mask(3) & !pfifo_wr_prdy(3) )
+    pfifo_wr_rdy := ~(pfifo_wr_mask(0) & ~pfifo_wr_prdy(0) | 
+                    pfifo_wr_mask(1) & ~pfifo_wr_prdy(1) | 
+                    pfifo_wr_mask(2) & ~pfifo_wr_prdy(2) | 
+                    pfifo_wr_mask(3) & ~pfifo_wr_prdy(3) )
     pfifo_wr_pvld(0) := pfifo_wr_vld & pfifo_wr_mask(0) & 
-                        !(  pfifo_wr_mask(1) & !pfifo_wr_prdy(1) | 
-                            pfifo_wr_mask(2) & !pfifo_wr_prdy(2) | 
-                            pfifo_wr_mask(3) & !pfifo_wr_prdy(3) )
+                        ~(  pfifo_wr_mask(1) & ~pfifo_wr_prdy(1) | 
+                            pfifo_wr_mask(2) & ~pfifo_wr_prdy(2) | 
+                            pfifo_wr_mask(3) & ~pfifo_wr_prdy(3) )
     pfifo_wr_pvld(1) := pfifo_wr_vld & pfifo_wr_mask(1) & 
-                        !(  pfifo_wr_mask(0) & !pfifo_wr_prdy(0) | 
-                            pfifo_wr_mask(2) & !pfifo_wr_prdy(2) | 
-                            pfifo_wr_mask(3) & !pfifo_wr_prdy(3) )
+                        ~(  pfifo_wr_mask(0) & ~pfifo_wr_prdy(0) | 
+                            pfifo_wr_mask(2) & ~pfifo_wr_prdy(2) | 
+                            pfifo_wr_mask(3) & ~pfifo_wr_prdy(3) )
     pfifo_wr_pvld(2) := pfifo_wr_vld & pfifo_wr_mask(2) & 
-                        !(  pfifo_wr_mask(0) & !pfifo_wr_prdy(0) | 
-                            pfifo_wr_mask(1) & !pfifo_wr_prdy(1) | 
-                            pfifo_wr_mask(3) & !pfifo_wr_prdy(3) )
+                        ~(  pfifo_wr_mask(0) & ~pfifo_wr_prdy(0) | 
+                            pfifo_wr_mask(1) & ~pfifo_wr_prdy(1) | 
+                            pfifo_wr_mask(3) & ~pfifo_wr_prdy(3) )
     pfifo_wr_pvld(3) := pfifo_wr_vld & pfifo_wr_mask(3) & 
-                        !(  pfifo_wr_mask(0) & !pfifo_wr_prdy(0) | 
-                            pfifo_wr_mask(1) & !pfifo_wr_prdy(1) | 
-                            pfifo_wr_mask(2) & !pfifo_wr_prdy(3) )
+                        ~(  pfifo_wr_mask(0) & ~pfifo_wr_prdy(0) | 
+                            pfifo_wr_mask(1) & ~pfifo_wr_prdy(1) | 
+                            pfifo_wr_mask(2) & ~pfifo_wr_prdy(3) )
     
     val u_pfifo =  Array.fill(4){Module(new NV_NVDLA_IS_pipe(conf.AM_DW))}
     for(i <- 0 to 3){

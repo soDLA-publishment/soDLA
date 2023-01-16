@@ -12,7 +12,7 @@ class p_SDFCNQD1PO4 extends RawModule {
     val Q = Output(Bool())
   })
 
-withClockAndReset (io.CP, !io.CDN) {
+withClockAndReset (io.CP, ~io.CDN) {
     // In this withClock scope, all synchronous elements are clocked against io.clockB.
 
     // This register is clocked against io.clockB, but uses implict reset from the parent context.

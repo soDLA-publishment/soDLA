@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_SDP_RDMA_pack(IW: Int = 512, OW: Int = 256, CW: Int = 1)(implicit val conf: nvdlaConfig) extends Module {
    val RATIO = IW/OW
    val io = IO(new Bundle {
@@ -47,11 +48,13 @@ withClock(io.nvdla_core_clk){
     val pack_prdy = io.out.ready
 
     val pack_pvld = RegInit(false.B)
-    pack_pvld := io.inp.valid
     io.out.valid := pack_pvld
 
+    when(io.inp.ready){
+        pack_pvld := io.inp.valid
+    }
     val is_pack_last = Wire(Bool())
-    io.inp.ready := (!pack_pvld) | (pack_prdy & is_pack_last)
+    io.inp.ready := (~pack_pvld) | (pack_prdy & is_pack_last)
 
     val inp_acc = io.inp.valid & io.inp.ready
     val out_acc = io.out.valid & io.out.ready
@@ -83,7 +86,7 @@ withClock(io.nvdla_core_clk){
         }
     }
     
-    is_pack_last := Mux(!io.cfg_dp_8, (pack_cnt===(RATIO/2-1).U), (pack_cnt===(RATIO-1).U))
+    is_pack_last := Mux(~io.cfg_dp_8, (pack_cnt===(RATIO/2-1).U), (pack_cnt===(RATIO-1).U))
 
     val pack_seg = VecInit((0 to RATIO-1) 
                     map {i => pack_data_ext((OW*i + OW - 1), OW*i)})

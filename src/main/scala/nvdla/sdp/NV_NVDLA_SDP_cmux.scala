@@ -5,6 +5,7 @@ import chisel3.util._
 import chisel3.experimental._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_SDP_cmux(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //in clock
@@ -40,19 +41,24 @@ withClock(io.nvdla_core_clk){
 
     val cmux_in_en = RegInit(false.B)
     val cacc_rdy = Wire(Bool())
+    val cacc_vld = Wire(Bool())
     val cmux2dp_prdy = Wire(Bool())
+    dontTouch(cmux_in_en)
+    dontTouch(cacc_rdy)
+    dontTouch(cacc_vld)
+    dontTouch(cmux2dp_prdy)
     val pipe_p1 = Module(new NV_NVDLA_BC_OS_pipe(conf.DP_IN_DW+2))
     pipe_p1.io.clk := io.nvdla_core_clk
     pipe_p1.io.vi := io.cacc2sdp_pd.valid
     io.cacc2sdp_pd.ready := pipe_p1.io.ro
     pipe_p1.io.di := io.cacc2sdp_pd.bits
-    val cacc_vld = pipe_p1.io.vo
+    cacc_vld := pipe_p1.io.vo
     pipe_p1.io.ri := cacc_rdy
     val cacc_pd = pipe_p1.io.dout
 
     val cmux2dp_pvld = cmux_in_en & Mux(cfg_flying_mode_on, cacc_vld, io.sdp_mrdma2cmux_pd.valid)
     cacc_rdy := cmux_in_en & cfg_flying_mode_on & cmux2dp_prdy
-    io.sdp_mrdma2cmux_pd.ready := cmux_in_en & (!cfg_flying_mode_on) & cmux2dp_prdy
+    io.sdp_mrdma2cmux_pd.ready := cmux_in_en & (~cfg_flying_mode_on) & cmux2dp_prdy
 
     //===========================================
     // Layer Switch
@@ -62,6 +68,12 @@ withClock(io.nvdla_core_clk){
     val cmux_pd_batch_end = cmux_pd(conf.DP_IN_DW)
     val cmux_pd_layer_end = cmux_pd(conf.DP_IN_DW+1)
     val cmux_pd_flush_batch_end_NC = cmux_pd_batch_end
+
+    when(io.op_en_load){
+      cmux_in_en := true.B
+    } .elsewhen(cmux_pd_layer_end && cmux2dp_pvld && cmux2dp_prdy){
+      cmux_in_en := false.B
+    }
 
     val cmux2dp_pd = cmux_pd(conf.DP_IN_DW-1, 0)
 

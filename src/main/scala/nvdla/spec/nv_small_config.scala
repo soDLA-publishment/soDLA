@@ -1,6 +1,6 @@
 package nvdla
 
-class nv_small
+class nv_small_config
 {
   val FEATURE_DATA_TYPE_INT8 = true
   val WEIGHT_DATA_TYPE_INT8 = true

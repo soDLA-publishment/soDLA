@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_BASIC_REG_single extends Module {
     val io = IO(new Bundle {
       // clk
@@ -56,7 +57,8 @@ withClock(io.nvdla_core_clk){
       ))
 
     // Register flop declarations
-    io.producer := RegEnable(io.reg.wr_data(0), false.B, s_pointer_0_wren)
+    val reg_pointer = RegEnable(io.reg.wr_data(0), false.B, s_pointer_0_wren)
+    io.producer := reg_pointer
 }}
 
 

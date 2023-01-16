@@ -4,6 +4,7 @@
  import chisel3.experimental._
  import chisel3.util._
 
+@chiselName
 class NV_NVDLA_CSC_WL_dec(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clock
@@ -101,20 +102,20 @@ withClock(io.nvdla_core_clk){
     }
     for(i <- 0 to conf.CSC_ATOMC-1){
         when(valid_d1){
-            when(mask_d1(i)){
-                vec_data_d2(i) := vec_data(i)
-            }
-            .otherwise{
-                vec_data_d2(i) := 0.asUInt(conf.CSC_BPE.W)
-            }
-                
+            // when(mask_d1(i)){
+            //     vec_data_d2(i) := vec_data(i)
+            // }
+            // .otherwise{
+            //     vec_data_d2(i) := 0.asUInt(conf.CSC_BPE.W)
+            // }
+            vec_data_d2(i) := vec_data(i) & Fill(conf.CSC_BPE, mask_d1(i))
         }
     }     
 
     ////////////////////////////////// phase III: registers //////////////////////////////////
     val mask_d2_int8_w = Wire(Vec(conf.CSC_ATOMC, Bool()))
     for(i <- 0 to conf.CSC_ATOMC-1){
-        mask_d2_int8_w(i) := vec_data(i).asUInt.orR
+        mask_d2_int8_w(i) := vec_data_d2(i).orR
     }
 
     val mask_d2_w = mask_d2_int8_w //only for int8

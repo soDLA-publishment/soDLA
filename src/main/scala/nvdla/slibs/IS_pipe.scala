@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //input skid
+@chiselName
 class NV_NVDLA_IS_pipe(WIDTH:Int) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock())  
@@ -77,7 +78,7 @@ class NV_NVDLA_IS_pipe(WIDTH:Int) extends Module {
     }
     skid_di := Mux(skid_flop_ro, io.di, skid_flop_di)
     //pipe ready
-    skid_ro := pipe_skid_ro || !pipe_skid_vi
+    skid_ro := pipe_skid_ro || ~pipe_skid_vi
     //pipe valid
     when(skid_ro){
         pipe_skid_vi := skid_vi

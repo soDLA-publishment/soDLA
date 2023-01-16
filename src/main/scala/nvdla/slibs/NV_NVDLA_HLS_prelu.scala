@@ -33,9 +33,9 @@ class NV_NVDLA_HLS_prelu(IN_WIDTH:Int=32, OUT_WIDTH:Int=64, OP_WIDTH:Int=32) ext
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
 
-    val data_in_sign = io.data_in
+    val data_in_sign = io.data_in(IN_WIDTH-1)
 
-    when(io.cfg_prelu_en & !data_in_sign){
+    when(io.cfg_prelu_en & ~data_in_sign){
         io.data_out := io.data_in
     }
     .otherwise{

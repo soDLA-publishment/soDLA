@@ -51,7 +51,7 @@ withClock(io.clk) {
     val wt_left_nxt = WireInit("b0".asUInt(wt_width.W))
 
     if(io_gnt_busy){
-        when(!io.gnt_busy.get & req =/= 0.U){
+        when(~io.gnt_busy.get & req =/= 0.U){
             wrr_gnt := io.gnt.asUInt
             wt_left := wt_left_nxt
         }
@@ -65,7 +65,7 @@ withClock(io.clk) {
 
     //gnt_pre
     val gnt_pre = WireInit("b0".asUInt(n.W))
-    when(wt_left === 0.U | !((req & wrr_gnt).orR)) {
+    when(wt_left === 0.U | ~((req & wrr_gnt).orR)) {
         for(i <- 0 to n){
             when(wrr_gnt === ("b1".asUInt((n+1).W) << i.U)(n, 1)){
                 gnt_pre := MuxCase(0.U(n.W), (i until i+n) map{ j => req(j % n) -> (1.U << (j % n))})
@@ -81,7 +81,7 @@ withClock(io.clk) {
     //generate io.gnt
     if(io_gnt_busy){
         for(i <- 0 to n-1){
-            io.gnt(i) := !io.gnt_busy.get & gnt_pre(i)
+            io.gnt(i) := ~io.gnt_busy.get & gnt_pre(i)
         }  
     }
     else{

@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //bubble collapse
+@chiselName
 class NV_NVDLA_BC_pipe(WIDTH:Int) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock()) 
@@ -51,7 +52,7 @@ class NV_NVDLA_BC_pipe(WIDTH:Int) extends Module {
     val pipe_ready = Wire(Bool())
 
     pipe_valid := Mux(io.ro, io.vi, true.B)
-    io.ro := pipe_ready || !pipe_valid;
+    io.ro := pipe_ready || ~pipe_valid;
     pipe_data := Mux(io.ro && io.vi, io.di, pipe_data)
 
     //## pipe (2) output
@@ -110,7 +111,7 @@ class NV_NVDLA_BC_VEC_pipe(DIM:Int, WIDTH:Int) extends Module {
     val pipe_ready = Wire(Bool())
 
     pipe_valid := Mux(io.ro, io.vi, true.B)
-    io.ro := pipe_ready || !pipe_valid;
+    io.ro := pipe_ready || ~pipe_valid;
     pipe_data := Mux(io.ro && io.vi, io.di, pipe_data)
 
     //## pipe (2) output

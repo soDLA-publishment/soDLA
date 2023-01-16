@@ -46,8 +46,6 @@ class nv_ram_rws(dep: Int, wid: Int, asic: Boolean = false) extends Module{
         .otherwise{ 
             io.dout := mem.read(io.ra, io.re)
         }
-
-        val 
     }
 }}
 

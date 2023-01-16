@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_SDP_core(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
 
@@ -119,7 +120,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
                         (io.reg2dp_ew_bypass.get === 0.U) 
     }
     else{
-        cfg_bs_en := false.B
+        cfg_ew_en := false.B
         cfg_mode_eql := false.B
     }    
 
@@ -226,7 +227,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     //covert mrdma data from atomic_m to NVDLA_SDP_MAX_THROUGHPUT
     val u_dpin_pack = Module(new NV_NVDLA_SDP_RDMA_pack(conf.DP_DIN_DW, conf.DP_IN_DW, 2))
     u_dpin_pack.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
-    u_dpin_pack.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+    u_dpin_pack.io.cfg_dp_8 := ~(io.reg2dp_proc_precision.asUInt.orR)
     u_dpin_pack.io.inp <> io.sdp_mrdma2cmux_pd
 
     // #ifdef NVDLA_SDP_BS_ENABLE
@@ -249,7 +250,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     val u_bs_alu_pack = if(conf.NVDLA_SDP_BS_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BS_OP_DW, 1))) else None
     if(conf.NVDLA_SDP_BS_ENABLE){
         u_bs_mul_pack.get.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
-        u_bs_mul_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_bs_mul_pack.get.io.cfg_dp_8 := ~(io.reg2dp_proc_precision.asUInt.orR)
         u_bs_mul_pack.get.io.inp <> io.sdp_brdma2dp_mul_pd.get
 
         bs_mul_in_pvld.get := u_bs_mul_pack.get.io.out.valid
@@ -257,7 +258,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         bs_mul_in_pd.get := u_bs_mul_pack.get.io.out.bits
 
         u_bs_alu_pack.get.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
-        u_bs_alu_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_bs_alu_pack.get.io.cfg_dp_8 := ~(io.reg2dp_proc_precision.asUInt.orR)
         u_bs_alu_pack.get.io.inp <> io.sdp_brdma2dp_alu_pd.get
         bs_alu_in_pvld.get := u_bs_alu_pack.get.io.out.valid
         u_bs_alu_pack.get.io.out.ready := bs_alu_in_prdy.get
@@ -284,7 +285,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     val u_bn_alu_pack = if(conf.NVDLA_SDP_BN_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.BN_OP_DW, 1))) else None
     if(conf.NVDLA_SDP_BN_ENABLE){
         u_bn_mul_pack.get.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
-        u_bn_mul_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_bn_mul_pack.get.io.cfg_dp_8 := ~(io.reg2dp_proc_precision.asUInt.orR)
         u_bn_mul_pack.get.io.inp <> io.sdp_nrdma2dp_mul_pd.get
 
         bn_mul_in_pvld.get := u_bn_mul_pack.get.io.out.valid
@@ -292,7 +293,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         bn_mul_in_pd.get := u_bn_mul_pack.get.io.out.bits
 
         u_bn_alu_pack.get.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
-        u_bn_alu_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_bn_alu_pack.get.io.cfg_dp_8 := ~(io.reg2dp_proc_precision.asUInt.orR)
         u_bn_alu_pack.get.io.inp <> io.sdp_nrdma2dp_alu_pd.get
         bn_alu_in_pvld.get := u_bn_alu_pack.get.io.out.valid
         u_bn_alu_pack.get.io.out.ready := bn_alu_in_prdy.get
@@ -320,7 +321,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     val u_ew_alu_pack = if(conf.NVDLA_SDP_EW_ENABLE) Some(Module(new NV_NVDLA_SDP_RDMA_pack(conf.AM_DW2, conf.EW_OP_DW, 1))) else None
     if(conf.NVDLA_SDP_EW_ENABLE){
         u_ew_mul_pack.get.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
-        u_ew_mul_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_ew_mul_pack.get.io.cfg_dp_8 := ~(io.reg2dp_proc_precision.asUInt.orR)
         u_ew_mul_pack.get.io.inp <> io.sdp_erdma2dp_mul_pd.get
 
         ew_mul_in_pvld.get := u_ew_mul_pack.get.io.out.valid
@@ -328,7 +329,7 @@ withClock(io.nvdla_clock.nvdla_core_clk){
         ew_mul_in_pd.get := u_ew_mul_pack.get.io.out.bits
 
         u_ew_alu_pack.get.io.nvdla_core_clk := io.nvdla_clock.nvdla_core_clk
-        u_ew_alu_pack.get.io.cfg_dp_8 := !(io.reg2dp_proc_precision.asUInt.orR)
+        u_ew_alu_pack.get.io.cfg_dp_8 := ~(io.reg2dp_proc_precision.asUInt.orR)
         u_ew_alu_pack.get.io.inp <> io.sdp_erdma2dp_alu_pd.get
         ew_alu_in_pvld.get := u_ew_alu_pack.get.io.out.valid
         u_ew_alu_pack.get.io.out.ready := ew_alu_in_prdy.get
@@ -358,8 +359,8 @@ withClock(io.nvdla_clock.nvdla_core_clk){
             bs_mul_in_en.get := false.B
         }
         .elsewhen(op_en_load){
-            bs_alu_in_en.get := cfg_bs_en && (!io.reg2dp_bs_alu.get.bypass) && (io.reg2dp_bs_alu.get.src===1.U)
-            bs_mul_in_en.get := cfg_bs_en && (!io.reg2dp_bs_mul.get.bypass) && (io.reg2dp_bs_mul.get.src===1.U)
+            bs_alu_in_en.get := cfg_bs_en && (~io.reg2dp_bs_alu.get.bypass) && (io.reg2dp_bs_alu.get.src===1.U)
+            bs_mul_in_en.get := cfg_bs_en && (~io.reg2dp_bs_mul.get.bypass) && (io.reg2dp_bs_mul.get.src===1.U)
         }
         .elsewhen(bs_alu_in_layer_end.get && bs_alu_in_pvld.get && bs_alu_in_prdy.get){
             bs_alu_in_en.get := false.B
@@ -385,8 +386,8 @@ withClock(io.nvdla_clock.nvdla_core_clk){
             bn_mul_in_en.get := false.B
         }
         .elsewhen(op_en_load){
-            bn_alu_in_en.get := cfg_bn_en && (!io.reg2dp_bn_alu.get.bypass) && (io.reg2dp_bn_alu.get.src===1.U)
-            bn_mul_in_en.get := cfg_bn_en && (!io.reg2dp_bn_mul.get.bypass) && (io.reg2dp_bn_mul.get.src===1.U)
+            bn_alu_in_en.get := cfg_bn_en && (~io.reg2dp_bn_alu.get.bypass) && (io.reg2dp_bn_alu.get.src===1.U)
+            bn_mul_in_en.get := cfg_bn_en && (~io.reg2dp_bn_mul.get.bypass) && (io.reg2dp_bn_mul.get.src===1.U)
         }
         .elsewhen(bn_alu_in_layer_end.get && bn_alu_in_pvld.get && bn_alu_in_prdy.get){
             bn_alu_in_en.get := false.B
@@ -413,8 +414,8 @@ withClock(io.nvdla_clock.nvdla_core_clk){
             ew_mul_in_en.get := false.B
         }
         .elsewhen(op_en_load){
-            ew_alu_in_en.get := cfg_ew_en && (!io.reg2dp_ew.get.alu.bypass) && (io.reg2dp_ew.get.alu.src===1.U)
-            ew_mul_in_en.get := cfg_ew_en && (!io.reg2dp_ew.get.mul.bypass) && (io.reg2dp_ew.get.mul.src===1.U)
+            ew_alu_in_en.get := cfg_ew_en && (~io.reg2dp_ew.get.alu.bypass) && (io.reg2dp_ew.get.alu.src===1.U)
+            ew_mul_in_en.get := cfg_ew_en && (~io.reg2dp_ew.get.mul.bypass) && (io.reg2dp_ew.get.mul.src===1.U)
         }
         .elsewhen(ew_alu_in_layer_end.get && ew_alu_in_pvld.get && ew_alu_in_prdy.get){
             ew_alu_in_en.get := false.B
@@ -696,9 +697,9 @@ withClock(io.nvdla_clock.nvdla_core_clk){
     val cfg_mode_pdp = io.reg2dp_output_dst === 1.U
     val core2wdma_rdy = Wire(Bool())
     val core2pdp_rdy = Wire(Bool())
-    cvt_data_out_prdy := core2wdma_rdy & ((!cfg_mode_pdp) || core2pdp_rdy)
+    cvt_data_out_prdy := core2wdma_rdy & ((~cfg_mode_pdp) || core2pdp_rdy)
     
-    val core2wdma_vld  = cvt_data_out_pvld & ((!cfg_mode_pdp) || core2pdp_rdy)
+    val core2wdma_vld  = cvt_data_out_pvld & ((~cfg_mode_pdp) || core2pdp_rdy)
     val core2pdp_vld = cfg_mode_pdp & cvt_data_out_pvld & core2wdma_rdy
 
     val core2wdma_pd = Mux(cfg_mode_pdp, Fill(conf.DP_OUT_DW, false.B), cvt_data_out_data)

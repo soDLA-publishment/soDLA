@@ -12,6 +12,7 @@ class sdp_y_int_mul_cfg_if extends Bundle{
     val src = Output(Bool())
 }
 
+@chiselName
 class NV_NVDLA_SDP_HLS_Y_int_mul extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -48,8 +49,8 @@ withClock(io.nvdla_core_clk){
 
     val mul_sync_prdy = Wire(Bool())
     val y_mul_sync2data = Module{new NV_NVDLA_HLS_sync2data(32, 32)}
-    y_mul_sync2data.io.chn1_en := !io.cfg_mul.bypass & io.cfg_mul.src
-    y_mul_sync2data.io.chn2_en := !io.cfg_mul.bypass
+    y_mul_sync2data.io.chn1_en := ~io.cfg_mul.bypass & io.cfg_mul.src
+    y_mul_sync2data.io.chn2_en := ~io.cfg_mul.bypass
     y_mul_sync2data.io.chn1_in <> io.chn_mul_op
     y_mul_sync2data.io.chn2_in.valid := io.chn_mul_in.valid
     val chn_in_srdy = y_mul_sync2data.io.chn2_in.ready
@@ -90,7 +91,7 @@ withClock(io.nvdla_core_clk){
     //signed 
     //unsigned 
     val mul_dout = Wire(UInt(32.W))
-    when(io.cfg_mul.prelu & !mul_data_reg(31)){
+    when(io.cfg_mul.prelu & ~mul_data_reg(31)){
         mul_dout := mul_data_reg
     }
     .otherwise{

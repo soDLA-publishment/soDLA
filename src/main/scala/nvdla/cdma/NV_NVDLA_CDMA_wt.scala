@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-
+@chiselName
 class NV_NVDLA_CDMA_wtIO(implicit conf: nvdlaConfig) extends Bundle {
 
     //nvdla core clock
@@ -63,7 +63,7 @@ class NV_NVDLA_CDMA_wtIO(implicit conf: nvdlaConfig) extends Bundle {
 }
 
 
-
+@chiselName
 class NV_NVDLA_CDMA_wt(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new NV_NVDLA_CDMA_wtIO)
 //     
@@ -104,17 +104,22 @@ withClock(io.nvdla_core_clk){
         when (io.reg2dp_op_en & need_pending) { nxt_state := sPend }
         .elsewhen (io.reg2dp_op_en & io.reg2dp_weight_reuse & last_skip_weight_rls) { nxt_state := sDone }
         .elsewhen (io.reg2dp_op_en) { nxt_state := sBusy }
+        .otherwise{ nxt_state := sIdle }
         }
         is (sPend) {
         when (pending_req_end) { nxt_state := sBusy }
+        .otherwise{ nxt_state := sPend }
         }
         is (sBusy) {
         when (fetch_done) { nxt_state := sDone }
+        .otherwise{ nxt_state := sBusy }
         }
         is (sDone) {
         when (io.status2dma_fsm_switch) { nxt_state := sIdle }
+        .otherwise{ nxt_state := sDone }
         }
     }
+    
     cur_state := nxt_state
 ////////////////////////////////////////////////////////////////////////
 //  FSM input signals                                                 //
@@ -281,8 +286,11 @@ withClock(io.nvdla_core_clk){
     wt_req_rdy := arb_sp_out_rdy & arb_sp_out_vld
     val dma_req_src = wt_req_src_d3
     val dma_req_size = wt_req_size_d3
+    dontTouch(dma_req_size)
     val dma_req_size_out = wt_req_size_out_d3
+    dontTouch(dma_req_size_out)
     val dma_req_addr = wt_req_addr_d3
+    dontTouch(dma_req_addr)
 
 ////////////////////////////////////////////////////////////////////////
 //  CDMA WT read request interface                                    //
@@ -320,18 +328,19 @@ withClock(io.nvdla_core_clk){
 //use case: Cbuf has empty entries, but empty entry number < 8*atmm
 //continue reading 8*atmm data from memory and then Cbuf can be fully written 
     val dma_rd_rsp_rdy = Wire(Bool())
-    val u_8atmm_fifo = Module{new NV_NVDLA_fifo(depth = 8*conf.ATMM/conf.DMAIF, width = conf.NVDLA_CDMA_MEM_RD_RSP,
-                        ram_type = 2, 
-                        distant_wr_req = false)}
+    dontTouch(dma_rd_rsp_rdy)
+    val u_8atmm_fifo = Module{new NV_NVDLA_fifo_new(depth = 8*conf.ATMM/conf.DMAIF, width = conf.NVDLA_CDMA_MEM_RD_RSP, ram_type = 2)}
+     
     u_8atmm_fifo.io.clk := io.nvdla_core_clk
     u_8atmm_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
-    u_8atmm_fifo.io.wr_pvld := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.bits
+    u_8atmm_fifo.io.wr_pvld := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.valid
     nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.ready := u_8atmm_fifo.io.wr_prdy
     u_8atmm_fifo.io.wr_pd := nv_NVDLA_PDP_RDMA_rdrsp.io.dmaif_rd_rsp_pd.bits
-    val dma_rd_rsp_vld = u_8atmm_fifo.io.rd_pvld 
+    val dma_rd_rsp_vld = u_8atmm_fifo.io.rd_pvld
+    dontTouch(dma_rd_rsp_vld)
     u_8atmm_fifo.io.rd_prdy := dma_rd_rsp_rdy
     val dma_rd_rsp_pd = u_8atmm_fifo.io.rd_pd 
-    
+    dontTouch(dma_rd_rsp_pd)
 ///////////////////////////////////////////
     dma_rd_req_pd := Cat(dma_rd_req_size, dma_rd_req_addr)
     dma_rd_req_vld := arb_sp_out_vld & dma_req_fifo_ready
@@ -342,6 +351,7 @@ withClock(io.nvdla_core_clk){
 //DorisLei redefine dma_rd_rsp_rdy to block reading process when cbuf is full
 ///////////////////////////////////
     val wt_cbuf_wr_vld_w = Wire(Bool())
+    dontTouch(wt_cbuf_wr_vld_w)
     val dmaif_within_atmc_cnt = if(conf.DMAIF < conf.ATMC) Some(RegInit("b0".asUInt(4.W))) else None
     if(conf.DMAIF < conf.ATMC){
         when(wt_cbuf_wr_vld_w){
@@ -357,7 +367,7 @@ withClock(io.nvdla_core_clk){
     val sc_wt_updt = withClock(io.nvdla_core_ng_clk){RegInit(false.B)}
     val sc_wt_entries = withClock(io.nvdla_core_ng_clk){RegInit("b0".asUInt(15.W))}
     val wt_wr_dmatx_cnt = RegInit("b0".asUInt(17.W))
-    when(wt_cbuf_wr_vld_w & (!sc_wt_updt)){
+    when(wt_cbuf_wr_vld_w & (~sc_wt_updt)){
         if(conf.DMAIF == conf.ATMC){
             wt_wr_dmatx_cnt := wt_wr_dmatx_cnt + 1.U
         }
@@ -380,18 +390,21 @@ withClock(io.nvdla_core_clk){
             }
         }       
     }
-    .elsewhen(!wt_cbuf_wr_vld_w & sc_wt_updt){
+    .elsewhen(~wt_cbuf_wr_vld_w & sc_wt_updt){
         wt_wr_dmatx_cnt := wt_wr_dmatx_cnt - sc_wt_entries
     }
 
     dma_rd_rsp_rdy := (wt_wr_dmatx_cnt < Cat(weight_bank, "b0".asUInt(log2Ceil(conf.NVDLA_CBUF_BANK_DEPTH).W)))
     val dma_req_fifo_req = Wire(Bool())
+    dontTouch(dma_req_fifo_req)
     val dma_req_fifo_data = Wire(UInt(6.W))
+    dontTouch(dma_req_fifo_data)
     val dma_rsp_fifo_ready = Wire(Bool())
+    dontTouch(dma_rsp_fifo_ready)
 
-    val u_fifo = Module{new  NV_NVDLA_fifo(depth = 128, width = 6,
+    val u_fifo = Module{new  NV_NVDLA_fifo_new(depth = 128, width = 6,
                         ram_type = 2, 
-                        distant_wr_req = true)}
+                        wr_reg = true)}
     u_fifo.io.clk := io.nvdla_core_clk
     u_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
     
@@ -399,9 +412,11 @@ withClock(io.nvdla_core_clk){
     dma_req_fifo_ready := u_fifo.io.wr_prdy
     u_fifo.io.wr_pd := dma_req_fifo_data
     val dma_rsp_fifo_req = u_fifo.io.rd_pvld
+    dontTouch(dma_rsp_fifo_req)
     u_fifo.io.rd_prdy := dma_rsp_fifo_ready
     val dma_rsp_fifo_data = u_fifo.io.rd_pd
-    
+    dontTouch(dma_rsp_fifo_data)
+
     dma_req_fifo_req := arb_sp_out_vld & dma_rd_req_rdy
     dma_req_fifo_data := Cat(dma_req_src, dma_req_size)
 
@@ -413,14 +428,16 @@ withClock(io.nvdla_core_clk){
     val dma_rd_rsp_data = dma_rd_rsp_pd(conf.NVDLA_MEMIF_WIDTH-1, 0)
     val dma_rd_rsp_mask = dma_rd_rsp_pd(conf.NVDLA_CDMA_MEM_RD_RSP - 1, conf.NVDLA_MEMIF_WIDTH)
     val dma_rsp_size = dma_rsp_fifo_data(3, 0)
+    dontTouch(dma_rsp_size)
     val dma_rsp_src = dma_rsp_fifo_data(5, 4)
+    dontTouch(dma_rsp_src)
     val dma_rsp_size_cnt_inc = dma_rsp_size_cnt + PopCount(dma_rd_rsp_mask)
 
     val dma_rsp_size_cnt_w = Mux(dma_rsp_size_cnt_inc === dma_rsp_size, "b0".asUInt(4.W), dma_rsp_size_cnt_inc)
     dma_rsp_fifo_ready := (dma_rd_rsp_vld & dma_rd_rsp_rdy & (dma_rsp_size_cnt_inc === dma_rsp_size))
     val wt_rsp_valid = (dma_rd_rsp_vld & dma_rd_rsp_rdy & (dma_rsp_src === src_id_wt))
-
-    val dma_rsp_data_p = dma_rd_rsp_data
+    dontTouch(wt_rsp_valid)
+    // val dma_rsp_data_p = dma_rd_rsp_data
 
     when(dma_rd_rsp_vld & dma_rd_rsp_rdy){
         dma_rsp_size_cnt := dma_rsp_size_cnt_w
@@ -481,6 +498,7 @@ withClock(io.nvdla_core_clk){
     val wt_cbuf_wr_idx_w = Mux(clear_all | wt_cbuf_wr_idx_set | wt_cbuf_wr_idx_wrap, 
                            Cat(data_bank_w, "b0".asUInt(conf.BANK_DEPTH_BITS.W)), wt_cbuf_wr_idx_inc(16, 0))
     val wt_cbuf_wr_data_w = wt_cbuf_wr_data_ori_w
+    dontTouch(wt_cbuf_wr_data_w)
     when(wt_local_data_reg_en){
         wt_local_data := wt_local_data_w
     }
@@ -615,10 +633,10 @@ withClock(io.nvdla_core_clk){
     val wt_fetched_cnt_inc = wt_fetched_cnt + 1.U
     val wt_fetched_cnt_w = Mux(layer_st, "b0".asUInt(26.W), wt_fetched_cnt_inc) 
     val wt_satisfied = if(conf.ATMC > conf.DMAIF)
-                       is_running & (Cat(wt_fetched_cnt, "b0".asUInt(log2Ceil(conf.DMAIF).W)) >= wt_required_bytes) & 
+                       is_running & (Cat(wt_fetched_cnt, "b0".asUInt(log2Ceil(conf.DMAIF/conf.NVDLA_BPE).W)) >= wt_required_bytes) & 
                        ~(wt_fetched_cnt(conf.ATMC/conf.DMAIF - 1, 0).orR)
                        else
-                       is_running & (Cat(wt_fetched_cnt, "b0".asUInt(log2Ceil(conf.DMAIF).W)) >= wt_required_bytes)
+                       is_running & (Cat(wt_fetched_cnt, "b0".asUInt(log2Ceil(conf.DMAIF/conf.NVDLA_BPE).W)) >= wt_required_bytes)
     status_update := Mux(~required_valid, false.B, wt_satisfied)
 
     when(layer_st | status_update){

@@ -53,7 +53,7 @@ class NV_NVDLA_pdp(implicit val conf: nvdlaConfig) extends Module {
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
-withReset(!io.nvdla_core_rstn){ 
+withReset(~io.nvdla_core_rstn){ 
 
     val u_reg = Module(new NV_NVDLA_PDP_reg)
     val u_slcg_core = Array.fill(2){Module(new NV_NVDLA_slcg(1, false))}

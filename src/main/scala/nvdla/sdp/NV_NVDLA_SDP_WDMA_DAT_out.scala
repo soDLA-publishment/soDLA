@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_SDP_WDMA_DAT_out(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //in clock
@@ -61,15 +62,14 @@ withClock(io.nvdla_core_clk){
     val cmd_vld = RegInit(false.B)
     val dat_accept = Wire(Bool())
     val is_last_beat = Wire(Bool())
-    io.cmd2dat_dma_pd.ready := cmd_rdy || !cmd_vld
+    io.cmd2dat_dma_pd.ready := cmd_rdy || ~cmd_vld
     cmd_rdy := dat_accept & is_last_beat
 
     when(io.cmd2dat_dma_pd.ready){
         cmd_vld := io.cmd2dat_dma_pd.valid
     }
 
-
-    val cmd_size = RegInit(0.U(14.W))
+    val cmd_size = RegInit(0.U(13.W))
     val cmd_addr = RegInit(0.U((conf.NVDLA_MEM_ADDRESS_WIDTH - conf.AM_AW).W))
     val cmd_odd = RegInit(false.B)
     val cmd_cube_end = RegInit(false.B)
@@ -89,8 +89,10 @@ withClock(io.nvdla_core_clk){
         cmd_en := false.B
         dat_en := true.B
     }.elsewhen(dat_accept){
-        cmd_en := true.B
-        dat_en := false.B
+        when(is_last_beat) {
+            cmd_en := true.B
+            dat_en := false.B
+        }
     }
 
     val size_of_atom = conf.NVDLA_DMA_MASK_BIT.asUInt
@@ -127,18 +129,18 @@ withClock(io.nvdla_core_clk){
                                 )
     val dat_rdy = Wire(Bool())
     
-    val dfifo_rd_en_npvld = VecInit((0 to 3) map {i => dfifo_rd_en(i) & ! io.dfifo_rd_pd(i).valid})
+    val dfifo_rd_en_npvld = VecInit((0 to 3) map {i => dfifo_rd_en(i) & ~ io.dfifo_rd_pd(i).valid})
 
     io.dfifo_rd_pd(0).ready := dat_rdy & dfifo_rd_en(0) &
-                        !(dfifo_rd_en_npvld(1) | dfifo_rd_en_npvld(2) | dfifo_rd_en_npvld(3))
+                        ~(dfifo_rd_en_npvld(1) | dfifo_rd_en_npvld(2) | dfifo_rd_en_npvld(3))
     io.dfifo_rd_pd(1).ready := dat_rdy & dfifo_rd_en(1) &
-                        !(dfifo_rd_en_npvld(0) | dfifo_rd_en_npvld(2) | dfifo_rd_en_npvld(3))
+                        ~(dfifo_rd_en_npvld(0) | dfifo_rd_en_npvld(2) | dfifo_rd_en_npvld(3))
     io.dfifo_rd_pd(2).ready := dat_rdy & dfifo_rd_en(2) &
-                        !(dfifo_rd_en_npvld(0) | dfifo_rd_en_npvld(1) | dfifo_rd_en_npvld(3))
+                        ~(dfifo_rd_en_npvld(0) | dfifo_rd_en_npvld(1) | dfifo_rd_en_npvld(3))
     io.dfifo_rd_pd(3).ready := dat_rdy & dfifo_rd_en(3) &
-                        !(dfifo_rd_en_npvld(0) | dfifo_rd_en_npvld(1) | dfifo_rd_en_npvld(2))
+                        ~(dfifo_rd_en_npvld(0) | dfifo_rd_en_npvld(1) | dfifo_rd_en_npvld(2))
     
-    val dat_vld = !(dfifo_rd_en_npvld.asUInt.orR)
+    val dat_vld = ~(dfifo_rd_en_npvld.asUInt.orR)
 
     val dat_pd_atom4 = Cat(io.dfifo_rd_pd(3).bits, io.dfifo_rd_pd(2).bits, io.dfifo_rd_pd(1).bits, io.dfifo_rd_pd(0).bits)
     val dat_pd_atom2 = Mux(beat_count(1,0) === 2.U, 
@@ -149,7 +151,7 @@ withClock(io.nvdla_core_clk){
                         Cat(Fill(3*conf.AM_DW, false.B), io.dfifo_rd_pd(3).bits),
                         Mux(beat_count(1,0) === 2.U,
                             Cat(Fill(3*conf.AM_DW, false.B), io.dfifo_rd_pd(2).bits),
-                            Mux(beat_count(1,0) === 2.U,
+                            Mux(beat_count(1,0) === 1.U,
                                 Cat(Fill(3*conf.AM_DW, false.B), io.dfifo_rd_pd(1).bits),
                                 Cat(Fill(3*conf.AM_DW, false.B), io.dfifo_rd_pd(0).bits)
                                 )
@@ -194,16 +196,17 @@ withClock(io.nvdla_core_clk){
     val dma_wr_dat_data = dat_pd(conf.NVDLA_MEMIF_WIDTH-1,0)
     val dma_wr_dat_pd = Cat(dma_wr_dat_mask(conf.NVDLA_DMA_MASK_BIT-1,0), dma_wr_dat_data)
     
-    io.dma_wr_req_pd.valid := (dma_wr_cmd_vld | dma_wr_dat_vld) & !cfg_mode_quite
+    io.dma_wr_req_pd.valid := (dma_wr_cmd_vld | dma_wr_dat_vld) & ~cfg_mode_quite
 
-    val dma_wr_req_pd_reg = RegInit(0.U((conf.NVDLA_DMA_WR_REQ-1).W))
-    when(cmd_en){
-        dma_wr_req_pd_reg := dma_wr_cmd_pd
-    }.otherwise{
-        dma_wr_req_pd_reg := dma_wr_dat_pd
-    }
-
-    io.dma_wr_req_pd.bits := Cat(Mux(cmd_en, false.B, true.B), dma_wr_req_pd_reg)
+    // val dma_wr_req_pd_reg = RegInit(0.U((conf.NVDLA_DMA_WR_REQ-1).W))
+    // when(cmd_en){
+    //     dma_wr_req_pd_reg := dma_wr_cmd_pd
+    // }.otherwise{
+    //     dma_wr_req_pd_reg := dma_wr_dat_pd
+    // }
+    val dma_wr_req_pd_out = Wire(UInt((conf.NVDLA_DMA_WR_REQ-1).W))
+    dma_wr_req_pd_out := Mux(cmd_en, dma_wr_cmd_pd, dma_wr_dat_pd)
+    io.dma_wr_req_pd.bits := Cat(Mux(cmd_en, false.B, true.B), dma_wr_req_pd_out)
 
 
 //=================================================

@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-
+@chiselName
 class NV_NVDLA_CDMA_cvt(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
@@ -302,7 +302,7 @@ for (t <- 0 to conf.NVDLA_HLS_CDMA_CVT_LATENCY){
 val cvt_out_sel_bp = if (conf.DMAIF < conf.ATMC) 
                      Some(Mux(cfg_cvt_en(1), cvt_out_sel_d1_d.get(conf.NVDLA_HLS_CDMA_CVT_LATENCY + 1), cvt_out_sel_d1.get)) 
                      else None
-val cvt_out_vld_bp = Mux(cfg_cvt_en(1), cvt_out_pad_vld_d1_d(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1), cvt_out_vld_d1)
+val cvt_out_vld_bp = Mux(cfg_cvt_en(1), cvt_out_vld_d1_d(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1), cvt_out_vld_d1)
 val cvt_out_addr_bp = Mux(cfg_cvt_en(1), cvt_out_addr_d1_d(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1), cvt_out_addr_d1)
 val cvt_out_nz_mask_bp = Mux(cfg_cvt_en(2), cvt_out_nz_mask_d1_d(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1), cvt_out_nz_mask_d1)
 val cvt_out_pad_vld_bp = Mux(cfg_cvt_en(3), cvt_out_pad_vld_d1_d(conf.NVDLA_HLS_CDMA_CVT_LATENCY+1), cvt_out_pad_vld_d1)

@@ -4,7 +4,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 
-
+@chiselName
 class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle{
         //general clock
@@ -133,7 +133,7 @@ withClock(io.nvdla_core_clk){
     val lat_count_cnt = perf_lat.io.lat_cnt_cur
 
     val lat_fifo_free_slot = io.tieoff_lat_fifo_depth - lat_count_cnt
-    val req_enable = (!lat_fifo_stall_enable) || (slot_needed <= lat_fifo_free_slot)
+    val req_enable = (~lat_fifo_stall_enable) || (slot_needed <= lat_fifo_free_slot)
     
     //================
     // bsp out: swizzle

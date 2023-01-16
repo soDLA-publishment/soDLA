@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_csb_master(implicit val conf: nvdlaConfig)  extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -88,7 +89,7 @@ class NV_NVDLA_csb_master(implicit val conf: nvdlaConfig)  extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+withClockAndReset(io.nvdla_core_clk, ~io.nvdla_core_rstn){
 ////////////////////////////////////////////////////////////////////////
 // CSB interface to async FIFO                                        //
 ////////////////////////////////////////////////////////////////////////

@@ -37,7 +37,7 @@ class NV_NVDLA_cfgrom extends Module {
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
                 
-withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn) { 
+withClockAndReset(io.nvdla_core_clk, ~io.nvdla_core_rstn) { 
     
 ////////////////////////////////////////////////////////////////////////
     val reg_offset = Wire(UInt(24.W))

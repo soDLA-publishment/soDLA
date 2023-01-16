@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
-
+@chiselName
 class NV_NVDLA_CDMA_IMG_ctrl(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
@@ -114,15 +114,19 @@ withClock(io.nvdla_core_clk){
         when (img_en & need_pending) { nxt_state := sPend }
         .elsewhen (img_en & io.reg2dp_data_reuse & last_skip_data_rls & mode_match) { nxt_state := sDone }
         .elsewhen (img_en) { nxt_state := sBusy }
+        .otherwise{ nxt_state := sIdle }
         }
         is (sPend) {
         when (pending_req_end) { nxt_state := sBusy }
+        .otherwise{ nxt_state := sPend }
         }
         is (sBusy) {
         when (img_done) { nxt_state := sDone }
+        .otherwise{ nxt_state := sBusy }
         }
         is (sDone) {
         when (io.status2dma_fsm_switch) { nxt_state := sIdle }
+        .otherwise{ nxt_state := sDone }
         }
     }
     cur_state := nxt_state
@@ -137,7 +141,7 @@ withClock(io.nvdla_core_clk){
     val is_done = (cur_state === sDone)
 
     io.layer_st := img_en & is_idle
-    val is_first_running = io.is_running & !is_running_d1
+    val is_first_running = io.is_running & ~is_running_d1
 
     is_running_d1 := io.is_running
     io.img2status_state := RegNext(nxt_state, false.B)
@@ -162,7 +166,7 @@ withClock(io.nvdla_core_clk){
 //  SLCG control signal                                               //
 ////////////////////////////////////////////////////////////////////////
     val slcg_img_en_w = img_en & (io.is_running | is_pending | is_done);
-    val slcg_img_gate_w = Fill(2, !slcg_img_en_w)
+    val slcg_img_gate_w = Fill(2, ~slcg_img_en_w)
 
     val slcg_img_gate_d3 = withClock(io.nvdla_core_ng_clk){ShiftRegister(slcg_img_gate_w, 2, Fill(2, true.B), true.B)}
     io.slcg_img_gate_dc := slcg_img_gate_d3(0)

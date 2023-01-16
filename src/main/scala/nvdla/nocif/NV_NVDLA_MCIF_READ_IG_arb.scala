@@ -4,7 +4,7 @@
  import chisel3.experimental._
  import chisel3.util._
 
-
+@chiselName
  class NV_NVDLA_MCIF_READ_IG_arb(implicit conf:nvdlaConfig) extends Module {
      val io = IO(new Bundle {
          //general clock
@@ -86,7 +86,7 @@ withClock(io.nvdla_core_clk){
 
     val arb_out_vld = src_gnt.asUInt.orR
     val arb_out_rdy = Wire(Bool())
-    gnt_busy := !arb_out_rdy
+    gnt_busy := ~arb_out_rdy
     val arb_out_pd = arb_pd
 
     val pipe_out = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_DMA_RD_IG_PW))

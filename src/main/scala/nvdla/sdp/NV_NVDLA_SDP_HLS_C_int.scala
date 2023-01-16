@@ -16,7 +16,7 @@ class sdp_c_int_cfg_cvt_if extends Bundle{
     val truncate = Output(UInt(6.W))
 }
 
-
+@chiselName
 class NV_NVDLA_SDP_HLS_C_int extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())

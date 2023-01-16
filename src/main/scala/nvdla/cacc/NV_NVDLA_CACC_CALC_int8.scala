@@ -6,6 +6,7 @@ import chisel3.util._
 import chisel3.iotesters.Driver
 
 //this module is to process dat
+@chiselName
 class NV_NVDLA_CACC_CALC_int8 extends Module {
 
     val io = IO(new Bundle {

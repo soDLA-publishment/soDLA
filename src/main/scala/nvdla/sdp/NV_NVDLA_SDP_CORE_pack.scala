@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 import chisel3.iotesters.Driver
 
+@chiselName
 class NV_NVDLA_SDP_CORE_pack(IW: Int = 512, OW: Int = 128) extends Module {
    val RATIO = IW/OW
    val io = IO(new Bundle {
@@ -43,7 +44,7 @@ withClock(io.nvdla_core_clk){
     val pack_pvld = RegInit(false.B)
     val pack_prdy = io.out.ready 
     io.out.valid := pack_pvld
-    io.inp.ready := (!pack_pvld) | (pack_prdy & is_pack_last)
+    io.inp.ready := (~pack_pvld) | (pack_prdy & is_pack_last)
 
     when(io.inp.ready){
         pack_pvld := io.inp.valid

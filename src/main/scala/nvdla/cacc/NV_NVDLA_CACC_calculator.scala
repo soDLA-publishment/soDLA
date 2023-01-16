@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //calculate accumulate data
+@chiselName
 class NV_NVDLA_CACC_calculator(implicit val conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
@@ -90,6 +91,8 @@ withClock(io.nvdla_core_clk){
         calc_in_mask(i) := io.mac_a2accu_mask(i)
         calc_in_mask(i + conf.CACC_ATOMK/2) := io.mac_b2accu_mask(i)
     }
+    dontTouch(calc_elem)
+    dontTouch(calc_in_mask)
 
     val calc_op_en = VecInit((0 to conf.CACC_ATOMK-1) map { i => calc_in_mask(i)})
     val calc_op1_vld = VecInit((0 to conf.CACC_ATOMK-1) map { i => calc_in_mask(i)&io.accu_ctrl_ram_valid})
@@ -97,15 +100,26 @@ withClock(io.nvdla_core_clk){
     val calc_wr_en = calc_valid & (~calc_channel_end)
 
     //if CACC_IN_WIDTH is not 22, this can be solved by auto width inference in chisel
-    val calc_op0 = calc_elem
-    val calc_op1 = abuf_in_data
+    val calc_op0 = Wire(Vec(conf.CACC_ATOMK, UInt((conf.CACC_IN_WIDTH+3).W)))
+    for(i <- 0 to conf.CACC_ATOMK-1){
+        val _calc_elem = calc_elem(i)
+        calc_op0(i) := Cat(Fill(3, _calc_elem(conf.CACC_IN_WIDTH-1)), _calc_elem)
+    }
 
+    val calc_op1 = abuf_in_data
+    
     // instance int8 adders
     val calc_fout_sat = Wire(Vec(conf.CACC_ATOMK, Bool()))
     val calc_pout_vld = Wire(Vec(conf.CACC_ATOMK, Bool()))
     val calc_fout_vld = Wire(Vec(conf.CACC_ATOMK, Bool()))
     val calc_pout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_PARSUM_WIDTH.W)))
     val calc_fout_sum = Wire(Vec(conf.CACC_ATOMK, UInt(conf.CACC_FINAL_WIDTH.W)))
+
+    dontTouch(calc_fout_sat)
+    dontTouch(calc_pout_vld)
+    dontTouch(calc_fout_vld)
+    dontTouch(calc_pout_sum)
+    dontTouch(calc_fout_sum)
 
     val u_cell_int8 = Array.fill(conf.CACC_ATOMK){Module(new NV_NVDLA_CACC_CALC_int8)}
 

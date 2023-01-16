@@ -50,7 +50,7 @@ class NV_NVDLA_cdp(implicit val conf: nvdlaConfig) extends Module {
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
-withReset(!io.nvdla_core_rstn){ 
+withReset(~io.nvdla_core_rstn){ 
 
     val u_slcg_core = Array.fill(2){Module(new NV_NVDLA_slcg(1, false))}
     val u_reg = Module(new NV_NVDLA_CDP_reg)

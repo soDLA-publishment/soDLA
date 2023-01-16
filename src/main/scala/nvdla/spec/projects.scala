@@ -6,7 +6,7 @@ import chisel3.util._
 import scala.math._
 
 
-class project_spec extends nv_large
+class project_spec extends nv_small_config
 {
     val NVDLA_FEATURE_DATA_TYPE_INT8 = FEATURE_DATA_TYPE_INT8
     val NVDLA_BPE = 8

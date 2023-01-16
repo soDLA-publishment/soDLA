@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //Implementation overview of ping-pong register file.
-
+@chiselName
 class NV_NVDLA_SDP_RDMA_reg extends Module {
     val io = IO(new Bundle {
         //general clock
@@ -180,8 +180,8 @@ withClock(io.nvdla_core_clk){
     val select_d1 = (reg_offset(11,0) >= "h0008".asUInt(32.W)) & (reg2dp_producer === true.B)
 
     s_reg_wr_en := reg_wr_en & select_s
-    d0_reg_wr_en := reg_wr_en & select_d0 & !reg2dp_d0_op_en
-    d1_reg_wr_en := reg_wr_en & select_d1 & !reg2dp_d1_op_en
+    d0_reg_wr_en := reg_wr_en & select_d0 & ~reg2dp_d0_op_en
+    d1_reg_wr_en := reg_wr_en & select_d1 & ~reg2dp_d1_op_en
 
     s_reg_wr_data  := reg_wr_data;
     d0_reg_wr_data := reg_wr_data;

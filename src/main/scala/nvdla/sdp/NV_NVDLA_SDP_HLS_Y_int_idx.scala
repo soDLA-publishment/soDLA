@@ -27,7 +27,7 @@ class sdp_y_int_idx_cfg_if extends Bundle{
     val lo_index_select = Output(UInt(8.W))
 }
 
-
+@chiselName
 class NV_NVDLA_SDP_HLS_Y_int_idx extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -183,9 +183,9 @@ withClock(io.nvdla_core_clk){
 
     //hit miss
     val le_miss = (le_uflow | le_oflow)
-    val le_hit = !le_miss
+    val le_hit = ~le_miss
     val lo_miss = (lo_uflow | lo_oflow)
-    val lo_hit = !lo_miss
+    val lo_hit = ~lo_miss
 
     val lut_final_uflow = Wire(Bool())
     val lut_final_oflow = Wire(Bool())

@@ -147,13 +147,13 @@ class cscConfiguration extends cbufConfiguration{
     }
     else if(NVDLA_MAC_ATOMIC_K_SIZE==8){
         //atomK
-        CSC_MIN_STRIPE = "d16"
+        CSC_MIN_STRIPE = "d8"
         //atomK
-        CSC_ATOMK_HEX = "h10"
+        CSC_ATOMK_HEX = "h8"
         //atomK*2
-        CSC_ATOMK_MUL2_HEX  = "h20"
+        CSC_ATOMK_MUL2_HEX  = "h10"
         //atomK*4
-        CSC_ATOMK_MUL4_HEX = "h40"
+        CSC_ATOMK_MUL4_HEX = "h20"
     }
 
     //notice, for image case, first atom OP within one strip OP must fetch from entry align place, in the middle of an entry is not supported.

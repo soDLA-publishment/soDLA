@@ -81,11 +81,10 @@ withClock(io.nvdla_core_clk){
     //==============
 
     val lat_rd_prdy = Wire(Bool())
-    val u_lat_fifo = Module{new NV_NVDLA_fifo(
+    val u_lat_fifo = Module{new NV_NVDLA_fifo_new(
                         depth = conf.NVDLA_VMOD_PDP_RDMA_LATENCY_FIFO_DEPTH, 
                         width = conf.NVDLA_PDP_MEM_RD_RSP,
-                        ram_type = 2, 
-                        distant_wr_req = false)}
+                        ram_type = 2)}
     u_lat_fifo.io.clk := io.nvdla_core_clk
     u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
@@ -120,11 +119,12 @@ withClock(io.nvdla_core_clk){
     }
 
     val u_ro_fifo = Array.fill(conf.TOTAL_PDP_NUM){
-                    Module(new NV_NVDLA_fifo(
-                    depth = 32, 
+                    Module(new NV_NVDLA_fifo_new(
+                    depth = 3, 
                     width = conf.PDPBW, 
-                    ram_type = 2, 
-                    distant_wr_req = false))}
+                    ram_type = 0,
+                    rd_reg = true,
+                    ram_bypass = true))}
 
     val ro_wr_pd = VecInit((0 to conf.TOTAL_PDP_NUM-1) 
                     map {i => lat_rd_data((conf.PDPBW*i + conf.PDPBW - 1), conf.PDPBW*i)})

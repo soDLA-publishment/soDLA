@@ -5,6 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //bubble collapse
+@chiselName
 class NV_NVDLA_BC_IS_pipe(WIDTH:Int) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock()) 
@@ -61,9 +62,9 @@ class NV_NVDLA_BC_IS_pipe(WIDTH:Int) extends Module {
     val skid_pipe_valid = Wire(Bool())
     val skid_pipe_data = Wire(UInt(WIDTH.W))
 
-    skid_catch := io.vi && skid_ready_flop && !skid_pipe_ready
-    skid_ready := Mux(skid_valid, skid_pipe_ready, !skid_catch)
-    skid_valid := Mux(skid_valid, !skid_pipe_ready, skid_catch)
+    skid_catch := io.vi && skid_ready_flop && ~skid_pipe_ready
+    skid_ready := Mux(skid_valid, skid_pipe_ready, ~skid_catch)
+    skid_valid := Mux(skid_valid, ~skid_pipe_ready, skid_catch)
 
     skid_ready_flop := skid_ready
     ro_out := skid_ready
@@ -78,7 +79,7 @@ class NV_NVDLA_BC_IS_pipe(WIDTH:Int) extends Module {
     val pipe_data = Reg(UInt(WIDTH.W))
     val pipe_ready = Wire(Bool())
 
-    pipe_ready_bc := pipe_ready || !pipe_valid
+    pipe_ready_bc := pipe_ready || ~pipe_valid
     pipe_valid := Mux(pipe_ready_bc, skid_pipe_valid, true.B)
     pipe_data := Mux(pipe_ready_bc&&skid_pipe_valid, skid_pipe_data, pipe_data)
     skid_pipe_ready := pipe_ready_bc

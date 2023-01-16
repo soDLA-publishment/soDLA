@@ -64,7 +64,7 @@ withClock(io.nvdla_core_clk){
     // Work Processing
     //==============
     val op_prcess = RegInit(false.B)
-    val op_load = io.reg2dp_op_en & !op_prcess;
+    val op_load = io.reg2dp_op_en & ~op_prcess;
     val is_last_beat = Wire(Bool())
     val reg_cube_last = RegInit(false.B)
     val dat_accept = Wire(Bool())
@@ -132,7 +132,7 @@ withClock(io.nvdla_core_clk){
     }
 
     val req_chn_size = RegInit("b0".asUInt(5.W))
-    val u_dat_fifo = Array.fill(conf.ATMM_NUM){Array.fill(conf.BATCH_CDP_NUM){Module(new NV_NVDLA_fifo(depth = 32, width = conf.CDPBW, ram_type = 0, distant_wr_req = false))}}
+    val u_dat_fifo = Array.fill(conf.ATMM_NUM){Array.fill(conf.BATCH_CDP_NUM){Module(new NV_NVDLA_fifo_new(depth = 32, width = conf.CDPBW, ram_type = 0, ram_bypass = true, rd_reg = true))}}    
     val dat_fifo_wr_pvld = Wire(Vec(conf.ATMM_NUM, Vec(conf.BATCH_CDP_NUM, Bool())))
     val dat_fifo_wr_prdy = Wire(Vec(conf.ATMM_NUM, Vec(conf.BATCH_CDP_NUM, Bool())))
     val dat_wr_rdys = Wire(Vec(conf.ATMM_NUM, Vec(conf.BATCH_CDP_NUM, Bool())))
@@ -155,7 +155,7 @@ withClock(io.nvdla_core_clk){
 
             dat_fifo_rd_prdy(i)(j) := dat_rdy_per_batch(i) & (j.U <= req_chn_size)
 
-            dat_fifo_wr_pvld(i)(j) := ((!dp2wdma_b_sync) || (dp2wdma_b_sync & cmd_fifo_wr_prdy)) & dp2wdma_vld & (dp2wdma_pos_c === j.U) & (dp2wdma_pos_w_bit0 === i.U)
+            dat_fifo_wr_pvld(i)(j) := ((~dp2wdma_b_sync) || (dp2wdma_b_sync & cmd_fifo_wr_prdy)) & dp2wdma_vld & (dp2wdma_pos_c === j.U) & (dp2wdma_pos_w_bit0 === i.U)
             dat_wr_rdys(i)(j) := dat_fifo_rd_prdy(i)(j) & (dp2wdma_pos_c === j.U) & (dp2wdma_pos_w_bit0 === i.U)
         }
     }
@@ -178,7 +178,7 @@ withClock(io.nvdla_core_clk){
 
     // FIFO:Write side
     val cmd_fifo_rd_prdy = Wire(Bool())
-    val u_cmd_fifo = Module(new NV_NVDLA_fifo(depth = 4, width = 17, ram_type = 0, distant_wr_req = false))
+    val u_cmd_fifo = Module(new NV_NVDLA_fifo_new(depth = 4, width = 17, ram_type = 0, ram_bypass = true, rd_reg = true))
     u_cmd_fifo.io.clk := io.nvdla_core_clk
     u_cmd_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
@@ -240,8 +240,8 @@ withClock(io.nvdla_core_clk){
     val dat_rdy = Wire(Bool())
     val dat_vld_per_batch = Wire(Vec(conf.ATMM_NUM, Bool()))
     for(i <- 0 to conf.ATMM_NUM-1){
-        dat_vld_per_batch(i) := dat_en & dat_fifo_rd_pvld_per_batch(i) & !(is_last_beat & (is_beat_num_odd < i.U))
-        dat_rdy_per_batch(i) :=  dat_en & dat_rdy & !(is_last_beat & (is_beat_num_odd < i.U))
+        dat_vld_per_batch(i) := dat_en & dat_fifo_rd_pvld_per_batch(i) & ~(is_last_beat & (is_beat_num_odd < i.U))
+        dat_rdy_per_batch(i) :=  dat_en & dat_rdy & ~(is_last_beat & (is_beat_num_odd < i.U))
     }
 
     val dat_vld = dat_en & (dat_vld_per_batch.asUInt.orR)
@@ -460,7 +460,7 @@ withClock(io.nvdla_core_clk){
     val intr_fifo_rd_prdy = dma_wr_rsp_complete
 
     //interrupt fifo
-    val u_intr_fifo = Module{new NV_NVDLA_fifo(depth = 0, width = 1)}
+    val u_intr_fifo = Module{new NV_NVDLA_fifo_new(depth = 0, width = 1)}
     u_intr_fifo.io.clk := io.nvdla_core_clk_orig
     u_intr_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 

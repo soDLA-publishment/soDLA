@@ -49,11 +49,10 @@ withClock(io.nvdla_core_clk){
     // Latency FIFO to buffer return DATA
     //==============
     val lat_rd_prdy = Wire(Bool())
-    val u_lat_fifo = Module{new NV_NVDLA_fifo(
+    val u_lat_fifo = Module{new NV_NVDLA_fifo_new(
                         depth = conf.NVDLA_VMOD_CDP_RDMA_LATENCY_FIFO_DEPTH, 
                         width = conf.NVDLA_CDP_MEM_RD_RSP,
-                        ram_type = 0, 
-                        distant_wr_req = false)}
+                        ram_type = 2)}
     u_lat_fifo.io.clk := io.nvdla_core_clk
     u_lat_fifo.io.pwrbus_ram_pd := io.pwrbus_ram_pd
 
@@ -92,11 +91,12 @@ withClock(io.nvdla_core_clk){
     val ro_rd_pvld = Wire(Vec(conf.TOTAL_CDP_NUM, Bool()))
     val ro_rd_prdy = Wire(Vec(conf.TOTAL_CDP_NUM, Bool()))
     val ro_rd_pd = Wire(Vec(conf.TOTAL_CDP_NUM, UInt((conf.CDPBW).W)))
-    val u_ro_fifo = Array.fill(conf.TOTAL_CDP_NUM){Module(new NV_NVDLA_fifo(
+    val u_ro_fifo = Array.fill(conf.TOTAL_CDP_NUM){Module(new NV_NVDLA_fifo_new(
                     depth = conf.NVDLA_CDP_THROUGHPUT*conf.NVDLA_BPE, 
                     width = 32,
-                    ram_type = 0, 
-                    distant_wr_req = false))}
+                    ram_type = 0,
+                    rd_reg = true,
+                    ram_bypass = true))}
 
     
     for(i <- 0 until conf.ATMM_NUM){

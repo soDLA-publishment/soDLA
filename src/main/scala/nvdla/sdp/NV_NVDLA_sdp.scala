@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_sdp(implicit val conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
 
@@ -78,7 +79,7 @@ class NV_NVDLA_sdp(implicit val conf: nvdlaConfig) extends Module {
     //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
     //             │ ─┤ ─┤       │ ─┤ ─┤         
     //             └──┴──┘       └──┴──┘ 
-withReset(!io.nvdla_core_rstn){  
+withReset(~io.nvdla_core_rstn){  
     //=======================================
     //DMA
     //--------------------------------------- 
@@ -169,20 +170,20 @@ withReset(!io.nvdla_core_rstn){
         //sdp_nrdma2dp_mul
         u_core.io.sdp_nrdma2dp_mul_pd.get <> u_rdma.io.sdp_nrdma2dp_mul_pd.get
         //reg2dp_bn
-        u_core.io.reg2dp_bn_bypass.get := d_field.bs_bypass
-        u_core.io.reg2dp_bn_relu_bypass.get := d_field.bs_relu_bypass
+        u_core.io.reg2dp_bn_bypass.get := d_field.bn_bypass
+        u_core.io.reg2dp_bn_relu_bypass.get := d_field.bn_relu_bypass
 
-        u_core.io.reg2dp_bn_alu.get.bypass := d_field.bs_alu_bypass
-        u_core.io.reg2dp_bn_alu.get.algo := d_field.bs_alu_algo
-        u_core.io.reg2dp_bn_alu.get.op := d_field.bs_alu_operand
-        u_core.io.reg2dp_bn_alu.get.shift_value := d_field.bs_alu_shift_value
-        u_core.io.reg2dp_bn_alu.get.src := d_field.bs_alu_src
+        u_core.io.reg2dp_bn_alu.get.bypass := d_field.bn_alu_bypass
+        u_core.io.reg2dp_bn_alu.get.algo := d_field.bn_alu_algo
+        u_core.io.reg2dp_bn_alu.get.op := d_field.bn_alu_operand
+        u_core.io.reg2dp_bn_alu.get.shift_value := d_field.bn_alu_shift_value
+        u_core.io.reg2dp_bn_alu.get.src := d_field.bn_alu_src
         
-        u_core.io.reg2dp_bn_mul.get.bypass := d_field.bs_mul_bypass
-        u_core.io.reg2dp_bn_mul.get.op := d_field.bs_mul_operand
-        u_core.io.reg2dp_bn_mul.get.prelu := d_field.bs_mul_prelu
-        u_core.io.reg2dp_bn_mul.get.shift_value := d_field.bs_mul_shift_value
-        u_core.io.reg2dp_bn_mul.get.src := d_field.bs_mul_src
+        u_core.io.reg2dp_bn_mul.get.bypass := d_field.bn_mul_bypass
+        u_core.io.reg2dp_bn_mul.get.op := d_field.bn_mul_operand
+        u_core.io.reg2dp_bn_mul.get.prelu := d_field.bn_mul_prelu
+        u_core.io.reg2dp_bn_mul.get.shift_value := d_field.bn_mul_shift_value
+        u_core.io.reg2dp_bn_mul.get.src := d_field.bn_mul_src
 
     }
     if(conf.NVDLA_SDP_EW_ENABLE){
@@ -218,65 +219,61 @@ withReset(!io.nvdla_core_rstn){
         u_core.io.reg2dp_ew.get.mul.prelu := d_field.ew_mul_prelu
         u_core.io.reg2dp_ew.get.mul.src := d_field.ew_mul_src
         u_core.io.reg2dp_ew.get.mul.truncate := d_field.ew_truncate
-
-        if(conf.NVDLA_SDP_LUT_ENABLE){
-            
-            u_core.io.reg2dp_lut.get.int_access_type := u_reg.io.reg2dp_lut_int_access_type
-            u_core.io.reg2dp_lut.get.int_addr := u_reg.io.reg2dp_lut_int_addr
-            u_core.io.reg2dp_lut.get.int_data := u_reg.io.reg2dp_lut_int_data
-            u_core.io.reg2dp_lut.get.int_data_wr := u_reg.io.reg2dp_lut_int_data_wr
-            u_core.io.reg2dp_lut.get.int_table_id := u_reg.io.reg2dp_lut_int_table_id
-            u_core.io.reg2dp_lut.get.le_end := s_field.lut_le_end
-            u_core.io.reg2dp_lut.get.le_slope_oflow_scale := s_field.lut_le_slope_oflow_scale
-            u_core.io.reg2dp_lut.get.le_slope_oflow_shift := s_field.lut_le_slope_oflow_shift
-            u_core.io.reg2dp_lut.get.le_slope_uflow_scale := s_field.lut_le_slope_uflow_scale
-            u_core.io.reg2dp_lut.get.le_slope_uflow_shift := s_field.lut_le_slope_uflow_shift
-            u_core.io.reg2dp_lut.get.lo_end := s_field.lut_lo_end
-            u_core.io.reg2dp_lut.get.lo_slope_oflow_scale := s_field.lut_lo_slope_oflow_scale
-            u_core.io.reg2dp_lut.get.lo_slope_oflow_shift := s_field.lut_lo_slope_oflow_shift
-            u_core.io.reg2dp_lut.get.lo_slope_uflow_scale := s_field.lut_lo_slope_uflow_scale
-            u_core.io.reg2dp_lut.get.lo_slope_uflow_shift := s_field.lut_lo_slope_uflow_shift
-            u_core.io.reg2dp_lut.get.le_start := s_field.lut_le_start
-            u_core.io.reg2dp_lut.get.lo_start := s_field.lut_lo_start
-            u_core.io.reg2dp_lut.get.le_function := s_field.lut_le_function
-            u_core.io.reg2dp_lut.get.le_index_offset := s_field.lut_le_index_offset
-            u_core.io.reg2dp_lut_slcg_en.get := u_reg.io.reg2dp_lut_slcg_en
-            
-            u_core.io.reg2dp_idx.get.hybrid_priority := s_field.lut_hybrid_priority
-            u_core.io.reg2dp_idx.get.le_index_offset := s_field.lut_le_index_offset
-            u_core.io.reg2dp_idx.get.le_function := s_field.lut_le_function
-            u_core.io.reg2dp_idx.get.le_index_select := s_field.lut_le_index_select
-            u_core.io.reg2dp_idx.get.le_start := s_field.lut_le_start
-            u_core.io.reg2dp_idx.get.lo_start := s_field.lut_lo_start
-            u_core.io.reg2dp_idx.get.lo_index_select := s_field.lut_lo_index_select
-            u_core.io.reg2dp_idx.get.oflow_priority := s_field.lut_oflow_priority
-            u_core.io.reg2dp_idx.get.uflow_priority := s_field.lut_uflow_priority
-
-            u_reg.io.dp2reg_lut_hybrid := u_core.io.dp2reg_lut.get.hybrid
-            u_reg.io.dp2reg_lut_int_data := u_core.io.dp2reg_lut.get.int_data 
-            u_reg.io.dp2reg_lut_le_hit := u_core.io.dp2reg_lut.get.le_hit 
-            u_reg.io.dp2reg_lut_lo_hit := u_core.io.dp2reg_lut.get.lo_hit 
-            u_reg.io.dp2reg_lut_oflow := u_core.io.dp2reg_lut.get.oflow 
-            u_reg.io.dp2reg_lut_uflow := u_core.io.dp2reg_lut.get.uflow 
-        }
-       else{
-          
-           u_reg.io.dp2reg_lut_hybrid := 0.U
-           u_reg.io.dp2reg_lut_int_data := 0.U
-           u_reg.io.dp2reg_lut_le_hit := 0.U
-           u_reg.io.dp2reg_lut_lo_hit := 0.U
-           u_reg.io.dp2reg_lut_oflow := 0.U
-           u_reg.io.dp2reg_lut_uflow := 0.U
-       
-       }
     }
     else{
         u_wdma.io.reg2dp_ew_alu_algo := "b0".asUInt(2.W)
         u_wdma.io.reg2dp_ew_alu_bypass := "b1".asUInt(1.W)
         u_wdma.io.reg2dp_ew_bypass := "b1".asUInt(1.W)
-
-
     }
+
+    if(conf.NVDLA_SDP_LUT_ENABLE){
+        u_core.io.reg2dp_lut.get.int_access_type := u_reg.io.reg2dp_lut_int_access_type
+        u_core.io.reg2dp_lut.get.int_addr := u_reg.io.reg2dp_lut_int_addr
+        u_core.io.reg2dp_lut.get.int_data := u_reg.io.reg2dp_lut_int_data
+        u_core.io.reg2dp_lut.get.int_data_wr := u_reg.io.reg2dp_lut_int_data_wr
+        u_core.io.reg2dp_lut.get.int_table_id := u_reg.io.reg2dp_lut_int_table_id
+        u_core.io.reg2dp_lut.get.le_end := s_field.lut_le_end
+        u_core.io.reg2dp_lut.get.le_slope_oflow_scale := s_field.lut_le_slope_oflow_scale
+        u_core.io.reg2dp_lut.get.le_slope_oflow_shift := s_field.lut_le_slope_oflow_shift
+        u_core.io.reg2dp_lut.get.le_slope_uflow_scale := s_field.lut_le_slope_uflow_scale
+        u_core.io.reg2dp_lut.get.le_slope_uflow_shift := s_field.lut_le_slope_uflow_shift
+        u_core.io.reg2dp_lut.get.lo_end := s_field.lut_lo_end
+        u_core.io.reg2dp_lut.get.lo_slope_oflow_scale := s_field.lut_lo_slope_oflow_scale
+        u_core.io.reg2dp_lut.get.lo_slope_oflow_shift := s_field.lut_lo_slope_oflow_shift
+        u_core.io.reg2dp_lut.get.lo_slope_uflow_scale := s_field.lut_lo_slope_uflow_scale
+        u_core.io.reg2dp_lut.get.lo_slope_uflow_shift := s_field.lut_lo_slope_uflow_shift
+        u_core.io.reg2dp_lut.get.le_start := s_field.lut_le_start
+        u_core.io.reg2dp_lut.get.lo_start := s_field.lut_lo_start
+        u_core.io.reg2dp_lut.get.le_function := s_field.lut_le_function
+        u_core.io.reg2dp_lut.get.le_index_offset := s_field.lut_le_index_offset
+        u_core.io.reg2dp_lut_slcg_en.get := u_reg.io.reg2dp_lut_slcg_en
+        
+        u_core.io.reg2dp_idx.get.hybrid_priority := s_field.lut_hybrid_priority
+        u_core.io.reg2dp_idx.get.le_index_offset := s_field.lut_le_index_offset
+        u_core.io.reg2dp_idx.get.le_function := s_field.lut_le_function
+        u_core.io.reg2dp_idx.get.le_index_select := s_field.lut_le_index_select
+        u_core.io.reg2dp_idx.get.le_start := s_field.lut_le_start
+        u_core.io.reg2dp_idx.get.lo_start := s_field.lut_lo_start
+        u_core.io.reg2dp_idx.get.lo_index_select := s_field.lut_lo_index_select
+        u_core.io.reg2dp_idx.get.oflow_priority := s_field.lut_oflow_priority
+        u_core.io.reg2dp_idx.get.uflow_priority := s_field.lut_uflow_priority
+
+        u_reg.io.dp2reg_lut_hybrid := u_core.io.dp2reg_lut.get.hybrid
+        u_reg.io.dp2reg_lut_int_data := u_core.io.dp2reg_lut.get.int_data 
+        u_reg.io.dp2reg_lut_le_hit := u_core.io.dp2reg_lut.get.le_hit 
+        u_reg.io.dp2reg_lut_lo_hit := u_core.io.dp2reg_lut.get.lo_hit 
+        u_reg.io.dp2reg_lut_oflow := u_core.io.dp2reg_lut.get.oflow 
+        u_reg.io.dp2reg_lut_uflow := u_core.io.dp2reg_lut.get.uflow 
+    }
+    else{
+        u_reg.io.dp2reg_lut_hybrid := 0.U
+        u_reg.io.dp2reg_lut_int_data := 0.U
+        u_reg.io.dp2reg_lut_le_hit := 0.U
+        u_reg.io.dp2reg_lut_lo_hit := 0.U
+        u_reg.io.dp2reg_lut_oflow := 0.U
+        u_reg.io.dp2reg_lut_uflow := 0.U
+    }
+
     u_wdma.io.reg2dp_op_en := u_reg.io.reg2dp_op_en
     u_wdma.io.reg2dp_wdma_slcg_op_en := u_reg.io.reg2dp_wdma_slcg_op_en
     u_wdma.io.reg2dp_output_dst := d_field.output_dst
@@ -289,10 +286,10 @@ withReset(!io.nvdla_core_rstn){
     u_wdma.io.reg2dp_out_precision := d_field.out_precision
     u_wdma.io.reg2dp_dst_ram_type := d_field.dst_ram_type
     u_wdma.io.reg2dp_dst_base_addr_high := d_field.dst_base_addr_high 
-    u_wdma.io.reg2dp_dst_base_addr_low := d_field.dst_base_addr_low
-    u_wdma.io.reg2dp_dst_batch_stride  := d_field.dst_batch_stride 
-    u_wdma.io.reg2dp_dst_line_stride := d_field.dst_line_stride
-    u_wdma.io.reg2dp_dst_surface_stride := d_field.dst_surface_stride
+    u_wdma.io.reg2dp_dst_base_addr_low := d_field.dst_base_addr_low(31, conf.AM_AW)
+    u_wdma.io.reg2dp_dst_batch_stride  := d_field.dst_batch_stride (31, conf.AM_AW)
+    u_wdma.io.reg2dp_dst_line_stride := d_field.dst_line_stride(31, conf.AM_AW)
+    u_wdma.io.reg2dp_dst_surface_stride := d_field.dst_surface_stride(31, conf.AM_AW)
     u_wdma.io.reg2dp_interrupt_ptr := u_reg.io.reg2dp_interrupt_ptr 
     u_wdma.io.reg2dp_perf_dma_en := d_field.perf_dma_en
 

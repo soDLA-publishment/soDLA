@@ -364,7 +364,7 @@ withClock(io.nvdla_core_clk){
         flush_num_cal := 7.U
     }
     //small input detect
-    val non_split_small_active = (non_splitw & (!io.reg2dp_cube_in_width(12, 3).orR) & (io.reg2dp_cube_in_width +& io.reg2dp_pad_left(2, 0) < io.reg2dp_kernel_width))
+    val non_split_small_active = (non_splitw & (~io.reg2dp_cube_in_width(12, 3).orR) & (io.reg2dp_cube_in_width +& io.reg2dp_pad_left(2, 0) < io.reg2dp_kernel_width))
     val big_stride = io.reg2dp_kernel_stride_width >= io.reg2dp_kernel_width
     val split_small_active = (~non_splitw) & ((big_stride & ((io.pooling_lwidth_cfg -& overlap) < io.reg2dp_kernel_width))
                                          | ((~big_stride) & ((io.pooling_lwidth_cfg +& overlap) < io.reg2dp_kernel_width)))
@@ -721,7 +721,7 @@ withClock(io.nvdla_core_clk){
     val pdp_info_out_prdy = Wire(Bool())
 
     val pdp_info_in_pd = Cat(pdp_din_lc,last_c,last_out_en,cur_datin_disable,pooling_din_last.asUInt)
-    val u_NV_NVDLA_PDP_cal1d_info_fifo = Module(new NV_NVDLA_fifo(depth=8, width=12, ram_type=0))
+    val u_NV_NVDLA_PDP_cal1d_info_fifo = Module(new NV_NVDLA_fifo_new(depth=8, width=12, ram_type=0, rd_reg = true, ram_bypass = true))
     u_NV_NVDLA_PDP_cal1d_info_fifo.io.clk := io.nvdla_core_clk
     u_NV_NVDLA_PDP_cal1d_info_fifo.io.wr_pvld := pdp_info_in_pvld
     pdp_info_in_prdy := u_NV_NVDLA_PDP_cal1d_info_fifo.io.wr_prdy

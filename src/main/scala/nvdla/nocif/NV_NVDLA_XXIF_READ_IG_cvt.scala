@@ -8,6 +8,7 @@ class xxif_read_ig_cq_wr_out_if extends Bundle{
     val thread_id = Output(UInt(4.W))
 }
 
+@chiselName
 class NV_NVDLA_XXIF_READ_IG_cvt(cq_enabled: Boolean)(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle{
         //general clock
@@ -52,16 +53,16 @@ withClock(io.nvdla_core_clk){
         val end_addr_is_32_align = end_offset(0) === false.B
         val inc = cmd_ftran & cmd_ltran & (cmd_size(0) === true.B) & cmd_swizzle
         axi_len := cmd_size(2, 1) + inc
-        io.cq_wr.get.valid := cmd_vld & axi_cmd_rdy & !os_cnt_full
+        io.cq_wr.get.valid := cmd_vld & axi_cmd_rdy & ~os_cnt_full
         io.cq_wr.get.bits.pd := Cat(cmd_ltran & end_addr_is_32_align, cmd_ftran & stt_addr_is_32_align, cmd_ltran,
                            cmd_odd, cmd_swizzle, axi_len)
         io.cq_wr.get.bits.thread_id := cmd_axid
-        axi_cmd_vld := cmd_vld & io.cq_wr.get.valid & !os_cnt_full
-        cmd_rdy := axi_cmd_rdy & io.cq_wr.get.valid & !os_cnt_full
+        axi_cmd_vld := cmd_vld & io.cq_wr.get.valid & ~os_cnt_full
+        cmd_rdy := axi_cmd_rdy & io.cq_wr.get.valid & ~os_cnt_full
     }
     else{
-        axi_cmd_vld := cmd_vld & !os_cnt_full
-        cmd_rdy := axi_cmd_rdy & !os_cnt_full      
+        axi_cmd_vld := cmd_vld & ~os_cnt_full
+        cmd_rdy := axi_cmd_rdy & ~os_cnt_full      
         axi_len := cmd_size 
     }
     

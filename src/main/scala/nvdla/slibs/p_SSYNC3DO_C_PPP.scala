@@ -12,7 +12,7 @@ class p_SSYNC3DO_C_PPP extends Module {
         val q = Output(Bool())
         val clr_ = Input(Bool())
     })
-withClockAndReset(io.clk, !io.clr_){
+withClockAndReset(io.clk, ~io.clr_){
 
     val q_out = RegInit(false.B)
     val d1_out = RegInit(false.B)

@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_SDP_HLS_lut_expn(LUT_DEPTH:Int = 256) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -61,7 +62,7 @@ withClock(io.nvdla_core_clk){
     log2_dw_lsd.io.a := Cat(false.B, lut_index_sub_reg)
     val leadzero = log2_dw_lsd.io.enc
 
-    val log2_lut_index = Mux(lut_uflow_reg|(!(lut_index_sub_reg.orR)), 0.U, 31.U -& leadzero(4, 0)) //morework
+    val log2_lut_index = Mux(lut_uflow_reg|(~(lut_index_sub_reg.orR)), 0.U, 31.U -& leadzero(4, 0)) //morework
     val filter_frac = (1.U << log2_lut_index) -& 1.U
     val log2_lut_frac = lut_index_sub_reg & filter_frac
 

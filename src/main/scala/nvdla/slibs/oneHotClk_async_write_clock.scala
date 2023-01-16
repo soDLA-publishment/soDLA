@@ -15,6 +15,6 @@ class oneHotClk_async_write_clock extends Module {
     val one_hot_enable = UJ_dft_xclamp_ctrl_asyncfifo_onehotclk_write.io.Y
     val tp = UJ_dft_xclamp_scan_asyncfifo_onehotclk_write.io.Y
 
-    io.enable_w := ((!one_hot_enable) || tp )
+    io.enable_w := ((~one_hot_enable) || tp )
 
 }

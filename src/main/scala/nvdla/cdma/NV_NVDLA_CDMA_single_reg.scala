@@ -4,11 +4,9 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_CDMA_single_reg extends Module {
     val io = IO(new Bundle {
-        // clk
-        val nvdla_core_clk = Input(Clock())
-
         // Register control interface
         val reg = new reg_control_if
 

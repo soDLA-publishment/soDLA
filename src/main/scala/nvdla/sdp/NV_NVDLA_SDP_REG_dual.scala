@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_SDP_REG_dual extends Module{
     val io = IO(new Bundle{
         // clk

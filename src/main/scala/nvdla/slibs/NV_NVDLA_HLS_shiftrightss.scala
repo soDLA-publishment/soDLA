@@ -61,7 +61,7 @@ class NV_NVDLA_HLS_shiftrightss(IN_WIDTH:Int = 49, OUT_WIDTH:Int = 32, SHIFT_WID
 
     data_round := (data_shift_r(OUT_WIDTH-1, 0) + point5)(OUT_WIDTH-1, 0)
 
-    right_shift_sat := !shift_sign & 
+    right_shift_sat := ~shift_sign & 
                       (( data_sign & ~(data_shift_r(IN_WIDTH-2, OUT_WIDTH-1).andR)) |
                       (~data_sign &  (data_shift_r(IN_WIDTH-2, OUT_WIDTH-1).orR)) |
                       (~data_sign & (Cat(data_shift_r(((OUT_WIDTH-1) - 1), 0), point5).andR)))

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_cbuf(implicit val conf: nvdlaConfig) extends Module {
  
   val io = IO(new Bundle {
@@ -23,7 +23,7 @@ class NV_NVDLA_cbuf(implicit val conf: nvdlaConfig) extends Module {
 
   })
 
-withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
+withClockAndReset(io.nvdla_core_clk, ~io.nvdla_core_rstn){
 //////////step1:write handle  
     val bank_ram_wr_en_d0 = Wire(Vec(conf.CBUF_BANK_NUMBER, Vec(conf.CBUF_RAM_PER_BANK, Vec(conf.CBUF_WR_PORT_NUMBER, Bool()))))
    

@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 //NV_NVDLA_SDP_RDMA_ig.v
-
+@chiselName
 class NV_NVDLA_SDP_RDMA_ig(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
@@ -282,7 +282,7 @@ withClock(io.nvdla_core_clk){
 
     val u_histo_rdma = Module{new NV_COUNTER_STAGE_histogram(32)}
     u_histo_rdma.io.clk := io.nvdla_core_clk
-    u_histo_rdma.io.rd_stall_inc := io.dma_rd_req_pd.valid & !io.dma_rd_req_pd.ready
+    u_histo_rdma.io.rd_stall_inc := io.dma_rd_req_pd.valid & ~io.dma_rd_req_pd.ready
     u_histo_rdma.io.rd_stall_dec := false.B
     u_histo_rdma.io.rd_stall_clr := io.op_load
     u_histo_rdma.io.rd_stall_cen := io.reg2dp_op_en & io.reg2dp_perf_dma_en

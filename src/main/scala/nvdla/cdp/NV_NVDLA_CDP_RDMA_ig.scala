@@ -62,7 +62,7 @@ withClock(io.nvdla_core_clk){
     val tran_vld = RegInit(false.B)
     val after_op_done = RegInit(false.B)
 
-    val op_load = io.reg2dp_op_en & !tran_vld
+    val op_load = io.reg2dp_op_en & ~tran_vld
     val op_done = cmd_accept & is_cube_end
 
     when(op_done){

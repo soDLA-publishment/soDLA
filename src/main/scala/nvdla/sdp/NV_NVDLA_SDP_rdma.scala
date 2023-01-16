@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
+@chiselName
 class NV_NVDLA_SDP_rdma(implicit conf: nvdlaConfig) extends Module {
 
 val io = IO(new Bundle {

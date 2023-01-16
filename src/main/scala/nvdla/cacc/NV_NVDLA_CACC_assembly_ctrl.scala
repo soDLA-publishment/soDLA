@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
+@chiselName
 class NV_NVDLA_CACC_assembly_ctrl(implicit conf: nvdlaConfig) extends Module {
 
     val io = IO(new Bundle {
@@ -82,7 +83,7 @@ val accu_cnt = RegInit("b0".asUInt(conf.CACC_ABUF_AWIDTH.W))
 val accu_ram_valid = RegInit(false.B)
 val accu_channel_st = RegInit(true.B)
 
-val layer_st = io.wait_for_op_en & io.reg2dp_op_en
+val layer_st = wait_for_op_en_out & io.reg2dp_op_en
 val accu_cnt_inc = accu_cnt + 1.U
 val accu_cnt_w = Mux(layer_st | accu_stripe_end, "b0".asUInt(conf.CACC_ABUF_AWIDTH.W), accu_cnt_inc)
 val accu_addr = accu_cnt

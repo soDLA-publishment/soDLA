@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-
+@chiselName
 class NV_NVDLA_fifo(depth: Int, width: Int,
                     ram_type: Int = 0, 
                     distant_wr_req: Boolean = false, 
@@ -12,7 +12,7 @@ class NV_NVDLA_fifo(depth: Int, width: Int,
                     io_wr_idle: Boolean = false,
                     io_wr_count: Boolean = false,
                     io_rd_idle: Boolean = false,
-                    useRealClock: Boolean = false) extends Module {
+                    useRealClock: Boolean = false)(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         //clk
         val clk = Input(Clock())
@@ -109,13 +109,13 @@ withClock(if (useRealClock) io.clk else clock){
         val rd_pvld_p = io.wr_pvld      // no real fifo, take from write-side input
         val rd_pvld_int_o = withClock(clk_mgated){RegInit(false.B)}    // internal copy of rd_pvld_o
         val rd_pvld_o = rd_pvld_int_o
-        val rd_popping = rd_pvld_p && !(rd_pvld_int_o && !rd_prdy_d_o);
+        val rd_popping = rd_pvld_p && ~(rd_pvld_int_o && ~rd_prdy_d_o);
 
         // 
         // SKID for -rd_busy_reg
         //
         val rd_pd_o = withClock(clk_mgated){Reg(UInt(width.W))} // output data register
-        val rd_pvld_next_o = (rd_pvld_p || (rd_pvld_int_o && !rd_prdy_d_o))
+        val rd_pvld_next_o = (rd_pvld_p || (rd_pvld_int_o && ~rd_prdy_d_o))
 
         rd_pvld_int_o := rd_pvld_next_o
         rd_pd_o := Fill(width, false.B)
@@ -125,16 +125,16 @@ withClock(if (useRealClock) io.clk else clock){
         //
         val rd_pd_out = Reg(UInt(width.W))  // output data register
         val rd_pvld_int_d = RegInit(false.B)    // so we can bubble-collapse rd_prdy_d
-        rd_prdy_d_o := !((rd_pvld_o && rd_pvld_int_d && !rd_prdy_d))
-        val rd_pvld_next = Mux(!rd_prdy_d_o,  rd_pvld_o, rd_pvld_p)  
+        rd_prdy_d_o := ~((rd_pvld_o && rd_pvld_int_d && ~rd_prdy_d))
+        val rd_pvld_next = Mux(~rd_prdy_d_o,  rd_pvld_o, rd_pvld_p)  
 
-        when(!rd_pvld_int || io.rd_prdy ){
+        when(~rd_pvld_int || io.rd_prdy ){
             rd_pvld_int := rd_pvld_next
         }
         rd_pvld_int_d := rd_pvld_int
 
-        when(rd_pvld_next && (!rd_pvld_int || io.rd_prdy)){
-            rd_pd_out := MuxLookup(!rd_prdy_d_o, Fill(width, false.B),
+        when(rd_pvld_next && (~rd_pvld_int || io.rd_prdy)){
+            rd_pd_out := MuxLookup(~rd_prdy_d_o, Fill(width, false.B),
                     Array(
                     0.U -> rd_pd_p,
                     1.U -> rd_pd_o
@@ -163,24 +163,24 @@ withClock(if (useRealClock) io.clk else clock){
         // factor for better timing with distant wr_pvld signal
         if(distant_wr_req){
             val wr_busy_in_next_wr_pvld_eq_1 = wr_busy_next
-            val wr_busy_in_next_wr_pvld_eq_0 = (wr_pvld_in && wr_busy_next) && !wr_reserving
+            val wr_busy_in_next_wr_pvld_eq_0 = (wr_pvld_in && wr_busy_next) && ~wr_reserving
             val wr_busy_in_next = Mux(io.wr_pvld, wr_busy_in_next_wr_pvld_eq_1, wr_busy_in_next_wr_pvld_eq_0)
             val wr_busy_in_int = wr_pvld_in && wr_busy_int
 
             wr_busy_in := wr_busy_in_next
-            when(!wr_busy_in_int){
-                wr_pvld_in := io.wr_pvld && !wr_busy_in
+            when(~wr_busy_in_int){
+                wr_pvld_in := io.wr_pvld && ~wr_busy_in
             }
 
             if(ram_type == 2){
-                when(!wr_busy_in && io.wr_pvld){
+                when(~wr_busy_in && io.wr_pvld){
                     wr_pd_in := io.wr_pd
                 }
             }
         }
 
-        io.wr_prdy := !wr_busy_in
-        wr_reserving := wr_pvld_in && !wr_busy_int   // reserving write space?
+        io.wr_prdy := ~wr_busy_in
+        wr_reserving := wr_pvld_in && ~wr_busy_int   // reserving write space?
 
         val wr_popping = Wire(Bool())       // fwd: write side sees pop?
         val wr_count = withClock(clk_mgated){RegInit("b0".asUInt(log2Ceil(depth+1).W))} // write-side count
@@ -204,7 +204,7 @@ withClock(if (useRealClock) io.clk else clock){
         }
 
         if(io_wr_empty){
-            io.wr_empty.get := RegNext(wr_count_next === 0.U && !io.wr_pvld, true.B)
+            io.wr_empty.get := RegNext(wr_count_next === 0.U && ~io.wr_pvld, true.B)
         }
         val wr_pushing = wr_reserving // data pushed same cycle as wr_pvld_in
         
@@ -233,7 +233,7 @@ withClock(if (useRealClock) io.clk else clock){
         // Adding parameter for fifogen to disable wr/rd contention assertion in ramgen.
         // Fifogen handles this by ignoring the data on the ram data out for that cycle.
         if(ram_type == 0){
-            val ram_we = wr_pushing && (wr_count > 0.U || !rd_popping)      // note: write occurs next cycle
+            val ram_we = wr_pushing && (wr_count > 0.U || ~rd_popping)      // note: write occurs next cycle
 
             val ram = Module(new nv_flopram(depth, width, false))
             ram.io.clk := clk_mgated
@@ -248,8 +248,8 @@ withClock(if (useRealClock) io.clk else clock){
         }
 
         if(ram_type == 1){
-            val ram_iwe = !wr_busy_in && io.wr_pvld
-            val ram_we = wr_pushing && (wr_count > 0.U || !rd_popping)      // note: write occurs next cycle
+            val ram_iwe = ~wr_busy_in && io.wr_pvld
+            val ram_we = wr_pushing && (wr_count > 0.U || ~rd_popping)      // note: write occurs next cycle
 
             val ram = Module(new nv_flopram(depth, width, true))
             ram.io.clk := io.clk
@@ -307,10 +307,10 @@ withClock(if (useRealClock) io.clk else clock){
         if(ram_type == 0){  
         
             rd_pvld_p := rd_count =/= 0.U|rd_pushing
-            rd_popping := rd_pvld_p && !(rd_pvld_int.get && !io.rd_prdy)
+            rd_popping := rd_pvld_p && ~(rd_pvld_int.get && ~io.rd_prdy)
             
             val rd_pd_reg = Reg(UInt(width.W)) // output data register
-            val rd_pvld_next = (rd_pvld_p || (rd_pvld_int.get && !io.rd_prdy))
+            val rd_pvld_next = (rd_pvld_p || (rd_pvld_int.get && ~io.rd_prdy))
             rd_pvld_int.get := rd_pvld_next
             rd_pd_reg := rd_pd_p
 
@@ -328,8 +328,7 @@ withClock(if (useRealClock) io.clk else clock){
         }
 
         if(ram_type == 2){
-            rd_popping := io.rd_pvld && io.rd_prdy
-
+            rd_popping := rd_pvld_p && ~(rd_pvld_int.get && ~io.rd_prdy)
             val rd_count_p_next_rd_popping_not_0 = rd_count_next_rd_popping =/= 0.U
             val rd_count_p_next_no_rd_popping_not_0 = rd_count_next_no_rd_popping =/= 0.U
             val rd_count_p_next_not_0 = Mux(rd_popping, rd_count_p_next_rd_popping_not_0, rd_count_p_next_no_rd_popping_not_0)
@@ -338,7 +337,7 @@ withClock(if (useRealClock) io.clk else clock){
             when(rd_pushing || rd_popping){
                 rd_pvld_p := rd_count_p_next_not_0
             }
-            val rd_pvld_next = (rd_pvld_p || (rd_pvld_int.get && !io.rd_prdy))
+            val rd_pvld_next = (rd_pvld_p || (rd_pvld_int.get && ~io.rd_prdy))
             rd_pvld_int.get := rd_pvld_next
 
             io.rd_pvld := rd_pvld_int.get
@@ -352,7 +351,7 @@ withClock(if (useRealClock) io.clk else clock){
         //
 
         if(io_rd_idle){
-            io.rd_idle.get := !io.rd_pvld && !rd_pushing && rd_count === 0.U
+            io.rd_idle.get := ~io.rd_pvld && ~rd_pushing && rd_count === 0.U
         }
         
         //
@@ -360,8 +359,8 @@ withClock(if (useRealClock) io.clk else clock){
         //
 
         if(io_wr_idle){
-            val rd_idle = !io.rd_pvld && !rd_pushing && rd_count === 0.U
-            io.wr_idle.get := !wr_pvld_in && rd_idle && !wr_pushing && wr_count === 0.U
+            val rd_idle = ~io.rd_pvld && ~rd_pushing && rd_count === 0.U
+            io.wr_idle.get := ~wr_pvld_in && rd_idle && ~wr_pushing && wr_count === 0.U
         }
 
         
@@ -369,7 +368,7 @@ withClock(if (useRealClock) io.clk else clock){
         //
 
         clk_mgated_enable := ((wr_reserving || wr_pushing || wr_popping ||
-                            (wr_pvld_in && !wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
+                            (wr_pvld_in && ~wr_busy_int) || (wr_busy_int =/= wr_busy_next)) || 
                             (rd_pushing || rd_popping || (io.rd_pvld && io.rd_prdy)) || 
                             (wr_pushing))
 
@@ -380,6 +379,7 @@ withClock(if (useRealClock) io.clk else clock){
 
 
 object NV_NVDLA_fifoDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new NV_NVDLA_fifo(depth = 20, width = 80, distant_wr_req = true, ram_type = 2))
 }
 

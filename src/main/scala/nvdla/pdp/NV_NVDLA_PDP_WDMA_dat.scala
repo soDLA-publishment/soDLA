@@ -95,7 +95,7 @@ withClock(io.nvdla_core_clk){
 
     is_fspt := cfg_mode_split & is_first_wg
     is_lspt := cfg_mode_split & is_last_wg
-    is_mspt := cfg_mode_split & !is_fspt & !is_lspt
+    is_mspt := cfg_mode_split & ~is_fspt & ~is_lspt
 
     //================================================================
     // C direction: count_b + count_surf
@@ -172,7 +172,7 @@ withClock(io.nvdla_core_clk){
     //==============
     // Data FIFO WRITE contrl
     //==============
-    val u_dat_fifo = Array.fill(conf.ATMM_NUM){Array.fill(conf.BATCH_PDP_NUM){Module(new NV_NVDLA_fifo(depth = 32, width = conf.PDPBW, ram_type = 0, distant_wr_req = false))}}
+    val u_dat_fifo = Array.fill(conf.ATMM_NUM){Array.fill(conf.BATCH_PDP_NUM){Module(new NV_NVDLA_fifo_new(depth = 3, width = conf.PDPBW, rd_reg = true, ram_type = 0, ram_bypass = true))}}    
     val u_dat_fifo_wr_prdy = Wire(Vec(conf.ATMM_NUM, Vec(conf.BATCH_PDP_NUM, Bool())))
     for(i <- 0 to conf.ATMM_NUM-1){
         for(j <- 0 to conf.BATCH_PDP_NUM-1){

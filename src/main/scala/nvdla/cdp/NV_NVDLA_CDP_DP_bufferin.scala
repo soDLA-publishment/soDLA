@@ -73,7 +73,7 @@ withClock(io.nvdla_core_clk){
         is (wait) {
             when(is_b_sync & (is_pos_c === 0.U) & is_last_pos_c & is_last_h & is_last_w & load_din){
                 stat_nex := cube_end
-            }.elsewhen(is_b_sync & (is_pos_c === 0.U) & (!is_last_pos_c) & load_din){
+            }.elsewhen(is_b_sync & (is_pos_c === 0.U) & (~is_last_pos_c) & load_din){
                 stat_nex := normal_c
             }.elsewhen((is_b_sync & is_last_c & (is_pos_c === 0.U) & is_last_pos_c & (~(is_last_h & is_last_w)) & load_din)){
                 stat_nex := first_c
@@ -92,7 +92,7 @@ withClock(io.nvdla_core_clk){
                   ||(more2less & (width_pre_cnt === width_pre) & hold_here & rdma2dp_ready_normal)){
                       when(is_last_c & is_last_h & is_last_w & is_last_pos_c){
                           stat_nex := cube_end
-                      }.elsewhen(is_last_c & (!(is_last_h & is_last_w)) & is_last_pos_c){
+                      }.elsewhen(is_last_c & (~(is_last_h & is_last_w)) & is_last_pos_c){
                           stat_nex := first_c
                       }.otherwise{
                           stat_nex := second_c
@@ -103,7 +103,7 @@ withClock(io.nvdla_core_clk){
             when(is_b_sync & load_din){
                 when(is_last_c & is_last_h & is_last_w & is_last_pos_c){
                     stat_nex := cube_end
-                }.elsewhen(is_last_c & (!(is_last_h & is_last_w)) & is_last_pos_c){
+                }.elsewhen(is_last_c & (~(is_last_h & is_last_w)) & is_last_pos_c){
                     stat_nex := first_c
                 }.otherwise{
                     stat_nex := normal_c

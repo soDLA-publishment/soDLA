@@ -17,14 +17,14 @@ class nvdla2csb_if extends Bundle{
     val data = Output(UInt(32.W))
 }
 
-class NV_NVDLA_apb2csb extends Module {
+class NV_NVDLA_apb2csb extends RawModule {
  
     //csb interface  
     val io = IO(new Bundle {
 
       //clock
       val pclk = Input(Clock())
-
+      val prstn = Input(Bool())
       // Flow control signals from the master
       val psel= Input(Bool())
       val penable = Input(Bool())
@@ -41,12 +41,12 @@ class NV_NVDLA_apb2csb extends Module {
     })
 
   //input  nvdla2csb_wr_complete
-  withClock(io.pclk){
+  withClockAndReset(io.pclk, ~io.prstn){
 
     val rd_trans_low = RegInit(false.B)
 
     val wr_trans_vld = io.psel & io.penable & io.pwrite
-    val rd_trans_vld = io.psel & io.penable & !io.pwrite 
+    val rd_trans_vld = io.psel & io.penable & ~io.pwrite 
 
     when(io.nvdla2csb.valid & rd_trans_low){
       rd_trans_low := false.B
@@ -55,14 +55,14 @@ class NV_NVDLA_apb2csb extends Module {
       rd_trans_low := true.B
     }    
 
-    io.csb2nvdla.valid := wr_trans_vld | rd_trans_vld & !rd_trans_low
+    io.csb2nvdla.valid := wr_trans_vld | rd_trans_vld & ~rd_trans_low
     io.csb2nvdla.bits.addr := io.paddr(17,2)
     io.csb2nvdla.bits.wdat := io.pwdata(31,0)
     io.csb2nvdla.bits.write := io.pwrite
     io.csb2nvdla.bits.nposted := false.B
 
     io.prdata := io.nvdla2csb.bits.data
-    io.pready := !(wr_trans_vld&(!io.csb2nvdla.ready)|rd_trans_vld&(!io.nvdla2csb.valid))
+    io.pready := ~(wr_trans_vld&(~io.csb2nvdla.ready)|rd_trans_vld&(~io.nvdla2csb.valid))
 
 }}
 
@@ -70,4 +70,3 @@ object NV_NVDLA_apb2csbDriver extends App {
   chisel3.Driver.execute(args, () => new NV_NVDLA_apb2csb())
 }
 
-  
