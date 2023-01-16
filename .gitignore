@@ -1,0 +1,24 @@
+# These are generated when I initialize the sbt
+.idea/
+target/
+
+#perl
+src/plugins/
+
+#output dir
+
+test_run_dir/
+
+
+
+*.fir
+*.v
+*.json
+
+
+# These are decided not to be public. 
+*.class
+*.jar
+*.jar
+*.zip
+*.class
