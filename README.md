@@ -22,7 +22,20 @@ lazy val sodla = (project in file("generators/sodla-wrapper"))
   .settings(commonSettings)
 ```
 
-In RocketConfigs.scala under chipyard/generators/chipyard/scala/config, add
+In chipyard/build.sbt, within the definition of chipyard,  add sodla
+
+```
+lazy val chipyard = (project in file("generators/chipyard"))
+  .sourceDependency(testchipip, testchipipLib)
+  .dependsOn(rocketchip, boom, hwacha, sifive_blocks, sifive_cache, utilities, iocell,
+    sha3, // On separate line to allow for cleaner tutorial-setup patches
+    dsptools, `rocket-dsptools`,
+    gemmini, icenet, tracegen, cva6, sodla,nvdla, sodor)
+  .settings(libraryDependencies ++= rocketLibDeps.value)
+  .settings(commonSettings)
+```
+
+In RocketConfigs.scala under chipyard/generators/chipyard/scala/config, add a configuration of soDLA integrated soc
 
 ```
 class SmallSODLARocketConfig extends Config(
