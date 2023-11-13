@@ -8,7 +8,7 @@ Thanks for [HuiX](xuehui.hf@gmail.com), [rgb000000](rgb000000black@gmail.com), [
 
 Smoke Test Setup
 ----------------
-The whole environment is accomplished by chipyard. We suggest to use the old version of chipyard(1.4.0, 1.5.0 have been tested successful), here is a local fork of [example](https://github.com/cora-chipyard/chipyard). vcs and verdi version is 2018. 
+The whole environment is accomplished by chipyard. We suggest to use the old version of chipyard(1.4.0, 1.5.0, 1.6.2(recommended) have been tested successful), here is a local fork of [example](https://github.com/cora-chipyard/chipyard). vcs and verdi version is 2018. 
 soDLA integration of latest chipyard(1.10.0) is not successful. 
 
 Paste soDLA and sodla-wrapper to chipyard/generators.
