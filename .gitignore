@@ -9,6 +9,8 @@ src/plugins/
 
 test_run_dir/
 
+chisel-template/
+
 
 
 *.fir
