@@ -78,11 +78,11 @@ withClock(io.nvdla_core_clk){
     val client_cq_rd_ack = Wire(Vec(conf.WDMA_NUM, Bool()))
     val client_axi_vld = Wire(Vec(conf.WDMA_NUM, Bool()))
     for(i <- 0 to conf.WDMA_NUM-1){
-        client_cq_rd_pvld(i) := MuxLookup(conf.arr_tieoff_axid(i).U, false.B,
+        client_cq_rd_pvld(i) := MuxLookup(conf.awr_tieoff_axid(i).U, false.B,
                                   (0 to conf.WDMA_MAX_NUM-1) map{j => j.U -> io.cq_rd_pd(j).valid})
-        client_cq_rd_ack(i) := MuxLookup(conf.arr_tieoff_axid(i).U, false.B,
+        client_cq_rd_ack(i) := MuxLookup(conf.awr_tieoff_axid(i).U, false.B,
                             (0 to conf.WDMA_MAX_NUM-1) map{j => j.U -> io.cq_rd_pd(j).bits(0)})
-        client_axi_vld(i) := iflop_axi_vld & (iflop_axi_axid === conf.arr_tieoff_axid(i).U)
+        client_axi_vld(i) := iflop_axi_vld & (iflop_axi_axid === conf.awr_tieoff_axid(i).U)
         io.mcif2client_wr_rsp_complete(i) := RegNext(client_cq_rd_pvld(i)&client_cq_rd_ack(i)&client_axi_vld(i), false.B)
     }
 
