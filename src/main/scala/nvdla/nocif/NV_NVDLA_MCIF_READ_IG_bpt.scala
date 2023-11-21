@@ -43,7 +43,7 @@ class NV_NVDLA_MCIF_READ_IG_bpt(implicit conf: nvdlaConfig) extends Module {
 //             └──┴──┘       └──┴──┘
 withClock(io.nvdla_core_clk){
     /////////////////// pipe1 /////////////////////
-    val pipe_p1 = Module(new NV_NVDLA_BC_OS_pipe(conf.NVDLA_DMA_RD_REQ))
+    val pipe_p1 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_DMA_RD_REQ))
     pipe_p1.io.clk  := io.nvdla_core_clk
 
     pipe_p1.io.vi := io.dma2bpt_req_pd.valid
@@ -55,7 +55,7 @@ withClock(io.nvdla_core_clk){
 
     //////////////////// pipe2 ////////////////////
     val in_rdy = Wire(Bool())
-    val pipe_p2 = Module(new NV_NVDLA_BC_OS_pipe(conf.NVDLA_DMA_RD_REQ))
+    val pipe_p2 = Module(new NV_NVDLA_IS_pipe(conf.NVDLA_DMA_RD_REQ))
     pipe_p2.io.clk  := io.nvdla_core_clk
 
     pipe_p2.io.vi := in_vld_p
