@@ -7,7 +7,7 @@ import chisel3.experimental._
 // this is a two clock read, synchronous-write memory, with bypass
 
 @chiselName
-class nv_ram_rwsthp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
+class nv_ram_rwsthp(dep: Int, wid: Int, asic: Boolean = false)(implicit val conf: nvdlaConfig) extends Module{
 
     val io = IO(new Bundle {
         //clock
@@ -31,8 +31,9 @@ class nv_ram_rwsthp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
  withClock(io.clk){
      if(!asic){
         // Create a synchronous-read, synchronous-write memory (like in FPGAs).
-        val mem = Reg(Vec(dep, UInt(wid.W)))
-        val ra_d = Reg(UInt(log2Ceil(dep).W))
+        val mem = if(conf.REGINIT_DATA) RegInit(Vec(Seq.fill(dep)("b0".asUInt(wid.W)))) else Reg(Vec(dep, UInt(wid.W)))
+        val ra_d = if(conf.REGINIT_DATA) RegInit("b0".asUInt(log2Ceil(dep).W)) else Reg(UInt(log2Ceil(dep).W))
+        val dout_r = if(conf.REGINIT_DATA) RegInit("b0".asUInt(wid.W)) else Reg(UInt(wid.W))
         // Create one write port and one read port.
         when (io.we) { 
             mem(io.wa) := io.di
@@ -43,7 +44,6 @@ class nv_ram_rwsthp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
 
         val dout_ram = mem(ra_d)
         val fbypass_dout_ram = Mux(io.byp_sel, io.dbyp, dout_ram)
-        val dout_r = Reg(UInt(wid.W))
         when (io.ore){
             dout_r := fbypass_dout_ram
         }
@@ -73,5 +73,6 @@ class nv_ram_rwsthp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
 
 
 object nv_ram_rwsthpDriver extends App {
+    implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new nv_ram_rwsthp(19, 32))
 }

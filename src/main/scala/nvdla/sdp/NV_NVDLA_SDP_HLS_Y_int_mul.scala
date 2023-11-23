@@ -13,7 +13,7 @@ class sdp_y_int_mul_cfg_if extends Bundle{
 }
 
 @chiselName
-class NV_NVDLA_SDP_HLS_Y_int_mul extends Module {
+class NV_NVDLA_SDP_HLS_Y_int_mul(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
 
@@ -114,7 +114,3 @@ withClock(io.nvdla_core_clk){
     io.mul_data_out.bits := Mux(io.cfg_mul.bypass, io.chn_mul_in.bits, mul_data_final)
 }}
 
-
-object NV_NVDLA_SDP_HLS_Y_int_mulDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_mul)
-}

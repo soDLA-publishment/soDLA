@@ -166,3 +166,9 @@ withClock(io.nvdla_core_clk){
         releasing := mc_releasing
     }
 }}
+
+
+object NV_NVDLA_DMAIF_wrDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new NV_NVDLA_DMAIF_wr(DMABW = 66))
+}

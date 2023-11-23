@@ -115,7 +115,7 @@ withClock(io.nvdla_core_clk){
                               io.pdp_done_mask1, io.pdp_done_mask0, io.cdp_done_mask1, 
                               io.cdp_done_mask0, io.sdp_done_mask1, io.sdp_done_mask0),
     //nvdla_glb_s_intr_set_0
-    "h8".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_set1, io.cacc_done_set0, 
+    "h8".asUInt(32.W)  -> Cat("b0".asUInt(10.W), io.cacc_done_set1, io.reg.offset, 
                               io.cdma_wt_done_set1, io.cdma_wt_done_set0, io.cdma_dat_done_set1, 
                               io.cdma_dat_done_set0, "b0".asUInt(6.W), io.rubik_done_set1, 
                               io.rubik_done_set0, io.bdma_done_set1, io.bdma_done_set0, 

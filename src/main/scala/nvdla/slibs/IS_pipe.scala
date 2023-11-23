@@ -6,7 +6,7 @@ import chisel3.util._
 
 //input skid
 @chiselName
-class NV_NVDLA_IS_pipe(WIDTH:Int) extends Module {
+class NV_NVDLA_IS_pipe(WIDTH:Int)(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock())  
 
@@ -54,9 +54,9 @@ class NV_NVDLA_IS_pipe(WIDTH:Int) extends Module {
     val ro_out = RegInit(true.B)
     val skid_flop_ro = RegInit(true.B)
     val skid_flop_vi = RegInit(false.B)
-    val skid_flop_di = Reg(UInt(WIDTH.W))
+    val skid_flop_di = if(conf.REGINIT_DATA) RegInit("b0".asUInt(WIDTH.W)) else Reg(UInt(WIDTH.W))
     val pipe_skid_vi = RegInit(false.B)
-    val pipe_skid_di = Reg(UInt(WIDTH.W))
+    val pipe_skid_di = if(conf.REGINIT_DATA) RegInit("b0".asUInt(WIDTH.W)) else Reg(UInt(WIDTH.W))
     //Wire
     val skid_vi = Wire(Bool())
     val skid_di = Wire(UInt(WIDTH.W))

@@ -193,7 +193,7 @@ withClock(io.nvdla_core_clk){
     //================
     // bpt2arb: addr
     //================
-    val out_addr = Reg(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+    val out_addr = if(conf.REGINIT_DATA) RegInit("b0".asUInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W)) else Reg(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
     when(bpt2arb_cmd_accept){
         when(is_ftran){
             out_addr := in_cmd_addr +& ((ftran_size +& 1.U) << conf.NVDLA_MEMORY_ATOMIC_LOG2.U)

@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 @chiselName
-class NV_NVDLA_SDP_HLS_X_int_relu extends Module {
+class NV_NVDLA_SDP_HLS_X_int_relu(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
 
@@ -54,7 +54,3 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-
-object NV_NVDLA_SDP_HLS_X_int_reluDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_X_int_relu)
-}

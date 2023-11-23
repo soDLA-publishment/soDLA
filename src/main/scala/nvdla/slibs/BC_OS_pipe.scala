@@ -6,7 +6,7 @@ import chisel3.util._
 
 //bubble collapse
 @chiselName
-class NV_NVDLA_BC_OS_pipe(WIDTH:Int) extends Module {
+class NV_NVDLA_BC_OS_pipe(WIDTH:Int)(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock()) 
 
@@ -55,7 +55,7 @@ withClock(io.clk){
     //## pipe valid-ready-bubble-collapse
     val pipe_ready_bc = Wire(Bool())
     val pipe_valid = RegInit(false.B)
-    val pipe_data = Reg(UInt(WIDTH.W))
+    val pipe_data = if(conf.REGINIT_DATA) RegInit("b0".asUInt(WIDTH.W)) else Reg(UInt(WIDTH.W))
     val pipe_ready = RegInit(true.B)
 
     pipe_ready_bc := pipe_ready || ~pipe_valid
@@ -66,7 +66,7 @@ withClock(io.clk){
     //## pipe skid buffer 
     val skid_valid = RegInit(false.B)
     val skid_ready_flop = RegInit(true.B)
-    val skid_data = Reg(UInt(WIDTH.W))
+    val skid_data = if(conf.REGINIT_DATA) RegInit("b0".asUInt(WIDTH.W)) else Reg(UInt(WIDTH.W))
     val skid_catch = Wire(Bool())
     val skid_ready = Wire(Bool())
     val pipe_skid_valid = Wire(Bool())

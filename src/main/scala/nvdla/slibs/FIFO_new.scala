@@ -117,7 +117,7 @@ withClock(if (useRealClock) io.clk else clock){
         // 
         // SKID for -rd_busy_reg
         //
-        val rd_pd_o = withClock(clk_mgated){Reg(UInt(width.W))} // output data register 
+        val rd_pd_o = if(conf.REGINIT_DATA) withClock(clk_mgated){RegInit("b0".asUInt(width.W))} else withClock(clk_mgated){Reg(UInt(width.W))}// output data register 
         val rd_pvld_next_o = (rd_pvld_p || (rd_pvld_int_o && ~rd_prdy_d_o))
 
         rd_pvld_int_o := rd_pvld_next_o
@@ -129,7 +129,7 @@ withClock(if (useRealClock) io.clk else clock){
         //
         // FINAL OUTPUT
         //
-        val rd_pd_out = Reg(UInt(width.W))  // output data register
+        val rd_pd_out = if(conf.REGINIT_DATA) RegInit("b0".asUInt(width.W)) else Reg(UInt(width.W))  // output data register
         val rd_pvld_int_d = RegInit(false.B)    // so we can bubble-collapse rd_prdy_d
         rd_prdy_d_o := ~((rd_pvld_o && rd_pvld_int_d && ~rd_prdy_d))
         val rd_pvld_next = Mux(~rd_prdy_d_o,  rd_pvld_o, rd_pvld_p)  
@@ -162,7 +162,11 @@ withClock(if (useRealClock) io.clk else clock){
         val wr_busy_int = withClock(clk_mgated){RegInit(false.B)}  // copy for internal use
 
         val wr_pvld_in = if(wr_reg) RegInit(false.B) else io.wr_pvld    // registered wr_pvld
-        val wr_pd_in = if(wr_reg & (ram_type == 2)) Reg(UInt(width.W)) else io.wr_pd   // registered wr_pd
+
+        val wr_pd_in = if(wr_reg & (ram_type == 2) & conf.REGINIT_DATA) RegInit("b0".asUInt(width.W)) 
+                       else if(wr_reg & (ram_type == 2) & !conf.REGINIT_DATA) Reg(UInt(width.W)) 
+                       else io.wr_pd   // registered wr_pd
+
         val wr_busy_in = if(wr_reg) RegInit(false.B) else wr_busy_int    // inputs being held this cycle?
         val wr_busy_next = Wire(Bool())     // fwd: fifo busy next?
 
@@ -357,7 +361,7 @@ withClock(if (useRealClock) io.clk else clock){
                 rd_pvld_p := rd_count =/= 0.U|rd_pushing
                 rd_popping := rd_pvld_p && ~(rd_pvld_int.get && ~io.rd_prdy)
 
-                val rd_pd_reg = withClock(clk_mgated){Reg(UInt(width.W))} // output data register
+                val rd_pd_reg = if(conf.REGINIT_DATA) withClock(clk_mgated){RegInit("b0".asUInt(width.W))} else withClock(clk_mgated){Reg(UInt(width.W))} // output data register
                 val rd_pvld_next = (rd_pvld_p || (rd_pvld_int.get && ~io.rd_prdy))
                 rd_pvld_int.get := rd_pvld_next
                 rd_pd_reg := rd_pd_p
@@ -389,7 +393,7 @@ withClock(if (useRealClock) io.clk else clock){
             if(rd_reg){
                 rd_popping := rd_pvld_p && (rd_pvld_int.get && ~io.rd_prdy)
 
-                val rd_pd_reg = withClock(clk_mgated){Reg(UInt(width.W))} // output data register
+                val rd_pd_reg = if(conf.REGINIT_DATA) withClock(clk_mgated){RegInit("b0".asUInt(width.W))} else withClock(clk_mgated){Reg(UInt(width.W))} // output data register
                 val rd_pvld_next = (rd_pvld_p || (rd_pvld_int.get && ~io.rd_prdy))
                 rd_pvld_int.get := rd_pvld_next
                 rd_pd_reg := rd_pd_p
@@ -510,7 +514,10 @@ withClock(if (useRealClock) io.clk else clock){
 // }
 
 
-
+object NV_NVDLA_MCIF_READ_eg_fifo extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
+  chisel3.Driver.execute(args, () => new NV_NVDLA_fifo_new(depth = 4,width = conf.NVDLA_PRIMARY_MEMIF_WIDTH, ram_type = 0))
+}
 
 
 

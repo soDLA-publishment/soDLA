@@ -5,7 +5,7 @@ import chisel3.experimental._
 import chisel3.util._
 
 @chiselName
-class NV_NVDLA_SDP_HLS_X_int_trt extends Module {
+class NV_NVDLA_SDP_HLS_X_int_trt(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
         //in
@@ -62,7 +62,3 @@ withClock(io.nvdla_core_clk){
     io.trt_data_out.bits := pipe_p1.io.dout
 
 }}
-
-object NV_NVDLA_SDP_HLS_X_int_trtDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_X_int_trt)
-}

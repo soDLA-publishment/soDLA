@@ -6,7 +6,7 @@ import chisel3.util._
 
 // this is a two clock read, synchronous-write memory
 // Don't use it in the asic flow
-class nv_ram_rwsp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
+class nv_ram_rwsp(dep: Int, wid: Int, asic: Boolean = false)(implicit val conf: nvdlaConfig) extends Module{
 
     val io = IO(new Bundle {
         //clock
@@ -28,9 +28,9 @@ class nv_ram_rwsp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
      if(!asic){
         // assign data...
         // Create a synchronous-read, synchronous-write memory (like in FPGAs).
-        val mem = Reg(Vec(dep, UInt(wid.W)))
-        val ra_d = Reg(UInt(log2Ceil(dep).W))
-        val dout_r = Reg(UInt(wid.W))
+        val mem = if(conf.REGINIT_DATA) RegInit(Vec(Seq.fill(dep)("b0".asUInt(wid.W)))) else Reg(Vec(dep, UInt(wid.W)))
+        val ra_d = if(conf.REGINIT_DATA) RegInit("b0".asUInt(log2Ceil(dep).W)) else Reg(UInt(log2Ceil(dep).W))
+        val dout_r = if(conf.REGINIT_DATA) RegInit("b0".asUInt(wid.W)) else Reg(UInt(wid.W))
         // Create one write port and one read port.
         when (io.we) { 
             mem(io.wa) := io.di
@@ -47,9 +47,9 @@ class nv_ram_rwsp(dep: Int, wid: Int, asic: Boolean = false) extends Module{
      else{
         // assign data...
         // Create a synchronous-read, synchronous-write memory (like in FPGAs).
-        val mem = Reg(Vec(dep, UInt(wid.W)))
-        val ra_d = Reg(UInt(log2Ceil(dep).W))
-        val dout_r = Reg(UInt(wid.W))
+        val mem = if(conf.REGINIT_DATA) RegInit(Vec(Seq.fill(dep)("b0".asUInt(wid.W)))) else Reg(Vec(dep, UInt(wid.W)))
+        val ra_d = if(conf.REGINIT_DATA) RegInit("b0".asUInt(log2Ceil(dep).W)) else Reg(UInt(log2Ceil(dep).W))
+        val dout_r = if(conf.REGINIT_DATA) RegInit("b0".asUInt(wid.W)) else Reg(UInt(wid.W))
         // Create one write port and one read port.
         when (io.we) { 
             mem(io.wa) := io.di

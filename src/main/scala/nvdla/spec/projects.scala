@@ -119,6 +119,8 @@ class project_spec extends nv_small_config
     var NV_FPGA_FIFOGEN = true
     var NV_FPGA_UNIT = true
 
+    val REGINIT_DATA = true
+
     if(!useFPGA){
         XSDB_SLV_DIS = false
         FPGA = false

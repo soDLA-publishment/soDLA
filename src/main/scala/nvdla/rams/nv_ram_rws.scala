@@ -6,7 +6,7 @@ import chisel3.experimental._
 
 // this is a synchronous-read, synchronous-write memory
 
-class nv_ram_rws(dep: Int, wid: Int, asic: Boolean = false) extends Module{
+class nv_ram_rws(dep: Int, wid: Int, asic: Boolean = false)(implicit val conf: nvdlaConfig) extends Module{
 
     val io = IO(new Bundle {
         //clock
@@ -24,8 +24,8 @@ class nv_ram_rws(dep: Int, wid: Int, asic: Boolean = false) extends Module{
     })
  withClock(io.clk){   
     if(!asic){
-        val mem = Reg(Vec(dep, UInt(wid.W)))
-        val ra_d = Reg(UInt(log2Ceil(dep).W))
+        val mem = if(conf.REGINIT_DATA) RegInit(Vec(Seq.fill(dep)("b0".asUInt(wid.W)))) else Reg(Vec(dep, UInt(wid.W)))
+        val ra_d = if(conf.REGINIT_DATA) RegInit("b0".asUInt(log2Ceil(dep).W)) else Reg(UInt(log2Ceil(dep).W))
 
         when (io.we) { 
             mem(io.wa) := io.di
@@ -51,6 +51,7 @@ class nv_ram_rws(dep: Int, wid: Int, asic: Boolean = false) extends Module{
 
 
 object nv_ram_rwsDriver extends App {
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new nv_ram_rws(128, 128))
 }
 

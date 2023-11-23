@@ -172,7 +172,7 @@ withClock(io.nvdla_core_clk){
     //================
     // bpt2arb: addr
     //================
-    val out_addr = Reg(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+    val out_addr = if(conf.REGINIT_DATA) RegInit("b0".asUInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W)) else Reg(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
     when(bpt2arb_accept){
         when(is_ftran){
             if(conf.NVDLA_MCIF_BURST_SIZE > 1){

@@ -6,7 +6,7 @@ import chisel3.util._
 
 //bubble collapse
 @chiselName
-class NV_NVDLA_BC_pipe(WIDTH:Int) extends Module {
+class NV_NVDLA_BC_pipe(WIDTH:Int)(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock()) 
 
@@ -48,7 +48,7 @@ class NV_NVDLA_BC_pipe(WIDTH:Int) extends Module {
      
     //## pipe valid-ready-bubble-collapse
     val pipe_valid = RegInit(false.B)
-    val pipe_data = Reg(UInt(WIDTH.W))
+    val pipe_data = if(conf.REGINIT_DATA) RegInit("b0".asUInt(WIDTH.W)) else Reg(UInt(WIDTH.W))
     val pipe_ready = Wire(Bool())
 
     pipe_valid := Mux(io.ro, io.vi, true.B)
@@ -64,7 +64,7 @@ class NV_NVDLA_BC_pipe(WIDTH:Int) extends Module {
 
 
 //bubble collapse for vector
-class NV_NVDLA_BC_VEC_pipe(DIM:Int, WIDTH:Int) extends Module {
+class NV_NVDLA_BC_VEC_pipe(DIM:Int, WIDTH:Int)(implicit val conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {  
         val clk = Input(Clock()) 
 
@@ -107,7 +107,7 @@ class NV_NVDLA_BC_VEC_pipe(DIM:Int, WIDTH:Int) extends Module {
      
     //## pipe valid-ready-bubble-collapse
     val pipe_valid = RegInit(false.B)
-    val pipe_data = Reg(UInt(WIDTH.W))
+    val pipe_data = if(conf.REGINIT_DATA) RegInit("b0".asUInt(WIDTH.W)) else Reg(UInt(WIDTH.W))
     val pipe_ready = Wire(Bool())
 
     pipe_valid := Mux(io.ro, io.vi, true.B)

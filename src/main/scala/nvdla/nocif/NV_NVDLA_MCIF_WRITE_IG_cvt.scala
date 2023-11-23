@@ -191,7 +191,7 @@ withClock(io.nvdla_core_clk){
 
     // IG_cvt===AXI OUT ZERO EXT
     io.mcif2noc_axi_aw.bits.id := opipe_axi_axid
-    io.mcif2noc_axi_aw.bits.addr := opipe_axi_addr
+    io.mcif2noc_axi_aw.bits.addr := Cat("b0".asUInt(32.W), opipe_axi_addr)
     io.mcif2noc_axi_aw.bits.len := opipe_axi_len
     io.mcif2noc_axi_w.bits.last := opipe_axi_last
     io.mcif2noc_axi_w.bits.data := opipe_axi_data

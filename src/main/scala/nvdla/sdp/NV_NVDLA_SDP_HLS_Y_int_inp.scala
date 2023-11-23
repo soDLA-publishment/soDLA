@@ -17,7 +17,7 @@ class sdp_y_int_inp_in extends Bundle{
 }
 
 @chiselName
-class NV_NVDLA_SDP_HLS_Y_int_inp extends Module {
+class NV_NVDLA_SDP_HLS_Y_int_inp(implicit conf: nvdlaConfig) extends Module {
    val io = IO(new Bundle {
         //clk
         val nvdla_core_clk = Input(Clock())
@@ -221,6 +221,3 @@ withClock(io.nvdla_core_clk){
 }}
 
 
-object NV_NVDLA_SDP_HLS_Y_int_inpDriver extends App {
-  chisel3.Driver.execute(args, () => new NV_NVDLA_SDP_HLS_Y_int_inp)
-}

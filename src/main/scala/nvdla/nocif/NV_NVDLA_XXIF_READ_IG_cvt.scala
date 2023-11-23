@@ -109,7 +109,7 @@ withClock(io.nvdla_core_clk){
     val opipe_axi_len  = pipe_p1.io.dout(1, 0)
 
     io.mcif2noc_axi_ar.bits.id    := Cat(0.U(4.W), opipe_axi_axid)
-    io.mcif2noc_axi_ar.bits.addr  := opipe_axi_addr
+    io.mcif2noc_axi_ar.bits.addr  := Cat(0.U(32.W), opipe_axi_addr)
     io.mcif2noc_axi_ar.bits.len   := Cat(0.U(2.W), opipe_axi_len)
 
 }}

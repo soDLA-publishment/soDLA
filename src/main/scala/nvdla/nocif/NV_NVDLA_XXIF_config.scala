@@ -86,7 +86,7 @@ class nocif_axi_wr_data_if(implicit val conf: nvdlaConfig) extends Bundle{
 class nocif_axi_wr_address_if(implicit val conf: nvdlaConfig) extends Bundle{
   val id = Output(UInt(8.W))
   val len = Output(UInt(4.W))
-  val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+  val addr = Output(UInt(64.W))
 }
 
 class nocif_axi_wr_response_if extends Bundle{
@@ -96,7 +96,7 @@ class nocif_axi_wr_response_if extends Bundle{
 class nocif_axi_rd_address_if(implicit val conf: nvdlaConfig) extends Bundle{
   val id = Output(UInt(8.W))
   val len = Output(UInt(4.W))
-  val addr = Output(UInt(conf.NVDLA_MEM_ADDRESS_WIDTH.W))
+  val addr = Output(UInt(64.W))
 }
 
 class nocif_axi_rd_data_if(implicit val conf: nvdlaConfig) extends Bundle{

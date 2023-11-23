@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental._
 import chisel3.util._
 
-class HLS_cdp_ocvt extends Module {
+class HLS_cdp_ocvt(implicit conf: nvdlaConfig) extends Module {
     val io = IO(new Bundle {
         val nvdla_core_clk = Input(Clock())
 
@@ -86,9 +86,9 @@ withClock(io.nvdla_core_clk){
 
 }}
 
-object HLS_cdp_ocvtDriver extends App {
-  chisel3.Driver.execute(args, () => new HLS_cdp_ocvt())
-}
+// object HLS_cdp_ocvtDriver extends App {
+//   chisel3.Driver.execute(args, () => new HLS_cdp_ocvt())
+// }
 
 
 

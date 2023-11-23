@@ -61,7 +61,7 @@ withClock(io.nvdla_core_clk) {
     }
 
 
-    val pipe_out = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_IS_pipe(conf.NVDLA_DMA_RD_RSP)) }
+    val pipe_out = Array.fill(conf.RDMA_NUM){Module(new NV_NVDLA_BC_pipe(conf.NVDLA_DMA_RD_RSP)) }
     for(i<-0 until conf.RDMA_NUM) {
         pipe_out(i).io.clk := io.nvdla_core_clk
 

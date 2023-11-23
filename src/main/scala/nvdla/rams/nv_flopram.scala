@@ -8,7 +8,7 @@ import chisel3.experimental._
 // Flop-Based RAM (with asynchronous wr_reg)
 //
 
-class nv_flopram(dep: Int, wid: Int, wr_reg: Boolean = false) extends Module{
+class nv_flopram(dep: Int, wid: Int, wr_reg: Boolean = false)(implicit conf:nvdlaConfig) extends Module{
   val io = IO(new Bundle{
         val clk = Input(Clock())  
         val clk_mgated = if(wr_reg) Some(Input(Clock())) else None
@@ -52,8 +52,9 @@ class nv_flopram(dep: Int, wid: Int, wr_reg: Boolean = false) extends Module{
 //     }
 // }
 
-val di_d = if(wr_reg) withClock(io.clk){RegEnable(io.di, io.iwe.get)} // -wr_reg
-            else io.di
+val di_d = if(wr_reg & conf.REGINIT_DATA) withClock(io.clk){RegEnable(io.di, 0.U, io.iwe.get)} // -wr_reg
+           else if(wr_reg & !conf.REGINIT_DATA) withClock(io.clk){RegEnable(io.di, io.iwe.get)}
+           else io.di
 
 val internal_clk = Wire(Clock()) 
 if(wr_reg){
@@ -64,7 +65,8 @@ else{
 } 
 
 withClock(internal_clk){
-    val ram_ff = Seq.fill(dep)(Reg(UInt(wid.W))) :+ Wire(UInt(wid.W))
+    val ram_ff = if(conf.REGINIT_DATA) Seq.fill(dep)(RegInit("b0".asUInt(wid.W))) :+ Wire(UInt(wid.W))
+                 else Seq.fill(dep)(Reg(UInt(wid.W))) :+ Wire(UInt(wid.W))
     when(io.we){
         if(dep>1){
             for(i <- 0 to dep-1){
@@ -84,6 +86,6 @@ withClock(internal_clk){
 
 
 object NV_NVDLA_CSC_SG_dat_fifo_flopram_rwsa_4x33 extends App {
-//   implicit val conf: nvdlaConfig = new nvdlaConfig
+  implicit val conf: nvdlaConfig = new nvdlaConfig
   chisel3.Driver.execute(args, () => new nv_flopram(dep = 4, wid = 33, wr_reg = true))
 }
