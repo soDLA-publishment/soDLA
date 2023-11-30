@@ -120,6 +120,8 @@ class project_spec extends nv_small_config
     var NV_FPGA_UNIT = true
 
     val REGINIT_DATA = true
+    val UNIFY_CLOCK = true
+    val CSB2REG_KEEP_BACKPRESSURE = false
 
     if(!useFPGA){
         XSDB_SLV_DIS = false
