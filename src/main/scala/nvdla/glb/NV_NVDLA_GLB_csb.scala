@@ -9,6 +9,7 @@ class NV_NVDLA_GLB_csb(implicit val conf: nvdlaConfig) extends Module {
 
         //clock
         val nvdla_core_clk = Input(Clock())
+        val nvdla_core_rstn = Input(Bool())
  
         //bdma
         val bdma_done_status0 = if(conf.NVDLA_BDMA_ENABLE) Some(Input(Bool())) else None
@@ -88,7 +89,7 @@ class NV_NVDLA_GLB_csb(implicit val conf: nvdlaConfig) extends Module {
 //           └─┐  ┐  ┌───────┬──┐  ┌──┘         
 //             │ ─┤ ─┤       │ ─┤ ─┤         
 //             └──┴──┘       └──┴──┘ 
-withClock(io.nvdla_core_clk){
+withClockAndReset(io.nvdla_core_clk, !io.nvdla_core_rstn){
 
     //////////////////////////////////////////////////////////
     ////  register
@@ -113,7 +114,7 @@ withClock(io.nvdla_core_clk){
     val  cacc_done_set1  = false.B
 
     val req_vld = RegNext(io.csb2glb.req.valid, false.B)
-    val req_pd = RegEnable(io.csb2glb.req.bits, io.csb2glb.req.valid)  
+    val req_pd = if(!conf.REGINIT_DATA) RegEnable(io.csb2glb.req.bits, io.csb2glb.req.valid) else RegEnable(io.csb2glb.req.bits, "b0".asUInt(63.W), io.csb2glb.req.valid) 
     io.csb2glb.req.ready := true.B
 
     // ========
@@ -153,7 +154,12 @@ withClock(io.nvdla_core_clk){
     val rsp_pd = Cat((rsp_rd_vld&false.B)|(rsp_wr_vld&true.B), 
                  (Fill(33, rsp_rd_vld)&rsp_rd_pd)|(Fill(33, rsp_wr_vld)&rsp_wr_pd))
     io.csb2glb.resp.valid := RegNext(rsp_vld, false.B)
-    io.csb2glb.resp.bits := RegEnable(rsp_pd, rsp_vld)
+    if(!conf.REGINIT_DATA){
+        io.csb2glb.resp.bits := RegEnable(rsp_pd, rsp_vld)
+    }
+    else{
+        io.csb2glb.resp.bits := RegEnable(rsp_pd, "b0".asUInt(34.W), rsp_vld) 
+    }
     val reg_offset = Cat(req_addr(9, 0), "b0".asUInt(2.W))
     val reg_wr_en = req_vld & req_write
     val reg_wr_data = io.req_wdat

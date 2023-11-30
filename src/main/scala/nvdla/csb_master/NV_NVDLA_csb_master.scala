@@ -135,9 +135,9 @@ val nvdla2csb_rresp_rdat = nvdla2csb_resp_pd
 val nvdla2csb_rresp_is_valid = nvdla2csb_resp_pvld  && (nvdla2csb_resp_pd(33) === false.B)
 val nvdla2csb_wresp_is_valid = nvdla2csb_resp_pvld && (nvdla2csb_resp_pd(33) === true.B)
 
-io.nvdla2csb.valid := withClock(io.nvdla_falcon_clk){RegNext(nvdla2csb_rresp_is_valid, false.B)}
-io.nvdla2csb.bits.data := withClock(io.nvdla_falcon_clk){RegEnable(nvdla2csb_rresp_rdat, "b0".asUInt(32.W), nvdla2csb_rresp_is_valid)}
-io.nvdla2csb_wr_complete := withClock(io.nvdla_falcon_clk){RegNext(nvdla2csb_wresp_is_valid, false.B)}
+io.nvdla2csb.valid := withClockAndReset(io.nvdla_falcon_clk, !io.nvdla_falcon_rstn){RegNext(nvdla2csb_rresp_is_valid, false.B)}
+io.nvdla2csb.bits.data := withClockAndReset(io.nvdla_falcon_clk, !io.nvdla_falcon_rstn){RegEnable(nvdla2csb_rresp_rdat, "b0".asUInt(32.W), nvdla2csb_rresp_is_valid)}
+io.nvdla2csb_wr_complete := withClockAndReset(io.nvdla_falcon_clk, !io.nvdla_falcon_rstn){RegNext(nvdla2csb_wresp_is_valid, false.B)}
 
 ////////////////////////////////////////////////////////////////////////
 // Distribute request and gather response                             //
@@ -397,8 +397,8 @@ when(dummy_req_pvld_w){
 
 val dummy_resp_rdat = Fill(32, false.B)
 val dummy_resp_error = false.B
-val dummy_rresp_pd = Cat(false.B, dummy_resp_rdat, dummy_resp_rdat(31,0))    /* PKT_nvdla_xx2csb_resp_dla_xx2csb_rd_erpt_ID  */
-val dummy_wresp_pd = Cat(true.B, dummy_resp_rdat, dummy_resp_rdat(31,0))    /* PKT_nvdla_xx2csb_resp_dla_xx2csb_wr_erpt_ID  */
+val dummy_rresp_pd = Cat(false.B, dummy_resp_error, dummy_resp_rdat(31,0))    /* PKT_nvdla_xx2csb_resp_dla_xx2csb_rd_erpt_ID  */
+val dummy_wresp_pd = Cat(true.B, dummy_resp_error, dummy_resp_rdat(31,0))    /* PKT_nvdla_xx2csb_resp_dla_xx2csb_wr_erpt_ID  */
 
 val dummy_resp_valid_w = csb2dummy_req_pvld & (csb2dummy_req_nposted | csb2dummy_req_read)
 val dummy_resp_type_w = ~csb2dummy_req_read & csb2dummy_req_nposted
@@ -410,33 +410,33 @@ val dummy_resp_valid = RegNext(dummy_resp_valid_w, false.B)
 
 //////////////// ass3mble ////////////////
 
-val cvif_resp_valid_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) Fill(34, cvif_resp_pd.get.valid)&cvif_resp_pd.get.bits else Fill(34, false.B)                     
+val cvif_resp_valid_pd = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) cvif_resp_pd.get.bits else Fill(34, false.B)                     
 val cvif_resp_valid_get = if(conf.NVDLA_SECONDARY_MEMIF_ENABLE) cvif_resp_pd.get.valid else false.B
 
-val bdma_resp_valid_pd = if(conf.NVDLA_BDMA_ENABLE) Fill(34, bdma_resp_pd.get.valid)&bdma_resp_pd.get.bits else Fill(34, false.B)
+val bdma_resp_valid_pd = if(conf.NVDLA_BDMA_ENABLE) bdma_resp_pd.get.bits else Fill(34, false.B)
 val bdma_resp_valid_get = if(conf.NVDLA_BDMA_ENABLE) bdma_resp_pd.get.valid else false.B
 
-val pdp_rdma_resp_valid_pd = if(conf.NVDLA_PDP_ENABLE) Fill(34, pdp_rdma_resp_pd.get.valid)&pdp_rdma_resp_pd.get.bits else Fill(34, false.B)
+val pdp_rdma_resp_valid_pd = if(conf.NVDLA_PDP_ENABLE) pdp_rdma_resp_pd.get.bits else Fill(34, false.B)
 val pdp_rdma_resp_valid_get = if(conf.NVDLA_PDP_ENABLE)  pdp_rdma_resp_pd.get.valid else false.B
 
-val pdp_resp_valid_pd = if(conf.NVDLA_PDP_ENABLE) Fill(34, pdp_resp_pd.get.valid)&pdp_resp_pd.get.bits else Fill(34, false.B)
+val pdp_resp_valid_pd = if(conf.NVDLA_PDP_ENABLE) pdp_resp_pd.get.bits else Fill(34, false.B)
 val pdp_resp_valid_get = if(conf.NVDLA_PDP_ENABLE) pdp_resp_pd.get.valid else false.B
 
-val cdp_rdma_resp_valid_pd = if(conf.NVDLA_CDP_ENABLE) Fill(34, cdp_rdma_resp_pd.get.valid)&cdp_rdma_resp_pd.get.bits else Fill(34, false.B)
+val cdp_rdma_resp_valid_pd = if(conf.NVDLA_CDP_ENABLE) cdp_rdma_resp_pd.get.bits else Fill(34, false.B)
 val cdp_rdma_resp_valid_get = if(conf.NVDLA_CDP_ENABLE)  cdp_rdma_resp_pd.get.valid else false.B
 
-val cdp_resp_valid_pd = if(conf.NVDLA_CDP_ENABLE) Fill(34, cdp_resp_pd.get.valid)&cdp_resp_pd.get.bits else Fill(34, false.B)
+val cdp_resp_valid_pd = if(conf.NVDLA_CDP_ENABLE) cdp_resp_pd.get.bits else Fill(34, false.B)
 val cdp_resp_valid_get = if(conf.NVDLA_CDP_ENABLE) cdp_resp_pd.get.valid else false.B
 
-val rbk_resp_valid_pd = if(conf.NVDLA_RUBIK_ENABLE) Fill(34, rbk_resp_pd.get.valid)&rbk_resp_pd.get.bits else Fill(34, false.B)
+val rbk_resp_valid_pd = if(conf.NVDLA_RUBIK_ENABLE) rbk_resp_pd.get.bits else Fill(34, false.B)
 val rbk_resp_valid_get = if(conf.NVDLA_RUBIK_ENABLE) rbk_resp_pd.get.valid else false.B
 
 
 core_resp_pd := (Fill(34, cfgrom_resp_pd.valid) & cfgrom_resp_pd.bits)|
                       (Fill(34, glb_resp_pd.valid) & glb_resp_pd.bits)|
                       (Fill(34, mcif_resp_pd.valid) & mcif_resp_pd.bits)|
-                      cvif_resp_valid_pd|
-                      bdma_resp_valid_pd|
+                      (Fill(34, cvif_resp_valid_get) & cvif_resp_valid_pd)|
+                      (Fill(34, bdma_resp_valid_get) & bdma_resp_valid_pd)|
                       (Fill(34, cdma_resp_pd.valid) & cdma_resp_pd.bits)|
                       (Fill(34, csc_resp_pd.valid) & csc_resp_pd.bits)|
                       (Fill(34, cmac_a_resp_pd.valid) & cmac_a_resp_pd.bits)|
@@ -444,11 +444,11 @@ core_resp_pd := (Fill(34, cfgrom_resp_pd.valid) & cfgrom_resp_pd.bits)|
                       (Fill(34, cacc_resp_pd.valid) & cacc_resp_pd.bits)|
                       (Fill(34, sdp_rdma_resp_pd.valid) & sdp_rdma_resp_pd.bits)|
                       (Fill(34, sdp_resp_pd.valid) & sdp_resp_pd.bits)|
-                      pdp_rdma_resp_valid_pd|
-                      pdp_resp_valid_pd|
-                      cdp_rdma_resp_valid_pd|
-                      cdp_resp_valid_pd|
-                      rbk_resp_valid_pd|
+                      (Fill(34, pdp_rdma_resp_valid_get) & pdp_rdma_resp_valid_pd)|
+                      (Fill(34, pdp_resp_valid_get) & pdp_resp_valid_pd)|
+                      (Fill(34, cdp_rdma_resp_valid_get) & cdp_rdma_resp_valid_pd)|
+                      (Fill(34, cdp_resp_valid_get) & cdp_resp_valid_pd)|
+                      (Fill(34, rbk_resp_valid_get) & rbk_resp_valid_pd)|
                       (Fill(34, dummy_resp_valid) & dummy_resp_pd)
 
 core_resp_pvld := cfgrom_resp_pd.valid |

@@ -314,7 +314,7 @@ withClockAndReset(io.nvdla_core_clk, ~io.nvdla_core_rstn){
     
     val core_intr_d = RegNext(core_intr_w, false.B)
 
-    io.core_intr := withClockAndReset(io.nvdla_falcon_clk, ~io.nvdla_falcon_rstn){ShiftRegister(core_intr_d, 3, false.B)}
+    io.core_intr := withClockAndReset(io.nvdla_falcon_clk, ~io.nvdla_falcon_rstn){ShiftRegister(core_intr_d, 3, false.B, true.B)}
 
 
 

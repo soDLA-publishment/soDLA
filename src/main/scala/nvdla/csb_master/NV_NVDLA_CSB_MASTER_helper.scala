@@ -47,16 +47,15 @@ withClock(io.nvdla_core_clk){
 
     val client_req_pvld = RegInit(false.B)
     val csb2client_req_pvld_out = RegInit(false.B)
-    val csb2client_req_pd_tmp = Reg(UInt(50.W))
+    val csb2client_req_pd_tmp = if(!conf.REGINIT_DATA) Reg(UInt(50.W)) else RegInit("b0".asUInt(50.W))
     val client_resp_valid_out = RegInit(false.B)
-    val client_resp_pd_out = Reg(UInt(34.W))
+    val client_resp_pd_out = if(!conf.REGINIT_DATA) Reg(UInt(34.W)) else RegInit("b0".asUInt(34.W))
 
     io.select_client := ((io.core_byte_addr & io.addr_mask) === address_space.asUInt(32.W))
     val client_req_pvld_w = Mux(io.core_req_pop_valid & io.select_client, true.B,
-                            Mux(~io.csb2client.req.valid, false.B,
-                            client_req_pvld))
+                            false.B)
     val csb2client_req_pvld_w = client_req_pvld
-    val csb2client_req_en = client_req_pvld & (~io.csb2client.req.valid)    
+    val csb2client_req_en = client_req_pvld 
 
     client_req_pvld := client_req_pvld_w
     csb2client_req_pvld_out := csb2client_req_pvld_w

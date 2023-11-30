@@ -13,7 +13,7 @@ class NV_NVDLA_glb(implicit val conf: nvdlaConfig) extends Module {
 
         val nvdla_core_rstn = Input(Bool())
         val nvdla_falcon_rstn = Input(Bool())
-
+ 
         val csb2glb = new csb2dp_if
         val core_intr = Output(Bool())
 
@@ -60,10 +60,21 @@ class NV_NVDLA_glb(implicit val conf: nvdlaConfig) extends Module {
     val u_ic = Module(new NV_NVDLA_GLB_ic)
 
     u_csb.io.nvdla_core_clk := io.nvdla_core_clk
+    u_csb.io.nvdla_core_rstn := io.nvdla_core_rstn
     u_ic.io.nvdla_core_clk := io.nvdla_core_clk
-    u_ic.io.nvdla_falcon_clk := io.nvdla_falcon_clk
+    if (!conf.UNIFY_CLOCK){
+        u_ic.io.nvdla_falcon_clk := io.nvdla_falcon_clk 
+    }
+    else{
+        u_ic.io.nvdla_falcon_clk := io.nvdla_core_clk
+    }
     u_ic.io.nvdla_core_rstn := io.nvdla_core_rstn
-    u_ic.io.nvdla_falcon_rstn := io.nvdla_falcon_rstn 
+    if (!conf.UNIFY_CLOCK){
+        u_ic.io.nvdla_falcon_rstn := io.nvdla_falcon_rstn
+    }
+    else{
+        u_ic.io.nvdla_falcon_rstn := io.nvdla_core_rstn
+    }
 
     if(conf.NVDLA_BDMA_ENABLE){
         u_csb.io.bdma_done_status0.get := u_ic.io.bdma_done_status0.get
