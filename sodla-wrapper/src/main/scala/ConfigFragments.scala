@@ -1,11 +1,12 @@
-package np.devices.sodla
+// See LICENSE for license details.
+package np.blocks.dla
 
 import chisel3._
 
-import freechips.rocketchip.config.{Field, Parameters, Config}
+import org.chipsalliance.cde.config.{Field, Parameters, Config}
 
 /**
- * Config fragment to add a SODLA to the SoC.
+ * Config fragment to add a NVDLA to the SoC.
  * Supports "small" and "large" configs only.
  * Can enable synth. RAMs instead of default FPGA RAMs.
  */
