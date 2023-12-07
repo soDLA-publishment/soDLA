@@ -99,7 +99,7 @@ val dataout_w_init = sub_h_cmp_w -& 1.U
 val conv_x_stride_w = io.reg2dp_conv_x_stride_ext +& 1.U
 val pixel_x_stride_w = MuxLookup(io.reg2dp_datain_channel_ext(1,0), conv_x_stride_w, 
                     Array(3.U -> Cat(conv_x_stride_w, "b0".asUInt(2.W)), //*4, after pre_extension
-                          2.U -> (Cat(conv_x_stride_w, "b0".asUInt(1.W)) +& conv_x_stride_w)))//*3
+                          2.U -> (Cat(conv_x_stride_w, "b0".asUInt(1.W)) + conv_x_stride_w)))//*3
 
 val pixel_x_init_w = MuxLookup(io.reg2dp_y_extension, Mux(io.reg2dp_weight_channel_ext >= conf.CSC_ATOMC_HEX.U, Fill(conf.LOG2_ATOMC, true.B), io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0)),
                           Array(2.U -> (Cat(pixel_x_stride_w, "b0".asUInt(1.W)) + pixel_x_stride_w + io.reg2dp_weight_channel_ext(5, 0)), 
@@ -127,8 +127,8 @@ val entries_batch = RegInit(Fill(conf.CSC_ENTRIES_NUM_WIDTH, false.B))
 val dataout_width_cmp = RegInit(Fill(13, false.B))
 val pra_truncate = RegInit(Fill(8, false.B))
 val rls_entries = RegInit(Fill(conf.CSC_ENTRIES_NUM_WIDTH, false.B))
-val h_bias_0_stride = RegInit(Fill(12, false.B))
-val h_bias_1_stride = RegInit(Fill(12, false.B))
+val h_bias_0_stride = RegInit(Fill(14, false.B))
+val h_bias_1_stride = RegInit(Fill(14, false.B))
 val slice_left = RegInit(Fill(14, false.B))
 
 //reg2dp_entries means entry per slice
@@ -136,9 +136,9 @@ val entries_single_w = (io.reg2dp_entries +& 1.U)(conf.CSC_ENTRIES_NUM_WIDTH-1, 
 val entries_batch_w = (entries_single_w * data_batch_w)(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
 val entries_w = entries_single_w
 val h_offset_slice_w = data_batch_w * y_dilate_w  
-val h_bias_0_stride_w = (entries * data_batch)(11, 0)
-val h_bias_1_stride_w = (entries * h_offset_slice)(11, 0)
-val rls_slices_w = io.reg2dp_rls_slices + 1.U
+val h_bias_0_stride_w = (entries * data_batch)(13, 0)
+val h_bias_1_stride_w = (entries * h_offset_slice)(13, 0)
+val rls_slices_w = io.reg2dp_rls_slices +& 1.U
 val slice_left_w = Mux(io.reg2dp_skip_data_rls, io.reg2dp_datain_height_ext +& 1.U, io.reg2dp_datain_height_ext -& io.reg2dp_rls_slices)
 val slices_oprand = Mux(layer_st_d1, rls_slices, slice_left)
 val slice_entries_w = (entries_batch * slices_oprand)(conf.CSC_ENTRIES_NUM_WIDTH-1, 0)
@@ -214,9 +214,9 @@ when(layer_st){
     pixel_x_stride_odd := pixel_x_stride_w(0)
     data_batch := data_batch_w
     batch_cmp := batch_cmp_w
-    pixel_x_init := pixel_x_init_w
+    pixel_x_init := pixel_x_init_w(5,0)
     pixel_x_init_offset := pixel_x_init_offset_w
-    pixel_x_add := pixel_x_add_w
+    pixel_x_add := pixel_x_add_w(6,0)
     pixel_x_byte_stride := pixel_x_stride_w
     pixel_ch_stride := pixel_ch_stride_w
     x_dilate := x_dilate_w
@@ -388,7 +388,7 @@ is_batch_end := batch_cnt === batch_cmp
 val sub_h_cnt = RegInit("b0".asUInt(2.W))
 val is_sub_h_end = Wire(Bool())
 
-val sub_h_cnt_inc = sub_h_cnt + 1.U
+val sub_h_cnt_inc = sub_h_cnt +& 1.U
 is_sub_h_end := (sub_h_cnt_inc === sub_h_cmp_g0)
 val sub_h_cnt_reg_en = layer_st | (((io.reg2dp_y_extension).orR) & dat_exec_valid)
 when(sub_h_cnt_reg_en){
@@ -407,7 +407,7 @@ val stripe_cnt_reg_en = layer_st | (dat_exec_valid & is_batch_end)
 
 when(stripe_cnt_reg_en){
     stripe_cnt := Mux(layer_st, "b0".asUInt(7.W),
-                  Mux(is_stripe_equal & ~is_sub_h_end, "b0".asUInt(2.W),
+                  Mux(is_stripe_equal & ~is_sub_h_end, stripe_cnt,
                   Mux(is_stripe_end, "b0".asUInt(7.W),
                   stripe_cnt_inc)))
 }
@@ -497,10 +497,10 @@ val datain_w_cnt_reg_en = layer_st | (dat_exec_valid & is_batch_end & is_sub_h_e
 val datain_w_ori_reg_en = layer_st | (dat_exec_valid & is_stripe_end & dl_channel_end & ~is_img_d1(1))
 
 //notice:after sub_h T, pixel_x_add elements in W direction is used by CMAC
-val pixel_x_cnt_add = Mux(is_sub_h_end, pixel_x_add, "b0".asUInt(6.W))
+val pixel_x_cnt_add = Mux(is_sub_h_end, pixel_x_add, "b0".asUInt(7.W))
 //channel count.
 val total_channel_op = Mux(io.reg2dp_weight_channel_ext(conf.LOG2_ATOMC-1, 0) === 0.U, io.reg2dp_weight_channel_ext(12, conf.LOG2_ATOMC),
-                        io.reg2dp_weight_channel_ext(12, conf.LOG2_ATOMC)+1.U)
+                        io.reg2dp_weight_channel_ext(12, conf.LOG2_ATOMC)+&1.U)
 channel_op_cnt := Mux(dl_channel_end&is_stripe_end, 2.U,
                   Mux(dl_block_end&is_stripe_end, channel_op_cnt + 1.U,
                   channel_op_cnt))
@@ -524,10 +524,14 @@ val pixel_force_clr = is_img_d1(0) & is_sub_h_end & (pixel_force_fetch | pixel_f
 
 when(datain_w_cnt_reg_en){
     datain_w_cnt := datain_w_cnt_w
-    pixel_w_cnt := pixel_w_cnt_w
 }
 when(datain_w_ori_reg_en){
     datain_w_ori := datain_w_cnt_w
+}
+when(pixel_w_cnt_reg_en){
+    pixel_w_cnt := pixel_w_cnt_w
+}
+when(pixel_w_ori_reg_en){
     pixel_w_ori := pixel_w_cnt_w
 }
 when(pixel_ch_ori_reg_en){
@@ -655,7 +659,7 @@ else if(conf.NVDLA_CC_ATOMC_DIV_ATOMK==4){
 
 w_bias_w := w_bias_int8(13, 0)
 val w_bias_reg_en = dat_exec_valid
-val dat_req_base_d1 = dat_entry_st
+val dat_req_base_d1 = dat_entry_st(conf.CBUF_ADDR_WIDTH-1, 0)
 
 when(c_bias_reg_en){
     c_bias := c_bias_w
@@ -682,8 +686,8 @@ when(w_bias_reg_en){
 val dat_req_sub_h_addr = RegInit(VecInit(Seq.fill(4)(Fill(conf.CBUF_ADDR_WIDTH, true.B))))
 val sc2buf_dat_rd_en_out = RegInit(false.B)
 val sc2buf_dat_rd_addr_out = RegInit(Fill(conf.CBUF_ADDR_WIDTH, true.B))
-val dat_req_pipe_pvld = RegInit(false.B)
-val dat_req_exec_pvld = RegInit(false.B)
+val dat_req_pipe_pvld = Wire(Bool())
+val dat_req_exec_pvld = Wire(Bool())
 val dat_req_pipe_sub_w = RegInit("b0".asUInt(2.W))
 val dat_req_pipe_sub_h = RegInit("b0".asUInt(2.W)) 
 val dat_req_pipe_sub_c = RegInit(false.B)
@@ -695,12 +699,12 @@ val dat_req_pipe_sub_w_st = RegInit(false.B)
 val dat_req_pipe_rls = RegInit(false.B)
 val dat_req_pipe_flag = RegInit("b0".asUInt(9.W))
 
-val h_bias_d1 = h_bias_0_d1 + h_bias_1_d1 + h_bias_2_d1 + h_bias_3_d1
-val dat_req_addr_sum = dat_req_base_d1 + c_bias_d1 + h_bias_d1 + w_bias_d1
+val h_bias_d1 = (h_bias_0_d1 + h_bias_1_d1 + h_bias_2_d1 + h_bias_3_d1)(conf.CBUF_ADDR_WIDTH-1,0)
+val dat_req_addr_sum = (dat_req_base_d1 +& c_bias_d1 +& h_bias_d1 +& w_bias_d1)(conf.CBUF_ADDR_WIDTH,0)
 val is_dat_req_addr_wrap = dat_req_addr_sum >= Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, false.B))
-val dat_req_addr_wrap = dat_req_addr_sum - Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, false.B))
+val dat_req_addr_wrap = (dat_req_addr_sum -& Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, false.B)))(conf.CBUF_ADDR_WIDTH-1,0)
 val dat_req_addr_w = Mux(layer_st | dat_req_dummy_d1, Fill(conf.CBUF_ADDR_WIDTH, true.B), 
-                     Mux(is_dat_req_addr_wrap, dat_req_addr_wrap, dat_req_addr_sum))    //get the address sends to cbuf
+                     Mux(is_dat_req_addr_wrap, dat_req_addr_wrap, dat_req_addr_sum))(conf.CBUF_ADDR_WIDTH-1,0)    //get the address sends to cbuf
 val dat_req_addr_minus1 = dat_req_addr_w - 1.U
 val is_dat_req_addr_minus1_wrap = (dat_req_addr_minus1 >= Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, false.B)))
 val dat_req_addr_minus1_wrap = Cat(data_bank, Fill(conf.LOG2_CBUF_BANK_DEPTH, true.B))
@@ -727,8 +731,8 @@ when(layer_st|sc2buf_dat_rd_en_w){sc2buf_dat_rd_addr_out := sc2buf_dat_rd_addr_w
 io.sc2buf_dat_rd.addr.valid := sc2buf_dat_rd_en_out
 io.sc2buf_dat_rd.addr.bits := sc2buf_dat_rd_addr_out
 
-dat_req_pipe_pvld := dat_pipe_valid_d1
-dat_req_pipe_flag := dat_exec_valid_d1
+dat_req_pipe_pvld := RegNext(dat_pipe_valid_d1, false.B)
+dat_req_exec_pvld := RegNext(dat_exec_valid_d1, false.B)
 when(dat_exec_valid_d1){ 
     dat_req_pipe_sub_w := dat_req_sub_w_d1
     dat_req_pipe_sub_h := dat_req_sub_h_d1
@@ -1116,6 +1120,22 @@ val dat_rsp_p0_vld_w = dat_rsp_pvld
 ///// latency register to balance with PRA cell          /////
 
 //////////////////////////////////////////////////////////////
+// val dat_out_pvld_l = Wire(Bool()) +: 
+//                     Seq.fill(5)(RegInit(false.B))
+// val dat_out_flag_l = Wire(UInt(9.W)) +: 
+//                       Seq.fill(5)(RegInit("b0".asUInt(9.W))) 
+
+// dat_out_pvld_l(0) := dat_rsp_pvld
+// dat_out_flag_l(0) := dat_rsp_flag
+
+// for(t <- 0 to 5-1){
+//     dat_out_pvld_l(t+1) := dat_out_pvld_l(t)
+//     when(dat_out_pvld_l(t)){
+//         dat_out_flag_l(t+1) := dat_out_flag_l(t)
+//     }
+// } 
+
+
 val dat_out_pvld = RegInit(false.B)
 val dat_out_flag = RegInit("b0".asUInt(9.W))
 val dat_out_bypass_mask = RegInit(VecInit(Seq.fill(conf.CSC_ATOMC)(false.B)))
