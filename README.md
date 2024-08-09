@@ -1,9 +1,9 @@
 soDLA 
 ================
 
-Sorry for the long waiting, redpanda3 has recently busy working on some other projects.
-
 Thanks for [HuiX](xuehui.hf@gmail.com), [rgb000000](rgb000000black@gmail.com), [CristinaZN], [Leway](https://github.com/colin4124) for contribution, and also, chisel creators for help.
+
+In addition to the original chisel-version of NVDLA, we have several additions, testing a neural network in chipyard, formal verifications, more docs to facilitate the specification process, and example customized accelerators under construction.
 
 
 Smoke Test Setup
