@@ -71,7 +71,7 @@ u_mcif_read's main purpose is to send read request from nvdla to memory, and get
 u_mcif_write has three actions, send the address, send the data, and get back the write response from the memory side. Sending the address and data are ingress. 
 
 
-As mentioned earlier, u_mcif_read and u_mcif_write would classify those request into two catagories, ingress and exgress, ingress requires arbitrate, and exgress requires broadcast. Those determine the actions of u_mcif_read and u_mcif_write. To take an example of u_mcif_read, it is divided into ingress module and exgress module. In the ingress module, there are three parts, bpt, arb, and cvt. bpt can be viewed as a pre-stage, arb is the arbitration stage, and cvt is the converting stage after arbitration. 
+As mentioned earlier, u_mcif_read and u_mcif_write would classify those request into two catagories, ingress and exgress, ingress requires arbitrate, and exgress requires broadcast. Arbitrating or broadcasting determine the actions of u_mcif_read and u_mcif_write. To take an example of u_mcif_read, it is divided into ingress module and exgress module. In the ingress module, there are three parts, bpt, arb, and cvt. bpt can be viewed as a pre-stage, arb is the arbitration stage, and cvt is the converting stage after arbitration. 
 
 
 In the bpt type of module, you can see lots of calculations, even a performace counter to calculate the latency count. However, those are only calculated within one-cycle, all of it is to generate an address or a sequence of data. The first two pipes are only for the timing-closure. 
@@ -94,6 +94,24 @@ In the arb type of module, it is an arbiter with priority(or weight), priority i
 In the cvt type of module, in addition to reformat the data, another cvt's work is to get the outstanding transaction numbers. The outstanding in Puvan Kumar in Quora's answer is "In simple words: The number of requested trasactions for which master didn't receive response from slave are called outstanding Transactions.". We have the same definition here, means a rdma is requesting a data, but wdma hasn't received yet. cvt module is the closed to NOC, so cvt would collect the outstanding info. 
 
 Next subchapter will go over more details in rdma and wdma modules.
+
+## READ_IG_bpt
+
+A read_ig_bpt's function is to collect the address request from rdma(the size of it is NVDLA_DMA_RD_REQ = NVDLA_MEM_ADDRESS_WIDTH + NVDLA_DMA_RD_SIZE, NVDLA_MEM_ADDRESS_WIDTH is 32 in small configuration, NVDLA_DMA_RD_SIZE is 15), and reformat it into  
+
+```
+//ftran(1 bit), ltran(1 bit), out_odd(1 bit), out_swizzle(1 bit), out_size(3 bit), bpt2arb(address_width), axid(4 bit)
+```
+
+There's a parameter NVDLA_MCIF_BURST_SIZE is needed during the reformatting step, although NVDLA_PRIMARY_MEMIF_MAX_BURST_LENGTH or PRIMARY_MEMIF_MAX_BURST_LENGTH is defaulted to be 1, means no burst operation between mcif to noc.
+
+
+## READ_eg
+
+read_eg's function is to receive the corresponding data to 
+
+
+
 
 
 
