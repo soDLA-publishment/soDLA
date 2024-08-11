@@ -1,0 +1,69 @@
+# CMAC 
+
+CMAC consists of active, mac, rt_in and rt_out. They are mostly pipe stages as below.
+
+```
+rt_in => active => mac => rt_out
+
+```
+
+rt means retiming, it is a technique when a large combinational logic cannot finish within a clock or a data transfer cannot arrive within a clock. 
+
+In the large combinational logic situation, happened in cmac_core_mac, for example, a mac is a large combinational logic, and it's impossible to let it finish within one clock, a feasible way is to insert another retiming logic. The retiming logic has a valid and mask signal, valid is to show whether the data is valid, mask is to mask the data output, valid and mask will delay some clocks to the output. So the data will be valid after several clocks appears to the output.
+
+In the data transfer situation, happened in cmac_core_rt_in and cmac_core_rt_out, if the data path in physical design is long, rt will remedy the length of the data transfer, and it cannot be replaced by FIFO method, since FIFO in physical design is only a sram, the path delay still exists.
+
+## CMAC Hierarchy View
+
+
+
+## CMAC Configurations
+
+
+```
+class cmacConfiguration extends project_spec
+{
+    val CMAC_BPE = NVDLA_BPE //bits per element
+    val CMAC_ATOMC = NVDLA_MAC_ATOMIC_C_SIZE 
+    val CMAC_ATOMK = NVDLA_MAC_ATOMIC_K_SIZE
+    val CMAC_ATOMK_HALF  = CMAC_ATOMK/2
+    val CMAC_INPUT_NUM = CMAC_ATOMC  //for one MAC_CELL
+    val CMAC_SLCG_NUM = 3+CMAC_ATOMK_HALF
+    val CMAC_RESULT_WIDTH = NVDLA_MAC_RESULT_WIDTH    //16b+log2(atomC)
+    val CMAC_IN_RT_LATENCY = 2   //both for data&pd
+    val CMAC_OUT_RT_LATENCY = 2   //both for data&pd
+    val CMAC_OUT_RETIMING = 3   //only data
+    val CMAC_ACTV_LATENCY = 2   //only data
+    val CMAC_DATA_LATENCY = (CMAC_IN_RT_LATENCY+CMAC_OUT_RT_LATENCY+CMAC_OUT_RETIMING+CMAC_ACTV_LATENCY)
+    val MAC_PD_LATENCY = (CMAC_OUT_RETIMING+CMAC_ACTV_LATENCY-3)     //pd must be 3T earlier than data
+    val RT_CMAC_A2CACC_LATENCY = 2
+    val RT_CMAC_B2CACC_LATENCY = 3
+
+    val PKT_nvdla_stripe_info_stripe_st_FIELD = 5
+    val PKT_nvdla_stripe_info_stripe_end_FIELD = 6
+    val PKT_nvdla_stripe_info_layer_end_FIELD = 8
+
+}
+```
+
+This is a double for-loop(nvdla is a 2-d architecture, the convolution is planar). Within the csc, it will count the stripe, then layer. As mentioned in the CMAC physical view, cmac is splitted into two identical groups for better timing in physical design, they are cmac_a and cmac_b. To take an example of cmac_a, cmac_a has half of the CMAC_ATOMK mac lanes, each mac is to calculate the mac value within a kernel. In C'WHC version(open-source version), each kernel is individual. Below is from the nvdla unit description from nvdla docs. 
+
+![image info](./imgs/fig42.PNG)
+
+Each lane means a kernel, and they share the same piece of data. 
+
+PKT_nvdla_stripe_info_stripe_st* and PKT_nvdla_stripe_info_layer* is the status of the double for-loop shared with cacc. Layer is the outer loop, and stipe is the inner loop. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

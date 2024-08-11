@@ -136,7 +136,8 @@ In the tieoff_*,
 
 each of the processor is given a special number, or axi-id, since cpu/memory needs to know the sender, and axi-id is used during the comparison in the exgress stage(a detailed behavior will mentioned later).
 
-###
+### 
+
 
 
 
