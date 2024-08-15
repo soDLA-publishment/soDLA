@@ -76,7 +76,7 @@ A Convolution is 3-layer of mac operations. The traditional format is C'WHC, C' 
 
 Each data from WHC cube is consists of sum of Channel[Sum of Stripe[multiply and accumulate]]
 
-MAC_ATOMIC_C_SIZE is the amount of data participated in the atomic operations within a stripe in the input data cube. The ATOMIC_C has little related to the channel c in the input data cube(If ATOMIC_C is related to the channel c, then in the CACC stage, there shouldn't be an indicator signal channel_end). CMAC stage from microarchitecture perspective is K lanes of mac(or fma, multiply-and-accumlate), with a function of caching weight from last stages to save energy. MAC size of each lane is the MAC_ATOMIC_C_SIZE, so we can say that the C is reduced in the operation. 
+MAC_ATOMIC_C_SIZE is the amount of data participated in the atomic operations within a stripe in the input data cube. The ATOMIC_C has little related to the channel c in the input data cube(If ATOMIC_C is related to the channel c, then in the CACC stage, there shouldn't be an indicator signal channel_end). From my perspective, ATOMIC_C can be viewed as an atomic operation within a stripe operation, but not necessary channel c, since in some configurations, channel_c and atomic_c are not the same number. CMAC stage from microarchitecture perspective is K lanes of mac(or fma, multiply-and-accumlate), with a function of caching weight from last stages to save energy. MAC size of each lane is the MAC_ATOMIC_C_SIZE, so we can say that the C is reduced in the operation. 
 
 MAC_ATOMIC_K_SIZE is the amount of weight kernels or kernel group size, each of the kernel is individual. In the data format of C'WHC, C' means the kernel size. 
 

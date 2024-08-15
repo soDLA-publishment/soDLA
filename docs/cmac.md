@@ -26,6 +26,10 @@ From floorplan perspective, cmac looks like below(I would name it floorplan view
 cmac is actually a pipeline structure, the data producer is csc, and the consumer is cacc. 
 rt_a and rt_b are the retiming blocks to relief the path delays. 
 
+## CMAC Register File
+
+Register in CMAC is in ping-pong style. 
+
 
 ## CMAC Configurations
 
@@ -90,6 +94,15 @@ We can say, a information of ATOMIC_C is reduced.
 ## MAC_RESULT_WIDTH Calculation
 
 In the integer mac operations, the result of a mac is 2*bpe + log2(c), the result would be truncate further in cacc stage. In the floating point operations, the result remains unchanged. 
+
+
+## From SystemC Point of View
+
+
+In cmac/gen/cmac_a_reg_model.cpp, describe the register behaviour. 
+
+
+
 
 
 
