@@ -108,7 +108,12 @@ There's a parameter NVDLA_MCIF_BURST_SIZE is needed during the reformatting step
 
 ## READ_eg
 
-read_eg's function is to receive the corresponding data to 
+read_eg's function is to receive the corresponding data from axi4 to rdma. It is a broadcast-and-compare mechanism. From axi4_rd_data channel, which is the producer, several parameter is received, data with MEMIF_WIDTH, last(means whether the data is the last piece), axid-id. The rdma, which is the consumer, read_eg transform the payload into data with MEMIF_WIDTH plus the mask bit(need to specify which piece of data is currently writing). 
+
+eg2ig_axi_vld is to send read_ig's performance counter to collect the outstanding situations, for example, read_ig is sending a request, but read_eg has not send the data. eg2ig_axi_vld is calculated based on the noc2mcif_axi read eg channel is valid and ready. 
+
+
+
 
 
 
