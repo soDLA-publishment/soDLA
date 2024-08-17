@@ -1,0 +1,4 @@
+target
+*.vcp
+*.swp
+*.preprocessed.v
