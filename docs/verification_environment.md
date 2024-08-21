@@ -8,3 +8,15 @@ riscv-toolchain as a compiler, will compile the testing program. And soDLA rtl i
 
 In the test/test_case/include/ape_small_single.h, provides the register address(or the KMD information). Application program is the ape_single.c 
 
+Take an example of dc_1x1x8_1x1x8x1_int8, the weight file is ape_get_ali3_data.c, totally 8 kernels in the weight, they are the first two elements
+
+```
+0x75946100,0xaa8efd3f
+```
+
+Read in the last 8 weight kernel as:
+
+![image info](./imgs/verif1.png)
+
+The data is the 
+
