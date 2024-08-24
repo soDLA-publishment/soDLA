@@ -20,7 +20,7 @@ case class SODLAParams(
 
 class SODLA(params: SODLAParams)(implicit p: Parameters) extends LazyModule {
   // val blackboxName = "nvdla_" + params.config
-  val hasSecondAXI = params.config == "small"
+  val hasSecondAXI = params.config == "large"
   val dataWidthAXI = if (params.config == "large") 256 else 64
 
   // DTS
