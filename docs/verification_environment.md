@@ -16,7 +16,13 @@ Take an example of dc_1x1x8_1x1x8x1_int8, the weight file is ape_get_ali3_data.c
 
 Read in the last 8 weight kernel as:
 
-![image info](./imgs/verif1.png)
+![image info](./imgs/verif2.PNG)
 
-The data is the 
+The corrensponding data is:
+
+```
+0x0000006f,0x00100000
+```
+
+The data is one-dimentional, 
 

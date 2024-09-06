@@ -17,7 +17,7 @@ In the data transfer situation, happened in cmac_core_rt_in and cmac_core_rt_out
 
 ![image info](./imgs/cmac_hierarchy.png)
 
-rt_in, active, mac, rt_out forms CMAC_core. Reg has two situations: 1. In small or large configuration cases, the bpe is defaulted to be int8, register only do the op_en function, which is to shut down the CMAC_core. 2. In full configuration cases, in addition to op_en function, register can switch between fp16 or int8(not included in all soDLA, soDLA can only support small or large type).
+rt_in, active, mac, rt_out forms CMAC_core. Configuration register has two situations: 1. In small or large configuration cases, the bpe is defaulted to be int8, register only do the op_en function, which is to shut down the CMAC_core. 2. In full configuration cases, in addition to op_en function, register can switch between fp16 or int8(not included in all soDLA, soDLA can only support small or large type).
 
 From floorplan perspective, cmac looks like below(I would name it floorplan view, but it is not actually a floorplan):
 
@@ -60,7 +60,15 @@ class cmacConfiguration extends project_spec
 }
 ```
 
-This is a double for-loop(nvdla is a 2-d architecture, the convolution is planar). Within the csc, it will count the stripe, then layer. As mentioned in the CMAC Hierarchy view, cmac is splitted into two identical groups for better timing in physical design, they are cmac_a and cmac_b. To take an example of cmac_a, cmac_a has half of the CMAC_ATOMK mac lanes, each mac is to calculate the mac value within a kernel. In C'WHC version(open-source version), each kernel is individual. Below is from the nvdla unit description from nvdla docs. 
+This is a double for-loop(nvdla is a 2-d architecture, the convolution is planar). Within the csc, it will count the stripe, then layer. As mentioned in the CMAC Hierarchy view, cmac is splitted into two identical groups for better timing in physical design, they are cmac_a and cmac_b. To take an example of cmac_a, cmac_a has half of the CMAC_ATOMK mac lanes, each mac is to calculate the mac value within a kernel. 
+
+In C'WHC version(open-source version), each k-lane is individual, representing a planar(W-H) piece of data in the channel of the kernel. 
+
+![image info](./imgs/weight0.PNG)
+
+if the k-lane is from the same kenel, different channel, then the result would be summed, thus the channel is reduced.  
+
+Below is from the nvdla unit description from nvdla docs. 
 
 ![image info](./imgs/fig42.PNG)
 
@@ -68,7 +76,7 @@ Each lane means a kernel, and they share the same piece of data.
 
 PKT_nvdla_stripe_info_stripe_st* and PKT_nvdla_stripe_info_layer* is the status of the double for-loop shared with cacc. Layer is the outer loop, and stipe is the inner loop. 
 
-## Each Lane is a Weight Kernel
+## Each Lane is a channel from a Weight Kernel
 
 As mentioned in the last sub-chapter, each lane means a kernel, and they share the same piece of data. Kernel, what is different from data cube is that weight during a convolution doesn't change. In order to cache the weight, a shadow stage is inserted in the cmac_active as below:
 
