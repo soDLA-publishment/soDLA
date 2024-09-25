@@ -17,3 +17,16 @@ From CACC, cmac_a and cmac_b each has k/2 kernels of atomic operation results.
 
 
 
+They are delivered to assembly controller first. Assembly controller has a credit-based interface with CSC module. 
+
+
+
+
+
+
+
+
+
+
+
+
