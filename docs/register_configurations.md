@@ -3,7 +3,7 @@
 The register is configurated by csb bus, from software side. reference is the nvdla.org/hw/v1/hwarch.html.
 As a practice, the example would be used from the test case of dc_1x1x8_1x1x8x1_int_0
 
-### SDP Group 
+### SDP RDMA Group 
 
 #### S_STATUS
 
@@ -27,13 +27,13 @@ Set it to 1 to kick off operation for current register group.
 
 address: 0xa00c
 
-Input cube’s width, in the example, this is 1, so set it to zero.
+Input cube’s width, in the example, width after convolution is still 1, so set it to zero.
 
 #### D_DATA_CUBE_HEIGHT
 
 address: 0xa010
 
-Input cube’s height, in the example, this is 1, so set it to zero.
+Input cube’s height, in the example, height after convolution is still 1, so set it to zero.
 
 ### D_DATA_CUBE_CHANNEL
 
@@ -51,7 +51,7 @@ Lower 32bits of input data address, in the example, the input address is 0x80050
 
 address: 0xa01c
 
-Higher 32bits of input data address when axi araddr is 64bits, is zero.
+Higher 32bits of input data address when axi araddr is 64bits, is zero. 
 
 ### D_SRC_LINE_STRIDE
 
@@ -59,49 +59,49 @@ address: 0xa020
 
 Line stride of input cube
 
-D_SRC_SURFACE_STRIDE
+### D_SRC_SURFACE_STRIDE
 
 0xa024
 
 Surface stride of input cube
 
-D_BRDMA_CFG
+### D_BRDMA_CFG
 
 0xa028
 
-Configuration of BRDMA: enable/disable, data size, Ram type, etc.
+Configuration of BRDMA: enable/disable, data size, Ram type, etc, default to be zero
 
-D_BS_BASE_ADDR_LOW
+### D_BS_BASE_ADDR_LOW
 
 0xa02c
 
 Lower 32bits address of the bias data cube
 
-D_BS_BASE_ADDR_HIGH
+### D_BS_BASE_ADDR_HIGH
 
 0xa030
 
 Higher 32bits address of the bias data cube when axi araddr is 64bits
 
-D_BS_LINE_STRIDE
+### D_BS_LINE_STRIDE
 
 0xa034
 
-Line stride of bias data cube
+Line stride of bias data cube.
 
-D_BS_SURFACE_STRIDE
+### D_BS_SURFACE_STRIDE
 
 0xa038
 
-Surface stride of bias data cube
+Surface stride of bias data cube.
 
-D_BS_BATCH_STRIDE
+### D_BS_BATCH_STRIDE
 
 0xa03c
 
 Stride of bias data cube in batch mode
 
-D_NRDMA_CFG
+### D_NRDMA_CFG
 
 0xa040
 
