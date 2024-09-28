@@ -1,6 +1,6 @@
 ## Register Configurations
 
-The register is configurated by csb bus, from software side. reference is the nvdla.org/hw/v1/hwarch.html.
+The register is configurated by csb bus, from software side. reference is the nvdla.org/hw/v1/hwarch.html. D_*** , means the register infomation is in the dual register group, S_*** means the register infomation is in the single register group.
 As a practice, the example would be used from the test case of dc_1x1x8_1x1x8x1_int_0
 
 ### SDP RDMA Group 
@@ -9,13 +9,21 @@ As a practice, the example would be used from the test case of dc_1x1x8_1x1x8x1_
 
 address: 0xa000
 
-Idle status of two register groups
+format: Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
+
+default value: initial state depends on dp0_op_en or dp1_op_en
+
+Idle status of two register groups, to indicate which register group is idle. 
 
 #### S_POINTER
 
 address: 0xa004
 
-Pointer for CSB master and data path to access groups. 
+format: Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
+
+default value: consumer is initially 0, 
+
+Pointer for CSB master and data path to access groups. consumer means the consumer pointer, register
 
 #### D_OP_ENABLE
 

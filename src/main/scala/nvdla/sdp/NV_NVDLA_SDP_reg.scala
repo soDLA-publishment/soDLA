@@ -182,7 +182,7 @@ withClock(io.nvdla_core_clk){
     // GENERATE CONSUMER PIONTER IN GENERAL SINGLE REGISTER GROUP         //
     //                                                                    //
     //////////////////////////////////////////////////////////////////////// 
-    val dp2reg_consumer_w = dp2reg_consumer
+    val dp2reg_consumer_w = ~dp2reg_consumer
 
     when(io.dp2reg_done){
         dp2reg_consumer := dp2reg_consumer_w
