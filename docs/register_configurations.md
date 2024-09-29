@@ -21,19 +21,25 @@ address: 0xa004
 
 format: Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
 
-default value: consumer is initially 0, 
+default value: consumer is initially 0, producer is initially 0. 
 
-Pointer for CSB master and data path to access groups. consumer means the consumer pointer, register
+Pointer for CSB master and data path to access groups. consumer means the which dual register is consuming the data returned from data processor, pointer is a 1-bit tag, for selecting which dual register. 
 
 #### D_OP_ENABLE
 
 address: 0xa008
 
-Set it to 1 to kick off operation for current register group.
+format: internal logic, unreadable
+
+Set it to 1 to kick off operation for current register group. 
 
 #### D_DATA_CUBE_WIDTH
 
 address: 0xa00c
+
+format: Cat("b0".asUInt(19.W), io.field.width_a[12:0])
+
+default value: 0
 
 Input cube’s width, in the example, width after convolution is still 1, so set it to zero.
 
@@ -41,17 +47,27 @@ Input cube’s width, in the example, width after convolution is still 1, so set
 
 address: 0xa010
 
+format: Cat("b0".asUInt(19.W), io.field.height[12:0])
+
+default value: 0
+
 Input cube’s height, in the example, height after convolution is still 1, so set it to zero.
 
 ### D_DATA_CUBE_CHANNEL
 
 address: 0xa014
 
+format: Cat("b0".asUInt(19.W), io.field.channel[12:0])
+
+default value: 0
+
 Input cube’s channel, for sdp, the output cube channel should be 1(k is 1), so set it to zero 
 
 ### D_SRC_BASE_ADDR_LOW
 
 address: 0xa018
+
+
 
 Lower 32bits of input data address, in the example, the input address is 0x80050200, which is the initial data input address from memory. 
 
