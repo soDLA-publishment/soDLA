@@ -67,13 +67,19 @@ Input cube’s channel, for sdp, the output cube channel should be 1(k is 1), so
 
 address: 0xa018
 
+format: io.field.src_base_addr_low[31:0]
 
+default value: 0
 
-Lower 32bits of input data address, in the example, the input address is 0x80050200, which is the initial data input address from memory. 
+Lower 32bits of input data address
 
 ### D_SRC_BASE_ADDR_HIGH
 
 address: 0xa01c
+
+format: io.field.dst_base_addr_low[31:0]
+
+default value: 0
 
 Higher 32bits of input data address when axi araddr is 64bits, is zero. 
 
@@ -81,7 +87,9 @@ Higher 32bits of input data address when axi araddr is 64bits, is zero.
 
 address: 0xa020
 
-Line stride of input cube
+format: 
+
+Line stride of input cube, is the distance in bytes from one line to another(according to a nvdla issue). 
 
 ### D_SRC_SURFACE_STRIDE
 
