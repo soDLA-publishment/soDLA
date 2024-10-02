@@ -87,175 +87,201 @@ Higher 32bits of input data address when axi araddr is 64bits, is zero.
 
 address: 0xa020
 
-format: 
+format: io.field.src_line_stride[31:0]
 
-Line stride of input cube, is the distance in bytes from one line to another(according to a nvdla issue). 
+default value: 0
+
+Line stride of input cube, is the distance in bytes from one line to another(according to a nvdla issue).  Line stride refers to the stride within one surface.
 
 ### D_SRC_SURFACE_STRIDE
 
-0xa024
+address: 0xa024
 
-Surface stride of input cube
+format: io.field.src_surface_stride[31:0]
+
+default value: 0
+
+Surface stride of input cube, is the distance in bytes from one surface to the next(according to a nvdla issue).  Surface stride refers to the stride between surfaces.
 
 ### D_BRDMA_CFG
 
-0xa028
+address: 0xa028
 
-Configuration of BRDMA: enable/disable, data size, Ram type, etc, default to be zero
+format: Cat("b0".asUInt(26.W), io.field.brdma_ram_type[0], io.field.brdma_data_mode[0], io.field.brdma_data_size[0], io.field.brdma_data_use[1:0], io.field.brdma_disable[0])
+
+default value: 0
+
+Configuration of BRDMA: enable/disable, data size, Ram type, etc, default to be zero(to be implemented deeper later)
 
 ### D_BS_BASE_ADDR_LOW
 
-0xa02c
+address: 0xa02c
 
-Lower 32bits address of the bias data cube
+format: io.field.bs_base_addr_low[31:0]
+
+defaut value: 0
+
+Lower 32bits address of the bias data cube. 
 
 ### D_BS_BASE_ADDR_HIGH
 
-0xa030
+address: 0xa030
+
+format: io.field.bs_base_addr_high[31:0]
+
+default value: 0
 
 Higher 32bits address of the bias data cube when axi araddr is 64bits
 
 ### D_BS_LINE_STRIDE
 
-0xa034
+address: 0xa034
+
+format: io.field.bs_line_stride[31:0]
+
+default: 0
 
 Line stride of bias data cube.
 
 ### D_BS_SURFACE_STRIDE
 
-0xa038
+address: 0xa038
+
+format: io.field.bs_surface_stride[31:0]
 
 Surface stride of bias data cube.
 
 ### D_BS_BATCH_STRIDE
 
-0xa03c
+address: 0xa03c
 
-Stride of bias data cube in batch mode
+format: io.field.bs_batch_stride[31:0]
+
+Stride of bias data cube in batch mode(mentioned in NVDLA programming guide).
 
 ### D_NRDMA_CFG
 
-0xa040
+address: 0xa040
 
 Configuration of NRDMA: enable/disable, data size, Ram type, etc.
 
 D_BN_BASE_ADDR_LOW
 
-0xa044
+address: 0xa044
 
 Lower 32bits address of the bias data cube
 
 D_BN_BASE_ADDR_HIGH
 
-0xa048
+address: 0xa048
 
 Higher 32bits address of the bias data cube when axi araddr is 64bits
 
 D_BN_LINE_STRIDE
 
-0xa04c
+address: 0xa04c
 
 Line stride of bias data cube
 
 D_BN_SURFACE_STRIDE
 
-0xa050
+address: 0xa050
 
 Surface stride of bias data cube
 
 D_BN_BATCH_STRIDE
 
-0xa054
+address: 0xa054
 
 Stride of bias data cube in batch mode
 
 D_ERDMA_CFG
 
-0xa058
+address: 0xa058
 
 Configuration of ERDMA: enable/disable, data size, Ram type, etc.
 
 D_EW_BASE_ADDR_LOW
 
-0xa05c
+address: 0xa05c
 
 Lower 32bits address of the bias data cube
 
 D_EW_BASE_ADDR_HIGH
 
-0xa060
+address: 0xa060
 
 Higher 32bits address of the bias data cube when axi araddr is 64bits
 
 D_EW_LINE_STRIDE
 
-0xa064
+address: 0xa064
 
 Line stride of bias data cube
 
 D_EW_SURFACE_STRIDE
 
-0xa068
+address: 0xa068
 
 Surface stride of bias data cube
 
 D_EW_BATCH_STRIDE
 
-0xa06c
+address: 0xa06c
 
 Stride of bias data cube in batch mode
 
 D_FEATURE_MODE_CFG
 
-0xa070
+address: 0xa070
 
 Operation configuration: flying mode, output destination, Direct or Winograd mode, flush NaN to zero, batch number.
 
 D_SRC_DMA_CFG
 
-0xa074
+address: 0xa074
 
 RAM type of input data cube
 
 D_STATUS_NAN_INPUT_NUM
 
-0xa078
+address: 0xa078
 
 Input NaN element number
 
 D_STATUS_INF_INPUT_NUM
 
-0xa07c
+address: 0xa07c
 
 Input Infinity element number
 
 D_PERF_ENABLE
 
-0xa080
+address: 0xa080
 
 Enable/Disable performance counting
 
 D_PERF_MRDMA_READ_STALL
 
-0xa084
+address: 0xa084
 
 Count stall cycles of M read DMA for one layer
 
 D_PERF_BRDMA_READ_STALL
 
-0xa088
+address: 0xa088
 
 Count stall cycles of B read DMA for one layer
 
 D_PERF_NRDMA_READ_STALL
 
-0xa08c
+address: 0xa08c
 
 Count stall cycles of N read DMA for one layer
 
 D_PERF_ERDMA_READ_STALL
 
-0xa090
+address: 0xa090
 
 Count stall cycles of E read DMA for one layer
 
