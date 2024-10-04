@@ -163,45 +163,73 @@ Stride of bias data cube in batch mode(mentioned in NVDLA programming guide).
 
 address: 0xa040
 
+format: Cat("b0".asUInt(26.W), io.field.nrdma_ram_type, io.field.nrdma_data_mode, io.field.nrdma_data_size, io.field.nrdma_data_use[1:0], io.field.nrdma_disable)
+
+default value: all 0.
+
 Configuration of NRDMA: enable/disable, data size, Ram type, etc.
 
-D_BN_BASE_ADDR_LOW
+### D_BN_BASE_ADDR_LOW
 
 address: 0xa044
 
-Lower 32bits address of the bias data cube
+format: io.field.bn_base_addr_low[31:0]
 
-D_BN_BASE_ADDR_HIGH
+default value: 0
+
+Lower 32bits address of the bias data cube, BN is for batch normalization. 
+
+## D_BN_BASE_ADDR_HIGH
 
 address: 0xa048
 
-Higher 32bits address of the bias data cube when axi araddr is 64bits
+format: io.field.bn_base_addr_high[31:0]
 
-D_BN_LINE_STRIDE
+default value: 0
+
+Higher 32bits address of the bias data cube when axi araddr is 64bits.
+
+## D_BN_LINE_STRIDE
 
 address: 0xa04c
 
-Line stride of bias data cube
+format: io.field.bn_line_stride[31:0]
 
-D_BN_SURFACE_STRIDE
+default value: 0
+
+Line stride of bias data cube for batch normalization
+
+## D_BN_SURFACE_STRIDE
 
 address: 0xa050
 
-Surface stride of bias data cube
+format: io.field.bn_line_stride[31:0]
 
-D_BN_BATCH_STRIDE
+default value: 0
+
+Surface stride of bias data cube for batch normalization
+
+## D_BN_BATCH_STRIDE
 
 address: 0xa054
 
-Stride of bias data cube in batch mode
+format: io.field.bn_batch_stride[31:0]
 
-D_ERDMA_CFG
+value: 0
+
+Stride of bias data cube for batch normalization in multi-batch mode
+
+## D_ERDMA_CFG
 
 address: 0xa058
 
+format: Cat("b0".asUInt(26.W), io.field.erdma_ram_type, io.field.erdma_data_mode, io.field.erdma_data_size, io.field.erdma_data_use[1:0], io.field.erdma_disable)
+
+value: 0
+
 Configuration of ERDMA: enable/disable, data size, Ram type, etc.
 
-D_EW_BASE_ADDR_LOW
+## D_EW_BASE_ADDR_LOW
 
 address: 0xa05c
 
