@@ -215,7 +215,7 @@ address: 0xa054
 
 format: io.field.bn_batch_stride[31:0]
 
-value: 0
+default value: 0
 
 Stride of bias data cube for batch normalization in multi-batch mode
 
@@ -225,43 +225,67 @@ address: 0xa058
 
 format: Cat("b0".asUInt(26.W), io.field.erdma_ram_type, io.field.erdma_data_mode, io.field.erdma_data_size, io.field.erdma_data_use[1:0], io.field.erdma_disable)
 
-value: 0
+default value: 0
 
-Configuration of ERDMA: enable/disable, data size, Ram type, etc.
+Configuration of ERDMA: enable/disable, data size, Ram type, etc. Those are the configurations in the EW mode(will implement more document later).
 
 ## D_EW_BASE_ADDR_LOW
 
 address: 0xa05c
 
+format: io.field.ew_base_addr_low[31:0]
+
+default value: 0
+
 Lower 32bits address of the bias data cube
 
-D_EW_BASE_ADDR_HIGH
+## D_EW_BASE_ADDR_HIGH
 
 address: 0xa060
 
-Higher 32bits address of the bias data cube when axi araddr is 64bits
+format: io.field.ew_base_addr_high[31:0]
 
-D_EW_LINE_STRIDE
+default value: 0
+
+Higher 32bits address of the bias data cube when axi araddr is 64bits. 
+
+## D_EW_LINE_STRIDE
 
 address: 0xa064
 
-Line stride of bias data cube
+format: io.field.ew_line_stride[31:0]
 
-D_EW_SURFACE_STRIDE
+default value: 0
+
+Line stride of bias data cube for element-wise mode.
+
+## D_EW_SURFACE_STRIDE
 
 address: 0xa068
 
-Surface stride of bias data cube
+format: io.field.ew_surface_stride[31:0]
 
-D_EW_BATCH_STRIDE
+default value: 0
+
+Surface stride of bias data cube for element-wise mode.
+
+## D_EW_BATCH_STRIDE
 
 address: 0xa06c
 
-Stride of bias data cube in batch mode
+format: io.field.ew_batch_stride[31:0]
 
-D_FEATURE_MODE_CFG
+default value: -
+
+Stride of bias data cube in batch mode for element-wise mode.
+
+## D_FEATURE_MODE_CFG
 
 address: 0xa070
+
+format: Cat("b0".asUInt(19.W), io.field.batch_number, io.field.out_precision, io.field.proc_precision, io.field.in_precision, io.field.winograd, io.field.flying_mode)
+
+default value: 0
 
 Operation configuration: flying mode, output destination, Direct or Winograd mode, flush NaN to zero, batch number.
 
