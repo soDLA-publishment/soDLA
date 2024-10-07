@@ -289,39 +289,55 @@ default value: 0
 
 Operation configuration: flying mode, output destination, Direct or Winograd mode, flush NaN to zero, batch number.
 
-D_SRC_DMA_CFG
+## D_SRC_DMA_CFG
 
 address: 0xa074
 
-RAM type of input data cube
+format: Cat("b0".asUInt(31.W), io.field.src_ram_type)
 
-D_STATUS_NAN_INPUT_NUM
+default value: 0
+
+RAM type of input data cube. There are two dma receivers in sdp rdma, one for the first memory, another one is for the secondary memory. src_ram_type = 1 means use the first receiver to get the rdma data. 
+
+## D_STATUS_NAN_INPUT_NUM
 
 address: 0xa078
 
-Input NaN element number
+format: io.status_nan_input_num[31:0]
 
-D_STATUS_INF_INPUT_NUM
+Input NaN element number. From dp side to reg side so it is unavailable for reg_write. This is a status signal. 
+
+## D_STATUS_INF_INPUT_NUM
 
 address: 0xa07c
 
-Input Infinity element number
+format: io.status_inf_input_num[31:0]
 
-D_PERF_ENABLE
+Input Infinity element number. From dp side to reg sideso it is unavailable for reg_write. This is a status signal.
+
+## D_PERF_ENABLE
 
 address: 0xa080
 
-Enable/Disable performance counting
+format: Cat("b0".asUInt(30.W), io.field.perf_nan_inf_count_en, io.field.perf_dma_en)
 
-D_PERF_MRDMA_READ_STALL
+default: 0
+
+Enable/Disable performance counting. 
+
+## D_PERF_MRDMA_READ_STALL
 
 address: 0xa084
 
-Count stall cycles of M read DMA for one layer
+format: 
 
-D_PERF_BRDMA_READ_STALL
+Count stall cycles of M read DMA for one layer. 
+
+## D_PERF_BRDMA_READ_STALL
 
 address: 0xa088
+
+format: 
 
 Count stall cycles of B read DMA for one layer
 
