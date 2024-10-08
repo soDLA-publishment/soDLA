@@ -329,28 +329,28 @@ Enable/Disable performance counting.
 
 address: 0xa084
 
-format: 
+format: io.mrdma_stall[31:0]
 
-Count stall cycles of M read DMA for one layer. 
+Count stall cycles of M read DMA for one layer, for MRDMA ig stage. MRDMA ig is to send request to external memory.  
 
 ## D_PERF_BRDMA_READ_STALL
 
 address: 0xa088
 
-format: 
+format: io.brdma_stall[31:0]
 
-Count stall cycles of B read DMA for one layer
+Count stall cycles of B read DMA for one layer, for BRDMA ig stage. BRDMA ig is to send requst to external memory in multi-batch mode. 
 
-D_PERF_NRDMA_READ_STALL
+## D_PERF_NRDMA_READ_STALL
 
 address: 0xa08c
 
-Count stall cycles of N read DMA for one layer
+Count stall cycles of N read DMA for one layer, for NRDMA ig stage, in batch normalization
 
-D_PERF_ERDMA_READ_STALL
+## D_PERF_ERDMA_READ_STALL
 
 address: 0xa090
 
-Count stall cycles of E read DMA for one layer
+Count stall cycles of E read DMA for one layer, for ERDMA ig stage, in element-wise mode.
 
 
