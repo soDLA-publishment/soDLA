@@ -53,7 +53,7 @@ default value: 0
 
 Input cube’s height, in the example, height after convolution is still 1, so set it to zero.
 
-### D_DATA_CUBE_CHANNEL
+#### D_DATA_CUBE_CHANNEL
 
 address: 0xa014
 
@@ -63,7 +63,7 @@ default value: 0
 
 Input cube’s channel, for sdp, the output cube channel should be 1(k is 1), so set it to zero 
 
-### D_SRC_BASE_ADDR_LOW
+#### D_SRC_BASE_ADDR_LOW
 
 address: 0xa018
 
@@ -73,7 +73,7 @@ default value: 0
 
 Lower 32bits of input data address
 
-### D_SRC_BASE_ADDR_HIGH
+#### D_SRC_BASE_ADDR_HIGH
 
 address: 0xa01c
 
@@ -83,7 +83,7 @@ default value: 0
 
 Higher 32bits of input data address when axi araddr is 64bits, is zero. 
 
-### D_SRC_LINE_STRIDE
+#### D_SRC_LINE_STRIDE
 
 address: 0xa020
 
@@ -133,7 +133,7 @@ default value: 0
 
 Higher 32bits address of the bias data cube when axi araddr is 64bits
 
-### D_BS_LINE_STRIDE
+#### D_BS_LINE_STRIDE
 
 address: 0xa034
 
@@ -143,7 +143,7 @@ default: 0
 
 Line stride of bias data cube.
 
-### D_BS_SURFACE_STRIDE
+#### D_BS_SURFACE_STRIDE
 
 address: 0xa038
 
@@ -151,7 +151,7 @@ format: io.field.bs_surface_stride[31:0]
 
 Surface stride of bias data cube.
 
-### D_BS_BATCH_STRIDE
+#### D_BS_BATCH_STRIDE
 
 address: 0xa03c
 
@@ -159,7 +159,7 @@ format: io.field.bs_batch_stride[31:0]
 
 Stride of bias data cube in batch mode(mentioned in NVDLA programming guide).
 
-### D_NRDMA_CFG
+#### D_NRDMA_CFG
 
 address: 0xa040
 
@@ -169,7 +169,7 @@ default value: all 0.
 
 Configuration of NRDMA: enable/disable, data size, Ram type, etc.
 
-### D_BN_BASE_ADDR_LOW
+#### D_BN_BASE_ADDR_LOW
 
 address: 0xa044
 
@@ -179,7 +179,7 @@ default value: 0
 
 Lower 32bits address of the bias data cube, BN is for batch normalization. 
 
-## D_BN_BASE_ADDR_HIGH
+#### D_BN_BASE_ADDR_HIGH
 
 address: 0xa048
 
@@ -189,7 +189,7 @@ default value: 0
 
 Higher 32bits address of the bias data cube when axi araddr is 64bits.
 
-## D_BN_LINE_STRIDE
+#### D_BN_LINE_STRIDE
 
 address: 0xa04c
 
@@ -199,7 +199,7 @@ default value: 0
 
 Line stride of bias data cube for batch normalization
 
-## D_BN_SURFACE_STRIDE
+#### D_BN_SURFACE_STRIDE
 
 address: 0xa050
 
@@ -209,7 +209,7 @@ default value: 0
 
 Surface stride of bias data cube for batch normalization
 
-## D_BN_BATCH_STRIDE
+#### D_BN_BATCH_STRIDE
 
 address: 0xa054
 
@@ -219,7 +219,7 @@ default value: 0
 
 Stride of bias data cube for batch normalization in multi-batch mode
 
-## D_ERDMA_CFG
+#### D_ERDMA_CFG
 
 address: 0xa058
 
@@ -229,7 +229,7 @@ default value: 0
 
 Configuration of ERDMA: enable/disable, data size, Ram type, etc. Those are the configurations in the EW mode(will implement more document later).
 
-## D_EW_BASE_ADDR_LOW
+#### D_EW_BASE_ADDR_LOW
 
 address: 0xa05c
 
@@ -239,7 +239,7 @@ default value: 0
 
 Lower 32bits address of the bias data cube
 
-## D_EW_BASE_ADDR_HIGH
+#### D_EW_BASE_ADDR_HIGH
 
 address: 0xa060
 
@@ -249,7 +249,7 @@ default value: 0
 
 Higher 32bits address of the bias data cube when axi araddr is 64bits. 
 
-## D_EW_LINE_STRIDE
+#### D_EW_LINE_STRIDE
 
 address: 0xa064
 
@@ -259,7 +259,7 @@ default value: 0
 
 Line stride of bias data cube for element-wise mode.
 
-## D_EW_SURFACE_STRIDE
+#### D_EW_SURFACE_STRIDE
 
 address: 0xa068
 
@@ -269,7 +269,7 @@ default value: 0
 
 Surface stride of bias data cube for element-wise mode.
 
-## D_EW_BATCH_STRIDE
+#### D_EW_BATCH_STRIDE
 
 address: 0xa06c
 
@@ -279,7 +279,7 @@ default value: -
 
 Stride of bias data cube in batch mode for element-wise mode.
 
-## D_FEATURE_MODE_CFG
+#### D_FEATURE_MODE_CFG
 
 address: 0xa070
 
@@ -289,7 +289,7 @@ default value: 0
 
 Operation configuration: flying mode, output destination, Direct or Winograd mode, flush NaN to zero, batch number.
 
-## D_SRC_DMA_CFG
+#### D_SRC_DMA_CFG
 
 address: 0xa074
 
@@ -299,7 +299,7 @@ default value: 0
 
 RAM type of input data cube. There are two dma receivers in sdp rdma, one for the first memory, another one is for the secondary memory. src_ram_type = 1 means use the first receiver to get the rdma data. 
 
-## D_STATUS_NAN_INPUT_NUM
+#### D_STATUS_NAN_INPUT_NUM
 
 address: 0xa078
 
@@ -307,7 +307,7 @@ format: io.status_nan_input_num[31:0]
 
 Input NaN element number. From dp side to reg side so it is unavailable for reg_write. This is a status signal. 
 
-## D_STATUS_INF_INPUT_NUM
+#### D_STATUS_INF_INPUT_NUM
 
 address: 0xa07c
 
@@ -315,7 +315,7 @@ format: io.status_inf_input_num[31:0]
 
 Input Infinity element number. From dp side to reg sideso it is unavailable for reg_write. This is a status signal.
 
-## D_PERF_ENABLE
+#### D_PERF_ENABLE
 
 address: 0xa080
 
@@ -325,7 +325,7 @@ default: 0
 
 Enable/Disable performance counting. 
 
-## D_PERF_MRDMA_READ_STALL
+#### D_PERF_MRDMA_READ_STALL
 
 address: 0xa084
 
@@ -333,7 +333,7 @@ format: io.mrdma_stall[31:0]
 
 Count stall cycles of M read DMA for one layer, for MRDMA ig stage. MRDMA ig is to send request to external memory.  
 
-## D_PERF_BRDMA_READ_STALL
+#### D_PERF_BRDMA_READ_STALL
 
 address: 0xa088
 
@@ -341,16 +341,56 @@ format: io.brdma_stall[31:0]
 
 Count stall cycles of B read DMA for one layer, for BRDMA ig stage. BRDMA ig is to send requst to external memory in multi-batch mode. 
 
-## D_PERF_NRDMA_READ_STALL
+#### D_PERF_NRDMA_READ_STALL
 
 address: 0xa08c
 
+format: io.ndmma_stall[31:0]
+
 Count stall cycles of N read DMA for one layer, for NRDMA ig stage, in batch normalization
 
-## D_PERF_ERDMA_READ_STALL
+#### D_PERF_ERDMA_READ_STALL
 
 address: 0xa090
 
+format: io.edmma_stall[31:0]
+
 Count stall cycles of E read DMA for one layer, for ERDMA ig stage, in element-wise mode.
+
+
+## SDP Group 
+
+#### S_STATUS
+
+address: 0xb000
+
+format: Cat("b0".asUInt(14.W), io.status_1, "b0".asUInt(14.W), io.status_0)
+
+default value: initial state depends on dp0_op_en or dp1_op_en
+
+Idle status of two register groups, to indicate which register group is idle. 
+
+#### S_POINTER
+
+address: 0xb004
+
+format: Cat("b0".asUInt(15.W), io.consumer, "b0".asUInt(15.W), io.producer)
+
+default value: consumer is initially 0, producer is initially 0. 
+
+Pointer for CSB master and data path to access groups. consumer means the which dual register is consuming the data returned from data processor, pointer is a 1-bit tag, for selecting which dual register. 
+
+#### S_LUT_ACCESS_CFG
+
+address: 0xb008
+
+format: Cat("b0".asUInt(14.W), io.lut_access_type, io.lut_table_id, "b0".asUInt(6.W), io.lut_addr[9:0])
+
+default value: all 0.
+
+
+
+
+
 
 
