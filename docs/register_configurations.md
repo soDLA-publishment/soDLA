@@ -1,6 +1,6 @@
 ## Register Configurations
 
-The register is configurated by csb bus, from software side. reference is the nvdla.org/hw/v1/hwarch.html. D_*** , means the register infomation is in the dual register group, S_*** means the register infomation is in the single register group.
+The register is configurated by csb bus, from software side. reference is the nvdla.org/hw/v1/hwarch.html. D_*** , means the register infomation is in the dual register group, S_*** means the register infomation is in the single register group. In most cases, register info will stay on dual register group. Other case, includes register info is always the same within a task, op_enable, pointer info, those info will stay on single register group. 
 As a practice, the example would be used from the test case of dc_1x1x8_1x1x8x1_int_0
 
 ### SDP RDMA Group 
@@ -387,6 +387,38 @@ address: 0xb008
 format: Cat("b0".asUInt(14.W), io.lut_access_type, io.lut_table_id, "b0".asUInt(6.W), io.lut_addr[9:0])
 
 default value: all 0.
+
+LUT access address and type. 
+
+#### S_LUT_ACCESS_DATA
+
+address: 0xb00c
+
+format: Cat("b0".asUInt(16.W), io.lut_data[15:0])
+
+default value: no default value
+
+Data register of read or write LUT. This data is get from processor to register. 
+
+#### S_LUT_CFG
+
+address: 0xb010
+
+format: Cat("b0".asUInt(25.W), io.field.lut_hybrid_priority, io.field.lut_oflow_priority, io.field.lut_uflow_priority, "b0".asUInt(3.W), io.field.lut_le_function)
+
+default value: 0
+
+lut_le_function means LUT’s type: exponent or linear. And the selection between LE and LO tables. lut_hybrid_priority, oflow_priority and oflow_priority makes no use.
+
+#### S_LUT_INFO
+
+
+
+
+
+
+
+
 
 
 
