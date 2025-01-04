@@ -5,6 +5,9 @@ Thanks for [HuiX](xuehui.hf@gmail.com), [rgb000000](rgb000000black@gmail.com), [
 
 In addition to the original chisel-version of NVDLA, we have several additions, testing a neural network in chipyard, formal verifications, more docs to facilitate the specification process, and example customized accelerators under construction.
 
+Lastest: 
+We provide the prebuilt [nvdla_vp](https://buymeacoffee.com/yudao/e/331650)
+
 
 Smoke Test Setup
 ----------------
