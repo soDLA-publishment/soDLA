@@ -412,6 +412,94 @@ lut_le_function means LUT’s type: exponent or linear. And the selection betwee
 
 #### S_LUT_INFO
 
+address: 0xb014
+
+format: Cat("b0".asUInt(8.W), io.field.lut_lo_index_select[7:0], io.field.lut_le_index_select[7:0], io.field.lut_le_index_offset[7:0])
+
+default value: 0
+
+LE and LO LUT index offset and selection, no use.
+
+#### S_LUT_LE_START
+
+address: 0xb018
+
+format: io.field.lut_le_start[31:0]
+
+default value: 0
+
+Start of LE LUT’s range.
+
+#### S_LUT_LE_END
+
+address: 0xb01c
+
+format: io.field.lut_le_end[31:0]
+
+default value: 0
+
+End of LE LUT's range.
+
+#### S_LUT_LO_START
+
+address: 0xb020
+
+format: io.field.lut_le_start[31:0]
+
+default value: 0
+
+Start of LO LUT's range
+
+#### S_LUT_LO_END
+
+address: 0xb024
+
+format: io.field.lut_lo_end[31:0]
+
+End of LO LUT's range
+
+#### S_LUT_LE_SLOPE_SCALE
+
+address: 0xb028
+
+format: Cat(io.field.lut_le_slope_oflow_scale[15:0], io.field.lut_le_slope_uflow_scale[15:0])
+
+Slope scale parameter for LE LUT underflow and overflow, signed value. According to CDP_DP_INTP_unit, a number is calculated based on f(x) = f(x0) + slope* (x - x0) >> right_shift, slope is based on this. 
+
+#### S_LUT_LE_SLOPE_SHIFT
+
+address: 0xb02c
+
+format: Cat("b0".asUInt(22.W), io.field.lut_le_slope_oflow_shift[4:0], io.field.lut_le_slope_uflow_shift[4:0])
+
+Slope scale parameter for LE LUT underflow and overflow, signed value. 
+
+
+#### S_LUT_LO_SLOPE_SCALE
+
+address: 0xb030
+
+format: Cat(io.field.lut_lo_slope_oflow_scale[15:0], io.field.lut_lo_slope_uflow_scale[15:0])
+
+Slope scale parameter for LO LUT underflow and overflow, signed value
+
+#### S_LUT_LO_SLOPE_SHIFT
+
+address: 0xb034
+
+format: Cat("b0".asUInt(22.W), io.field.lut_lo_slope_oflow_shift[4:0], io.field.lut_lo_slope_uflow_shift[4:0])
+
+Slope scale parameter for LO LUT underflow and overflow, signed value. 
+
+
+
+
+
+
+
+
+
+
 
 
 
