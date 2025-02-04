@@ -491,6 +491,94 @@ format: Cat("b0".asUInt(22.W), io.field.lut_lo_slope_oflow_shift[4:0], io.field.
 
 Slope scale parameter for LO LUT underflow and overflow, signed value. 
 
+#### D_OP_ENABLE
+
+address: 0xb038
+
+format: Cat("b0".asUInt(31.W), io.op_en)
+
+Set it to 1 to kick off operation for current register group
+
+#### D_DATA_CUBE_WIDTH
+
+address: 0xb03c
+
+format: Cat("b0".asUInt(19.W), io.field.width_a[12:0])
+
+Input cube’s width, used in the sdp img2col part
+
+#### D_DATA_CUBE_HEIGHT
+
+address: 0xb040
+
+format: Cat("b0".asUInt(19.W), io.field.height[12:0])
+
+Input cube's height, used in sdp the img2col part.
+
+#### D_DATA_CUBE_CHANNEL
+
+address: 0xb044
+
+format: Cat("b0".asUInt(19.W),io.field.channel[12:0])
+
+Input cube's channel, used in sdp the img2col part.
+
+#### D_DST_BASE_ADDR_LOW
+
+address: 0xb048
+
+format: io.field.dst_base_addr_low[31:0]
+
+Lower 32bits of output data address
+
+#### D_DST_BASE_ADDR_HIGH
+
+address: 0xb04c
+
+format: io.field.dst_base_addr_high[31:0]
+
+Higher 32bits of output data address when axi awaddr is 64bits
+
+#### D_DST_LINE_STRIDE
+
+address: 0xb050
+
+format: io.field.dst_line_stride[31:0]
+
+Line stride of output data cube
+
+#### D_DST_SURFACE_STRIDE 
+
+address: 0xb054
+
+format: io.field.dst_surface_stride[31:0]
+
+Surface stride of output data cube
+
+#### D_DP_BS_CFG
+
+address: 0xb058
+
+format: Cat("b0".asUInt(25.W), io.field.bs_relu_bypass, io.field.bs_mul_prelu, io.field.bs_mul_bypass, io.field.bs_alu_algo, io.field.bs_alu_bypass, io.field.bs_bypass)
+
+Configurations of BS module: bypass, algorithm, etc. 
+
+#### D_DP_BS_ALU_CFG
+
+address: 0xb05c
+
+format: 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
